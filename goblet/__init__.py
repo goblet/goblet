@@ -1,0 +1,1 @@
+from goblet.app import Goblet
