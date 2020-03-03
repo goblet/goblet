@@ -1,7 +1,8 @@
 from goblet import Goblet
+import logging 
 
-app = Goblet(function_name="eml-watcher",region='us-central-1', stackdriver=True, debug=True)
-
+app = Goblet(function_name="eml-watcher",region='us-central-1', stackdriver=True)
+app.log.setLevel(logging.INFO)
 email_schema = {
      "type" : "object",
      "properties" : {

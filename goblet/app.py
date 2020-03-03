@@ -10,29 +10,25 @@ from google.cloud import pubsub_v1
 import base64
 import json
 
-class Goblet():
-    FORMAT_STRING = '%(name)s - %(levelname)s - %(message)s'
+logging.basicConfig()
 
-    def __init__(self, function_name="goblet", region="us-east4", debug=False, stackdriver=False, env=None):
+class Goblet():
+    def __init__(self, function_name="goblet", region="us-east4", stackdriver=False, env=None):
         super(Goblet, self).__init__()
         self.function_name = function_name
         self.region = region
-        self._debug = debug
-        self.log = logging.getLogger()
+        self.log = logging.getLogger(__name__)
         self.data = None
         self.event = None
         self.context = None
         self.correlation_id = None
         if stackdriver:
             self._initialize_stackdriver_logging()
-            self.log = logging.getLogger(name=self.function_name)
-            self._configure_log_level()
-        else:
-            self._configure_logging()
+            self.log = logging.getLogger(name=__name__)
 
     def _initialize_stackdriver_logging(self):
         stackdriver_client = google.cloud.logging.Client()
-        stackdriver_handler = CloudLoggingHandler(stackdriver_client,name=self.function_name, resource=self.log_resource, labels={})
+        stackdriver_handler = CloudLoggingHandler(stackdriver_client,name=__name__, resource=self.log_resource, labels={})
         setup_logging(stackdriver_handler)
 
     @property
@@ -44,42 +40,6 @@ class Goblet():
                     "correlation_id": self.correlation_id or "missing"
                 },
     )
-
-    def _configure_logging(self):
-        if self._already_configured(self.log):
-            return
-        handler = logging.StreamHandler(sys.stdout)
-        formatter = logging.Formatter(self.FORMAT_STRING)
-        handler.setFormatter(formatter)
-        self.log.propagate = False
-        self._configure_log_level()
-        self.log.addHandler(handler)
-
-    def _already_configured(self, log):
-        if not log.handlers:
-            return False
-        for handler in log.handlers:
-            if isinstance(handler, logging.StreamHandler):
-                if handler.stream == sys.stdout:
-                    return True
-        return False
-
-    @property
-    def debug(self):
-        return self._debug
-
-    @debug.setter
-    def debug(self, value):
-        self._debug = value
-        self._configure_log_level()
-
-    def _configure_log_level(self):
-        if self._debug:
-            level = logging.DEBUG
-        else:
-            level = logging.ERROR
-        self.log.setLevel(level)
-
 
     def _set_coorelation_id(self, event):
         if event.get('attributes'):
