@@ -22,7 +22,7 @@ To install goblet, open an interactive shell and run:
 
 .. code::
 
-    pip install goblet
+    pip install goblet-gcs
 
 .. note::
 
