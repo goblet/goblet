@@ -12,7 +12,7 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'goblet'
+NAME = 'goblet-gcs'
 DESCRIPTION = 'Google Cloud functions wrapper'
 URL = 'https://github.com/anovis/goblet'
 EMAIL = 'austen.novis@gmail.com'
@@ -36,7 +36,7 @@ except FileNotFoundError:
 # Load the package's __version__.py module as a dictionary.
 about = {}
 if not VERSION:
-    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
+    project_slug = 'goblet'.lower().replace("-", "_").replace(" ", "_")
     with open(os.path.join(here, project_slug, '__version__.py')) as f:
         exec(f.read(), about)
 else:

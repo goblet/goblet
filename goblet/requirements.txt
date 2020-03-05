@@ -1,3 +1,0 @@
-google-cloud-logging
-google-cloud-pubsub
-jsonschema
