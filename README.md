@@ -17,3 +17,4 @@ To install goblet, open an interactive shell and run:
 Docs
 ----
 
+[Goblet Documentation](https://anovis.github.io/goblet/docs/build/html/index.html)

@@ -22,6 +22,7 @@ class Goblet():
         self.event = None
         self.context = None
         self.correlation_id = None
+        self.headers = {}
         if stackdriver:
             self._initialize_stackdriver_logging()
             self.log = logging.getLogger(name=__name__)
@@ -75,10 +76,30 @@ class Goblet():
 
         return cloudfunction_wrapper
 
-    def http_entry_point(self,log_error=True,event_schema=None):
+    def http_entry_point(self,log_error=True,event_schema=None, cors=False):
         def cloudfunction_wrapper(func):
             def cloudfunction_request(request):
-                self.data = request.get_json 
+                if cors:
+                    cors_headers = cors if isinstance(cors,dict) else {} 
+                    # Set CORS headers for the preflight request
+                    if request.method == 'OPTIONS':
+                        # Allows GET requests from any origin with the Content-Type
+                        # header and caches preflight response for an 3600s
+                        headers = {
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'GET',
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Max-Age': '3600'
+                        }
+                        headers.update(cors_headers)
+                        return ('', 204, headers)
+                    # Set CORS headers for the main request
+                    self.headers = {
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                    self.headers.update(cors_headers)
+                    
+                self.data = request.get_json() 
                 if self.data.get('attributes'):
                     self.correlation_id = self.data['attributes'].get("correlation_id", str(uuid.uuid4()))
                 else:
@@ -93,14 +114,31 @@ class Goblet():
                         else:
                             raise e
                 try:   
-                    func(request)
+                    return func(request)
                 except Exception as e:
                     if log_error:
                         self.log.exception(e)
 
-            return cloudfunction_event
+            return cloudfunction_request
 
         return cloudfunction_wrapper
+
+    def jsonify(self, *args, **kwargs):
+        indent = None
+        separators = (',', ':')
+        headers = {'Content-Type': 'application/json'}
+        headers.update(self.headers)
+
+        if args and kwargs:
+            raise TypeError('jsonify() behavior undefined when passed both args and kwargs')
+        elif len(args) == 1:  # single args are passed directly to dumps()
+            data = args[0]
+        else:
+            data = args or kwargs
+
+        json_string = json.dumps(data, indent=indent, separators=separators)
+        return (json_string,200,headers)
+        
 
     def configure_pubsub_topic(self,name, schema=None):
         self.pubsub_topic_name=name, 
