@@ -65,3 +65,21 @@ Output validation to another pubsub topic can be done when configuring the topic
     @app.entry_point()
     def main(event, context):
         app.publish( {"name": "test_user","Id" : 1}) # valid
+
+
+Cors
+-----
+
+Cors headers can be added to http cloud functions by setting the cors field to true. this adds the cors
+headers to app.headers. if you return using app.jsonify then the headers will automatically be added.
+
+.. code::
+
+    from goblet import Goblet
+
+    app = Goblet()
+
+    @app.http_entry_point(cors=True)
+    def main(request):
+        app.log.info(app.data)
+        return app.jsonify({data:"very important"})

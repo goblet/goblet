@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Features &mdash; goblet 0.0.1 documentation</title>
+  <title>Features &mdash; goblet 0.1.0 documentation</title>
   
 
   
@@ -85,6 +85,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Features</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#input-output-validation">Input/Output validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cors">Cors</a></li>
 </ul>
 </li>
 </ul>
@@ -205,6 +206,21 @@ create your schema and pass into the goblet wrapper. If valid goblet will decode
 <span class="nd">@app</span><span class="o">.</span><span class="n">entry_point</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_user&quot;</span><span class="p">,</span><span class="s2">&quot;Id&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="c1"># valid</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cors">
+<h2>Cors<a class="headerlink" href="#cors" title="Permalink to this headline">¶</a></h2>
+<p>Cors headers can be added to http cloud functions by setting the cors field to true. this adds the cors
+headers to app.headers. if you return using app.jsonify then the headers will automatically be added.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">http_entry_point</span><span class="p">(</span><span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="n">data</span><span class="p">:</span><span class="s2">&quot;very important&quot;</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
