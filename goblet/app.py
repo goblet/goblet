@@ -98,8 +98,13 @@ class Goblet():
                         'Access-Control-Allow-Origin': '*'
                     }
                     self.headers.update(cors_headers)
-                    
-                self.data = request.get_json() 
+                
+                if request.content_type == "application/x-www-form-urlencoded":
+                    self.data = request.form
+                else:
+                    # TODO: add support for different content types
+                    self.data = request.get_json() 
+
                 if self.data.get('attributes'):
                     self.correlation_id = self.data['attributes'].get("correlation_id", str(uuid.uuid4()))
                 else:
@@ -118,6 +123,7 @@ class Goblet():
                 except Exception as e:
                     if log_error:
                         self.log.exception(e)
+                    return (json.dumps(e),400,self.headers)
 
             return cloudfunction_request
 
