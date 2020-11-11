@@ -66,7 +66,12 @@ class Register_Handlers(DecoratorAPI):
         for k,v in self.handlers.items():
             log.info(f"deploying {k}")
             v.deploy()
-        
+
+    def destroy(self):
+        for k,v in self.handlers.items():
+            log.info(f"deploying {k}")
+            v.destroy()
+
     def register_middleware(self, func, event_type='all'):
         middleware_list = self.middleware_handlers.get('event_type',[])
         middleware_list.append(func)

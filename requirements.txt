@@ -1,3 +1,8 @@
 google-cloud-logging
 google-cloud-pubsub
 jsonschema
+google-api-python-client
+google-auth-oauthlib
+oauth2client
+google-cloud-storage
+ruamel.yaml

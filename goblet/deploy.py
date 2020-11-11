@@ -39,15 +39,21 @@ class Deployer:
 
     def deploy(self, goblet, config=None):
 
-        # self.zip()
-        # url = self._upload_zip()
-        # self.create_cloudfunction(url)
-        #TODO: get function name
-        # function = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
-        # goblet.handlers["route"].generate_openapi_spec(function)
+        self.zip()
+        url = self._upload_zip()
+        self.create_cloudfunction(url)
+        # TODO: get function name
+        function = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
+        goblet.handlers["route"].generate_openapi_spec(function)
         goblet.deploy()
 
-        return 1
+        return goblet
+
+    def destroy(self, goblet):
+        goblet.destroy()
+        #TODO: destory bucket and function
+
+        return goblet
     
     def create_cloudfunction(self, url):
         subprocess.run([

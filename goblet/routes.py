@@ -69,6 +69,21 @@ class ApiGateway(Handler):
 
         return gateway_resp
 
+    def destroy(self):
+
+        # destroy api gateway
+        gateway_client = Client("apigateway", 'v1beta',calls='projects.locations.gateways',parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
+        gateway_client.execute('delete',parent_key="name")
+
+        # destroy api config
+        api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis.configs',parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + self.name)
+        api_client.execute('delete',parent_key="name")
+
+        # destroy api
+        api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis',parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
+        api_client.execute('delete',parent_key="name")
+        
+
     def generate_openapi_spec(self, cloudfunction):
         spec = OpenApiSpec(self.name, cloudfunction)
         spec.add_apigateway_routes(self.routes)
