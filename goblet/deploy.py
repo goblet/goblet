@@ -8,6 +8,7 @@ import subprocess
 from google.cloud import storage
 
 from goblet.client import Client, get_default_project
+from goblet.utils import get_dir, get_g_dir
 import hashlib
 
 log = logging.getLogger('goblet.deployer')
@@ -36,16 +37,19 @@ class Deployer:
         m.update(b"goblet")
         return "goblet-" + m.hexdigest()
 
+    def package(self, goblet):
+        #TODO: add entrypoint
+        self.zip()
 
     def deploy(self, goblet, config=None):
 
         self.zip()
-        url = self._upload_zip()
-        self.create_cloudfunction(url)
-        # TODO: get function name
-        function = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
-        goblet.handlers["route"].generate_openapi_spec(function)
-        goblet.deploy()
+        # url = self._upload_zip()
+        # self.create_cloudfunction(url)
+        # # TODO: get function name
+        # function = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
+        # goblet.handlers["route"].generate_openapi_spec(function)
+        # goblet.deploy()
 
         return goblet
 
@@ -94,7 +98,7 @@ class Deployer:
         except:
             storage_client.create_bucket(bucket, location="us")
         blob = bucket.blob("goblet.zip")
-        blob.upload_from_filename("/home/austen/repos/goblet/.goblet/goblet.zip")
+        blob.upload_from_filename(f"{get_dir()}/.goblet/goblet.zip")
         return f"gs://{self.goblet_hash_name}/goblet.zip"
 
     # google api
@@ -119,20 +123,19 @@ class Deployer:
     #     return resp["uploadUrl"]
 
     def create_zip(self):
-        if not os.path.isdir('.goblet'):
-            os.mkdir('.goblet')  
-        return zipfile.ZipFile('.goblet/goblet.zip', 'w', zipfile.ZIP_DEFLATED)
+        if not os.path.isdir(get_g_dir()):
+            os.mkdir(get_g_dir())  
+        return zipfile.ZipFile(get_g_dir() + '/goblet.zip', 'w', zipfile.ZIP_DEFLATED)
 
     def zip(self):
         self.zip_file("requirements.txt")
-        self.zip_directory('*')
+        self.zip_directory(get_dir() + '/*')
 
     def zip_file(self, filename):
         self.zipf.write(filename)
 
     def zip_directory(self, dir, exclude=['build', 'docs', 'examples']):
         exclusion_set = set(exclude)
-        curr_dir = Path(__file__).parent.absolute()
         for path in Path('').rglob('*.py'):
             if not set(path.parts).intersection(exclusion_set):
                  self.zipf.write(str(path))

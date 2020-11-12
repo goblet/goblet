@@ -6,7 +6,7 @@ import json
 
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project
-
+from goblet.utils import get_g_dir
 
 
 class ApiGateway(Handler):
@@ -53,8 +53,8 @@ class ApiGateway(Handler):
         config = {
             "openapiDocuments": [
                 { "document": {
-                    "path": f'.goblet/{self.name}_openapi_spec.yml',
-                    "contents": base64.b64encode(open(f'.goblet/{self.name}_openapi_spec.yml','rb').read()).decode('utf-8')
+                    "path": f'{get_g_dir()}/{self.name}_openapi_spec.yml',
+                    "contents": base64.b64encode(open(f'{get_g_dir()}/{self.name}_openapi_spec.yml','rb').read()).decode('utf-8')
                     }
                 }
             ]
@@ -87,7 +87,7 @@ class ApiGateway(Handler):
     def generate_openapi_spec(self, cloudfunction):
         spec = OpenApiSpec(self.name, cloudfunction)
         spec.add_apigateway_routes(self.routes)
-        with open(f'.goblet/{self.name}_openapi_spec.yml', 'w') as f:
+        with open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'w') as f:
             spec.write(f)
 
 class OpenApiSpec:
