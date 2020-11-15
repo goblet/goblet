@@ -1,9 +1,11 @@
 import click
-import os
-import importlib.util
+import os 
+import logging 
 
-from goblet.utils import get_app_from_module
+from goblet.utils import get_goblet_app
 from goblet.deploy import Deployer
+
+logging.basicConfig()
 
 @click.group()
 def main():
@@ -14,10 +16,27 @@ def help():
     click.echo('Help coming soon...see docs for now')
 
 @main.command()
-def deploy():
+@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
+@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
+def deploy(project, location):
     try:
+        os.environ["GOOGLE_PROJECT"]=project
+        os.environ["GOOGLE_LOCATION"]=location
         app = get_goblet_app()
         Deployer().deploy(app)
+
+    except FileNotFoundError:
+        click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+
+@main.command()
+@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
+@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
+def destroy(project, location):
+    try:
+        os.environ["GOOGLE_PROJECT"]=project
+        os.environ["GOOGLE_LOCATION"]=location
+        app = get_goblet_app()
+        Deployer().destroy(app)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
@@ -30,13 +49,3 @@ def package():
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
-
-
-def get_goblet_app():
-        # load main
-    dir_path = os.path.realpath('.')
-    spec = importlib.util.spec_from_file_location("main", f"{dir_path}/main.py")
-    main = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(main)
-    app = get_app_from_module(main)
-    return app

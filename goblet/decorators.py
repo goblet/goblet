@@ -53,6 +53,10 @@ class Register_Handlers(DecoratorAPI):
         }
         self.middleware_handlers = {}
 
+    def __call__(self, request, context=None):
+        log.info(request)
+        return "working"
+
     def _register_handler(self, handler_type, name,
                           func, kwargs, options=None):
 

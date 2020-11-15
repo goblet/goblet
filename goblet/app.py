@@ -25,6 +25,7 @@ class Goblet(LegacyDecoratorAPI, Register_Handlers):
         self.context = None
         self.correlation_id = None
         self.headers = {}
+        self.entrypoint = None
         if stackdriver:
             self._initialize_stackdriver_logging()
             self.log = logging.getLogger(name=__name__)

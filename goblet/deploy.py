@@ -7,12 +7,12 @@ import subprocess
 
 from google.cloud import storage
 
-from goblet.client import Client, get_default_project
-from goblet.utils import get_dir, get_g_dir
+from goblet.client import Client, get_default_project, get_default_location
+from goblet.utils import get_dir, get_g_dir, get_goblet_app
 import hashlib
 
 log = logging.getLogger('goblet.deployer')
-
+log.setLevel(logging.INFO)
 
 class Deployer:
 
@@ -38,18 +38,20 @@ class Deployer:
         return "goblet-" + m.hexdigest()
 
     def package(self, goblet):
-        #TODO: add entrypoint
         self.zip()
 
     def deploy(self, goblet, config=None):
-
+        log.info("zipping function......")
         self.zip()
-        # url = self._upload_zip()
-        # self.create_cloudfunction(url)
-        # # TODO: get function name
-        # function = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
-        # goblet.handlers["route"].generate_openapi_spec(function)
-        # goblet.deploy()
+        log.info("uploading function zip to gs......")
+        url = self._upload_zip()
+        log.info("creating google function......")
+        # TODO: CHECK IF VERSION IS DEPLOYED
+        function_name = self.create_cloudfunction(url, goblet.entrypoint)
+        # function_name = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
+        log.info("deploying api......")
+        goblet.handlers["route"].generate_openapi_spec(function_name)
+        goblet.deploy()
 
         return goblet
 
@@ -59,7 +61,7 @@ class Deployer:
 
         return goblet
     
-    def create_cloudfunction(self, url):
+    def create_cloudfunction(self, url, entrypoint):
         subprocess.run([
             "gcloud",
             "functions",
@@ -70,10 +72,12 @@ class Deployer:
             "--runtime=python37",
             "--trigger-http",
             "--entry-point",
-            "goblet_entrypoint",
-
+            entrypoint,
         ])
 
+        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
+
+    # google api
     # def create_cloudfunction(self,source_url):
     #     req_body = {
     #         "name": self.name,

@@ -2,12 +2,15 @@ from collections import OrderedDict
 from ruamel import yaml
 import base64
 import json 
-
+import logging
+import time 
 
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project
 from goblet.utils import get_g_dir
 
+log = logging.getLogger('goblet.deployer')
+log.setLevel(logging.INFO)
 
 class ApiGateway(Handler):
     def __init__(self, app_name, routes={}):
@@ -49,7 +52,8 @@ class ApiGateway(Handler):
 
     def deploy(self):
         resp = self.api_client.execute('create', params={'apiId':self.name})
-        
+        time.sleep(2)
+
         config = {
             "openapiDocuments": [
                 { "document": {
@@ -61,17 +65,20 @@ class ApiGateway(Handler):
         }
 
         config_resp = self._create_config_client().execute('create', params={'apiConfigId':self.name, 'body':config})
-        
+
         gateway ={
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{self.name}",
         }
         gateway_resp = self._create_gateway_client().execute('create', params={'gatewayId':self.name, 'body':gateway})
-
+        log.info(f"deployed api...")
+        log.info(f"api endpoint")
         return gateway_resp
 
     def destroy(self):
 
         # destroy api gateway
+        log.info("destroying api gateway......")
+
         gateway_client = Client("apigateway", 'v1beta',calls='projects.locations.gateways',parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
         gateway_client.execute('delete',parent_key="name")
 
@@ -82,7 +89,8 @@ class ApiGateway(Handler):
         # destroy api
         api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis',parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
         api_client.execute('delete',parent_key="name")
-        
+        log.info("api gateway successfully destroyed......")
+
 
     def generate_openapi_spec(self, cloudfunction):
         spec = OpenApiSpec(self.name, cloudfunction)
@@ -115,7 +123,8 @@ class OpenApiSpec:
         method_spec = OrderedDict()
         method_spec["x-google-backend"] = {
             "address": self.cloudfunction,
-            "protocol": "h2"
+            "protocol": "h2",
+            "path_translation": "APPEND_PATH_TO_ADDRESS"
         }
         method_spec["operationId"]=entry.function_name
         # add params
