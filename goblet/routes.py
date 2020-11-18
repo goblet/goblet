@@ -9,6 +9,7 @@ import re
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project
 from goblet.utils import get_g_dir
+from googleapiclient.errors import HttpError
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -27,6 +28,7 @@ class ApiGateway(Handler):
     def register_route(self, name, func, kwargs):
         path = kwargs.pop("path")
         methods = kwargs.pop("methods")
+        kwargs = kwargs.pop('kwargs')
         path_entries = self.routes.get(path,{})
         for method in methods:
             if path_entries.get(method):
@@ -76,12 +78,24 @@ class ApiGateway(Handler):
     def _create_config_client(self):
         return Client("apigateway", 'v1beta',calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/'+self.name)
 
+    def _patch_config_client(self):
+        return Client("apigateway", 'v1beta',calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/'+self.name + '/configs/' + self.name)
+
     def _create_gateway_client(self):
         return Client("apigateway", 'v1beta',calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}')
 
+    def _patch_gateway_client(self):
+        return Client("apigateway", 'v1beta',calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
+
     def deploy(self):
-        resp = self.api_client.execute('create', params={'apiId':self.name})
-        time.sleep(10)
+        try:
+            self.api_client.execute('create', params={'apiId':self.name})
+            time.sleep(10)
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"api already deployed")
+            else:
+                raise e
 
         config = {
             "openapiDocuments": [
@@ -92,16 +106,33 @@ class ApiGateway(Handler):
                 }
             ]
         }
-
-        config_resp = self._create_config_client().execute('create', params={'apiConfigId':self.name, 'body':config})
-
+        try:
+            config_version_name = self.name
+            self._create_config_client().execute('create', params={'apiConfigId':self.name, 'body':config})
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"updating api endpoints")
+                configs = self._create_config_client().execute('list')
+                version = len(configs['apiConfigs']) #TODO: use hash
+                config_version_name = f"{self.name}-v{version}"
+                self._create_config_client().execute('create', params={'apiConfigId':config_version_name, 'body':config})
+            else:
+                raise e
         gateway ={
-            "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{self.name}",
+            "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
         }
-        gateway_resp = self._create_gateway_client().execute('create', params={'gatewayId':self.name, 'body':gateway})
-        log.info(f"deployed api...")
-        log.info(f"api endpoint is ")
-        return gateway_resp
+        try: 
+            self._create_gateway_client().execute('create', params={'gatewayId':self.name, 'body':gateway})
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"updating gateway")
+                self._patch_gateway_client().execute('patch', parent_key='name',params={'updateMask':'apiConfig','body':gateway})
+            else:
+                raise e
+        log.info(f"api successfully deployed...")
+        gateway_resp = self._patch_gateway_client().execute('get', parent_key='name')
+        log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
+        return 
 
     def destroy(self):
 
@@ -112,8 +143,10 @@ class ApiGateway(Handler):
         gateway_client.execute('delete',parent_key="name")
 
         # destroy api config
-        api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis.configs',parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + self.name)
-        api_client.execute('delete',parent_key="name")
+        configs = self._create_config_client().execute('list')
+        for c in configs['apiConfigs']:
+            api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis.configs',parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
+            api_client.execute('delete',parent_key="name")
 
         # destroy api
         api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis',parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
@@ -127,6 +160,7 @@ class ApiGateway(Handler):
         with open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'w') as f:
             spec.write(f)
 
+PRIMITIVES = ["integer", "boolean","string"]
 class OpenApiSpec:
     def __init__(self, app_name, cloudfunction, version="1.0.0"):
         self.spec = OrderedDict()
@@ -159,11 +193,14 @@ class OpenApiSpec:
 
         params = []
         for param in entry.view_args:
+            type_info = entry.kwargs.get("param_types",{}).get(param,"string")
+            if type_info not in PRIMITIVES:
+                raise ValueError(f"param_type {param} has type {type_info}. It must be of type {PRIMITIVES}")
             param_entry = {
                 "in":"path",
                 "name": param,
                 "required": True,
-                "type": "string" #TODO: specify type
+                "type": type_info
             } 
             params.append(param_entry)
         if params:
@@ -213,6 +250,7 @@ class RouteEntry:
         elif cors is False:
             cors = None
         self.cors = cors
+        self.kwargs = {**kwargs}
 
     def _extract_view_args(self,path):
         components = path.split('/')
@@ -245,8 +283,7 @@ class RouteEntry:
 class CORSConfig(object):
     """A cors configuration to attach to a route."""
 
-    _REQUIRED_HEADERS = ['Content-Type', 'X-Amz-Date', 'Authorization',
-                         'X-Api-Key', 'X-Amz-Security-Token']
+    _REQUIRED_HEADERS = ['Content-Type','Authorization']
 
     def __init__(self, allow_origin='*', allow_headers=None,
                  expose_headers=None, max_age=None, allow_credentials=None):

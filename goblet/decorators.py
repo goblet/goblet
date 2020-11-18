@@ -54,7 +54,6 @@ class Register_Handlers(DecoratorAPI):
         self.middleware_handlers = {}
 
     def __call__(self, request, context=None):
-        log.info(dir(request))
         return self.handlers["route"](request)
         # return "working"
 

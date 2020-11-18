@@ -18,12 +18,13 @@ def help():
 @main.command()
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
-def deploy(project, location):
+@click.option('--skip-function','skip_function', is_flag=True)
+def deploy(project, location,skip_function):
     try:
         os.environ["GOOGLE_PROJECT"]=project
         os.environ["GOOGLE_LOCATION"]=location
         app = get_goblet_app()
-        Deployer().deploy(app)
+        Deployer().deploy(app, skip_function=skip_function)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")

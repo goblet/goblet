@@ -40,14 +40,16 @@ class Deployer:
     def package(self, goblet):
         self.zip()
 
-    def deploy(self, goblet, config=None):
-        log.info("zipping function......")
-        self.zip()
-        log.info("uploading function zip to gs......")
-        url = self._upload_zip()
-        log.info("creating google function......")
-        # TODO: CHECK IF VERSION IS DEPLOYED
-        function_name = self.create_cloudfunction(url, goblet.entrypoint)
+    def deploy(self, goblet, skip_function=False, config=None):
+        if not skip_function:
+            log.info("zipping function......")
+            self.zip()
+            log.info("uploading function zip to gs......")
+            url = self._upload_zip()
+            log.info("creating google function......")
+            # TODO: CHECK IF VERSION IS DEPLOYED
+            self.create_cloudfunction(url, goblet.entrypoint)
+        function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         # function_name = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
         log.info("deploying api......")
         goblet.handlers["route"].generate_openapi_spec(function_name)
