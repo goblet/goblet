@@ -57,7 +57,15 @@ class Deployer:
 
     def destroy(self, goblet):
         goblet.destroy()
-        #TODO: destory bucket and function
+
+        log.info("deleting google function......")
+        client = Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/'+self.name)
+        client.execute('delete', parent_key="name")
+        
+        log.info("deleting storage bucket......")
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(self.goblet_hash_name)
+        bucket.delete(force=True)
 
         return goblet
     

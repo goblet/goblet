@@ -18,10 +18,10 @@ class DecoratorAPI:
     #                              'description': description},
     #     )
 
-    def route(self, path, method=['GET'], **kwargs):
+    def route(self, path, methods=['GET'], **kwargs):
         return self._create_registration_function(
             handler_type='route',
-            registration_kwargs={'path': path,'method':method, 'kwargs': kwargs},
+            registration_kwargs={'path': path,'methods':methods, 'kwargs': kwargs},
         )
 
     def _create_registration_function(self, handler_type,
@@ -54,8 +54,9 @@ class Register_Handlers(DecoratorAPI):
         self.middleware_handlers = {}
 
     def __call__(self, request, context=None):
-        log.info(request)
-        return "working"
+        log.info(dir(request))
+        return self.handlers["route"](request)
+        # return "working"
 
     def _register_handler(self, handler_type, name,
                           func, kwargs, options=None):

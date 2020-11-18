@@ -4,6 +4,7 @@ import base64
 import json 
 import logging
 import time 
+import re
 
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project
@@ -25,7 +26,7 @@ class ApiGateway(Handler):
         
     def register_route(self, name, func, kwargs):
         path = kwargs.pop("path")
-        methods = kwargs.pop("method")
+        methods = kwargs.pop("methods")
         path_entries = self.routes.get(path,{})
         for method in methods:
             if path_entries.get(method):
@@ -41,6 +42,34 @@ class ApiGateway(Handler):
             path_entries[method] = entry
         self.routes[path] = path_entries
 
+    def __call__(self, request, context=None):
+        print(request)
+        method = request.method
+        path = request.path 
+        entry = self.routes.get(path,{}).get(method)
+        if not entry:
+            # test param paths
+            for p in self.routes:
+                print(p)
+                print(path)
+                if '{' in p and self._matched_path(p,path):
+                    entry = self.routes.get(p,{}).get(method)
+        # TODO: better handling
+        if not entry:
+            raise ValueError(f"No route found for {path} with {method}")
+        return entry(request)
+
+    @staticmethod
+    def _matched_path(org_path, path):
+        split_org = re.sub(r'{[\w]+}', '', org_path).split('/')
+        split_path = path.split('/')
+        if len(split_path) != len(split_org):
+            return False
+        for i, item in enumerate(split_org):
+            if item and split_path[i] != item:
+                return False
+        return True
+
     def _create_api_client(self):
         return Client("apigateway", 'v1beta',calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global')
 
@@ -52,7 +81,7 @@ class ApiGateway(Handler):
 
     def deploy(self):
         resp = self.api_client.execute('create', params={'apiId':self.name})
-        time.sleep(2)
+        time.sleep(10)
 
         config = {
             "openapiDocuments": [
@@ -71,7 +100,7 @@ class ApiGateway(Handler):
         }
         gateway_resp = self._create_gateway_client().execute('create', params={'gatewayId':self.name, 'body':gateway})
         log.info(f"deployed api...")
-        log.info(f"api endpoint")
+        log.info(f"api endpoint is ")
         return gateway_resp
 
     def destroy(self):
@@ -127,8 +156,20 @@ class OpenApiSpec:
             "path_translation": "APPEND_PATH_TO_ADDRESS"
         }
         method_spec["operationId"]=entry.function_name
-        # add params
-        # add query strings
+
+        params = []
+        for param in entry.view_args:
+            param_entry = {
+                "in":"path",
+                "name": param,
+                "required": True,
+                "type": "string" #TODO: specify type
+            } 
+            params.append(param_entry)
+        if params:
+            method_spec["parameters"] = params
+        #TODO: add query strings
+       
         method_spec["responses"] = {
             '200': {
                 "description": "A successful response"
@@ -146,6 +187,7 @@ class OpenApiSpec:
         yaml.Representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
         yaml.YAML().dump(dict(self.spec), file)
 
+_PARAMS = re.compile(r'{\w+}')
 
 class RouteEntry:
 
@@ -171,6 +213,22 @@ class RouteEntry:
         elif cors is False:
             cors = None
         self.cors = cors
+
+    def _extract_view_args(self,path):
+        components = path.split('/')
+        original_components = self.uri_pattern.split('/')
+        matches = 0
+        args = {}
+        for i, component in enumerate(components):
+            if component != original_components[i]:
+                args[self.view_args[matches]] = component
+                matches +=1 
+        return args
+
+    def __call__(self, request):
+        #TODO: pass in args and kwargs and options
+        args = self._extract_view_args(request.path)
+        return self.route_function(**args)
 
     def _parse_view_args(self):
         if '{' not in self.uri_pattern:
