@@ -135,21 +135,26 @@ class ApiGateway(Handler):
     def destroy(self):
 
         # destroy api gateway
-        log.info("destroying api gateway......")
-
-        gateway_client = Client("apigateway", 'v1beta',calls='projects.locations.gateways',parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
-        gateway_client.execute('delete',parent_key="name")
-
+        try: 
+            gateway_client = Client("apigateway", 'v1beta',calls='projects.locations.gateways',parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
+            gateway_client.execute('delete',parent_key="name")
+            log.info("destroying api gateway......")
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info(f"api gateway already destroyed")
+            else:
+                raise e
         # destroy api config
         configs = self._create_config_client().execute('list')
         for c in configs['apiConfigs']:
             api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis.configs',parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
             api_client.execute('delete',parent_key="name")
+        log.info(f"api configs destroyed")
 
         # destroy api
         api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis',parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
         api_client.execute('delete',parent_key="name")
-        log.info("api gateway successfully destroyed......")
+        log.info("apis successfully destroyed......")
 
 
     def generate_openapi_spec(self, cloudfunction):

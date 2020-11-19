@@ -58,8 +58,9 @@ class Client:
     def __call__(self):
         return self.client 
 
-    def execute(self, api, parent=True, parent_key='parent', params={}):
+    def execute(self, api, parent=True, parent_key='parent', params=None):
         api_chain = self.client
+        params = params or {}
 
         if isinstance(self.calls, str):
             calls = self.calls.split('.')

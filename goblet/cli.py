@@ -43,6 +43,20 @@ def destroy(project, location):
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
 
 @main.command()
+@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
+@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
+@click.argument('cloudfunction')
+def openapi(project, location, cloudfunction):
+    try:
+        os.environ["GOOGLE_PROJECT"]=project
+        os.environ["GOOGLE_LOCATION"]=location
+        app = get_goblet_app()
+        app.handlers["route"].generate_openapi_spec(cloudfunction)
+
+    except FileNotFoundError:
+        click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+
+@main.command()
 def package():
     try:
         app = get_goblet_app()
