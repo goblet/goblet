@@ -24,7 +24,7 @@ def deploy(project, location,skip_function):
         os.environ["GOOGLE_PROJECT"]=project
         os.environ["GOOGLE_LOCATION"]=location
         app = get_goblet_app()
-        Deployer().deploy(app, skip_function=skip_function)
+        Deployer({"name":app.function_name}).deploy(app, skip_function=skip_function)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
@@ -37,7 +37,7 @@ def destroy(project, location):
         os.environ["GOOGLE_PROJECT"]=project
         os.environ["GOOGLE_LOCATION"]=location
         app = get_goblet_app()
-        Deployer().destroy(app)
+        Deployer({"name":app.function_name}).destroy(app)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")

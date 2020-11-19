@@ -26,6 +26,7 @@ class Goblet(LegacyDecoratorAPI, Register_Handlers):
         self.correlation_id = None
         self.headers = {}
         self.entrypoint = None
+        self.g = G()
         if stackdriver:
             self._initialize_stackdriver_logging()
             self.log = logging.getLogger(name=__name__)
@@ -60,3 +61,6 @@ class Goblet(LegacyDecoratorAPI, Register_Handlers):
 
         json_string = json.dumps(data, indent=indent, separators=separators)
         return (json_string,200,headers)
+
+class G: 
+    pass

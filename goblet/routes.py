@@ -45,15 +45,12 @@ class ApiGateway(Handler):
         self.routes[path] = path_entries
 
     def __call__(self, request, context=None):
-        print(request)
         method = request.method
         path = request.path 
         entry = self.routes.get(path,{}).get(method)
         if not entry:
             # test param paths
             for p in self.routes:
-                print(p)
-                print(path)
                 if '{' in p and self._matched_path(p,path):
                     entry = self.routes.get(p,{}).get(method)
         # TODO: better handling
@@ -130,6 +127,7 @@ class ApiGateway(Handler):
             else:
                 raise e
         log.info(f"api successfully deployed...")
+        time.sleep(5)
         gateway_resp = self._patch_gateway_client().execute('get', parent_key='name')
         log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
         return 

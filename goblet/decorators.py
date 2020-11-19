@@ -3,9 +3,12 @@ import logging
 
 log = logging.getLogger(__name__)
 
+EVENT_TYPES = ["all", 'http']
 
 class DecoratorAPI:
     def middleware(self, event_type='all'):
+        if event_type not in EVENT_TYPES:
+            raise ValueError(f"{event_type} not in {EVENT_TYPES}")
         def _middleware_wrapper(func):
             self.register_middleware(func, event_type)
             return func
@@ -34,8 +37,6 @@ class DecoratorAPI:
             return user_handler
         return _register_handler
 
-    def _get_middleware_handlers(self, event_type):
-        raise NotImplementedError("_get_middleware_handlers")
 
     def _register_handler(self, handler_type, name,
                           func, kwargs, options=None):
@@ -52,10 +53,22 @@ class Register_Handlers(DecoratorAPI):
             "route":ApiGateway(function_name)
         }
         self.middleware_handlers = {}
+        self.current_request = None
 
     def __call__(self, request, context=None):
+        self.current_request = request
+        # TODO: get event_type
+        event_type = 'http'
+        request = self._call_middleware(request,event_type)
         return self.handlers["route"](request)
-        # return "working"
+
+    def _call_middleware(self, event, event_type):
+        middleware = self.middleware_handlers.get('all', [])
+        middleware.extend(self.middleware_handlers.get(event_type, []))
+        for m in middleware:
+            event = m(event)
+
+        return event
 
     def _register_handler(self, handler_type, name,
                           func, kwargs, options=None):
@@ -77,11 +90,9 @@ class Register_Handlers(DecoratorAPI):
             v.destroy()
 
     def register_middleware(self, func, event_type='all'):
-        middleware_list = self.middleware_handlers.get('event_type',[])
+        middleware_list = self.middleware_handlers.get(event_type,[])
         middleware_list.append(func)
-
-    def _get_middleware_handlers(self, event_type):
-        return self.middleware_handlers.get(event_type, [])
+        self.middleware_handlers[event_type] = middleware_list
 
     def _register_route(self, name, func, kwargs):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
