@@ -13,13 +13,20 @@ def main():
 
 @main.command()
 def help():
-    click.echo('Help coming soon...see docs for now')
+    click.echo('You can view the full docs for goblet at https://anovis.github.io/goblet/docs/build/html/index.html')
 
 @main.command()
-@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
-@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
+@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT', required=True)
+@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
 @click.option('--skip-function','skip_function', is_flag=True)
 def deploy(project, location,skip_function):
+    """
+    You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
+    
+    Note: Allowed GOOGLE_LOCATION values for API GATEWATy Beta are: asia-east1, europe-west1, and us-central1.
+
+    Note: Make sure api-gateway, cloudfunctions, and storage are enabled in your project
+    """
     try:
         os.environ["GOOGLE_PROJECT"]=project
         os.environ["GOOGLE_LOCATION"]=location
@@ -47,6 +54,11 @@ def destroy(project, location):
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
 @click.argument('cloudfunction')
 def openapi(project, location, cloudfunction):
+    """
+    You can find the generated openapi spec in /.goblet folder. 
+
+    The cloudfunction argument sets the correct x-google-backend address in the openapi spec.
+    """
     try:
         os.environ["GOOGLE_PROJECT"]=project
         os.environ["GOOGLE_LOCATION"]=location
@@ -60,7 +72,7 @@ def openapi(project, location, cloudfunction):
 def package():
     try:
         app = get_goblet_app()
-        Deployer().package(app)
+        Deployer({"name":app.function_name}).package(app)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")

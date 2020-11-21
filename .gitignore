@@ -14,7 +14,7 @@ __pycache__/
 .Python
 build/
 # ignore docs build
-!docs/build/
+docs/build/
 develop-eggs/
 dist/
 downloads/

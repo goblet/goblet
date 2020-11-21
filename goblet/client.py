@@ -1,15 +1,10 @@
 import pickle
 import os.path
+import time 
+
 from googleapiclient.discovery import build
-# from google_auth_oauthlib.flow import InstalledAppFlow
-# from google.auth.transport.requests import Request
-# from google.oauth2 import service_account
+
 import google.auth
-
-
-# If modifying these scopes, delete the file token.pickle.
-# SCOPES = ['https://www.googleapis.com/auth/documents.readonly']
-CLOUD_SCOPES = frozenset(['https://www.googleapis.com/auth/cloud-platform'])
 
 
 def get_default_project():
@@ -48,25 +43,48 @@ class Client:
         self.project_id = get_default_project()
         self.location_id = get_default_location()
         self.calls = calls
+        self.resource = resource
+        self.version = version
+        self.parent_schema = parent_schema
         self.credentials = credentials or get_credentials()
 
         self.client = build(resource, version, credentials=self.credentials, cache_discovery=False)
-        self.parent_schema = parent_schema
+        
+        self.parent = None
         if self.parent_schema:
             self.parent = self.parent_schema.format(project_id=self.project_id, location_id=self.location_id)
 
     def __call__(self):
         return self.client 
 
-    def execute(self, api, parent=True, parent_key='parent', params=None):
-        api_chain = self.client
-        params = params or {}
+    def wait_for_operation(self, operation, timeout=600):
+        done = False
+        operation_client = Client(
+            self.resource, 
+            version=self.version, 
+            credentials=self.credentials, 
+            calls="projects.locations.operations",
+            parent_schema= operation
+        )
+        count = 0
+        sleep_duration = 4
+        while not done or count > timeout:
+            resp = operation_client.execute('get', parent_key="name")
+            done = resp.get("done")
+            time.sleep(sleep_duration)
+            count += sleep_duration
 
-        if isinstance(self.calls, str):
-            calls = self.calls.split('.')
+    def execute(self, api, calls=None, parent_schema=None, parent=True, parent_key='parent', params=None):
+        api_chain = self.client
+        _params = params or {}
+        _calls = calls or self.calls
+        _schema = parent_schema or self.parent_schema
+        
+        if isinstance(_calls, str):
+            calls = _calls.split('.')
         for call in calls:
             api_chain = getattr(api_chain, call)()
 
-        if self.parent_schema and parent:
-            params[parent_key] = self.parent
-        return getattr(api_chain, api)(**params).execute()
+        if _schema and parent:
+            _params[parent_key] = self.parent
+        return getattr(api_chain, api)(**_params).execute()

@@ -86,8 +86,8 @@ class ApiGateway(Handler):
 
     def deploy(self):
         try:
-            self.api_client.execute('create', params={'apiId':self.name})
-            time.sleep(10)
+            resp = self.api_client.execute('create', params={'apiId':self.name})
+            self.api_client.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"api already deployed")
@@ -145,17 +145,29 @@ class ApiGateway(Handler):
             else:
                 raise e
         # destroy api config
-        configs = self._create_config_client().execute('list')
-        for c in configs['apiConfigs']:
-            api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis.configs',parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
-            api_client.execute('delete',parent_key="name")
-        log.info(f"api configs destroyed")
+        try:
+            configs = self._create_config_client().execute('list')
+            for c in configs.get('apiConfigs',[]):
+                api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis.configs',parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
+                resp = api_client.execute('delete',parent_key="name")
+            log.info(f"api configs destroying....")
+            api_client.wait_for_operation(resp["name"])
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info(f"api configs already destroyed")
+            else:
+                raise e
 
         # destroy api
-        api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis',parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
-        api_client.execute('delete',parent_key="name")
-        log.info("apis successfully destroyed......")
-
+        try: 
+            api_client = Client("apigateway", 'v1beta',calls='projects.locations.apis',parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
+            api_client.execute('delete',parent_key="name")
+            log.info("apis successfully destroyed......")
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info(f"api already destroyed")
+            else:
+                raise e
 
     def generate_openapi_spec(self, cloudfunction):
         spec = OpenApiSpec(self.name, cloudfunction)

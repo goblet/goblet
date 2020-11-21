@@ -3,13 +3,15 @@ import zipfile
 import os 
 import requests
 import logging
-import subprocess
+import hashlib
 
 from google.cloud import storage
+from google.api_core.exceptions import NotFound
+
+from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_dir, get_g_dir, get_goblet_app
-import hashlib
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -50,7 +52,6 @@ class Deployer:
             # TODO: CHECK IF VERSION IS DEPLOYED
             self.create_cloudfunction(url, goblet.entrypoint)
         function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
-        # function_name = "https://us-central1-plated-sunup-284701.cloudfunctions.net/goblet_test_app"
         log.info("deploying api......")
         goblet.handlers["route"].generate_openapi_spec(function_name)
         goblet.deploy()
@@ -60,47 +61,39 @@ class Deployer:
     def destroy(self, goblet):
         goblet.destroy()
 
-        log.info("deleting google function......")
-        client = Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/'+self.name)
-        client.execute('delete', parent_key="name")
-        
-        log.info("deleting storage bucket......")
+        try: 
+            client = Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/'+self.name)
+            client.execute('delete', parent_key="name")
+            log.info("deleting google cloudfunction......")
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info(f"cloudfunction already deployed")
+            else:
+                raise e
+
         storage_client = storage.Client()
         bucket = storage_client.bucket(self.goblet_hash_name)
-        bucket.delete(force=True)
+        try:
+            bucket.delete(force=True)
+            log.info("deleting storage bucket......")
+        except NotFound as e:
+            if e.code == 404:
+                log.info(f"storage bucket already deployed")
+            else:
+                raise e
 
         return goblet
     
-    def create_cloudfunction(self, url, entrypoint):
-        subprocess.run([
-            "gcloud",
-            "functions",
-            "deploy",
-            self.name,
-            "--source",
-            url,
-            "--runtime=python37",
-            "--trigger-http",
-            "--entry-point",
-            entrypoint,
-        ])
-
-        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
-
-    # google api
-    # def create_cloudfunction(self,source_url):
-    #     req_body = {
-    #         "name": self.name,
-    #         "description":"created by goblet",
-    #         "entryPoint": "goblet_entrypoint",
-    #         "sourceUploadUrl": source_url,
-    #         "httpsTrigger": {},
-    #         "runtime":"python37",
-    #         'timeout': '60s',
-    #         'availableMemoryMb': 512
-
-    #     }
-    #     resp2 = self.function_client.execute('create',parent_key="location", params={'body':req_body})
+    def create_cloudfunction(self,url, entrypoint):
+        req_body = {
+            "name": f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}",
+            "description":"created by goblet",
+            "entryPoint": entrypoint,
+            "sourceUploadUrl": url,
+            "httpsTrigger": {},
+            "runtime":"python37"
+        }
+        self.function_client.execute('create',parent_key="location", params={'body':req_body})
        
     def _upload_zip(self):
         self.zipf.close()
