@@ -21,7 +21,17 @@ REQUIRES_PYTHON = '>=3.7.0'
 VERSION = os.environ.get('VERSION')
 
 # What packages are required for this module to be executed?
-REQUIRED = ["google-cloud-logging","google-cloud-pubsub","jsonschema"]
+REQUIRED = [
+    "google-cloud-logging",
+    "google-cloud-pubsub",
+    "jsonschema",
+    "ruamel.yaml",
+    "google-api-python-client",
+    "google-auth-oauthlib",
+    "oauth2client",
+    "google-cloud-storage",
+    "click",
+]
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -92,19 +102,14 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*", "docs"]),
-    # If your package is a single module, use this instead of 'packages':
-    # py_modules=['mypackage'],
-
-    # entry_points={
-    #     'console_scripts': ['mycli=mymodule:cli'],
-    # },
+    entry_points={
+        'console_scripts': ['goblet=goblet.cli:main'],
+    },
     install_requires=REQUIRED,
     # extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
     classifiers=[
-        # Trove classifiers
-        # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
