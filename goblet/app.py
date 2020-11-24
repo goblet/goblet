@@ -1,9 +1,8 @@
 import logging
 import os 
 import sys
-import google.cloud.logging
-from google.cloud.logging.handlers import CloudLoggingHandler, setup_logging
-from google.cloud.logging.resource import Resource
+from google.cloud import logging_v2
+
 import uuid
 from jsonschema import validate, ValidationError
 from google.cloud import pubsub_v1
@@ -28,17 +27,17 @@ class Goblet(LegacyDecoratorAPI, Register_Handlers):
         self.entrypoint = None
         self.g = G()
         if stackdriver:
-            self._initialize_stackdriver_logging()
+            # self._initialize_stackdriver_logging()
             self.log = logging.getLogger(name=__name__)
 
     def _initialize_stackdriver_logging(self):
-        stackdriver_client = google.cloud.logging.Client()
-        stackdriver_handler = CloudLoggingHandler(stackdriver_client,name=__name__, resource=self.log_resource, labels={})
-        setup_logging(stackdriver_handler)
+        stackdriver_client = logging_v2.Client()
+        stackdriver_handler = logging_v2.CloudLoggingHandler(stackdriver_client,name=__name__, resource=self.log_resource, labels={})
+        stackdriver_client.setup_logging(stackdriver_handler)
 
     @property
     def log_resource(self):
-        return Resource(type="cloud_function", 
+        return logging_v2.Resource(type="cloud_function", 
                 labels={
                     "function_name": self.function_name, 
                     "region": self.region,

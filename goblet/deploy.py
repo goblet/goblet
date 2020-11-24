@@ -78,7 +78,7 @@ class Deployer:
             log.info("deleting storage bucket......")
         except NotFound as e:
             if e.code == 404:
-                log.info(f"storage bucket already deployed")
+                log.info(f"storage bucket already destroyed")
             else:
                 raise e
 
@@ -93,41 +93,47 @@ class Deployer:
             "httpsTrigger": {},
             "runtime":"python37"
         }
-        self.function_client.execute('create',parent_key="location", params={'body':req_body})
-       
-    def _upload_zip(self):
-        self.zipf.close()
-        curr_dir = Path(__file__).parent.absolute()
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(self.goblet_hash_name)
         try:
-            storage_client.get_bucket(self.goblet_hash_name)
-        except:
-            storage_client.create_bucket(bucket, location="us")
-        blob = bucket.blob("goblet.zip")
-        blob.upload_from_filename(f"{get_dir()}/.goblet/goblet.zip")
-        return f"gs://{self.goblet_hash_name}/goblet.zip"
-
-    # google api
+            self.function_client.execute('create',parent_key="location", params={'body':req_body})
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"updating cloudfunction...")
+                self.function_client.execute('patch',parent_key="name",parent_schema=req_body["name"], params={'body':req_body})
+            else:
+                raise e
     # def _upload_zip(self):
     #     self.zipf.close()
-    #     zip_size = os.stat('.goblet/goblet.zip').st_size
-    #     with open('.goblet/goblet.zip', 'rb') as f:
-    #         resp = self.function_client.execute('generateUploadUrl')
-            
-    #         upload_resp = requests.put(
-    #             resp["uploadUrl"],
-    #             data=f,
-    #             headers={
-    #                 "content-type": "application/zip", 
-    #                 'Content-Length': str(zip_size),
-    #                 "x-goog-content-length-range": "0,104857600"
-    #                 }
-    #         )
+    #     curr_dir = Path(__file__).parent.absolute()
+    #     storage_client = storage.Client()
+    #     bucket = storage_client.bucket(self.goblet_hash_name)
+    #     try:
+    #         storage_client.get_bucket(self.goblet_hash_name)
+    #     except:
+    #         storage_client.create_bucket(bucket, location="us")
+    #     blob = bucket.blob("goblet.zip")
+    #     blob.upload_from_filename(f"{get_dir()}/.goblet/goblet.zip")
+    #     return f"gs://{self.goblet_hash_name}/goblet.zip"
 
-    #     log.info("function code uploaded")
+    # google api
+    def _upload_zip(self):
+        self.zipf.close()
+        zip_size = os.stat('.goblet/goblet.zip').st_size
+        with open('.goblet/goblet.zip', 'rb') as f:
+            resp = self.function_client.execute('generateUploadUrl')
+            
+            upload_resp = requests.put(
+                resp["uploadUrl"],
+                data=f,
+                headers={
+                    "content-type": "application/zip", 
+                    'Content-Length': str(zip_size),
+                    "x-goog-content-length-range": "0,104857600"
+                    }
+            )
+
+        log.info("function code uploaded")
         
-    #     return resp["uploadUrl"]
+        return resp["uploadUrl"]
 
     def create_zip(self):
         if not os.path.isdir(get_g_dir()):

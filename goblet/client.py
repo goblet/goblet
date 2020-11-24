@@ -78,7 +78,9 @@ class Client:
         api_chain = self.client
         _params = params or {}
         _calls = calls or self.calls
-        _schema = parent_schema or self.parent_schema
+        if parent_schema:
+            parent_schema = parent_schema.format(project_id=self.project_id, location_id=self.location_id)
+        _schema = parent_schema or self.parent
         
         if isinstance(_calls, str):
             calls = _calls.split('.')
@@ -86,5 +88,5 @@ class Client:
             api_chain = getattr(api_chain, call)()
 
         if _schema and parent:
-            _params[parent_key] = self.parent
+            _params[parent_key] = _schema
         return getattr(api_chain, api)(**_params).execute()
