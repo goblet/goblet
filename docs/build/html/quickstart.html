@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quickstart &mdash; goblet 0.1.0 documentation</title>
+  <title>Quickstart &mdash; goblet 0.2.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Features" href="features.html" />
+    <link rel="next" title="Topics" href="topics.html" />
     <link rel="prev" title="Welcome to goblet’s documentation!" href="index.html" /> 
 </head>
 
@@ -81,10 +81,16 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#credentials">Credentials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-your-project">Creating Your Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deploying">Deploying</a></li>
+</ul>
+</li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
 </ul>
 
             
@@ -151,38 +157,74 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<p>To install goblet, open an interactive shell and run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">goblet</span><span class="o">-</span><span class="n">gcs</span>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>In this tutorial, you’ll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.7. You can find the latest versions of python on the Python download page.</p>
+<p>To install Goblet, we’ll first create and activate a virtual environment in python3.7:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 --version
+Python 3.7.3
+$ python3 -m venv venv37
+$ . venv37/bin/activate
 </pre></div>
 </div>
-<p>Import the Goblet class and instantiate:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">stackdriver</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-
-<span class="nd">@app</span><span class="o">.</span><span class="n">entry_point</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;goblet logger&quot;</span><span class="p">)</span>
+<p>Next we’ll install Goblet using pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">goblet</span><span class="o">-</span><span class="n">gcs</span>
 </pre></div>
 </div>
-<p>To use goblet with stackdriver:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="n">CLOUD_FUNCTION_NAME</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east4&quot;</span><span class="p">,</span> <span class="n">stackdriver</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-
-<span class="nd">@app</span><span class="o">.</span><span class="n">entry_point</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;goblet logger in stackdriver&quot;</span><span class="p">)</span>
+<p>You can verify you have goblet installed by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ goblet --help
+Usage: goblet [OPTIONS] COMMAND [ARGS]...
+...
 </pre></div>
 </div>
-<p>By default goblet attaches the following labels to each log:</p>
-<ul class="simple">
-<li><p>function_name</p></li>
-<li><p>region</p></li>
-<li><p>correlation_id (defaults to “missing”)</p></li>
-</ul>
+</div>
+<div class="section" id="credentials">
+<h2>Credentials<a class="headerlink" href="#credentials" title="Permalink to this headline">¶</a></h2>
+<p>Before you can deploy an application, be sure you have credentials configured. You should run <cite>gcloud auth login</cite> and sign in to the desired project.</p>
+<p>When setting the defaut location note tha api-gateway is only available in <cite>asia-east1</cite>, <cite>europe-west1</cite>, and <cite>us-central1</cite>.</p>
+</div>
+<div class="section" id="creating-your-project">
+<h2>Creating Your Project<a class="headerlink" href="#creating-your-project" title="Permalink to this headline">¶</a></h2>
+<p>create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes <cite>goblet-gcs</cite></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls -la
+drwxr-xr-x   .goblet
+-rw-r--r--   main.py
+-rw-r--r--   requirements.txt
+</pre></div>
+</div>
+<p>You can ignore the .goblet directory for now, the two main files we’ll focus on is app.py and requirements.txt.</p>
+<p>Let’s take a look at the main.py file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This app with deploy an api with endpoint <cite>/home</cite>.</p>
+</div>
+<div class="section" id="deploying">
+<h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
+<p>Let’s deploy this app. Make sure you’re in the app directory and run goblet deploy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ goblet deploy
+INFO:goblet.deployer:zipping function......
+INFO:goblet.deployer:uploading function zip to gs......
+INFO:goblet.deployer:creating google function......
+INFO:goblet.deployer:deploying api......
+INFO:goblet.deployer:api successfully deployed...
+INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
+```
+</pre></div>
+</div>
+<p>You now have an API up and running using API Gateway and cloudfunctions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl https://goblet-example-yol8sbt.uc.gateway.dev/home
+{&quot;hello&quot;: &quot;world&quot;}
+</pre></div>
+</div>
+<p>Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running <cite>golet deploy</cite>.</p>
+</div>
 </div>
 
 
@@ -193,7 +235,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="topics.html" class="btn btn-neutral float-right" title="Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to goblet’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

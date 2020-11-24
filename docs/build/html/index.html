@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to goblet’s documentation! &mdash; goblet 0.1.0 documentation</title>
+  <title>Welcome to goblet’s documentation! &mdash; goblet 0.2.0 documentation</title>
   
 
   
@@ -83,7 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
 </ul>
 
             
@@ -152,12 +152,36 @@
 <h1>Welcome to goblet’s documentation!<a class="headerlink" href="#welcome-to-goblet-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>Goblet is a microframework for helping write google cloud functions in python. It provides:</p>
+<p>Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use [cloudfunctions](<a class="reference external" href="https://cloud.google.com/functions">https://cloud.google.com/functions</a>). It provides:</p>
 <ul class="simple">
+<li><p>A command line tool for creating, deploying, and managing your app</p></li>
+<li><p>A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.</p></li>
 <li><p>Unified logging and error handling with stackdriver</p></li>
-<li><p>Type checking for incoming and outgoing data from pubsub and http endpoints</p></li>
 <li><p>Utitilies to help with tracking events through in a pubsub pipeline</p></li>
 </ul>
+<p>You can create Rest APIs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+   <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">],</span> <span class="n">param_types</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;integer&quot;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">post_example</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+   <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once you’ve written your code, you just run goblet deploy and Goblet takes care of deploying your app.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ goblet deploy
+...
+https://api.uc.gateway.dev
+
+$ curl https://api.uc.gateway.dev/home
+{&quot;hello&quot;: &quot;world&quot;}
+</pre></div>
+</div>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -165,26 +189,42 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">goblet</span><span class="o">-</span><span class="n">gcs</span>
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="head">
+<h1>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD<a class="headerlink" href="#head" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to have the correct services enabled in your gcp project
+<cite>api-gateway</cite>, <cite>cloudfunctions</cite>, <cite>storage</cite></p>
+</div>
+<p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; fea4d8690498114781025eaea73e18a4e4371285</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Goblet requires python version 3.7 or higher.</p>
-</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#credentials">Credentials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#creating-your-project">Creating Your Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#deploying">Deploying</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="topics">
+<h2>Topics<a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="features.html#input-output-validation">Input/Output validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="features.html#cors">Cors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#routing">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#request">Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#response">Response</a></li>
 </ul>
 </li>
 </ul>
