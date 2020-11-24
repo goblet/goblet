@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Topics &mdash; goblet 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> goblet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">goblet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Topics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/topics.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="topics">
+<h1>Topics<a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="routing">
+<h2>Routing<a class="headerlink" href="#routing" title="Permalink to this headline">¶</a></h2>
+<p>The Goblet.route() method is used to construct which routes you want to create for your API.
+The concept is the same mechanism used by Flask. You decorate a function with &#64;app.route(…),
+and whenever a user requests that URL, the function you’ve decorated is called. For example,
+suppose you deployed this app:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s1">&#39;helloworld&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;index&#39;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/a&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">a</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/b&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">b</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you go to <a class="reference external" href="https://endpoint/">https://endpoint/</a>, the index() function would be called. If you went to <a class="reference external" href="https://endpoint/a">https://endpoint/a</a> and <a class="reference external" href="https://endpoint/b">https://endpoint/b</a>, then the a() and b() function would be called, respectively.</p>
+<p>You can also create a route that captures part of the URL. This captured value will then be passed in as arguments to your view function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you then go to <a class="reference external" href="https://endpoint/users/james">https://endpoint/users/james</a>, then the view function will be called as: users(‘james’).
+The parameters are passed as keyword parameters based on the name as they appear in the URL.
+The argument names for the view function must match the name of the captured argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/a/</span><span class="si">{first}</span><span class="s1">/b/</span><span class="si">{second}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="request">
+<h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
+<p>The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture.
+To access other parts of the request including headers, query strings, and post data you can use <cite>app.current_request</cite> to get
+the request object. To see all fields see <a class="reference external" href="https://werkzeug.palletsprojects.com/en/1.0.x/wrappers/#werkzeug.wrappers.Request">Request</a>. Note, that this also means you cannot control the routing based on query strings or headers.
+Here’s an example for accessing query string data in a view function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include-greeting&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;greeting&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Hello, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p>Here’s an example for accessing post data in a view function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users}&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">():</span>
+    <span class="n">json_data</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">json</span>
+    <span class="k">return</span> <span class="n">json_data</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="response">
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
+<p>Goblet http function response should be of the form a flask <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">Response</a>. See more at the <a class="reference external" href="https://cloud.google.com/functions/docs/writing/http">cloudfunctions</a> documentation</p>
+<p>jsonify is a helper to create response objects.</p>
+<p><code class="docutils literal notranslate"><span class="pre">`Goblet.jsonify(*args,</span> <span class="pre">**kwargs)`</span></code></p>
+<p>This function wraps dumps() to add a few enhancements that make life easier. It turns the JSON output into a Response
+object with the application/json mimetype. For convenience, it also converts multiple arguments into an array or
+multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and jsonify([1,2,3]) serialize to [1,2,3].</p>
+<p>For clarity, the JSON serialization behavior has the following differences from dumps():</p>
+<p>Single argument: Passed straight through to dumps().</p>
+<p>Multiple arguments: Converted to an array before being passed to dumps().</p>
+<p>Multiple keyword arguments: Converted to a dict before being passed to dumps().</p>
+<p>Both args and kwargs: Behavior undefined and will throw an exception.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/get_current_user&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                <span class="n">email</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will send a JSON response like this to the browser:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;admin@localhost&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">42</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, austen novis
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
