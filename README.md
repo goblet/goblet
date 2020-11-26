@@ -154,6 +154,17 @@ INFO:goblet.deployer:deleting storage bucket......
 
 Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/anovis/goblet/issues) page.
 
+## Roadmap
+
+&#9744; Tests \
+ &#9744; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
+ &#9744; Configuration Options (function names, ...)\
+ &#9744; Cleanup gcp buckets\
+ &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
+ &#9744; User generated dataclasses for openapi spec \
+ &#9744; [Scheduler](https://cloud.google.com/scheduler) trigger \
+ &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger
+
 ## Want to contribute
 
 If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) submit a [pull request](https://github.com/anovis/goblet/pulls).
