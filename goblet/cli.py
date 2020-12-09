@@ -19,7 +19,8 @@ def help():
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT', required=True)
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
 @click.option('--skip-function','skip_function', is_flag=True)
-def deploy(project, location,skip_function):
+@click.option('--only-function','only_function', is_flag=True)
+def deploy(project, location,skip_function, only_function):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
     
@@ -31,7 +32,7 @@ def deploy(project, location,skip_function):
         os.environ["GOOGLE_PROJECT"]=project
         os.environ["GOOGLE_LOCATION"]=location
         app = get_goblet_app()
-        Deployer({"name":app.function_name}).deploy(app, skip_function=skip_function)
+        Deployer({"name":app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")

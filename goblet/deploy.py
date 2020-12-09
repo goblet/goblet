@@ -33,6 +33,8 @@ class Deployer:
         return Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
 
     def project_hash(self):
+        if not get_default_project():
+            return None
         m = hashlib.md5()
         m.update(get_default_project().encode('utf-8'))
         m.update(self.config["name"].encode('utf-8'))
@@ -42,7 +44,7 @@ class Deployer:
     def package(self, goblet):
         self.zip()
 
-    def deploy(self, goblet, skip_function=False, config=None):
+    def deploy(self, goblet, skip_function=False,only_function=False, config=None):
         if not skip_function:
             log.info("zipping function......")
             self.zip()
@@ -53,8 +55,9 @@ class Deployer:
             self.create_cloudfunction(url, goblet.entrypoint)
         function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         log.info("deploying api......")
-        goblet.handlers["route"].generate_openapi_spec(function_name)
-        goblet.deploy()
+        if not only_function:
+            goblet.handlers["route"].generate_openapi_spec(function_name)
+            goblet.deploy()
 
         return goblet
 
