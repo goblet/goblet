@@ -85,6 +85,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Topics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
 </ul>
@@ -193,6 +194,31 @@ The argument names for the view function must match the name of the captured arg
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span><span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="config">
+<h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>You can provide custom configurations for your cloudfunction by using the config.json file which should be
+located in the .goblet folder. If one doesn’t exist then you should add one.</p>
+<p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <cite>cloudfunction</cite> key. See below for example.</p>
+<p>Example fields include</p>
+<ul class="simple">
+<li><p>environmentVariables</p></li>
+<li><p>labels</p></li>
+<li><p>availableMemoryMb</p></li>
+<li><p>timeout</p></li>
+</ul>
+<p>Example config.json:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;env1&quot;</span><span class="p">:</span><span class="s2">&quot;var1&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;labels&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;label1&quot;</span><span class="p">:</span><span class="s2">&quot;val1&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;availableMemoryMb&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="nt">&quot;timeout&quot;</span><span class="p">:</span> <span class="s2">&quot;30s&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>see the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunction</a> docs for more details on the fields.</p>
 </div>
 <div class="section" id="request">
 <h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>

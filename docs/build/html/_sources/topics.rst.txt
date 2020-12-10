@@ -4,7 +4,7 @@ Topics
 
 
 Routing
-******* 
+^^^^^^^^^^^^^
 
 The Goblet.route() method is used to construct which routes you want to create for your API. 
 The concept is the same mechanism used by Flask. You decorate a function with @app.route(...), 
@@ -50,10 +50,42 @@ The argument names for the view function must match the name of the captured arg
         return {'first': first, 'second': second}
 
 
+Config
+^^^^^^^^^^^^^
+
+You can provide custom configurations for your cloudfunction by using the config.json file which should be 
+located in the .goblet folder. If one doesn't exist then you should add one. 
+
+To provide custom values for the cloudfunction configuration pass in your desired overrides in the `cloudfunction` key. See below for example.
+
+Example fields include 
+
+- environmentVariables
+- labels
+- availableMemoryMb
+- timeout
+
+Example config.json: 
+
+.. code:: json
+
+    {
+        "cloudfunction":{
+            "environmentVariables": {"env1":"var1"},
+            "labels": {"label1":"val1"},
+            "availableMemoryMb": 256,
+            "timeout": "30s"
+        }
+    }
+
+see the `cloudfunction`_ docs for more details on the fields.
+
+.. _CLOUDFUNCTION: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
+
 
 Request
-******* 
-
+^^^^^^^^^^^^^ 
+ 
 The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture. 
 To access other parts of the request including headers, query strings, and post data you can use `app.current_request` to get
 the request object. To see all fields see `Request`_. Note, that this also means you cannot control the routing based on query strings or headers. 
@@ -80,7 +112,7 @@ Here’s an example for accessing post data in a view function:
         return json_data
 
 Response
-********
+^^^^^^^^^^^^^ 
 
 Goblet http function response should be of the form a flask `Response`_. See more at the `cloudfunctions`_ documentation
 

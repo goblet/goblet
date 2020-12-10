@@ -52,15 +52,11 @@ To install goblet, open an interactive shell and run:
 .. code::
 
     pip install goblet-gcs
-<<<<<<< HEAD
-=======
-
 
 .. note:: 
    
    Make sure to have the correct services enabled in your gcp project
    `api-gateway`, `cloudfunctions`, `storage`
->>>>>>> fea4d8690498114781025eaea73e18a4e4371285
 
 .. note::
 
