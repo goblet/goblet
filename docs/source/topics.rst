@@ -56,6 +56,8 @@ Config
 You can provide custom configurations for your cloudfunction by using the config.json file which should be 
 located in the .goblet folder. If one doesn't exist then you should add one. 
 
+To provide custom values for the cloudfunction configuration pass in your desired overrides in the `cloudfunction` key. See below for example.
+
 Example fields include 
 
 - environmentVariables
@@ -68,10 +70,12 @@ Example config.json:
 .. code:: json
 
     {
-        "environmentVariables": {"env1":"var1"},
-        "labels": {"label1":"val1"},
-        "availableMemoryMb": 256,
-        "timeout": "30s"
+        "cloudfunction":{
+            "environmentVariables": {"env1":"var1"},
+            "labels": {"label1":"val1"},
+            "availableMemoryMb": 256,
+            "timeout": "30s"
+        }
     }
 
 see the `cloudfunction`_ docs for more details on the fields.

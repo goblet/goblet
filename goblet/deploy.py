@@ -90,6 +90,7 @@ class Deployer:
     
     def create_cloudfunction(self,url, entrypoint):
         config = GConfig()
+        user_configs = config.cloudfunction or {}
         req_body = {
             "name": f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}",
             "description": config.description or "created by goblet",
@@ -97,10 +98,7 @@ class Deployer:
             "sourceUploadUrl": url,
             "httpsTrigger": {},
             "runtime":"python37",
-            "environmentVariables":config.environmentVariables or {},
-            "labels": config.labels or {},
-            "availableMemoryMb": config.availableMemoryMb or 256,
-            "timeout": config.timeout or "60s"
+            **user_configs
         }
         try:
             self.function_client.execute('create',parent_key="location", params={'body':req_body})
