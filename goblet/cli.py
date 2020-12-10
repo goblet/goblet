@@ -13,7 +13,7 @@ def main():
 
 @main.command()
 def help():
-    click.echo('You can view the full docs for goblet at https://anovis.github.io/goblet/docs/build/html/index.html')
+    click.echo('Use goblet --help. You can also view the full docs for goblet at https://anovis.github.io/goblet/docs/build/html/index.html')
 
 @main.command()
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT', required=True)

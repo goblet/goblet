@@ -12,6 +12,7 @@ from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_dir, get_g_dir, get_goblet_app
+from goblet.config import GConfig
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -88,13 +89,18 @@ class Deployer:
         return goblet
     
     def create_cloudfunction(self,url, entrypoint):
+        config = GConfig()
         req_body = {
             "name": f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}",
-            "description":"created by goblet",
+            "description": config.description or "created by goblet",
             "entryPoint": entrypoint,
             "sourceUploadUrl": url,
             "httpsTrigger": {},
-            "runtime":"python37"
+            "runtime":"python37",
+            "environmentVariables":config.environmentVariables or {},
+            "labels": config.labels or {},
+            "availableMemoryMb": config.availableMemoryMb or 256,
+            "timeout": config.timeout or "60s"
         }
         try:
             self.function_client.execute('create',parent_key="location", params={'body':req_body})
