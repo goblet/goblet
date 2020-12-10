@@ -1,5 +1,17 @@
 import os
 import importlib.util
+from contextlib import contextmanager
+
+@contextmanager
+def add_to_path(p):
+    import sys
+    old_path = sys.path
+    sys.path = sys.path[:]
+    sys.path.insert(0, p)
+    try:
+        yield
+    finally:
+        sys.path = old_path
 
 def get_app_from_module(m):
     from goblet import Goblet
@@ -12,8 +24,9 @@ def get_goblet_app():
     dir_path = os.path.realpath('.')
     spec = importlib.util.spec_from_file_location("main", f"{dir_path}/main.py")
     main = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(main)
-    app, app_name = get_app_from_module(main)
+    with add_to_path(dir_path):
+        spec.loader.exec_module(main)
+        app, app_name = get_app_from_module(main)
     setattr(app, "entrypoint", app_name)
     return app
 

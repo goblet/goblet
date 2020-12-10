@@ -24,19 +24,11 @@ def get_default_location():
 
     return None
 
-
-
 def get_credentials():
     """get user credentials and save them for future use
     """
     credentials, project = google.auth.default()
     return credentials
-
-# def function_api():
-#     cloudfunctions = Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-#     x = cloudfunctions.execute('list')
-#     return x 
-# function_api =
 
 class Client:
     def __init__(self, resource,version='v1', credentials=None, calls=None, parent_schema=None):
