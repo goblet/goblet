@@ -55,8 +55,8 @@ class Deployer:
             # TODO: CHECK IF VERSION IS DEPLOYED
             self.create_cloudfunction(url, goblet.entrypoint)
         function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
-        log.info("deploying api......")
         if not only_function:
+            log.info("deploying api......")
             goblet.handlers["route"].generate_openapi_spec(function_name)
             goblet.deploy()
 
@@ -148,15 +148,21 @@ class Deployer:
         return zipfile.ZipFile(get_g_dir() + '/goblet.zip', 'w', zipfile.ZIP_DEFLATED)
 
     def zip(self):
+        config = GConfig()
         self.zip_file("requirements.txt")
-        self.zip_directory(get_dir() + '/*')
+        include = config.customFiles or []
+        include.append('*.py')
+        self.zip_directory(get_dir() + '/*', include=include)
 
     def zip_file(self, filename):
         self.zipf.write(filename)
 
-    def zip_directory(self, dir, exclude=['build', 'docs', 'examples']):
+    def zip_directory(self, dir, include=['*.py'], exclude=['build', 'docs', 'examples']):
         exclusion_set = set(exclude)
-        for path in Path('').rglob('*.py'):
+        globbed_files = []
+        for pattern in include:
+            globbed_files.extend(Path('').rglob(pattern))
+        for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                  self.zipf.write(str(path))
 
