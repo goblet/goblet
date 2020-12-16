@@ -1,5 +1,8 @@
 # GOBLET
 
+![PyPI](https://img.shields.io/pypi/v/goblet-gcs?color=blue&style=plastic)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/goblet-gcs?style=plastic)
+
 Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use [cloudfunctions](https://cloud.google.com/functions). It provides:
 
 * A command line tool for creating, deploying, and managing your app
