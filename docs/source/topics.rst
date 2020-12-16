@@ -53,7 +53,7 @@ The argument names for the view function must match the name of the captured arg
 Config
 ^^^^^^^^^^^^^
 
-You can provide custom configurations for your cloudfunction by using the config.json file which should be 
+You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be 
 located in the .goblet folder. If one doesn't exist then you should add one. 
 
 To provide custom values for the cloudfunction configuration pass in your desired overrides in the `cloudfunction` key. See below for example.
@@ -82,6 +82,18 @@ see the `cloudfunction`_ docs for more details on the fields.
 
 .. _CLOUDFUNCTION: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
 
+By default goblet includes all python files located in the directory. To include other files use the `customFiles` key
+which takes in a list of python `glob`_ formatted strings.
+
+Example config.json: 
+
+.. code:: json
+
+    {
+        "customFiles": ["*.yaml"]
+    }   
+
+.. _GLOB: https://docs.python.org/3/library/glob.html
 
 Request
 ^^^^^^^^^^^^^ 
