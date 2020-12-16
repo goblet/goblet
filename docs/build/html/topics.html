@@ -197,7 +197,7 @@ The argument names for the view function must match the name of the captured arg
 </div>
 <div class="section" id="config">
 <h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
-<p>You can provide custom configurations for your cloudfunction by using the config.json file which should be
+<p>You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be
 located in the .goblet folder. If one doesn’t exist then you should add one.</p>
 <p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <cite>cloudfunction</cite> key. See below for example.</p>
 <p>Example fields include</p>
@@ -219,6 +219,14 @@ located in the .goblet folder. If one doesn’t exist then you should add one.</
 </pre></div>
 </div>
 <p>see the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunction</a> docs for more details on the fields.</p>
+<p>By default goblet includes all python files located in the directory. To include other files use the <cite>customFiles</cite> key
+which takes in a list of python <a class="reference external" href="https://docs.python.org/3/library/glob.html">glob</a> formatted strings.</p>
+<p>Example config.json:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;customFiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.yaml&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="request">
 <h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
