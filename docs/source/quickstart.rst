@@ -20,7 +20,7 @@ Next we'll install Goblet using pip:
 
 .. code::
 
-    python3 -m pip install goblet-gcs
+    python3 -m pip install goblet-gcp
 
 
 You can verify you have goblet installed by running:
@@ -41,7 +41,7 @@ When setting the defaut location note tha api-gateway is only available in `asia
 Creating Your Project
 *********************
 
-create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes `goblet-gcs`
+create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes `goblet-gcp`
 
 .. code::
 

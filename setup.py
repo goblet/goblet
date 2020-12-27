@@ -12,7 +12,7 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'goblet-gcs'
+NAME = 'goblet-gcp'
 DESCRIPTION = 'Google Cloud functions wrapper'
 URL = 'https://github.com/anovis/goblet'
 EMAIL = 'austen.novis@gmail.com'

@@ -1,1 +1,1 @@
-goblet-gcs
+goblet-gcp
