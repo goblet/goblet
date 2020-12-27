@@ -51,7 +51,7 @@ To install goblet, open an interactive shell and run:
 
 .. code::
 
-    pip install goblet-gcs
+    pip install goblet-gcp
 
 
 .. note:: 
