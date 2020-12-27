@@ -9,7 +9,7 @@ Welcome to goblet's documentation!
 Overview
 ----------
 
-Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use [cloudfunctions](https://cloud.google.com/functions). It provides:
+Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use `cloudfunctions`_. It provides:
 
 * A command line tool for creating, deploying, and managing your app
 * A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
@@ -51,7 +51,7 @@ To install goblet, open an interactive shell and run:
 
 .. code::
 
-    pip install goblet-gcs
+    pip install goblet-gcp
 
 
 .. note:: 
@@ -62,6 +62,8 @@ To install goblet, open an interactive shell and run:
 .. note::
 
     Goblet requires python version 3.7 or higher.
+
+.. _CLOUDFUNCTIONS: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
 
 
 Quickstart

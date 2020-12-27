@@ -1,5 +1,8 @@
 # GOBLET
 
+![PyPI](https://img.shields.io/pypi/v/goblet-gcp?color=blue&style=plastic)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/goblet-gcp?style=plastic)
+
 Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use [cloudfunctions](https://cloud.google.com/functions). It provides:
 
 * A command line tool for creating, deploying, and managing your app
@@ -38,7 +41,7 @@ $ curl https://api.uc.gateway.dev/home
 
 To install goblet, open an interactive shell and run:
 
-```pip install goblet-gcs```
+```pip install goblet-gcp```
 
 Make sure to have the correct services enabled in your gcp project
 
@@ -60,7 +63,7 @@ $ . venv37/bin/activate
 Next we'll install Goblet using pip:
 
 ```sh
-python3 -m pip install goblet-gcs
+python3 -m pip install goblet-gcp
 ```
 
 You can verify you have goblet installed by running:
@@ -79,7 +82,7 @@ When setting the defaut location note tha api-gateway is only available in `asia
 
 ### Creating Your Project
 
-create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes `goblet-gcs`
+create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes `goblet-gcp`
 
 ```sh
 $ ls -la
