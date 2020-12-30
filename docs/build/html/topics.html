@@ -86,6 +86,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Topics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
 </ul>
@@ -224,6 +225,26 @@ which takes in a list of python <a class="reference external" href="https://docs
 <p>Example config.json:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;customFiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.yaml&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="authentication">
+<h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
+<p>API gateway supports several authentication options including, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-jwt">jwt</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-firebase">firebase</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-auth0">auth0</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-okta">Okta</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-googleid">google_id</a>,</p>
+<p>To configure authentication with goblet simply add the desired configuration in the <cite>securityDefinitions</cite> option in config.json. See the
+API gateway docs linked above for more details on how to set up the configuration.</p>
+<p>An api using JWT authentication would require the following in <cite>config.json</cite></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;your_custom_auth_id&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;authorizationUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;flow&quot;</span><span class="p">:</span> <span class="s2">&quot;implicit&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;oauth2&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;x-google-issuer&quot;</span><span class="p">:</span> <span class="s2">&quot;issuer of the token&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;x-google-jwks_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;url to the public key&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
