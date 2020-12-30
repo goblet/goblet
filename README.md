@@ -160,7 +160,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 ## Roadmap
 
 &#9744; Tests \
- &#9744; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
+ &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
  &#9745; Configuration Options (function names, ...)\
  &#9744; Cleanup gcp buckets\
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
