@@ -95,6 +95,35 @@ Example config.json:
 
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
+Authentication
+^^^^^^^^^^^^^
+API gateway supports several authentication options including, `jwt`_, `firebase`_, `auth0`_, `Okta`_, `google_id`_, 
+
+.. _JWT: https://cloud.google.com/api-gateway/docs/authenticating-users-jwt
+.. _firebase: https://cloud.google.com/api-gateway/docs/authenticating-users-firebase
+.. _auth0: https://cloud.google.com/api-gateway/docs/authenticating-users-auth0
+.. _Okta: https://cloud.google.com/api-gateway/docs/authenticating-users-okta
+.. _google_id: https://cloud.google.com/api-gateway/docs/authenticating-users-googleid
+
+To configure authentication with goblet simply add the desired configuration in the `securityDefinitions` option in config.json. See the 
+API gateway docs linked above for more details on how to set up the configuration. 
+
+An api using JWT authentication would require the following in `config.json`
+
+.. code:: json
+
+    {
+        "securityDefinitions":{
+            "your_custom_auth_id":{
+                "authorizationUrl": "",
+                "flow": "implicit",
+                "type": "oauth2",
+                "x-google-issuer": "issuer of the token",
+                "x-google-jwks_uri": "url to the public key"
+            }
+        }
+    }
+
 Request
 ^^^^^^^^^^^^^ 
  
