@@ -1,9 +1,10 @@
-from goblet.routes import RouteEntry, ApiGateway
+from goblet.resources.routes import RouteEntry, ApiGateway
+from goblet.resources.schduler import Scheduler
 import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ["all", 'http']
+EVENT_TYPES = ["all", 'http', 'schedule']
 
 class DecoratorAPI:
     def middleware(self, event_type='all'):
@@ -14,17 +15,17 @@ class DecoratorAPI:
             return func
         return _middleware_wrapper
  
-    # def schedule(self, expression, description=''):
-    #     return self._create_registration_function(
-    #         handler_type='schedule',
-    #         registration_kwargs={'expression': expression,
-    #                              'description': description},
-    #     )
 
     def route(self, path, methods=['GET'], **kwargs):
         return self._create_registration_function(
             handler_type='route',
             registration_kwargs={'path': path,'methods':methods, 'kwargs': kwargs},
+        )
+
+    def schedule(self, scheduler, **kwargs):
+        return self._create_registration_function(
+            handler_type='schedule',
+            registration_kwargs={'schedule': schedule, 'kwargs': kwargs},
         )
 
     def _create_registration_function(self, handler_type,
@@ -50,17 +51,29 @@ class Register_Handlers(DecoratorAPI):
 
     def __init__(self,function_name):
         self.handlers = {
-            "route":ApiGateway(function_name)
+            "route":ApiGateway(function_name),
+            "schedule": Scheduler(function_name)
         }
         self.middleware_handlers = {}
         self.current_request = None
 
     def __call__(self, request, context=None):
         self.current_request = request
-        # TODO: get event_type
-        event_type = 'http'
+        event_type = self.get_event_type(request)
+
+        # call middleware
         request = self._call_middleware(request,event_type)
+        
+        if event_type == "schedule":
+            return self.handlers['scheduler'](request)
+
         return self.handlers["route"](request)
+
+    def get_event_type(self, request):
+        if request.headers.get("schedule"):
+            return "schedule"
+        
+        return 'http'
 
     def _call_middleware(self, event, event_type):
         middleware = self.middleware_handlers.get('all', [])
@@ -96,6 +109,9 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_route(self, name, func, kwargs):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
+
+    def _register_schedule(self, name, func, kwargs):
+        self.handlers["schedule"].register_route(name=name, func=func, kwargs=kwargs)
 
 class LegacyDecoratorAPI:
 

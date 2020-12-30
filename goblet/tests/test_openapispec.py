@@ -1,4 +1,4 @@
-from goblet.routes import OpenApiSpec, RouteEntry
+from goblet.resources.routes import OpenApiSpec, RouteEntry
 
 
 class TestOpenApiSpec:
