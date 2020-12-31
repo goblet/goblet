@@ -16,9 +16,9 @@ log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
 
 class ApiGateway(Handler):
-    def __init__(self, app_name, routes={}):
+    def __init__(self, app_name, routes=None):
         self.name = self.format_name(app_name)
-        self.routes = routes
+        self.routes = routes or {}
         self.api_client = self._create_api_client()
         # self.cloudfunction = None
 

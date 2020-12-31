@@ -1,5 +1,5 @@
 from goblet.resources.routes import RouteEntry, ApiGateway
-from goblet.resources.schduler import Scheduler
+from goblet.resources.scheduler import Scheduler
 import logging
 
 log = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class DecoratorAPI:
             registration_kwargs={'path': path,'methods':methods, 'kwargs': kwargs},
         )
 
-    def schedule(self, scheduler, **kwargs):
+    def schedule(self, schedule, **kwargs):
         return self._create_registration_function(
             handler_type='schedule',
             registration_kwargs={'schedule': schedule, 'kwargs': kwargs},
@@ -111,7 +111,7 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
 
     def _register_schedule(self, name, func, kwargs):
-        self.handlers["schedule"].register_route(name=name, func=func, kwargs=kwargs)
+        self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
 
 class LegacyDecoratorAPI:
 
