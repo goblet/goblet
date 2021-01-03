@@ -86,6 +86,8 @@ class ApiGateway(Handler):
         return Client("apigateway", 'v1beta',calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
 
     def deploy(self):
+        if len(self.routes) == 0:
+            return
         try:
             resp = self.api_client.execute('create', params={'apiId':self.name})
             self.api_client.wait_for_operation(resp["name"])

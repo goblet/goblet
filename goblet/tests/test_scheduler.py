@@ -18,12 +18,12 @@ class TestScheduler:
             'timeZone': 'utc', 
             'description': 'test', 
             'HttpTarget': {
-                'uri': 'projects/plated-sunup-284701/locations/us-central1/functions/goblet_example', 
                 'headers': {
                     'X-Goblet-Type': 'schedule', 
                     'X-Goblet-Name': 'dummy_function'
                 }, 
-                'httpMethod': 'GET'
+                'httpMethod': 'GET',
+                'oidcToken':{}
             }
         }
         assert(scheduler.jobs['dummy_function']['job_json'] == scheule_json )

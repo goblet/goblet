@@ -65,12 +65,12 @@ class Register_Handlers(DecoratorAPI):
         request = self._call_middleware(request,event_type)
         
         if event_type == "schedule":
-            return self.handlers['scheduler'](request)
+            return self.handlers['schedule'](request)
 
         return self.handlers["route"](request)
 
     def get_event_type(self, request):
-        if request.headers.get("schedule"):
+        if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"
         
         return 'http'

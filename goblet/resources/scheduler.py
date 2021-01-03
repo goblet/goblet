@@ -25,21 +25,24 @@ class Scheduler(Handler):
     def register_job(self, name, func, kwargs):
         schedule = kwargs["schedule"]
         kwargs = kwargs.pop('kwargs')
-        timezone = kwargs.get("timezone", "utc")
+        timezone = kwargs.get("timezone", 'UTC')
         description = kwargs.get("description", "Created by goblet")
         self.jobs[name] = {
             "job_json": {
-                "name": name,
+                "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{name}",
                 "schedule": schedule,
                 "timeZone": timezone,
                 "description": description,
-                "HttpTarget": {
-                    "uri": self.cloudfunction,
+                "httpTarget": {
+                    # "uri": ADDED AT runtime,
                     "headers": {
                         'X-Goblet-Type':'schedule',
                         'X-Goblet-Name': name
                     },
-                    "httpMethod": "GET"
+                    "httpMethod": "GET",
+                    'oidcToken':{
+                        # "serviceAccountEmail": ADDED AT runtime
+                    }
                 }
             },
             "func":func
@@ -57,32 +60,43 @@ class Scheduler(Handler):
         return job["func"]()
 
     def deploy(self):
-        for job in self.jobs.values():
-            self.deploy_job(job["job_json"])
+        cloudfunction_client = Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
+        resp = cloudfunction_client.execute('get',parent_key="name",parent_schema=self.cloudfunction)
+        log.info("deploying scheduled functions......")
+        if not resp:
+            raise ValueError(f"Function {self.cloudfunction} not found")
+        cloudfunction_target = resp["httpsTrigger"]["url"]
+        service_account = resp["serviceAccountEmail"]
 
-    def deploy_job(self, job):
+        for job_name, job in self.jobs.items():
+            job["job_json"]["httpTarget"]['uri'] = cloudfunction_target
+            job["job_json"]["httpTarget"]['oidcToken']["serviceAccountEmail"] = service_account
+
+            self.deploy_job(job_name, job["job_json"])
+
+    def deploy_job(self, job_name, job):
         try:
             resp = self.api_client.execute('create', params={'body':job})
-            self.api_client.wait_for_operation(resp["name"])
+            log.info(f"created scheduled job: {job_name}")
         except HttpError as e:
             if e.resp.status == 409:
-                # TODO
-                log.info(f"should update...")
+                log.info(f"updated scheduled job: {job_name}")
+                resp = self.api_client.execute('patch', parent_key="name",parent_schema=job['name'], params={'body':job})
             else:
                 raise e
 
 
     def destroy(self):
-        for job_name in self.jobs():
+        for job_name in self.jobs.keys():
             self._destroy_job(job_name)
     
-    def _destroy_job(job_name):
+    def _destroy_job(self, job_name):
         try: 
-            scheduler_client = Client("cloudscheduler", 'v1',calls='projects.locations.jobs',parent_schema='projects/{project_id}/locations/{location_id}/jobs/' + self.job_name)
+            scheduler_client = Client("cloudscheduler", 'v1',calls='projects.locations.jobs',parent_schema='projects/{project_id}/locations/{location_id}/jobs/' + job_name)
             scheduler_client.execute('delete',parent_key="name")
-            log.info("destroying scheduled function......")
+            log.info("destroying scheduled functions......")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info(f"scheduled function already destroyed")
+                log.info(f"scheduled functions already destroyed")
             else:
                 raise e

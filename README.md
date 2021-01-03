@@ -165,7 +165,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; Cleanup gcp buckets\
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
  &#9744; User generated dataclasses for openapi spec \
- &#9744; [Scheduler](https://cloud.google.com/scheduler) trigger \
+ &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger
 
 ## Want to contribute
