@@ -50,6 +50,26 @@ The argument names for the view function must match the name of the captured arg
         return {'first': first, 'second': second}
 
 
+Scheduled Jobs
+^^^^^^^^^^^^^
+
+To deploy scheduled jobs using a cron schedule use the Goblet.schedule decorator. The cron schedule follows the unix-cron format. 
+More information on the cron format can be found `here`_. Make sure `Cloud Scheduler`_ is enabled in your account if you want to deploy
+scheduled jobs.
+
+Example usage:
+
+.. code:: python 
+
+    @app.schedule('5 * * * *')
+    def scheduled_job():
+        return app.jsonify("success")
+
+
+.. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
+.. _CLOUD SCHEDULER: https://cloud.google.com/scheduler
+
+
 Config
 ^^^^^^^^^^^^^
 
