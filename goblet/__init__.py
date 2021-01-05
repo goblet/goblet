@@ -1,1 +1,1 @@
-from goblet.app import Goblet
+from goblet.app import Goblet  # noqa: F401

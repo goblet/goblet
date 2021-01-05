@@ -1,5 +1,6 @@
-import json 
+import json
 from goblet.utils import get_g_dir
+
 
 class GConfig:
     def __init__(self, config=None):
@@ -13,7 +14,7 @@ class GConfig:
         except FileNotFoundError:
             return {}
 
-    def  __getattr__(self, name):
+    def __getattr__(self, name):
         attr = self.config.get(name)
         if attr:
             return attr

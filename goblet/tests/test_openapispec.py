@@ -11,8 +11,8 @@ class TestOpenApiSpec:
             '/home': {
                 'get': {
                     'x-google-backend': {
-                        'address': 'xyz.cloudfunction', 
-                        'protocol': 'h2', 
+                        'address': 'xyz.cloudfunction',
+                        'protocol': 'h2',
                         'path_translation': 'APPEND_PATH_TO_ADDRESS'
                     },
                     'operationId': 'route',
@@ -37,17 +37,17 @@ class TestOpenApiSpec:
         assert(spec.spec['paths']['/home'].get('get'))
 
     def test_add_route_param(self):
-        route = RouteEntry(None, "route", "/home/{param}/{param2}", "GET", param_types={'param2':"boolean"})
+        route = RouteEntry(None, "route", "/home/{param}/{param2}", "GET", param_types={'param2': "boolean"})
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         params = spec.spec['paths']['/home/{param}/{param2}']['get']['parameters']
-        assert(len(params) ==2)
+        assert(len(params) == 2)
         assert(params[0] == {'in': 'path', 'name': 'param', 'required': True, 'type': 'string'})
         assert(params[1] == {'in': 'path', 'name': 'param2', 'required': True, 'type': 'boolean'})
 
     def test_security_definitions(self):
         security_def = {
-            "your_custom_auth_id":{
+            "your_custom_auth_id": {
                 "authorizationUrl": "",
                 "flow": "implicit",
                 "type": "oauth2",

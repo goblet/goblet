@@ -1,13 +1,11 @@
 import logging
-import os 
-import sys
 from google.cloud import logging_v2
-
 import json
 
 from goblet.decorators import LegacyDecoratorAPI, Register_Handlers
 
 logging.basicConfig()
+
 
 class Goblet(LegacyDecoratorAPI, Register_Handlers):
     def __init__(self, function_name="goblet", region="us-east4", stackdriver=False, env=None):
@@ -28,18 +26,19 @@ class Goblet(LegacyDecoratorAPI, Register_Handlers):
 
     def _initialize_stackdriver_logging(self):
         stackdriver_client = logging_v2.Client()
-        stackdriver_handler = logging_v2.CloudLoggingHandler(stackdriver_client,name=__name__, resource=self.log_resource, labels={})
+        stackdriver_handler = logging_v2.CloudLoggingHandler(stackdriver_client, name=__name__, resource=self.log_resource, labels={})
         stackdriver_client.setup_logging(stackdriver_handler)
 
     @property
     def log_resource(self):
-        return logging_v2.Resource(type="cloud_function", 
-                labels={
-                    "function_name": self.function_name, 
-                    "region": self.region,
-                    "correlation_id": self.correlation_id or "missing"
-                },
-    )
+        return logging_v2.Resource(
+            type="cloud_function",
+            labels={
+                "function_name": self.function_name,
+                "region": self.region,
+                "correlation_id": self.correlation_id or "missing"
+            },
+        )
 
     def jsonify(self, *args, **kwargs):
         indent = None
@@ -55,7 +54,8 @@ class Goblet(LegacyDecoratorAPI, Register_Handlers):
             data = args or kwargs
 
         json_string = json.dumps(data, indent=indent, separators=separators)
-        return (json_string,200,headers)
+        return (json_string, 200, headers)
 
-class G: 
+
+class G:
     pass
