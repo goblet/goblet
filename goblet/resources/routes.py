@@ -16,9 +16,9 @@ log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
 
 class ApiGateway(Handler):
-    def __init__(self, app_name, routes={}):
+    def __init__(self, app_name, routes=None):
         self.name = self.format_name(app_name)
-        self.routes = routes
+        self.routes = routes or {}
         self.api_client = self._create_api_client()
         # self.cloudfunction = None
 
@@ -86,6 +86,8 @@ class ApiGateway(Handler):
         return Client("apigateway", 'v1beta',calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
 
     def deploy(self):
+        if len(self.routes) == 0:
+            return
         try:
             resp = self.api_client.execute('create', params={'apiId':self.name})
             self.api_client.wait_for_operation(resp["name"])

@@ -46,15 +46,15 @@ class Deployer:
         self.zip()
 
     def deploy(self, goblet, skip_function=False,only_function=False, config=None):
+        function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         if not skip_function:
             log.info("zipping function......")
             self.zip()
             log.info("uploading function zip to gs......")
             url = self._upload_zip()
-            log.info("creating google function......")
+            log.info(f"creating google function {function_name}")
             # TODO: CHECK IF VERSION IS DEPLOYED
             self.create_cloudfunction(url, goblet.entrypoint)
-        function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         if not only_function:
             log.info("deploying api......")
             goblet.handlers["route"].generate_openapi_spec(function_name)
@@ -101,13 +101,15 @@ class Deployer:
             **user_configs
         }
         try:
-            self.function_client.execute('create',parent_key="location", params={'body':req_body})
+            resp = self.function_client.execute('create',parent_key="location", params={'body':req_body})
+            log.info(f"creating cloudfunction...")
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"updating cloudfunction...")
-                self.function_client.execute('patch',parent_key="name",parent_schema=req_body["name"], params={'body':req_body})
+                resp = self.function_client.execute('patch',parent_key="name",parent_schema=req_body["name"], params={'body':req_body})
             else:
                 raise e
+        self.function_client.wait_for_operation(resp["name"], calls="operations")
     # def _upload_zip(self):
     #     self.zipf.close()
     #     curr_dir = Path(__file__).parent.absolute()

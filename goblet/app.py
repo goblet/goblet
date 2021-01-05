@@ -3,10 +3,6 @@ import os
 import sys
 from google.cloud import logging_v2
 
-import uuid
-from jsonschema import validate, ValidationError
-from google.cloud import pubsub_v1
-import base64
 import json
 
 from goblet.decorators import LegacyDecoratorAPI, Register_Handlers

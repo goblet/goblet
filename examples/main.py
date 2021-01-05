@@ -32,3 +32,8 @@ def post():
 @app.route('/home/{name}', methods=["GET"], param_types={"name":"integer"})
 def namer(name):
     return name
+
+# Example scheuled job
+@app.schedule('5 * * * *')
+def scheduled_job():
+    return app.jsonify("success")
