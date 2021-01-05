@@ -1,6 +1,6 @@
 from pathlib import Path
 import zipfile
-import os 
+import os
 import requests
 import logging
 import hashlib
@@ -11,11 +11,12 @@ from google.api_core.exceptions import NotFound
 from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location
-from goblet.utils import get_dir, get_g_dir, get_goblet_app
+from goblet.utils import get_dir, get_g_dir
 from goblet.config import GConfig
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
+
 
 class Deployer:
 
@@ -31,7 +32,7 @@ class Deployer:
         self.function_client = self._create_function_client()
 
     def _create_function_client(self):
-        return Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
+        return Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
 
     def project_hash(self):
         if not get_default_project():
@@ -45,7 +46,7 @@ class Deployer:
     def package(self, goblet):
         self.zip()
 
-    def deploy(self, goblet, skip_function=False,only_function=False, config=None):
+    def deploy(self, goblet, skip_function=False, only_function=False, config=None):
         function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         if not skip_function:
             log.info("zipping function......")
@@ -65,13 +66,13 @@ class Deployer:
     def destroy(self, goblet):
         goblet.destroy()
 
-        try: 
-            client = Client("cloudfunctions", 'v1',calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/'+self.name)
+        try:
+            client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/' + self.name)
             client.execute('delete', parent_key="name")
             log.info("deleting google cloudfunction......")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info(f"cloudfunction already deployed")
+                log.info("cloudfunction already deployed")
             else:
                 raise e
 
@@ -82,13 +83,13 @@ class Deployer:
             log.info("deleting storage bucket......")
         except NotFound as e:
             if e.code == 404:
-                log.info(f"storage bucket already destroyed")
+                log.info("storage bucket already destroyed")
             else:
                 raise e
 
         return goblet
-    
-    def create_cloudfunction(self,url, entrypoint):
+
+    def create_cloudfunction(self, url, entrypoint):
         config = GConfig()
         user_configs = config.cloudfunction or {}
         req_body = {
@@ -97,16 +98,16 @@ class Deployer:
             "entryPoint": entrypoint,
             "sourceUploadUrl": url,
             "httpsTrigger": {},
-            "runtime":"python37",
+            "runtime": "python37",
             **user_configs
         }
         try:
-            resp = self.function_client.execute('create',parent_key="location", params={'body':req_body})
-            log.info(f"creating cloudfunction...")
+            resp = self.function_client.execute('create', parent_key="location", params={'body': req_body})
+            log.info("creating cloudfunction...")
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"updating cloudfunction...")
-                resp = self.function_client.execute('patch',parent_key="name",parent_schema=req_body["name"], params={'body':req_body})
+                log.info("updating cloudfunction...")
+                resp = self.function_client.execute('patch', parent_key="name", parent_schema=req_body["name"], params={'body': req_body})
             else:
                 raise e
         self.function_client.wait_for_operation(resp["name"], calls="operations")
@@ -129,24 +130,24 @@ class Deployer:
         zip_size = os.stat('.goblet/goblet.zip').st_size
         with open('.goblet/goblet.zip', 'rb') as f:
             resp = self.function_client.execute('generateUploadUrl')
-            
-            upload_resp = requests.put(
+
+            requests.put(
                 resp["uploadUrl"],
                 data=f,
                 headers={
-                    "content-type": "application/zip", 
+                    "content-type": "application/zip",
                     'Content-Length': str(zip_size),
                     "x-goog-content-length-range": "0,104857600"
-                    }
+                }
             )
 
         log.info("function code uploaded")
-        
+
         return resp["uploadUrl"]
 
     def create_zip(self):
         if not os.path.isdir(get_g_dir()):
-            os.mkdir(get_g_dir())  
+            os.mkdir(get_g_dir())
         return zipfile.ZipFile(get_g_dir() + '/goblet.zip', 'w', zipfile.ZIP_DEFLATED)
 
     def zip(self):
@@ -166,5 +167,4 @@ class Deployer:
             globbed_files.extend(Path('').rglob(pattern))
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
-                 self.zipf.write(str(path))
-
+                self.zipf.write(str(path))
