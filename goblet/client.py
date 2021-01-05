@@ -49,13 +49,13 @@ class Client:
     def __call__(self):
         return self.client 
 
-    def wait_for_operation(self, operation, timeout=600):
+    def wait_for_operation(self, operation, timeout=600, calls="projects.locations.operations"):
         done = False
         operation_client = Client(
             self.resource, 
             version=self.version, 
             credentials=self.credentials, 
-            calls="projects.locations.operations",
+            calls=calls,
             parent_schema= operation
         )
         count = 0
