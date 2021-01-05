@@ -44,7 +44,6 @@ class TestRoutes:
         @app.route('/home', methods=['PUT'])
         def dummy_function2(self):
             return True
-
         gateway = app.handlers["route"]
         assert(len(gateway.routes) == 1)
         assert(gateway.routes['/home']['GET'])
@@ -63,7 +62,6 @@ class TestRoutes:
         @app.route('/home2')
         def dummy_function2(self, home_id):
             return True
-
         gateway = app.handlers["route"]
         assert(len(gateway.routes) == 2)
         assert(gateway.routes['/home']['GET'])

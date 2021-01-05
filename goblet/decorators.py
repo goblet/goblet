@@ -78,7 +78,6 @@ class Register_Handlers(DecoratorAPI):
     def get_event_type(self, request):
         if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"
-
         return 'http'
 
     def _call_middleware(self, event, event_type):
