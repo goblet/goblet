@@ -38,4 +38,5 @@ jobs:
           pip install pytest
       - name: Run Pytest
         run: |
+          export PYTHONPATH=$(pwd)
           pytest goblet/tests -v
