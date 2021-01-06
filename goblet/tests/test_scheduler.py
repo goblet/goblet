@@ -1,9 +1,16 @@
+import pytest
 from goblet import Goblet
+
+
+@pytest.fixture
+def mock_google_projeect(monkeypatch):
+    monkeypatch.setenv("GOOGLE_PROJECT", "PROJECT_ID")
+    monkeypatch.setenv("GOOGLE_LOCATION", "LOCATION")
 
 
 class TestScheduler:
 
-    def test_add_schedule(self):
+    def test_add_schedule(self, mock_google_projeect):
         app = Goblet(function_name="goblet_example", region='us-central-1')
 
         @app.schedule('* * * * *', description='test')
@@ -13,7 +20,7 @@ class TestScheduler:
         scheduler = app.handlers["schedule"]
         assert(len(scheduler.jobs) == 1)
         scheule_json = {
-            'name': 'projects/plated-sunup-284701/locations/us-central1/jobs/dummy_function',
+            'name': 'projects/PROJECT_ID/locations/LOCATION/jobs/dummy_function',
             'schedule': '* * * * *',
             'timeZone': 'UTC',
             'description': 'test',
