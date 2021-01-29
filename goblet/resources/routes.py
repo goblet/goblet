@@ -158,11 +158,14 @@ class ApiGateway(Handler):
         # destroy api config
         try:
             configs = self._create_config_client().execute('list')
+            api_client = None
+            resp = {}
             for c in configs.get('apiConfigs', []):
                 api_client = Client("apigateway", 'v1beta', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
                 resp = api_client.execute('delete', parent_key="name")
             log.info("api configs destroying....")
-            api_client.wait_for_operation(resp["name"])
+            if api_client:
+                api_client.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("api configs already destroyed")

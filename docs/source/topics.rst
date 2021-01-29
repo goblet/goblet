@@ -115,6 +115,23 @@ Example config.json:
 
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
+
+Run Locally
+^^^^^^^^^^^
+
+Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class
+
+.. code:: python
+
+    from goblet import Goblet
+
+    app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
+
+
+Then run `goblet local test` and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at `localhost:8080`.
+
+
 Authentication
 ^^^^^^^^^^^^^
 API gateway supports several authentication options including, `jwt`_, `firebase`_, `auth0`_, `Okta`_, `google_id`_, 

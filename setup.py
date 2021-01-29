@@ -22,15 +22,11 @@ VERSION = os.environ.get('VERSION')
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "google-cloud-logging",
-    "google-cloud-pubsub",
-    "jsonschema",
-    "ruamel.yaml",
-    "google-api-python-client",
-    "google-auth-oauthlib",
-    "oauth2client",
-    "google-cloud-storage",
     "click",
+    "google-api-python-client",
+    "google-cloud-storage",
+    "functions-framework",
+    "ruamel.yaml",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
