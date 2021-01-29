@@ -1,6 +1,6 @@
 import logging
 import json
-import sys 
+import sys
 
 from goblet.decorators import Register_Handlers
 
@@ -18,8 +18,7 @@ class Goblet(Register_Handlers):
         if local and sys.modules.get('main'):
             def local_func(request):
                 return self(request)
-            setattr(sys.modules['main'],local,local_func)
-
+            setattr(sys.modules['main'], local, local_func)
 
     def jsonify(self, *args, **kwargs):
         indent = None

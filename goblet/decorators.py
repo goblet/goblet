@@ -1,8 +1,6 @@
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
 import logging
-from jsonschema import validate, ValidationError
-from google.cloud import pubsub_v1
 
 log = logging.getLogger(__name__)
 
@@ -114,4 +112,3 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_schedule(self, name, func, kwargs):
         self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
-

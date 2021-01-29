@@ -107,6 +107,20 @@ def index():
 
 This app with deploy an api with endpoint `/home`.
 
+### Running Locally
+
+Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class
+
+```python
+from goblet import Goblet
+
+app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
+
+```
+
+Then run `goblet local test` and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at `localhost:8080` with your routes.
+
 ### Deploying
 
 Let's deploy this app. Make sure you're in the app directory and run goblet deploy:

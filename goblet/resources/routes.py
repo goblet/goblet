@@ -5,8 +5,6 @@ import logging
 import time
 import re
 
-from uritemplate import api
-
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project
 from goblet.utils import get_g_dir
