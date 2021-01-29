@@ -87,6 +87,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
@@ -241,6 +242,17 @@ which takes in a list of python <a class="reference external" href="https://docs
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="run-locally">
+<h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this headline">¶</a></h2>
+<p>Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then run <cite>goblet local test</cite> and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at <cite>localhost:8080</cite>.</p>
 </div>
 <div class="section" id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
