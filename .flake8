@@ -1,0 +1,5 @@
+[flake8]
+ignore = E501
+; exclude = .git,__pycache__,docs
+max-complexity = 15
+#E501 line too long

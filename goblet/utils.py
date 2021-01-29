@@ -2,6 +2,7 @@ import os
 import importlib.util
 from contextlib import contextmanager
 
+
 @contextmanager
 def add_to_path(p):
     import sys
@@ -13,11 +14,13 @@ def add_to_path(p):
     finally:
         sys.path = old_path
 
+
 def get_app_from_module(m):
     from goblet import Goblet
     for obj in dir(m):
-        if isinstance(getattr(m,obj), Goblet):
-            return getattr(m,obj), obj
+        if isinstance(getattr(m, obj), Goblet):
+            return getattr(m, obj), obj
+
 
 def get_goblet_app():
     # looks for main.py and gets goblet app
@@ -30,8 +33,10 @@ def get_goblet_app():
     setattr(app, "entrypoint", app_name)
     return app
 
+
 def get_g_dir():
     return f"{os.path.realpath('.')}/.goblet"
+
 
 def get_dir():
     return os.path.realpath('.')

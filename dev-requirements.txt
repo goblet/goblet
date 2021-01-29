@@ -1,3 +1,6 @@
 Sphinx
 sphinx-rtd-theme
 twine
+coverage
+flake8
+pytest

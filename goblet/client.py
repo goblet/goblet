@@ -1,6 +1,5 @@
-import pickle
-import os.path
-import time 
+import os
+import time
 
 from googleapiclient.discovery import build
 
@@ -15,6 +14,7 @@ def get_default_project():
 
     return None
 
+
 def get_default_location():
     for k in ('GOOGLE_ZONE', 'GCLOUD_ZONE', 'CLOUDSDK_COMPUTE_ZONE',
               'GOOGLE_REGION', 'GCLOUD_REGION', 'CLOUDSDK_COMPUTE_REGION',
@@ -24,14 +24,16 @@ def get_default_location():
 
     return None
 
+
 def get_credentials():
     """get user credentials and save them for future use
     """
     credentials, project = google.auth.default()
     return credentials
 
+
 class Client:
-    def __init__(self, resource,version='v1', credentials=None, calls=None, parent_schema=None):
+    def __init__(self, resource, version='v1', credentials=None, calls=None, parent_schema=None):
         self.project_id = get_default_project()
         self.location_id = get_default_location()
         self.calls = calls
@@ -41,22 +43,22 @@ class Client:
         self.credentials = credentials or get_credentials()
 
         self.client = build(resource, version, credentials=self.credentials, cache_discovery=False)
-        
+
         self.parent = None
         if self.parent_schema:
             self.parent = self.parent_schema.format(project_id=self.project_id, location_id=self.location_id)
 
     def __call__(self):
-        return self.client 
+        return self.client
 
     def wait_for_operation(self, operation, timeout=600, calls="projects.locations.operations"):
         done = False
         operation_client = Client(
-            self.resource, 
-            version=self.version, 
-            credentials=self.credentials, 
+            self.resource,
+            version=self.version,
+            credentials=self.credentials,
             calls=calls,
-            parent_schema= operation
+            parent_schema=operation
         )
         count = 0
         sleep_duration = 4
@@ -73,7 +75,7 @@ class Client:
         if parent_schema:
             parent_schema = parent_schema.format(project_id=self.project_id, location_id=self.location_id)
         _schema = parent_schema or self.parent
-        
+
         if isinstance(_calls, str):
             calls = _calls.split('.')
         for call in calls:
