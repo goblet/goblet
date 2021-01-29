@@ -1,6 +1,7 @@
 import click
 import os
 import logging
+import subprocess
 
 from goblet.utils import get_goblet_app
 from goblet.deploy import Deployer
@@ -73,6 +74,18 @@ def openapi(project, location, cloudfunction):
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+
+@main.command()
+@click.argument('local_arg')
+def local(local_arg):
+    """
+    Requires the local argument to be set in the Goblet class. 
+    
+    For example in this case you would use local_function
+    
+    Goblet("test_function",local="local_function")
+    """
+    subprocess.run(["functions-framework", f"--target={local_arg}", "--debug"])
 
 
 @main.command()

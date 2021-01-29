@@ -1,44 +1,25 @@
 import logging
-from google.cloud import logging_v2
 import json
+import sys 
 
-from goblet.decorators import LegacyDecoratorAPI, Register_Handlers
+from goblet.decorators import Register_Handlers
 
 logging.basicConfig()
 
 
-class Goblet(LegacyDecoratorAPI, Register_Handlers):
-    def __init__(self, function_name="goblet", region="us-east4", stackdriver=False, env=None):
+class Goblet(Register_Handlers):
+    def __init__(self, function_name="goblet", region="us-east4", local=None):
         super(Goblet, self).__init__(function_name=function_name)
         self.function_name = function_name
         self.region = region
         self.log = logging.getLogger(__name__)
-        self.data = None
-        self.event = None
-        self.context = None
-        self.correlation_id = None
         self.headers = {}
-        self.entrypoint = None
         self.g = G()
-        if stackdriver:
-            # self._initialize_stackdriver_logging()
-            self.log = logging.getLogger(name=__name__)
+        if local and sys.modules.get('main'):
+            def local_func(request):
+                return self(request)
+            setattr(sys.modules['main'],local,local_func)
 
-    def _initialize_stackdriver_logging(self):
-        stackdriver_client = logging_v2.Client()
-        stackdriver_handler = logging_v2.CloudLoggingHandler(stackdriver_client, name=__name__, resource=self.log_resource, labels={})
-        stackdriver_client.setup_logging(stackdriver_handler)
-
-    @property
-    def log_resource(self):
-        return logging_v2.Resource(
-            type="cloud_function",
-            labels={
-                "function_name": self.function_name,
-                "region": self.region,
-                "correlation_id": self.correlation_id or "missing"
-            },
-        )
 
     def jsonify(self, *args, **kwargs):
         indent = None
