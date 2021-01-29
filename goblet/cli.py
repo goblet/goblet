@@ -2,6 +2,7 @@ import click
 import os
 import logging
 import subprocess
+from functions_framework.exceptions import MissingTargetException
 
 from goblet.utils import get_goblet_app
 from goblet.deploy import Deployer
@@ -85,7 +86,10 @@ def local(local_arg):
     
     Goblet("test_function",local="local_function")
     """
-    subprocess.run(["functions-framework", f"--target={local_arg}", "--debug"])
+    try:
+        subprocess.check_output(["functions-framework", f"--target={local_arg}", "--debug"])
+    except subprocess.CalledProcessError:
+        click.echo("Incorrect argument. Make sure you set the local param in your Goblet class and that it matches the arg used in goblet local")
 
 
 @main.command()
