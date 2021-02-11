@@ -7,8 +7,7 @@ Goblet is a framework for writing serverless apps in python in google cloud. It 
 
 * A command line tool for creating, deploying, and managing your app
 * A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
-* Unified logging and error handling with stackdriver
-* Utitilies to help with tracking events through in a pubsub pipeline
+* Local environment for your api endpoints
 
 You can create Rest APIs:
 

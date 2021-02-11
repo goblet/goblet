@@ -131,6 +131,13 @@ Running your functions locally for testing and debugging is easy to do with gobl
 Then run `goblet local test` and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at `localhost:8080`.
 
+To test a scheduled job locally you will need to include two headers in your request. One `X-Goblet-Type:schedule` and 
+`X-Goblet-Name:FUNCTION_NAME` which is the name of your function.
+
+.. code:: sh 
+
+    curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+
 
 Authentication
 ^^^^^^^^^^^^^
@@ -169,14 +176,12 @@ To access other parts of the request including headers, query strings, and post 
 the request object. To see all fields see `Request`_. Note, that this also means you cannot control the routing based on query strings or headers. 
 Here’s an example for accessing query string data in a view function:
 
-.. _Request: https://werkzeug.palletsprojects.com/en/1.0.x/wrappers/#werkzeug.wrappers.Request
-
 .. code:: python 
 
     @app.route('/users/{name}')
     def users(name):
         result = {'name': name}
-        if app.current_request.query_params.get('include-greeting') == 'true':
+        if app.current_request.args.get('include-greeting') == 'true':
             result['greeting'] = 'Hello, %s' % name
         return result
 
@@ -189,10 +194,16 @@ Here’s an example for accessing post data in a view function:
         json_data = app.current_request.json
         return json_data
 
+To see the full list of available fields see `Request`_
+
+.. _Request: https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html
+
 Response
 ^^^^^^^^^^^^^ 
 
 Goblet http function response should be of the form a flask `Response`_. See more at the `cloudfunctions`_ documentation
+
+To see the full list of available fields see `Response`_
 
 .. _RESPONSE: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response
 .. _CLOUDFUNCTIONS: https://cloud.google.com/functions/docs/writing/http
