@@ -20,9 +20,13 @@ class TestJsonify:
 class TestResponse:
 
     def test_headers(self):
-        r = Response('', {'Content-Type': 'json'})
-        assert r()[2] == {'Content-Type': 'json'}
+        def start_response_headers(status, response_headers, exc_info=None):
+            assert response_headers == [('Content-Type','json')] 
+        r = Response('test', {'Content-Type': 'json'})
+        assert r({}, start_response_headers) == ["test"]
 
     def test_status(self):
-        r = Response('', status_code=401)
-        assert r()[1] == 401
+        def start_response_status(status, response_headers, exc_info=None):
+            assert status == 401 
+        r = Response('test', status_code=401)
+        assert r({}, start_response_status) == ["test"]
