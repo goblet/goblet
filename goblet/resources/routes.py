@@ -19,8 +19,14 @@ class ApiGateway(Handler):
     def __init__(self, app_name, routes=None):
         self.name = self.format_name(app_name)
         self.routes = routes or {}
-        self.api_client = self._create_api_client()
+        self._api_client = None
         # self.cloudfunction = None
+
+    @property
+    def api_client(self):
+        if not self._api_client:
+            self._api_client = self._create_api_client()
+        return self._api_client
 
     def format_name(self, name):
         # ([a-z0-9-.]+) for api gateway name

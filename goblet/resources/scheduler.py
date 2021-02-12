@@ -12,7 +12,13 @@ class Scheduler(Handler):
     def __init__(self, name, routes={}):
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
         self.jobs = {}
-        self.api_client = self._create_api_client()
+        self._api_client = None
+
+    @property
+    def api_client(self):
+        if not self._api_client:
+            self._api_client = self._create_api_client()
+        return self._api_client
 
     def _create_api_client(self):
         return Client("cloudscheduler", 'v1', calls='projects.locations.jobs', parent_schema='projects/{project_id}/locations/{location_id}')

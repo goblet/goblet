@@ -14,7 +14,7 @@ lint:
 
 coverage:
 	coverage run -m pytest goblet/tests;
-	coverage report -m --include="goblet/*";
+	coverage report -m --include="goblet/*" --omit="goblet/tests/*";
 
 tests:
 	pytest goblet/tests;

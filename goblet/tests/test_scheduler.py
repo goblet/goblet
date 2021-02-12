@@ -1,9 +1,16 @@
+import pytest
 from goblet import Goblet
 import os 
 
+@pytest.fixture
+def mock_google_projeect(monkeypatch):
+    monkeypatch.setenv("GOOGLE_PROJECT", "PROJECT_ID")
+    monkeypatch.setenv("GOOGLE_LOCATION", "LOCATION")
+
+
 class TestScheduler:
 
-    def test_add_schedule(self):
+    def test_add_schedule(self, mock_google_projeect):
         app = Goblet(function_name="goblet_example", region='us-central-1')
         os.environ["GOOGLE_PROJECT"] = "TEST_PROJECT"
         os.environ["GOOGLE_LOCATION"] = "us-central1"
