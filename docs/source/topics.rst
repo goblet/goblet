@@ -51,7 +51,7 @@ The argument names for the view function must match the name of the captured arg
 
 
 Scheduled Jobs
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 To deploy scheduled jobs using a cron schedule use the Goblet.schedule decorator. The cron schedule follows the unix-cron format. 
 More information on the cron format can be found `here`_. Make sure `Cloud Scheduler`_ is enabled in your account if you want to deploy
@@ -71,7 +71,7 @@ Example usage:
 
 
 Config
-^^^^^^^^^^^^^
+^^^^^^
 
 You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be 
 located in the .goblet folder. If one doesn't exist then you should add one. 
@@ -131,9 +131,16 @@ Running your functions locally for testing and debugging is easy to do with gobl
 Then run `goblet local test` and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at `localhost:8080`.
 
+To test a scheduled job locally you will need to include two headers in your request. One `X-Goblet-Type:schedule` and 
+`X-Goblet-Name:FUNCTION_NAME` which is the name of your function.
+
+.. code:: sh 
+
+    curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+
 
 Authentication
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 API gateway supports several authentication options including, `jwt`_, `firebase`_, `auth0`_, `Okta`_, `google_id`_, 
 
 .. _JWT: https://cloud.google.com/api-gateway/docs/authenticating-users-jwt
@@ -162,21 +169,19 @@ An api using JWT authentication would require the following in `config.json`
     }
 
 Request
-^^^^^^^^^^^^^ 
+^^^^^^^
  
 The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture. 
 To access other parts of the request including headers, query strings, and post data you can use `app.current_request` to get
 the request object. To see all fields see `Request`_. Note, that this also means you cannot control the routing based on query strings or headers. 
 Here’s an example for accessing query string data in a view function:
 
-.. _Request: https://werkzeug.palletsprojects.com/en/1.0.x/wrappers/#werkzeug.wrappers.Request
-
 .. code:: python 
 
     @app.route('/users/{name}')
     def users(name):
         result = {'name': name}
-        if app.current_request.query_params.get('include-greeting') == 'true':
+        if app.current_request.args.get('include-greeting') == 'true':
             result['greeting'] = 'Hello, %s' % name
         return result
 
@@ -189,17 +194,40 @@ Here’s an example for accessing post data in a view function:
         json_data = app.current_request.json
         return json_data
 
-Response
-^^^^^^^^^^^^^ 
+To see the full list of available fields see `Request`_
 
+.. _Request: https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html
+
+Response
+^^^^^^^^
 Goblet http function response should be of the form a flask `Response`_. See more at the `cloudfunctions`_ documentation
+
+To see the full list of available fields see `Response`_
 
 .. _RESPONSE: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response
 .. _CLOUDFUNCTIONS: https://cloud.google.com/functions/docs/writing/http
 
-jsonify is a helper to create response objects.
 
-```Goblet.jsonify(*args, **kwargs)```
+You can use goblet's `Response` class to make it easier to pass in custom headers and response codes.
+
+.. code:: python 
+
+    from goblet import Response
+
+    @app.route('/response')
+    def response():
+        return Response({"failed": 400}, headers={"Content-Type": "application/json"}, status_code=400)
+
+
+Another option is goblet's `jsonify`, which is a helper to create response objects.
+
+.. code:: python 
+
+    from goblet import jsonify
+
+    jsonify(*args, **kwargs)
+
+
 
 This function wraps dumps() to add a few enhancements that make life easier. It turns the JSON output into a Response 
 object with the application/json mimetype. For convenience, it also converts multiple arguments into an array or 
@@ -221,7 +249,7 @@ Example usage:
 
     @app.route('/get_current_user')
     def get_current_user():
-        return app.jsonify(username=g.user.username,
+        return jsonify(username=g.user.username,
                     email=g.user.email,
                     id=g.user.id)
 
