@@ -21,12 +21,12 @@ class TestResponse:
 
     def test_headers(self):
         def start_response_headers(status, response_headers, exc_info=None):
-            assert response_headers == [('Content-Type','json')] 
+            assert response_headers == [('Content-Type', 'json')]
         r = Response('test', {'Content-Type': 'json'})
         assert r({}, start_response_headers) == ["test"]
 
     def test_status(self):
         def start_response_status(status, response_headers, exc_info=None):
-            assert status == 401 
+            assert status == 401
         r = Response('test', status_code=401)
         assert r({}, start_response_status) == ["test"]

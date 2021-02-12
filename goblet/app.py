@@ -42,7 +42,7 @@ class Response(object):
     def __init__(self, body, headers=None, status_code=200):
         self.body = body
         if headers is None:
-            headers = {'Content-type':'text/plain'}
+            headers = {'Content-type': 'text/plain'}
         self.headers = headers
         self.status_code = status_code
 
@@ -51,9 +51,10 @@ class Response(object):
         if not isinstance(body, (str, bytes)):
             body = json.dumps(body, separators=(',', ':'))
         status = self.status_code
-        headers = [(k,v) for k,v in self.headers.items()]
+        headers = [(k, v) for k, v in self.headers.items()]
         start_response(status, headers)
         return [body]
+
 
 def jsonify(*args, **kwargs):
     indent = None
