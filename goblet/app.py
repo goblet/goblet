@@ -20,6 +20,7 @@ class Goblet(Register_Handlers):
                 return self(request)
             setattr(sys.modules['main'], local, local_func)
 
+    # Will deprecate
     def jsonify(self, *args, **kwargs):
         indent = None
         separators = (',', ':')
@@ -35,6 +36,42 @@ class Goblet(Register_Handlers):
 
         json_string = json.dumps(data, indent=indent, separators=separators)
         return (json_string, 200, headers)
+
+
+class Response(object):
+    def __init__(self, body, headers=None, status_code=200):
+        self.body = body
+        if headers is None:
+            headers = {'Content-type': 'text/plain'}
+        self.headers = headers
+        self.status_code = status_code
+
+    def __call__(self, environ, start_response):
+        body = self.body
+        if not isinstance(body, (str, bytes)):
+            body = json.dumps(body, separators=(',', ':'))
+        status = self.status_code
+        headers = [(k, v) for k, v in self.headers.items()]
+        start_response(status, headers)
+        return [body]
+
+
+def jsonify(*args, **kwargs):
+    indent = None
+    separators = (',', ':')
+    headers = {'Content-Type': 'application/json'}
+    headers.update(kwargs.get('headers', {}))
+
+    if args and kwargs:
+        raise TypeError('jsonify() behavior undefined when passed both args and kwargs')
+    elif len(args) == 1:  # single args are passed directly to dumps()
+        data = args[0]
+    else:
+        data = args or kwargs
+
+    if not isinstance(data, (str, bytes)):
+        data = json.dumps(data, indent=indent, separators=separators)
+    return (data, 200, headers)
 
 
 class G:
