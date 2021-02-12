@@ -67,6 +67,21 @@ Let's take a look at the main.py file:
 
 This app with deploy an api with endpoint `/home`.
 
+Running Locally
+***************
+
+Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class
+
+.. code:: python 
+
+    from goblet import Goblet
+
+    app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
+
+
+Then run `goblet local test` and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at `localhost:8080` with your routes.
+
 Deploying
 **********
 
@@ -92,4 +107,18 @@ You now have an API up and running using API Gateway and cloudfunctions:
 
 Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running `golet deploy`.
 
+Cleanup
+**********
 
+You've now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.
+
+If you're done experimenting with Goblet and you'd like to cleanup, you can use the `goblet destroy` command, and Goblet will delete all the resources it created when running the goblet deploy command.
+
+.. code:: bash
+
+    $ goblet destroy
+    INFO:goblet.deployer:destroying api gateway......
+    INFO:goblet.deployer:api configs destroying....
+    INFO:goblet.deployer:apis successfully destroyed......
+    INFO:goblet.deployer:deleting google cloudfunction......
+    INFO:goblet.deployer:deleting storage bucket......

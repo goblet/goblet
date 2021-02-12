@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quickstart &mdash; goblet 0.2.0 documentation</title>
+  <title>Quickstart &mdash; goblet 0.3.1 documentation</title>
   
 
   
@@ -85,7 +85,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#credentials">Credentials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-your-project">Creating Your Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-locally">Running Locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deploying">Deploying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cleanup">Cleanup</a></li>
 </ul>
 </li>
 </ul>
@@ -205,6 +207,17 @@ drwxr-xr-x   .goblet
 </div>
 <p>This app with deploy an api with endpoint <cite>/home</cite>.</p>
 </div>
+<div class="section" id="running-locally">
+<h2>Running Locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
+<p>Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then run <cite>goblet local test</cite> and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at <cite>localhost:8080</cite> with your routes.</p>
+</div>
 <div class="section" id="deploying">
 <h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
 <p>Let’s deploy this app. Make sure you’re in the app directory and run goblet deploy:</p>
@@ -224,6 +237,19 @@ INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
 </pre></div>
 </div>
 <p>Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running <cite>golet deploy</cite>.</p>
+</div>
+<div class="section" id="cleanup">
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
+<p>You’ve now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.</p>
+<p>If you’re done experimenting with Goblet and you’d like to cleanup, you can use the <cite>goblet destroy</cite> command, and Goblet will delete all the resources it created when running the goblet deploy command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ goblet destroy
+INFO:goblet.deployer:destroying api gateway......
+INFO:goblet.deployer:api configs destroying....
+INFO:goblet.deployer:apis successfully destroyed......
+INFO:goblet.deployer:deleting google cloudfunction......
+INFO:goblet.deployer:deleting storage bucket......
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Topics &mdash; goblet 0.2.0 documentation</title>
+  <title>Topics &mdash; goblet 0.3.1 documentation</title>
   
 
   
@@ -253,6 +253,11 @@ which takes in a list of python <a class="reference external" href="https://docs
 </div>
 <p>Then run <cite>goblet local test</cite> and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at <cite>localhost:8080</cite>.</p>
+<p>To test a scheduled job locally you will need to include two headers in your request. One <cite>X-Goblet-Type:schedule</cite> and
+<cite>X-Goblet-Name:FUNCTION_NAME</cite> which is the name of your function.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+</pre></div>
+</div>
 </div>
 <div class="section" id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
@@ -278,12 +283,12 @@ API gateway docs linked above for more details on how to set up the configuratio
 <h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
 <p>The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture.
 To access other parts of the request including headers, query strings, and post data you can use <cite>app.current_request</cite> to get
-the request object. To see all fields see <a class="reference external" href="https://werkzeug.palletsprojects.com/en/1.0.x/wrappers/#werkzeug.wrappers.Request">Request</a>. Note, that this also means you cannot control the routing based on query strings or headers.
+the request object. To see all fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">Request</a>. Note, that this also means you cannot control the routing based on query strings or headers.
 Here’s an example for accessing query string data in a view function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include-greeting&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include-greeting&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
         <span class="n">result</span><span class="p">[</span><span class="s1">&#39;greeting&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Hello, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">name</span>
     <span class="k">return</span> <span class="n">result</span>
 </pre></div>
@@ -295,12 +300,26 @@ Here’s an example for accessing query string data in a view function:</p>
     <span class="k">return</span> <span class="n">json_data</span>
 </pre></div>
 </div>
+<p>To see the full list of available fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">Request</a></p>
 </div>
 <div class="section" id="response">
 <h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
 <p>Goblet http function response should be of the form a flask <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">Response</a>. See more at the <a class="reference external" href="https://cloud.google.com/functions/docs/writing/http">cloudfunctions</a> documentation</p>
-<p>jsonify is a helper to create response objects.</p>
-<p><code class="docutils literal notranslate"><span class="pre">`Goblet.jsonify(*args,</span> <span class="pre">**kwargs)`</span></code></p>
+<p>To see the full list of available fields see <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">Response</a></p>
+<p>You can use goblet’s <cite>Response</cite> class to make it easier to pass in custom headers and response codes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/response&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">response</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">400</span><span class="p">},</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another option is goblet’s <cite>jsonify</cite>, which is a helper to create response objects.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">jsonify</span>
+
+<span class="n">jsonify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>This function wraps dumps() to add a few enhancements that make life easier. It turns the JSON output into a Response
 object with the application/json mimetype. For convenience, it also converts multiple arguments into an array or
 multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and jsonify([1,2,3]) serialize to [1,2,3].</p>
@@ -312,7 +331,7 @@ multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and 
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/get_current_user&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
                 <span class="n">email</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
                 <span class="nb">id</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
