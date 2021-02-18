@@ -322,13 +322,15 @@ class OpenApiSpec:
                         }
                     }
                 }
-
-        method_spec["responses"] = {
-            '200': {
-                "description": "A successful response",
-                **content
+        if entry.responses:
+            method_spec["responses"] = entry.responses
+        else:
+            method_spec["responses"] = {
+                '200': {
+                    "description": "A successful response",
+                    **content
+                }
             }
-        }
         path_exists = self.spec["paths"].get(entry.uri_pattern)
         if path_exists:
             self.spec["paths"][entry.uri_pattern][entry.method.lower()] = dict(method_spec)
@@ -356,6 +358,7 @@ class RouteEntry:
         self.method = method
         self.api_key_required = api_key_required
         self.request_body = kwargs.get("request_body")
+        self.responses = kwargs.get("responses")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']
         self.view_args = self._parse_view_args()

@@ -105,3 +105,10 @@ class TestOpenApiSpec:
         response_content = spec.spec['paths']['/home']['get']['responses']['200']['content']
         assert response_content == {'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}}
         assert len(spec.spec['components']) == 0
+
+    def test_custom_response(self):
+        route = RouteEntry(dummy, "route", "/home", "GET", responses={'400': {'description': '400'}})
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response = spec.spec['paths']['/home']['get']['responses']
+        assert response['400'] ==  {'description': '400'}
