@@ -5,6 +5,7 @@ import subprocess
 
 from goblet.utils import get_goblet_app
 from goblet.deploy import Deployer
+from goblet.__version__ import __version__
 
 logging.basicConfig()
 
@@ -17,6 +18,11 @@ def main():
 @main.command()
 def help():
     click.echo('Use goblet --help. You can also view the full docs for goblet at https://anovis.github.io/goblet/docs/build/html/index.html')
+
+
+@main.command()
+def version():
+    click.echo(__version__)
 
 
 @main.command()
@@ -57,18 +63,14 @@ def destroy(project, location):
 
 
 @main.command()
-@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
-@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
 @click.argument('cloudfunction')
-def openapi(project, location, cloudfunction):
+def openapi(cloudfunction):
     """
     You can find the generated openapi spec in /.goblet folder.
 
     The cloudfunction argument sets the correct x-google-backend address in the openapi spec.
     """
     try:
-        os.environ["GOOGLE_PROJECT"] = project
-        os.environ["GOOGLE_LOCATION"] = location
         app = get_goblet_app()
         app.handlers["route"].generate_openapi_spec(cloudfunction)
 

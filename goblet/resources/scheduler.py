@@ -60,15 +60,22 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
+    def __add__(self, other):
+        self.jobs.update(other.jobs)
+        return self
+
     def deploy(self):
+        if not self.jobs:
+            return
+
         cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
         resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
-        log.info("deploying scheduled functions......")
         if not resp:
             raise ValueError(f"Function {self.cloudfunction} not found")
         cloudfunction_target = resp["httpsTrigger"]["url"]
         service_account = resp["serviceAccountEmail"]
 
+        log.info("deploying scheduled jobs......")
         for job_name, job in self.jobs.items():
             job["job_json"]["httpTarget"]['uri'] = cloudfunction_target
             job["job_json"]["httpTarget"]['oidcToken']["serviceAccountEmail"] = service_account

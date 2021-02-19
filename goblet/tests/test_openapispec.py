@@ -71,8 +71,8 @@ class TestOpenApiSpec:
         assert(len(params) == 2)
         assert(params[0] == {'in': 'path', 'name': 'param', 'required': True, 'type': 'string'})
         assert(params[1] == {'in': 'path', 'name': 'param2', 'required': True, 'type': 'boolean'})
-        response_content = spec.spec['paths']['/home/{param}/{param2}']['get']['responses']['200']['content']
-        assert response_content == {'text/plain': {'schema': {'type': 'integer'}}}
+        response_content = spec.spec['paths']['/home/{param}/{param2}']['get']['responses']['200']["schema"]
+        assert response_content == {'type': 'integer'}
 
     def test_return_schema_regular(self):
         def schema_typed() -> DummySchema:
@@ -81,9 +81,9 @@ class TestOpenApiSpec:
         route = RouteEntry(schema_typed, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec['paths']['/home']['get']['responses']['200']['content']
-        assert response_content == {'application/json': {'schema': {'$ref': '#/components/schemas/DummySchema'}}}
-        assert len(spec.spec['components']["schemas"]["DummySchema"]["properties"]) == 2
+        response_content = spec.spec['paths']['/home']['get']['responses']['200']['schema']
+        assert response_content == {'$ref': '#/definitions/DummySchema'}
+        assert len(spec.spec['definitions']["DummySchema"]["properties"]) == 2
 
     def test_return_lists(self):
         def schema_typed_list() -> List[DummySchema]:
@@ -92,9 +92,9 @@ class TestOpenApiSpec:
         route = RouteEntry(schema_typed_list, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec['paths']['/home']['get']['responses']['200']['content']
-        assert response_content == {'application/json': {'schema': {"type": "array", "items": {'$ref': '#/components/schemas/DummySchema'}}}}
-        assert len(spec.spec['components']["schemas"]["DummySchema"]["properties"]) == 2
+        response_content = spec.spec['paths']['/home']['get']['responses']['200']['schema']
+        assert response_content == {"type": "array", "items": {'$ref': '#/definitions/DummySchema'}}
+        assert len(spec.spec['definitions']["DummySchema"]["properties"]) == 2
 
         def prim_typed_list() -> List[str]:
             return []
@@ -102,20 +102,20 @@ class TestOpenApiSpec:
         route = RouteEntry(prim_typed_list, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec['paths']['/home']['get']['responses']['200']['content']
-        assert response_content == {'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}}
-        assert len(spec.spec['components']) == 0
+        response_content = spec.spec['paths']['/home']['get']['responses']['200']['schema']
+        assert response_content == {"type": "array", "items": {'type': 'string'}}
+        assert len(spec.spec['definitions']) == 0
 
     def test_custom_response(self):
         route = RouteEntry(dummy, "route", "/home", "GET", responses={'400': {'description': '400'}})
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         response = spec.spec['paths']['/home']['get']['responses']
-        assert response['400'] ==  {'description': '400'}
+        assert response['400'] == {'description': '400'}
 
     def test_request_body(self):
         route = RouteEntry(dummy, "route", "/home", "GET", request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}})
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         request_body = spec.spec['paths']['/home']['get']['requestBody']
-        assert request_body ==  {'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}}
+        assert request_body == {'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}}

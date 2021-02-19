@@ -3,7 +3,6 @@ from marshmallow.schema import Schema
 from ruamel import yaml
 import base64
 import logging
-import time
 import re
 from typing import get_type_hints
 from apispec import APISpec
@@ -68,6 +67,10 @@ class ApiGateway(Handler):
         if not entry:
             raise ValueError(f"No route found for {path} with {method}")
         return entry(request)
+
+    def __add__(self, other):
+        self.routes.update(other.routes)
+        return self
 
     @staticmethod
     def _matched_path(org_path, path):
@@ -134,15 +137,16 @@ class ApiGateway(Handler):
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
         }
         try:
-            self._create_gateway_client().execute('create', params={'gatewayId': self.name, 'body': gateway})
+            gateway_resp = self._create_gateway_client().execute('create', params={'gatewayId': self.name, 'body': gateway})
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("updating gateway")
-                self._patch_gateway_client().execute('patch', parent_key='name', params={'updateMask': 'apiConfig', 'body': gateway})
+                gateway_resp = self._patch_gateway_client().execute('patch', parent_key='name', params={'updateMask': 'apiConfig', 'body': gateway})
             else:
                 raise e
+        if gateway_resp:
+            self._create_gateway_client().wait_for_operation(gateway_resp["name"])
         log.info("api successfully deployed...")
-        time.sleep(5)
         gateway_resp = self._patch_gateway_client().execute('get', parent_key='name')
         log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
         return
@@ -222,17 +226,16 @@ class OpenApiSpec:
         self.component_spec = APISpec(
             title="",
             version="1.0.0",
-            openapi_version="3.0.2",
+            openapi_version="2.0",
             plugins=[MarshmallowPlugin()],
         )
-        self.spec["components"] = {}
+        self.spec["definitions"] = {}
 
     def add_component(self, component):
         if component.__name__ in self.component_spec.components.schemas:
             return
-
         self.component_spec.components.schema(component.__name__, schema=component)
-        self.spec["components"] = self.component_spec.to_dict()['components']
+        self.spec["definitions"] = self.component_spec.to_dict()['definitions']
 
     def add_apigateway_routes(self, apigateway):
         for path, methods in apigateway.items():
@@ -246,7 +249,7 @@ class OpenApiSpec:
             param_type = {"type": PRIMITIVE_MAPPINGS[type_info]}
         elif issubclass(type_info, Schema) and not only_primititves:
             self.add_component(type_info)
-            param_type = {"$ref": f"#/components/schemas/{type_info.__name__}"}
+            param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
         else:
             raise ValueError(f"param_type has type {type_info}. \
                 It must be of type {PRIMITIVE_MAPPINGS.values} or a dataclass inheriting from Schema")
@@ -287,12 +290,8 @@ class OpenApiSpec:
         if return_type:
             if return_type in PRIMITIVE_MAPPINGS.keys():
                 content = {
-                    "content": {
-                        "text/plain": {
-                            "schema": {
-                                "type": PRIMITIVE_MAPPINGS[return_type]
-                            }
-                        }
+                    "schema": {
+                        "type": PRIMITIVE_MAPPINGS[return_type]
                     }
                 }
             # list
@@ -300,26 +299,18 @@ class OpenApiSpec:
                 type_info = return_type.__args__[0]
                 param_type = self.get_param_type(type_info)
                 content = {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    **param_type
-                                }
-                            }
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            **param_type
                         }
                     }
                 }
             elif issubclass(return_type, Schema):
                 param_type = self.get_param_type(return_type)
                 content = {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                **param_type
-                            }
-                        }
+                    "schema": {
+                        **param_type
                     }
                 }
         if entry.responses:
