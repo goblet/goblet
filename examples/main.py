@@ -4,11 +4,14 @@ import logging
 app = Goblet(function_name="goblet_example",region='us-central-1', local="test")
 app.log.setLevel(logging.INFO) # configure goblet logger level
 
+from typing import List
+from marshmallow import Schema, fields
+
 # path param
 @app.route('/home/{test}')
 def home(test):
     return jsonify(test)
-
+    
 # example query args
 @app.route('/home')
 def query_args():
@@ -23,9 +26,27 @@ def post():
     return jsonify(request.json)
 
 # Typed Path Param
-@app.route('/home/{name}', methods=["GET"], param_types={"name":"integer"})
-def namer(name):
-    return name
+@app.route('/home/{name}/{id}', methods=["GET"])
+def namer(name: str, id: int):
+    return f"{name}: {id}"
+
+class Point(Schema):
+    lat = fields.Int()
+    lng = fields.Int()
+
+# custom schema types
+@app.route('/points')
+def points() -> List[Point]:
+    point = Point().load({"lat":0, "lng":0})
+    return [point]
+
+# custom responses and request_types
+@app.route('/custom', request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}},
+responses={'400': {'description': '400'}})
+def custom():
+    request = app.current_request
+    assert request.data ["string1", "string2"]
+    return
 
 # example response object
 @app.route('/response')

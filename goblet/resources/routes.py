@@ -1,9 +1,12 @@
 from collections import OrderedDict
+from marshmallow.schema import Schema
 from ruamel import yaml
 import base64
 import logging
-import time
 import re
+from typing import get_type_hints
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
 
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project
@@ -64,6 +67,10 @@ class ApiGateway(Handler):
         if not entry:
             raise ValueError(f"No route found for {path} with {method}")
         return entry(request)
+
+    def __add__(self, other):
+        self.routes.update(other.routes)
+        return self
 
     @staticmethod
     def _matched_path(org_path, path):
@@ -130,15 +137,16 @@ class ApiGateway(Handler):
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
         }
         try:
-            self._create_gateway_client().execute('create', params={'gatewayId': self.name, 'body': gateway})
+            gateway_resp = self._create_gateway_client().execute('create', params={'gatewayId': self.name, 'body': gateway})
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("updating gateway")
-                self._patch_gateway_client().execute('patch', parent_key='name', params={'updateMask': 'apiConfig', 'body': gateway})
+                gateway_resp = self._patch_gateway_client().execute('patch', parent_key='name', params={'updateMask': 'apiConfig', 'body': gateway})
             else:
                 raise e
+        if gateway_resp:
+            self._create_gateway_client().wait_for_operation(gateway_resp["name"])
         log.info("api successfully deployed...")
-        time.sleep(5)
         gateway_resp = self._patch_gateway_client().execute('get', parent_key='name')
         log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
         return
@@ -191,7 +199,11 @@ class ApiGateway(Handler):
             spec.write(f)
 
 
-PRIMITIVES = ["integer", "boolean", "string"]
+PRIMITIVE_MAPPINGS = {
+    str: "string",
+    bool: "boolean",
+    int: "integer"
+}
 
 
 class OpenApiSpec:
@@ -211,11 +223,37 @@ class OpenApiSpec:
         self.spec["schemes"] = ["https"]
         self.spec['produces'] = ["application/json"]
         self.spec["paths"] = {}
+        self.component_spec = APISpec(
+            title="",
+            version="1.0.0",
+            openapi_version="2.0",
+            plugins=[MarshmallowPlugin()],
+        )
+        self.spec["definitions"] = {}
+
+    def add_component(self, component):
+        if component.__name__ in self.component_spec.components.schemas:
+            return
+        self.component_spec.components.schema(component.__name__, schema=component)
+        self.spec["definitions"] = self.component_spec.to_dict()['definitions']
 
     def add_apigateway_routes(self, apigateway):
         for path, methods in apigateway.items():
             for method, entry in methods.items():
                 self.add_route(entry)
+
+    def get_param_type(self, type_info, only_primititves=False):
+        if not type_info:
+            return {"type": "string"}
+        if type_info in PRIMITIVE_MAPPINGS.keys():
+            param_type = {"type": PRIMITIVE_MAPPINGS[type_info]}
+        elif issubclass(type_info, Schema) and not only_primititves:
+            self.add_component(type_info)
+            param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
+        else:
+            raise ValueError(f"param_type has type {type_info}. \
+                It must be of type {PRIMITIVE_MAPPINGS.values} or a dataclass inheriting from Schema")
+        return param_type
 
     def add_route(self, entry):
         method_spec = OrderedDict()
@@ -227,26 +265,63 @@ class OpenApiSpec:
         method_spec["operationId"] = entry.function_name
 
         params = []
+        type_hints = get_type_hints(entry.route_function)
         for param in entry.view_args:
-            type_info = entry.kwargs.get("param_types", {}).get(param, "string")
-            if type_info not in PRIMITIVES:
-                raise ValueError(f"param_type {param} has type {type_info}. It must be of type {PRIMITIVES}")
+            type_info = type_hints.get(param, str)
+            param_type = self.get_param_type(type_info, only_primititves=True)
+
             param_entry = {
                 "in": "path",
                 "name": param,
                 "required": True,
-                "type": type_info
+                **param_type
             }
             params.append(param_entry)
         if params:
             method_spec["parameters"] = params
+        if entry.request_body:
+            if isinstance(entry.request_body, dict):
+                method_spec["requestBody"] = entry.request_body
+
         # TODO: add query strings
 
-        method_spec["responses"] = {
-            '200': {
-                "description": "A successful response"
+        return_type = type_hints.get('return')
+        content = {}
+        if return_type:
+            if return_type in PRIMITIVE_MAPPINGS.keys():
+                content = {
+                    "schema": {
+                        "type": PRIMITIVE_MAPPINGS[return_type]
+                    }
+                }
+            # list
+            elif "typing.List" in str(return_type):
+                type_info = return_type.__args__[0]
+                param_type = self.get_param_type(type_info)
+                content = {
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            **param_type
+                        }
+                    }
+                }
+            elif issubclass(return_type, Schema):
+                param_type = self.get_param_type(return_type)
+                content = {
+                    "schema": {
+                        **param_type
+                    }
+                }
+        if entry.responses:
+            method_spec["responses"] = entry.responses
+        else:
+            method_spec["responses"] = {
+                '200': {
+                    "description": "A successful response",
+                    **content
+                }
             }
-        }
         path_exists = self.spec["paths"].get(entry.uri_pattern)
         if path_exists:
             self.spec["paths"][entry.uri_pattern][entry.method.lower()] = dict(method_spec)
@@ -273,6 +348,8 @@ class RouteEntry:
         self.uri_pattern = path
         self.method = method
         self.api_key_required = api_key_required
+        self.request_body = kwargs.get("request_body")
+        self.responses = kwargs.get("responses")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']
         self.view_args = self._parse_view_args()
