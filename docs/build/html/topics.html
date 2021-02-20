@@ -91,6 +91,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#openapi-spec">OpenApi Spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiple-files">Multiple Files</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +344,72 @@ multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and 
     <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;admin@localhost&quot;</span><span class="p">,</span>
     <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">42</span>
 <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="openapi-spec">
+<h2>OpenApi Spec<a class="headerlink" href="#openapi-spec" title="Permalink to this headline">¶</a></h2>
+<p>Goblet generates an <a class="reference external" href="https://swagger.io/specification/">OpenApi</a> spec from your route endpoints in order to create the api gateway. The open api spec is written to the
+<cite>.goblet</cite> folder and can be used for other tools. To generate just the open api spec you can run the command <cite>goblet openapi FUNCTION_NAME</cite>.
+Note that gcp <a class="reference external" href="https://cloud.google.com/api-gateway/docs/openapi-overview">gateway</a> only supports openapi spec 2.0.</p>
+<p>By default the param types will be created in the spec as strings and a base 200 response.
+You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.</p>
+<p>If you use a custom schema type you should create a schema class that inherits from marshmallow Schema.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
+
+<span class="c1"># Typed Path Param</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home/</span><span class="si">{name}</span><span class="s1">/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">namer</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">: </span><span class="si">{id}</span><span class="s2">&quot;</span>
+
+<span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
+    <span class="n">lng</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
+
+<span class="c1"># custom schema types</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/points&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">points</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]:</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">({</span><span class="s2">&quot;lat&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;lng&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
+
+<span class="c1"># custom responses and request_types</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;application/json&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}}}},</span>
+<span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;400&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;400&#39;</span><span class="p">}})</span>
+<span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
+    <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span> <span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">]</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-files">
+<h2>Multiple Files<a class="headerlink" href="#multiple-files" title="Permalink to this headline">¶</a></h2>
+<p>It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
+them in the main.py folder under your main app. You can do this with simple addition notation or with the <cite>Goblet.combine</cite> function</p>
+<p>other.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">otherapp</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
+
+<span class="nd">@otherapp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/other&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">other</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;other&#39;</span>
+</pre></div>
+</div>
+<p>combine all routes in main.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+<span class="kn">from</span> <span class="nn">other</span> <span class="kn">import</span> <span class="n">otherapp</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="s1">&#39;main_function&#39;</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">otherapp</span><span class="p">)</span>
+<span class="c1"># can also do</span>
+<span class="c1"># app + otherapp</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;home&#39;</span>
 </pre></div>
 </div>
 </div>
