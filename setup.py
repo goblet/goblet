@@ -22,10 +22,12 @@ VERSION = os.environ.get('VERSION')
 
 # What packages are required for this module to be executed?
 REQUIRED = [
+    "apispec",
     "click",
     "google-api-python-client",
     "google-cloud-storage",
     "functions-framework",
+    "marshmallow",
     "ruamel.yaml",
 ]
 

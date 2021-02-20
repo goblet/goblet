@@ -262,3 +262,82 @@ This will send a JSON response like this to the browser:
         "email": "admin@localhost",
         "id": 42
     }
+
+OpenApi Spec
+^^^^^^^^^^^^
+
+Goblet generates an `OpenApi`_ spec from your route endpoints in order to create the api gateway. The open api spec is written to the 
+`.goblet` folder and can be used for other tools. To generate just the open api spec you can run the command `goblet openapi FUNCTION_NAME`.
+Note that gcp `gateway`_ only supports openapi spec 2.0. 
+
+
+By default the param types will be created in the spec as strings and a base 200 response. 
+You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.
+
+If you use a custom schema type you should create a schema class that inherits from marshmallow Schema. 
+
+.. code:: python 
+
+    from typing import List
+    from marshmallow import Schema, fields
+
+    # Typed Path Param
+    @app.route('/home/{name}/{id}', methods=["GET"])
+    def namer(name: str, id: int):
+        return f"{name}: {id}"
+
+    class Point(Schema):
+        lat = fields.Int()
+        lng = fields.Int()
+
+    # custom schema types
+    @app.route('/points')
+    def points() -> List[Point]:
+        point = Point().load({"lat":0, "lng":0})
+        return [point]
+
+    # custom responses and request_types
+    @app.route('/custom', request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}},
+    responses={'400': {'description': '400'}})
+    def custom():
+        request = app.current_request
+        assert request.data ["string1", "string2"]
+        return
+
+.. _OPENAPI: https://swagger.io/specification/
+.. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
+
+Multiple Files
+^^^^^^^^^^^^^^
+
+It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
+them in the main.py folder under your main app. You can do this with simple addition notation or with the `Goblet.combine` function
+
+other.py 
+
+.. code:: python
+
+    from goblet import Goblet
+
+    otherapp = Goblet()
+
+    @otherapp.route('/other')
+    def other():
+        return 'other'
+
+combine all routes in main.py
+
+.. code:: python
+
+    from goblet import Goblet
+    from other import otherapp
+
+    app = Goblet('main_function')
+    
+    app.combine(otherapp)
+    # can also do
+    # app + otherapp
+
+    @app.route('/home')
+    def home():
+        return 'home'

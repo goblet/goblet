@@ -8,6 +8,7 @@ Goblet is a framework for writing serverless apps in python in google cloud. It 
 * A command line tool for creating, deploying, and managing your app
 * A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
 * Local environment for your api endpoints
+* Dynamically generated openapispec
 
 You can create Rest APIs:
 
@@ -177,7 +178,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Configuration Options (function names, ...)\
  &#9744; Cleanup gcp buckets\
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
- &#9744; User generated dataclasses for openapi spec \
+ &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger
 

@@ -1,4 +1,5 @@
 main.py
+other.py
 .vscode
 .pytest_cache
 .goblet

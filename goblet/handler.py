@@ -8,3 +8,6 @@ class Handler:
 
     def __call__(self, request, context=None):
         raise NotImplementedError("__call__")
+
+    def __add__(self):
+        raise NotImplementedError("__add__")

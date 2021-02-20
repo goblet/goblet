@@ -1,10 +1,21 @@
+from typing import List
+from marshmallow import Schema, fields
 from goblet.resources.routes import OpenApiSpec, RouteEntry
+
+
+def dummy():
+    pass
+
+
+class DummySchema(Schema):
+    id = fields.Int()
+    flt = fields.Float()
 
 
 class TestOpenApiSpec:
 
     def test_add_route(self):
-        route = RouteEntry(None, "route", "/home", "GET")
+        route = RouteEntry(dummy, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         expected_json = {
@@ -27,23 +38,14 @@ class TestOpenApiSpec:
         assert(spec.spec['paths'] == expected_json)
 
     def test_add_route_post(self):
-        route = RouteEntry(None, "route", "/home", "GET")
-        route_post = RouteEntry(None, "route", "/home", "POST")
+        route = RouteEntry(dummy, "route", "/home", "GET")
+        route_post = RouteEntry(dummy, "route", "/home", "POST")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         spec.add_route(route_post)
 
         assert(spec.spec['paths']['/home'].get('post'))
         assert(spec.spec['paths']['/home'].get('get'))
-
-    def test_add_route_param(self):
-        route = RouteEntry(None, "route", "/home/{param}/{param2}", "GET", param_types={'param2': "boolean"})
-        spec = OpenApiSpec("test", "xyz.cloudfunction")
-        spec.add_route(route)
-        params = spec.spec['paths']['/home/{param}/{param2}']['get']['parameters']
-        assert(len(params) == 2)
-        assert(params[0] == {'in': 'path', 'name': 'param', 'required': True, 'type': 'string'})
-        assert(params[1] == {'in': 'path', 'name': 'param2', 'required': True, 'type': 'boolean'})
 
     def test_security_definitions(self):
         security_def = {
@@ -57,3 +59,63 @@ class TestOpenApiSpec:
         }
         spec = OpenApiSpec("test", "xyz.cloudfunction", security_definitions=security_def)
         assert(spec.spec["securityDefinitions"] == security_def)
+
+    def test_add_primitive_types(self):
+        def prim_typed(param: str, param2: bool) -> int:
+            return 200
+
+        route = RouteEntry(prim_typed, "route", "/home/{param}/{param2}", "GET")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        params = spec.spec['paths']['/home/{param}/{param2}']['get']['parameters']
+        assert(len(params) == 2)
+        assert(params[0] == {'in': 'path', 'name': 'param', 'required': True, 'type': 'string'})
+        assert(params[1] == {'in': 'path', 'name': 'param2', 'required': True, 'type': 'boolean'})
+        response_content = spec.spec['paths']['/home/{param}/{param2}']['get']['responses']['200']["schema"]
+        assert response_content == {'type': 'integer'}
+
+    def test_return_schema_regular(self):
+        def schema_typed() -> DummySchema:
+            return DummySchema()
+
+        route = RouteEntry(schema_typed, "route", "/home", "GET")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response_content = spec.spec['paths']['/home']['get']['responses']['200']['schema']
+        assert response_content == {'$ref': '#/definitions/DummySchema'}
+        assert len(spec.spec['definitions']["DummySchema"]["properties"]) == 2
+
+    def test_return_lists(self):
+        def schema_typed_list() -> List[DummySchema]:
+            return []
+
+        route = RouteEntry(schema_typed_list, "route", "/home", "GET")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response_content = spec.spec['paths']['/home']['get']['responses']['200']['schema']
+        assert response_content == {"type": "array", "items": {'$ref': '#/definitions/DummySchema'}}
+        assert len(spec.spec['definitions']["DummySchema"]["properties"]) == 2
+
+        def prim_typed_list() -> List[str]:
+            return []
+
+        route = RouteEntry(prim_typed_list, "route", "/home", "GET")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response_content = spec.spec['paths']['/home']['get']['responses']['200']['schema']
+        assert response_content == {"type": "array", "items": {'type': 'string'}}
+        assert len(spec.spec['definitions']) == 0
+
+    def test_custom_response(self):
+        route = RouteEntry(dummy, "route", "/home", "GET", responses={'400': {'description': '400'}})
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response = spec.spec['paths']['/home']['get']['responses']
+        assert response['400'] == {'description': '400'}
+
+    def test_request_body(self):
+        route = RouteEntry(dummy, "route", "/home", "GET", request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}})
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        request_body = spec.spec['paths']['/home']['get']['requestBody']
+        assert request_body == {'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}}
