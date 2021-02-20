@@ -1,5 +1,7 @@
+apispec==4.3.0
 click==7.1.2
 functions-framework==2.1.0
 google-api-python-client==1.12.5
 google-cloud-storage==1.32.0
+marshmallow==3.10.0
 ruamel.yaml==0.16.12

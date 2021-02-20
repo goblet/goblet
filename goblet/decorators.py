@@ -70,6 +70,14 @@ class Register_Handlers(DecoratorAPI):
 
         return self.handlers["route"](request)
 
+    def __add__(self, other):
+        self.handlers["route"] += other.handlers["route"]
+        self.handlers["schedule"] += other.handlers["schedule"]
+        return self
+
+    def combine(self, other):
+        return self + other
+
     def get_event_type(self, request):
         if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"

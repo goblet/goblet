@@ -1,4 +1,4 @@
-from goblet import jsonify, Response
+from goblet import jsonify, Response, Goblet
 
 
 class TestJsonify:
@@ -30,3 +30,44 @@ class TestResponse:
             assert status == 401
         r = Response('test', status_code=401)
         assert r({}, start_response_status) == ["test"]
+
+
+class TestDecoraters:
+
+    def test_add(self):
+        app1 = Goblet("test")
+        app2 = Goblet("test")
+
+        @app1.route('/home')
+        @app2.route('/home2')
+        @app1.schedule('* * * * *')
+        def dummy_function(self, home_id):
+            return True
+
+        @app2.schedule('1 * * * *')
+        def dummy_function2(self, home_id):
+            return True
+
+        app1 + app2
+
+        assert list(app1.handlers['route'].routes.keys()) == ['/home', '/home2']
+        assert list(app1.handlers['schedule'].jobs.keys()) == ['dummy_function', 'dummy_function2']
+
+    def test_combine(self):
+        app1 = Goblet("test")
+        app2 = Goblet("test")
+
+        @app1.route('/home')
+        @app2.route('/home2')
+        @app1.schedule('* * * * *')
+        def dummy_function(self, home_id):
+            return True
+
+        @app2.schedule('1 * * * *')
+        def dummy_function2(self, home_id):
+            return True
+
+        app1.combine(app2)
+
+        assert list(app1.handlers['route'].routes.keys()) == ['/home', '/home2']
+        assert list(app1.handlers['schedule'].jobs.keys()) == ['dummy_function', 'dummy_function2']
