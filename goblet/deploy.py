@@ -43,7 +43,7 @@ class Deployer:
         m.update(b"goblet")
         return "goblet-" + m.hexdigest()
 
-    def package(self, goblet):
+    def package(self):
         self.zip()
 
     def deploy(self, goblet, skip_function=False, only_function=False, config=None):
@@ -127,8 +127,8 @@ class Deployer:
     # google api
     def _upload_zip(self):
         self.zipf.close()
-        zip_size = os.stat('.goblet/goblet.zip').st_size
-        with open('.goblet/goblet.zip', 'rb') as f:
+        zip_size = os.stat(f'.goblet/{self.name}.zip').st_size
+        with open(f'.goblet/{self.name}.zip', 'rb') as f:
             resp = self.function_client.execute('generateUploadUrl')
 
             requests.put(
@@ -148,7 +148,7 @@ class Deployer:
     def create_zip(self):
         if not os.path.isdir(get_g_dir()):
             os.mkdir(get_g_dir())
-        return zipfile.ZipFile(get_g_dir() + '/goblet.zip', 'w', zipfile.ZIP_DEFLATED)
+        return zipfile.ZipFile(get_g_dir() + f'/{self.name}.zip', 'w', zipfile.ZIP_DEFLATED)
 
     def zip(self):
         config = GConfig()

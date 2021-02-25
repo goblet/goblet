@@ -30,19 +30,21 @@ def version():
 @main.command()
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT', required=True)
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
+@click.option('-s', '--stage', 'stage', envvar='STAGE')
 @click.option('--skip-function', 'skip_function', is_flag=True)
 @click.option('--only-function', 'only_function', is_flag=True)
-def deploy(project, location, skip_function, only_function):
+def deploy(project, location, stage, skip_function, only_function):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
 
-    Note: Allowed GOOGLE_LOCATION values for API GATEWATy Beta are: asia-east1, europe-west1, and us-central1.
+    Note: Allowed GOOGLE_LOCATION values for API GATEWAY are: asia-east1, europe-west1, us-eastl1 and us-central1.
 
     Note: Make sure api-gateway, cloudfunctions, and storage are enabled in your project
     """
     try:
         os.environ["GOOGLE_PROJECT"] = project
         os.environ["GOOGLE_LOCATION"] = location
+        os.environ["STAGE"] = stage
         app = get_goblet_app()
         Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function)
 
@@ -53,13 +55,15 @@ def deploy(project, location, skip_function, only_function):
 @main.command()
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
-def destroy(project, location):
+@click.option('-s', '--stage', 'stage', envvar='STAGE')
+def destroy(project, location, stage):
     """
     Deletes all resources in gcp that are defined the current deployment
     """
     try:
         os.environ["GOOGLE_PROJECT"] = project
         os.environ["GOOGLE_LOCATION"] = location
+        os.environ["STAGE"] = stage
         app = get_goblet_app()
         Deployer({"name": app.function_name}).destroy(app)
 
@@ -99,12 +103,14 @@ def local(local_arg):
         click.echo("Incorrect argument. Make sure you set the local param in your Goblet class and that it matches the arg used in goblet local")
 
 
+@click.option('-s', '--stage', 'stage', envvar='STAGE')
 @main.command()
-def package():
+def package(stage):
     """generates the goblet zipped package in .goblet folder"""
     try:
+        os.environ["STAGE"] = stage
         app = get_goblet_app()
-        Deployer({"name": app.function_name}).package(app)
+        Deployer({"name": app.function_name}).package()
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
