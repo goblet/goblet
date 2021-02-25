@@ -1,3 +1,4 @@
+from goblet.config import GConfig
 import click
 import os
 import logging
@@ -22,6 +23,7 @@ def help():
 
 @main.command()
 def version():
+    """current goblet version"""
     click.echo(__version__)
 
 
@@ -52,6 +54,9 @@ def deploy(project, location, skip_function, only_function):
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
 def destroy(project, location):
+    """
+    Deletes all resources in gcp that are defined the current deployment
+    """
     try:
         os.environ["GOOGLE_PROJECT"] = project
         os.environ["GOOGLE_LOCATION"] = location
@@ -96,9 +101,41 @@ def local(local_arg):
 
 @main.command()
 def package():
+    """generates the goblet zipped package in .goblet folder"""
     try:
         app = get_goblet_app()
         Deployer({"name": app.function_name}).package(app)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+
+
+@main.group()
+def stage():
+    """view and create different environment stages"""
+    pass
+
+
+@stage.command(name="list")
+def list_stages():
+    config = GConfig.get_g_config()
+    if not config.get("stages"):
+        return click.echo("no stages found")
+    click.echo(list(config["stages"].keys()))
+
+
+@stage.command()
+@click.argument('stage',)
+def create(stage):
+    """create a new stage in config.json"""
+    config = GConfig()
+    if config.stages and stage in config.stages:
+        return click.echo(f"stage {stage} already exists")
+    app = get_goblet_app()
+    function_name = f"{app.function_name}-{stage}"
+    if not config.stages:
+        config.stages = {stage: {"name": function_name}}
+    else:
+        config.stages[stage] = {"name": function_name}
+    config.write()
+    click.echo(f"stage {stage} created in config.json with function name {function_name}")

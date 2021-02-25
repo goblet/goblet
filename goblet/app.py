@@ -8,17 +8,21 @@ logging.basicConfig()
 
 
 class Goblet(Register_Handlers):
-    def __init__(self, function_name="goblet", region="us-east4", local=None):
+    def __init__(self, function_name="goblet", region="us-east4", stage=None, local=None):
         super(Goblet, self).__init__(function_name=function_name)
         self.function_name = function_name
         self.region = region
         self.log = logging.getLogger(__name__)
         self.headers = {}
+        self.stage = stage
         self.g = G()
         if local and sys.modules.get('main'):
             def local_func(request):
                 return self(request)
             setattr(sys.modules['main'], local, local_func)
+
+    def use_stage(self, stage):
+        self.stage = stage
 
     # Will deprecate
     def jsonify(self, *args, **kwargs):

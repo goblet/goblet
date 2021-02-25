@@ -3,8 +3,11 @@ from goblet.utils import get_g_dir
 
 
 class GConfig:
-    def __init__(self, config=None):
+    def __init__(self, config=None, stage=None):
         self.config = config or self.get_g_config()
+        self.stage = stage
+        if self.stage:
+            self.config.update(self.config.get("stages", {}).get(self.stage, {}))
 
     @staticmethod
     def get_g_config():
@@ -28,5 +31,5 @@ class GConfig:
             super(GConfig, self).__setattr__(name, value)
 
     def write(self):
-        with open(f'{get_g_dir()}/config.json') as f:
-            f.write(json.dumps(self.config))
+        with open(f'{get_g_dir()}/config.json', 'w') as f:
+            f.write(json.dumps(self.config, indent=4))
