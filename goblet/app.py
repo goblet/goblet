@@ -21,9 +21,6 @@ class Goblet(Register_Handlers):
                 return self(request)
             setattr(sys.modules['main'], local, local_func)
 
-    def use_stage(self, stage):
-        self.stage = stage
-
     # Will deprecate
     def jsonify(self, *args, **kwargs):
         indent = None

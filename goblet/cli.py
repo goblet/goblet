@@ -134,8 +134,8 @@ def create(stage):
     app = get_goblet_app()
     function_name = f"{app.function_name}-{stage}"
     if not config.stages:
-        config.stages = {stage: {"name": function_name}}
+        config.stages = {stage: {"function_name": function_name}}
     else:
-        config.stages[stage] = {"name": function_name}
+        config.stages[stage] = {"function_name": function_name}
     config.write()
     click.echo(f"stage {stage} created in config.json with function name {function_name}")
