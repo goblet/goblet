@@ -341,3 +341,44 @@ combine all routes in main.py
     @app.route('/home')
     def home():
         return 'home'
+
+
+Stages
+^^^^^^^
+
+You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using `goblet stage create STAGE` or by 
+manually adding an entry in config.json under stages. A stage will require a unique function_name which is used to create resources in gcp. Any fields in your stage will 
+override those in the general config file. 
+
+For example the dev deployment will override the environment variable `env` with `dev` and the prod deployment will yield `prod`
+
+.. code:: json 
+
+    {
+        "cloudfunction": {
+            "environmentVariables": {
+                "env": "main"
+            }
+        },
+        "stages": {
+            "dev": {
+                "function_name": "goblet-dev",
+                "cloudfunction": {
+                    "environmentVariables": {
+                        "key": "dev"
+                    }
+                }
+            },
+            "prod": {
+                "function_name": "goblet-prod",
+                "cloudfunction": {
+                    "environmentVariables": {
+                        "key": "prod"
+                    }
+                }
+            }
+        }
+    }
+
+You can view your current stages using `goblet stage list`. To deploy or destroy a specific stage use the `--stage` or `-s` flag with the stage. You can also use the 
+environment variable `STAGE`. For example `goblet deploy -s dev`.
