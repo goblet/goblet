@@ -1,3 +1,4 @@
+from goblet.config import GConfig
 import logging
 import json
 import sys
@@ -9,8 +10,8 @@ logging.basicConfig()
 
 class Goblet(Register_Handlers):
     def __init__(self, function_name="goblet", region="us-east4", local=None):
-        super(Goblet, self).__init__(function_name=function_name)
-        self.function_name = function_name
+        self.function_name = GConfig().function_name or function_name
+        super(Goblet, self).__init__(function_name=self.function_name)
         self.region = region
         self.log = logging.getLogger(__name__)
         self.headers = {}

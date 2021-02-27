@@ -3,17 +3,18 @@
 ![PyPI](https://img.shields.io/pypi/v/goblet-gcp?color=blue&style=plastic)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/goblet-gcp?style=plastic)
 
-Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use [cloudfunctions](https://cloud.google.com/functions). It provides:
+Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis that use [cloudfunctions](https://cloud.google.com/functions). It provides:
 
-* A command line tool for creating, deploying, and managing your app
-* A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
+* A command line tool for creating, deploying, and managing your api
+* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
 * Local environment for your api endpoints
 * Dynamically generated openapispec
+* Support for multiple stages
 
 You can create Rest APIs:
 
 ```python
-from goblet import Goblet
+from goblet import Goblet, jsonify
 
 app = Goblet(function_name="goblet_example",region='us-central-1')
 
@@ -21,9 +22,9 @@ app = Goblet(function_name="goblet_example",region='us-central-1')
 def home():
     return {"hello": "world"}
 
-@app.route('/home/{id}', methods=["POST"], param_types={"name":"integer"})
-def post_example(id):
-    return app.jsonify(id)
+@app.route('/home/{id}', methods=["POST"])
+def post_example(id: int) -> List[int]:
+    return jsonify([id])
 ```
 
 Once you've written your code, you just run goblet deploy and Goblet takes care of deploying your app.
@@ -78,7 +79,7 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 
 Before you can deploy an application, be sure you have credentials configured. You should run `gcloud auth login` and sign in to the desired project.
 
-When setting the defaut location note tha api-gateway is only available in `asia-east1`, `europe-west1`, and `us-central1`.
+When setting the defaut location note tha api-gateway is only available in `asia-east1`, `europe-west1`, `us-east-1` and `us-central1`.
 
 ### Creating Your Project
 
@@ -173,7 +174,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
 ## Roadmap
 
-&#9744; Tests \
+ &#9744; Tests \
  &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
  &#9745; Configuration Options (function names, ...)\
  &#9744; Cleanup gcp buckets\
@@ -182,9 +183,15 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger
 
-## Want to contribute
+## Want to Contribute
 
 If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) submit a [pull request](https://github.com/anovis/goblet/pulls).
+
+## Want to Support
+
+<!-- markdownlint-disable MD033 -->
+<a href="https://www.buymeacoffee.com/austennovis" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<!-- markdownlint-disable MD033 -->
 
 ___
 

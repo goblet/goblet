@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from time import sleep
 from marshmallow.schema import Schema
 from ruamel import yaml
 import base64
@@ -84,19 +85,19 @@ class ApiGateway(Handler):
         return True
 
     def _create_api_client(self):
-        return Client("apigateway", 'v1beta', calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global')
+        return Client("apigateway", 'v1', calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global')
 
     def _create_config_client(self):
-        return Client("apigateway", 'v1beta', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
+        return Client("apigateway", 'v1', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
 
     def _patch_config_client(self):
-        return Client("apigateway", 'v1beta', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + self.name)
+        return Client("apigateway", 'v1', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + self.name)
 
     def _create_gateway_client(self):
-        return Client("apigateway", 'v1beta', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}')
+        return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}')
 
     def _patch_gateway_client(self):
-        return Client("apigateway", 'v1beta', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
+        return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
 
     def deploy(self):
         if len(self.routes) == 0:
@@ -155,7 +156,7 @@ class ApiGateway(Handler):
 
         # destroy api gateway
         try:
-            gateway_client = Client("apigateway", 'v1beta', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
+            gateway_client = Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
             gateway_client.execute('delete', parent_key="name")
             log.info("destroying api gateway......")
         except HttpError as e:
@@ -169,11 +170,12 @@ class ApiGateway(Handler):
             api_client = None
             resp = {}
             for c in configs.get('apiConfigs', []):
-                api_client = Client("apigateway", 'v1beta', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
+                api_client = Client("apigateway", 'v1', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
                 resp = api_client.execute('delete', parent_key="name")
             log.info("api configs destroying....")
             if api_client:
                 api_client.wait_for_operation(resp["name"])
+                sleep(2)
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("api configs already destroyed")
@@ -182,7 +184,7 @@ class ApiGateway(Handler):
 
         # destroy api
         try:
-            api_client = Client("apigateway", 'v1beta', calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
+            api_client = Client("apigateway", 'v1', calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
             api_client.execute('delete', parent_key="name")
             log.info("apis successfully destroyed......")
         except HttpError as e:

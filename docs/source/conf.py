@@ -12,6 +12,8 @@
 #
 import os
 import sys
+from goblet.__version__ import __version__
+
 sys.path.insert(0, os.path.abspath('.'))
 
 
@@ -22,7 +24,7 @@ copyright = '2020, austen novis'
 author = 'austen novis'
 
 # The full version, including alpha/beta/rc tags
-release = '0.3.1'
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------
