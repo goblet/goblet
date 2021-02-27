@@ -5,9 +5,6 @@ import requests
 import logging
 import hashlib
 
-from google.cloud import storage
-from google.api_core.exceptions import NotFound
-
 from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location
@@ -72,18 +69,7 @@ class Deployer:
             log.info("deleting google cloudfunction......")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info("cloudfunction already deployed")
-            else:
-                raise e
-
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(self.goblet_hash_name)
-        try:
-            bucket.delete(force=True)
-            log.info("deleting storage bucket......")
-        except NotFound as e:
-            if e.code == 404:
-                log.info("storage bucket already destroyed")
+                log.info("cloudfunction already destroyed")
             else:
                 raise e
 
@@ -111,20 +97,7 @@ class Deployer:
             else:
                 raise e
         self.function_client.wait_for_operation(resp["name"], calls="operations")
-    # def _upload_zip(self):
-    #     self.zipf.close()
-    #     curr_dir = Path(__file__).parent.absolute()
-    #     storage_client = storage.Client()
-    #     bucket = storage_client.bucket(self.goblet_hash_name)
-    #     try:
-    #         storage_client.get_bucket(self.goblet_hash_name)
-    #     except:
-    #         storage_client.create_bucket(bucket, location="us")
-    #     blob = bucket.blob("goblet.zip")
-    #     blob.upload_from_filename(f"{get_dir()}/.goblet/goblet.zip")
-    #     return f"gs://{self.goblet_hash_name}/goblet.zip"
 
-    # google api
     def _upload_zip(self):
         self.zipf.close()
         zip_size = os.stat(f'.goblet/{self.name}.zip').st_size

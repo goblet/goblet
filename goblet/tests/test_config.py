@@ -1,5 +1,4 @@
 from goblet.config import GConfig
-import os
 
 test_config = {
     "cloudfunction": {
@@ -36,11 +35,11 @@ class TestGConfig:
         config = GConfig(test_config, stage="dev")
         assert config.cloudfunction["environmentVariables"]["key"] == "dev"
 
-    def test_env_variable(self):
-        os.environ["TEST"] = "test"
+    def test_env_variable(self, monkeypatch):
+        monkeypatch.setenv("TEST", "test")
         assert GConfig().TEST == "test"
 
-    def test_stages_env(self):
-        os.environ["STAGE"] = "dev"
+    def test_stages_env(self, monkeypatch):
+        monkeypatch.setenv("STAGE", "dev")
         config = GConfig(test_config)
         assert config.cloudfunction["environmentVariables"]["key"] == "dev"

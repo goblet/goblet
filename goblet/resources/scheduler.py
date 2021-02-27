@@ -10,6 +10,7 @@ log.setLevel(logging.INFO)
 
 class Scheduler(Handler):
     def __init__(self, name, routes={}):
+        self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
         self.jobs = {}
         self._api_client = None
@@ -30,7 +31,7 @@ class Scheduler(Handler):
         description = kwargs.get("description", "Created by goblet")
         self.jobs[name] = {
             "job_json": {
-                "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{name}",
+                "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
                 "schedule": schedule,
                 "timeZone": timezone,
                 "description": description,
@@ -85,10 +86,10 @@ class Scheduler(Handler):
     def deploy_job(self, job_name, job):
         try:
             self.api_client.execute('create', params={'body': job})
-            log.info(f"created scheduled job: {job_name}")
+            log.info(f"created scheduled job: {job_name} for {self.name}")
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"updated scheduled job: {job_name}")
+                log.info(f"updated scheduled job: {job_name} for {self.name}")
                 self.api_client.execute('patch', parent_key="name", parent_schema=job['name'], params={'body': job})
             else:
                 raise e
@@ -99,7 +100,7 @@ class Scheduler(Handler):
 
     def _destroy_job(self, job_name):
         try:
-            scheduler_client = Client("cloudscheduler", 'v1', calls='projects.locations.jobs', parent_schema='projects/{project_id}/locations/{location_id}/jobs/' + job_name)
+            scheduler_client = Client("cloudscheduler", 'v1', calls='projects.locations.jobs', parent_schema='projects/{project_id}/locations/{location_id}/jobs/' + self.name + '-' + job_name)
             scheduler_client.execute('delete', parent_key="name")
             log.info("destroying scheduled functions......")
         except HttpError as e:

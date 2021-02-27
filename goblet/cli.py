@@ -44,7 +44,8 @@ def deploy(project, location, stage, skip_function, only_function):
     try:
         os.environ["GOOGLE_PROJECT"] = project
         os.environ["GOOGLE_LOCATION"] = location
-        os.environ["STAGE"] = stage
+        if stage:
+            os.environ["STAGE"] = stage
         app = get_goblet_app()
         Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function)
 
@@ -63,7 +64,8 @@ def destroy(project, location, stage):
     try:
         os.environ["GOOGLE_PROJECT"] = project
         os.environ["GOOGLE_LOCATION"] = location
-        os.environ["STAGE"] = stage
+        if stage:
+            os.environ["STAGE"] = stage
         app = get_goblet_app()
         Deployer({"name": app.function_name}).destroy(app)
 
@@ -108,7 +110,8 @@ def local(local_arg):
 def package(stage):
     """generates the goblet zipped package in .goblet folder"""
     try:
-        os.environ["STAGE"] = stage
+        if stage:
+            os.environ["STAGE"] = stage
         app = get_goblet_app()
         Deployer({"name": app.function_name}).package()
 
