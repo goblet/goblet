@@ -9,12 +9,13 @@ Welcome to goblet's documentation!
 Overview
 ----------
 
-Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use `cloudfunctions`_. It provides:
+Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis that use [cloudfunctions](https://cloud.google.com/functions). It provides:
 
-* A command line tool for creating, deploying, and managing your app
-* A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
+* A command line tool for creating, deploying, and managing your api
+* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
 * Local environment for your api endpoints
 * Dynamically generated openapispec
+* Support for multiple stages
 
 You can create Rest APIs:
 

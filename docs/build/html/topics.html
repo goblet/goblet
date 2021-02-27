@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Topics &mdash; goblet 0.3.1 documentation</title>
+  <title>Topics &mdash; goblet 0.3.3 documentation</title>
   
 
   
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#openapi-spec">OpenApi Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multiple-files">Multiple Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stages">Stages</a></li>
 </ul>
 </li>
 </ul>
@@ -412,6 +413,42 @@ them in the main.py folder under your main app. You can do this with simple addi
     <span class="k">return</span> <span class="s1">&#39;home&#39;</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="stages">
+<h2>Stages<a class="headerlink" href="#stages" title="Permalink to this headline">¶</a></h2>
+<p>You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using <cite>goblet stage create STAGE</cite> or by
+manually adding an entry in config.json under stages. A stage will require a unique function_name which is used to create resources in gcp. Any fields in your stage will
+override those in the general config file.</p>
+<p>For example the dev deployment will override the environment variable <cite>env</cite> with <cite>dev</cite> and the prod deployment will yield <cite>prod</cite></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;env&quot;</span><span class="p">:</span> <span class="s2">&quot;main&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;stages&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;dev&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;function_name&quot;</span><span class="p">:</span> <span class="s2">&quot;goblet-dev&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;dev&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;prod&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;function_name&quot;</span><span class="p">:</span> <span class="s2">&quot;goblet-prod&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;prod&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can view your current stages using <cite>goblet stage list</cite>. To deploy or destroy a specific stage use the <cite>–stage</cite> or <cite>-s</cite> flag with the stage. You can also use the
+environment variable <cite>STAGE</cite>. For example <cite>goblet deploy -s dev</cite>.</p>
 </div>
 </div>
 

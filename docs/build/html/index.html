@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to goblet’s documentation! &mdash; goblet 0.3.1 documentation</title>
+  <title>Welcome to goblet’s documentation! &mdash; goblet 0.3.3 documentation</title>
   
 
   
@@ -152,12 +152,13 @@
 <h1>Welcome to goblet’s documentation!<a class="headerlink" href="#welcome-to-goblet-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>Goblet is a framework for writing serverless apps in python in google cloud. It allows you to quickly create and deploy applications that use <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunctions</a>. It provides:</p>
+<p>Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis that use [cloudfunctions](<a class="reference external" href="https://cloud.google.com/functions">https://cloud.google.com/functions</a>). It provides:</p>
 <ul class="simple">
-<li><p>A command line tool for creating, deploying, and managing your app</p></li>
-<li><p>A decorator based API for integrating with GCP API Gateway (beta), Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.</p></li>
+<li><p>A command line tool for creating, deploying, and managing your api</p></li>
+<li><p>A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.</p></li>
 <li><p>Local environment for your api endpoints</p></li>
 <li><p>Dynamically generated openapispec</p></li>
+<li><p>Support for multiple stages</p></li>
 </ul>
 <p>You can create Rest APIs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
@@ -229,6 +230,7 @@ $ curl https://api.uc.gateway.dev/home
 <li class="toctree-l2"><a class="reference internal" href="topics.html#response">Response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="topics.html#openapi-spec">OpenApi Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="topics.html#multiple-files">Multiple Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics.html#stages">Stages</a></li>
 </ul>
 </li>
 </ul>
