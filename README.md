@@ -174,14 +174,17 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
 ## Roadmap
 
- &#9744; Tests \
+ &#9744; Complete Test Coverage \
  &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
  &#9745; Configuration Options (function names, ...)\
  &#9744; Cleanup gcp buckets\
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
  &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
- &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger
+ &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
+ &#9744; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
+ &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
+ &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger
 
 ## Want to Contribute
 

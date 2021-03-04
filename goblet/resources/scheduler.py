@@ -9,10 +9,10 @@ log.setLevel(logging.INFO)
 
 
 class Scheduler(Handler):
-    def __init__(self, name, routes={}):
+    def __init__(self, name, jobs=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
-        self.jobs = {}
+        self.jobs = jobs or {}
         self._api_client = None
 
     @property

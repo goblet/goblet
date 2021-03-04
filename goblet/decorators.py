@@ -1,10 +1,11 @@
+from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
 import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ["all", 'http', 'schedule']
+EVENT_TYPES = ["all", 'http', 'schedule', 'pubsub']
 
 
 class DecoratorAPI:
@@ -30,6 +31,12 @@ class DecoratorAPI:
             registration_kwargs={'schedule': schedule, 'kwargs': kwargs},
         )
 
+    def topic(self, topic, **kwargs):
+        return self._create_registration_function(
+            handler_type='pubsub',
+            registration_kwargs={'topic': topic, 'kwargs': kwargs},
+        )
+    
     def _create_registration_function(self, handler_type,
                                       registration_kwargs=None):
         def _register_handler(user_handler):
@@ -53,32 +60,39 @@ class Register_Handlers(DecoratorAPI):
     def __init__(self, function_name):
         self.handlers = {
             "route": ApiGateway(function_name),
-            "schedule": Scheduler(function_name)
+            "schedule": Scheduler(function_name),
+            "pubsub": PubSub(function_name)
         }
         self.middleware_handlers = {}
         self.current_request = None
 
     def __call__(self, request, context=None):
         self.current_request = request
-        event_type = self.get_event_type(request)
+        event_type = self.get_event_type(request, context)
 
         # call middleware
         request = self._call_middleware(request, event_type)
 
         if event_type == "schedule":
             return self.handlers['schedule'](request)
+        if event_type == "pubsub":
+            return self.handlers['pubsub'](request, context)
+        if event_type == "http":
+            self.handlers["route"](request)
 
-        return self.handlers["route"](request)
+        raise ValueError(f"{event_type} not a valid event type")
 
     def __add__(self, other):
-        self.handlers["route"] += other.handlers["route"]
-        self.handlers["schedule"] += other.handlers["schedule"]
+        for handler in self.handlers:
+            self.handlers[handler] += other.handlers[handler]
         return self
 
     def combine(self, other):
         return self + other
 
-    def get_event_type(self, request):
+    def get_event_type(self, request, context=None):
+        if context and context.get("resource"):
+            return context.resource["service"].split('.')[0]
         if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"
         return 'http'
@@ -120,3 +134,6 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_schedule(self, name, func, kwargs):
         self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
+
+    def _register_pubsub(self, name, func, kwargs):
+        self.handlers["pubsub"].register_topic(name=name, func=func, kwargs=kwargs)
