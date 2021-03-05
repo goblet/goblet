@@ -36,7 +36,7 @@ class DecoratorAPI:
             handler_type='pubsub',
             registration_kwargs={'topic': topic, 'kwargs': kwargs},
         )
-    
+
     def _create_registration_function(self, handler_type,
                                       registration_kwargs=None):
         def _register_handler(user_handler):
@@ -91,8 +91,8 @@ class Register_Handlers(DecoratorAPI):
         return self + other
 
     def get_event_type(self, request, context=None):
-        if context and context.get("resource"):
-            return context.resource["service"].split('.')[0]
+        if context and context.event_type:
+            return context.event_type.split('.')[1].split('/')[0]
         if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"
         return 'http'

@@ -50,12 +50,9 @@ class Deployer:
             self.zip()
             log.info("uploading function zip to gs......")
             url = self._upload_zip()
-            log.info(f"creating google function {function_name}")
             # TODO: CHECK IF VERSION IS DEPLOYED
             self.create_function(url, goblet.entrypoint)
         if not only_function:
-            log.info("deploying api......")
-            goblet.handlers["route"].generate_openapi_spec(function_name)
             goblet.deploy()
 
         return goblet

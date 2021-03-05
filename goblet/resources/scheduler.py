@@ -95,6 +95,8 @@ class Scheduler(Handler):
                 raise e
 
     def destroy(self):
+        if not self.jobs:
+            return
         for job_name in self.jobs.keys():
             self._destroy_job(job_name)
 

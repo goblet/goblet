@@ -34,14 +34,14 @@ You can verify you have goblet installed by running:
 Credentials
 ************
 
-Before you can deploy an application, be sure you have credentials configured. You should run `gcloud auth login` and sign in to the desired project.
+Before you can deploy an application, be sure you have credentials configured. You should run ``gcloud auth application-default login`` and sign in to the desired project.
 
-When setting the defaut location note tha api-gateway is only available in `asia-east1`, `europe-west1`, and `us-central1`.
+When setting the defaut location note tha api-gateway is only available in ``asia-east1``, ``europe-west1``, and ``us-central1``.
 
 Creating Your Project
 *********************
 
-create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes `goblet-gcp`
+create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes ``goblet-gcp``
 
 .. code::
 
@@ -65,7 +65,7 @@ Let's take a look at the main.py file:
         return {"hello": "world"}
 
 
-This app with deploy an api with endpoint `/home`.
+This app with deploy an api with endpoint ``/home``.
 
 Running Locally
 ***************
@@ -79,8 +79,8 @@ Running your functions locally for testing and debugging is easy to do with gobl
     app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
 
 
-Then run `goblet local test` and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at `localhost:8080` with your routes.
+Then run ``goblet local test`` and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at ``localhost:8080`` with your routes.
 
 Deploying
 **********
@@ -105,14 +105,14 @@ You now have an API up and running using API Gateway and cloudfunctions:
     $ curl https://goblet-example-yol8sbt.uc.gateway.dev/home
     {"hello": "world"}
 
-Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running `golet deploy`.
+Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running ``golet deploy``.
 
 Cleanup
 **********
 
 You've now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.
 
-If you're done experimenting with Goblet and you'd like to cleanup, you can use the `goblet destroy` command, and Goblet will delete all the resources it created when running the goblet deploy command.
+If you're done experimenting with Goblet and you'd like to cleanup, you can use the ``goblet destroy`` command, and Goblet will delete all the resources it created when running the goblet deploy command.
 
 .. code:: bash
 

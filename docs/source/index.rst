@@ -9,7 +9,11 @@ Welcome to goblet's documentation!
 Overview
 ----------
 
-Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis that use [cloudfunctions](https://cloud.google.com/functions). It provides:
+Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis backed by `cloudfunctions`_. 
+
+.. _cloudfunctions: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
+
+It provides:
 
 * A command line tool for creating, deploying, and managing your api
 * A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
@@ -54,6 +58,7 @@ To install goblet, open an interactive shell and run:
 
     pip install goblet-gcp
 
+You will also need to install `gcloud cli`_ for authentication
 
 .. note:: 
    
@@ -64,8 +69,7 @@ To install goblet, open an interactive shell and run:
 
     Goblet requires python version 3.7 or higher.
 
-.. _CLOUDFUNCTIONS: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
-
+.. _gcloud cli: https://cloud.google.com/sdk/docs/install
 
 Quickstart
 -----------
@@ -82,5 +86,13 @@ Topics
    :maxdepth: 2
 
    topics
+
+Resources
+----------
+
+.. toctree::
+   :maxdepth: 2
+
+   resources
 
 

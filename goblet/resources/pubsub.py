@@ -36,9 +36,9 @@ class PubSub(Handler):
             }
 
     def __call__(self, event, context):
-        topic_name = context.resource["name"].split('/')[-1]
+        topic_name = context.resource.split('/')[-1]
         data = base64.b64decode(event['data']).decode('utf-8')
-        attributes = event.get("attributes", {})
+        attributes = event.get("attributes") or {}
 
         topic = self.topics.get(topic_name)
         if not topic:
@@ -46,8 +46,8 @@ class PubSub(Handler):
 
         # check attributes
         for name, info in topic.items():
-            if info["attributes"].items() >= attributes:
-                topic["func"][name](data)
+            if info["attributes"].items() <= attributes.items():
+                info["func"](data)
         return
 
     def __add__(self, other):
@@ -70,7 +70,7 @@ class PubSub(Handler):
             req_body = {
                 "name": f"{self.cloudfunction}-topic-{topic}",
                 "description": config.description or "created by goblet",
-                "entryPoint": resp["entrypoint"],
+                "entryPoint": resp["entryPoint"],
                 "sourceUploadUrl": resp["sourceUploadUrl"],
                 "eventTrigger": {
                     "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
@@ -83,4 +83,4 @@ class PubSub(Handler):
 
     def destroy(self):
         for topic in self.topics:
-            destroy_cloudfunction(f"{self.cloudfunction}-topic-{topic}")
+            destroy_cloudfunction(f"{self.name}-topic-{topic}")
