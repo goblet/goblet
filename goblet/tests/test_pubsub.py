@@ -37,7 +37,7 @@ class TestPubSub:
 
         @app.topic('test')
         def dummy_function(data):
-            assert data == 'test' 
+            assert data == 'test'
 
         mock_context = Mock()
         mock_context.resource = 'projects/GOOGLE_PROJECT/topics/test'
@@ -48,17 +48,16 @@ class TestPubSub:
         # assert dummy_function is run
         app(event, mock_context)
 
-
     def test_call_topic_attributes(self, monkeypatch):
         app = Goblet(function_name="goblet_example", region='us-central-1')
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
-        @app.topic('test', attributes={'t':1})
+        @app.topic('test', attributes={'t': 1})
         def dummy_function(data):
-            assert data == 'test' 
+            assert data == 'test'
 
-        @app.topic('test', attributes={'t':3})
+        @app.topic('test', attributes={'t': 3})
         def dummy_function2(data):
             raise Exception()
 
@@ -71,10 +70,8 @@ class TestPubSub:
         event3 = {'data': base64.b64encode('test3'.encode()), 'attributes': {'t': 3}}
 
         # assert dummy_function is run
-        app(event, mock_context) 
+        app(event, mock_context)
         app(event2, mock_context)
         # assert dummy function2 is run
         with pytest.raises(Exception):
-            app(event3, mock_context) 
-
-
+            app(event3, mock_context)

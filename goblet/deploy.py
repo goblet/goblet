@@ -44,7 +44,6 @@ class Deployer:
         self.zip()
 
     def deploy(self, goblet, skip_function=False, only_function=False, config=None):
-        function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         if not skip_function:
             log.info("zipping function......")
             self.zip()
