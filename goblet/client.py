@@ -11,6 +11,11 @@ def get_default_project():
               'GOOGLE_CLOUD_PROJECT', 'CLOUDSDK_CORE_PROJECT'):
         if k in os.environ:
             return os.environ[k]
+        try:
+            _, project = google.auth.default()
+            return project
+        except Exception:
+            return None
 
     return None
 

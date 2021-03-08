@@ -2,8 +2,11 @@
 
 ![PyPI](https://img.shields.io/pypi/v/goblet-gcp?color=blue&style=plastic)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/goblet-gcp?style=plastic)
+![Tests](https://github.com/anovis/goblet/actions/workflows/main.yml/badge.svg)
 
-Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis that use [cloudfunctions](https://cloud.google.com/functions). It provides:
+Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis backed by [cloudfunctions](https://cloud.google.com/functions). 
+
+It provides:
 
 * A command line tool for creating, deploying, and managing your api
 * A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
@@ -48,6 +51,8 @@ Make sure to have the correct services enabled in your gcp project
 
 `api-gateway`, `cloudfunctions`, `storage`
 
+You will also need to install [gcloud cli](https://cloud.google.com/sdk/docs/install) for authentication
+
 ## QuickStart
 
 In this tutorial, you'll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.7. You can find the latest versions of python on the Python download page.
@@ -77,7 +82,7 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 
 ### Credentials
 
-Before you can deploy an application, be sure you have credentials configured. You should run `gcloud auth login` and sign in to the desired project.
+Before you can deploy an application, be sure you have credentials configured. You should run `gcloud auth application-default login` and sign in to the desired project.
 
 When setting the defaut location note tha api-gateway is only available in `asia-east1`, `europe-west1`, `us-east-1` and `us-central1`.
 
@@ -174,14 +179,18 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
 ## Roadmap
 
- &#9744; Tests \
+ &#9744; Placebo Tests \
  &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
- &#9745; Configuration Options (function names, ...)\
- &#9744; Cleanup gcp buckets\
+ &#9745; Configuration Options (function names, ...) \
+ &#9744; Cleanup gcp buckets \
+ &#9744; Use checksum for updates \
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
  &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
- &#9744; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger
+ &#9745; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
+ &#9744; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
+ &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
+ &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger
 
 ## Want to Contribute
 
