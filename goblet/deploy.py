@@ -44,38 +44,25 @@ class Deployer:
         self.zip()
 
     def deploy(self, goblet, skip_function=False, only_function=False, config=None):
-        function_name = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         if not skip_function:
             log.info("zipping function......")
             self.zip()
             log.info("uploading function zip to gs......")
             url = self._upload_zip()
-            log.info(f"creating google function {function_name}")
             # TODO: CHECK IF VERSION IS DEPLOYED
-            self.create_cloudfunction(url, goblet.entrypoint)
+            self.create_function(url, goblet.entrypoint)
         if not only_function:
-            log.info("deploying api......")
-            goblet.handlers["route"].generate_openapi_spec(function_name)
             goblet.deploy()
 
         return goblet
 
     def destroy(self, goblet):
         goblet.destroy()
-
-        try:
-            client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/' + self.name)
-            client.execute('delete', parent_key="name")
-            log.info("deleting google cloudfunction......")
-        except HttpError as e:
-            if e.resp.status == 404:
-                log.info("cloudfunction already destroyed")
-            else:
-                raise e
+        destroy_cloudfunction(self.name)
 
         return goblet
 
-    def create_cloudfunction(self, url, entrypoint):
+    def create_function(self, url, entrypoint):
         config = GConfig()
         user_configs = config.cloudfunction or {}
         req_body = {
@@ -87,16 +74,7 @@ class Deployer:
             "runtime": "python37",
             **user_configs
         }
-        try:
-            resp = self.function_client.execute('create', parent_key="location", params={'body': req_body})
-            log.info("creating cloudfunction...")
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info("updating cloudfunction...")
-                resp = self.function_client.execute('patch', parent_key="name", parent_schema=req_body["name"], params={'body': req_body})
-            else:
-                raise e
-        self.function_client.wait_for_operation(resp["name"], calls="operations")
+        create_cloudfunction(req_body)
 
     def _upload_zip(self):
         self.zipf.close()
@@ -141,3 +119,29 @@ class Deployer:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
+
+
+def create_cloudfunction(req_body):
+    function_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
+    try:
+        resp = function_client.execute('create', parent_key="location", params={'body': req_body})
+        log.info(f"creating cloudfunction {req_body['name']}")
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info(f"updating cloudfunction {req_body['name']}")
+            resp = function_client.execute('patch', parent_key="name", parent_schema=req_body["name"], params={'body': req_body})
+        else:
+            raise e
+    function_client.wait_for_operation(resp["name"], calls="operations")
+
+
+def destroy_cloudfunction(name):
+    try:
+        client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/' + name)
+        client.execute('delete', parent_key="name")
+        log.info(f"deleting google cloudfunction {name}......")
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"cloudfunction {name} already destroyed")
+        else:
+            raise e

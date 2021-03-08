@@ -6,6 +6,7 @@ import subprocess
 
 from goblet.utils import get_goblet_app
 from goblet.deploy import Deployer
+from goblet.client import get_default_project
 from goblet.__version__ import __version__
 
 logging.basicConfig()
@@ -28,7 +29,7 @@ def version():
 
 
 @main.command()
-@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT', required=True)
+@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
 @click.option('-s', '--stage', 'stage', envvar='STAGE')
 @click.option('--skip-function', 'skip_function', is_flag=True)
@@ -42,7 +43,10 @@ def deploy(project, location, stage, skip_function, only_function):
     Note: Make sure api-gateway, cloudfunctions, and storage are enabled in your project
     """
     try:
-        os.environ["GOOGLE_PROJECT"] = project
+        _project = project or get_default_project()
+        if not _project:
+            click.echo("Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT")
+        os.environ["GOOGLE_PROJECT"] = _project
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
@@ -55,14 +59,17 @@ def deploy(project, location, stage, skip_function, only_function):
 
 @main.command()
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
-@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION')
+@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
 @click.option('-s', '--stage', 'stage', envvar='STAGE')
 def destroy(project, location, stage):
     """
     Deletes all resources in gcp that are defined the current deployment
     """
     try:
-        os.environ["GOOGLE_PROJECT"] = project
+        _project = project or get_default_project()
+        if not _project:
+            click.echo("Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT")
+        os.environ["GOOGLE_PROJECT"] = _project
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage

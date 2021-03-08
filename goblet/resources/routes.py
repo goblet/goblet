@@ -102,6 +102,8 @@ class ApiGateway(Handler):
     def deploy(self):
         if len(self.routes) == 0:
             return
+        log.info("deploying api......")
+        self.generate_openapi_spec(self.name)
         try:
             resp = self.api_client.execute('create', params={'apiId': self.name})
             self.api_client.wait_for_operation(resp["name"])
@@ -153,6 +155,8 @@ class ApiGateway(Handler):
         return
 
     def destroy(self):
+        if len(self.routes) == 0:
+            return
 
         # destroy api gateway
         try:

@@ -1,10 +1,9 @@
-========
+======
 Topics
-========
-
+======
 
 Routing
-^^^^^^^^^^^^^
+^^^^^^^^
 
 The Goblet.route() method is used to construct which routes you want to create for your API. 
 The concept is the same mechanism used by Flask. You decorate a function with @app.route(...), 
@@ -50,33 +49,13 @@ The argument names for the view function must match the name of the captured arg
         return {'first': first, 'second': second}
 
 
-Scheduled Jobs
-^^^^^^^^^^^^^^
-
-To deploy scheduled jobs using a cron schedule use the Goblet.schedule decorator. The cron schedule follows the unix-cron format. 
-More information on the cron format can be found `here`_. Make sure `Cloud Scheduler`_ is enabled in your account if you want to deploy
-scheduled jobs.
-
-Example usage:
-
-.. code:: python 
-
-    @app.schedule('5 * * * *')
-    def scheduled_job():
-        return app.jsonify("success")
-
-
-.. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
-.. _CLOUD SCHEDULER: https://cloud.google.com/scheduler
-
-
 Config
 ^^^^^^
 
 You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be 
 located in the .goblet folder. If one doesn't exist then you should add one. 
 
-To provide custom values for the cloudfunction configuration pass in your desired overrides in the `cloudfunction` key. See below for example.
+To provide custom values for the cloudfunction configuration pass in your desired overrides in the ``cloudfunction`` key. See below for example.
 
 Example fields include 
 
@@ -102,7 +81,7 @@ see the `cloudfunction`_ docs for more details on the fields.
 
 .. _CLOUDFUNCTION: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
 
-By default goblet includes all python files located in the directory. To include other files use the `customFiles` key
+By default goblet includes all python files located in the directory. To include other files use the ``customFiles`` key
 which takes in a list of python `glob`_ formatted strings.
 
 Example config.json: 
@@ -128,11 +107,11 @@ Running your functions locally for testing and debugging is easy to do with gobl
     app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
 
 
-Then run `goblet local test` and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at `localhost:8080`.
+Then run ``goblet local test`` and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at ``localhost:8080``.
 
-To test a scheduled job locally you will need to include two headers in your request. One `X-Goblet-Type:schedule` and 
-`X-Goblet-Name:FUNCTION_NAME` which is the name of your function.
+To test a scheduled job locally you will need to include two headers in your request. One ``X-Goblet-Type:schedule`` and 
+``X-Goblet-Name:FUNCTION_NAME`` which is the name of your function.
 
 .. code:: sh 
 
@@ -149,10 +128,10 @@ API gateway supports several authentication options including, `jwt`_, `firebase
 .. _Okta: https://cloud.google.com/api-gateway/docs/authenticating-users-okta
 .. _google_id: https://cloud.google.com/api-gateway/docs/authenticating-users-googleid
 
-To configure authentication with goblet simply add the desired configuration in the `securityDefinitions` option in config.json. See the 
+To configure authentication with goblet simply add the desired configuration in the ``securityDefinitions`` option in config.json. See the 
 API gateway docs linked above for more details on how to set up the configuration. 
 
-An api using JWT authentication would require the following in `config.json`
+An api using JWT authentication would require the following in ``config.json``
 
 .. code:: json
 
@@ -172,8 +151,9 @@ Request
 ^^^^^^^
  
 The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture. 
-To access other parts of the request including headers, query strings, and post data you can use `app.current_request` to get
-the request object. To see all fields see `Request`_. Note, that this also means you cannot control the routing based on query strings or headers. 
+To access other parts of the request including headers, query strings, and post data you can use ``app.current_request`` to get
+the request object. To see all fields see `request <https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html>`__
+Note, that this also means you cannot control the routing based on query strings or headers. 
 Here’s an example for accessing query string data in a view function:
 
 .. code:: python 
@@ -194,21 +174,18 @@ Here’s an example for accessing post data in a view function:
         json_data = app.current_request.json
         return json_data
 
-To see the full list of available fields see `Request`_
-
-.. _Request: https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html
+To see the full list of available fields see `request <https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html>`__
 
 Response
 ^^^^^^^^
-Goblet http function response should be of the form a flask `Response`_. See more at the `cloudfunctions`_ documentation
+Goblet http function response should be of the form a flask `response <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response>`__. See more at the `cloudfunctions`_ documentation
 
-To see the full list of available fields see `Response`_
+To see the full list of available fields see `response <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response>`__
 
-.. _RESPONSE: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response
 .. _CLOUDFUNCTIONS: https://cloud.google.com/functions/docs/writing/http
 
 
-You can use goblet's `Response` class to make it easier to pass in custom headers and response codes.
+You can use goblet's ``Response`` class to make it easier to pass in custom headers and response codes.
 
 .. code:: python 
 
@@ -219,7 +196,7 @@ You can use goblet's `Response` class to make it easier to pass in custom header
         return Response({"failed": 400}, headers={"Content-Type": "application/json"}, status_code=400)
 
 
-Another option is goblet's `jsonify`, which is a helper to create response objects.
+Another option is goblet's ``jsonify``, which is a helper to create response objects.
 
 .. code:: python 
 
@@ -267,7 +244,7 @@ OpenApi Spec
 ^^^^^^^^^^^^
 
 Goblet generates an `OpenApi`_ spec from your route endpoints in order to create the api gateway. The open api spec is written to the 
-`.goblet` folder and can be used for other tools. To generate just the open api spec you can run the command `goblet openapi FUNCTION_NAME`.
+``.goblet`` folder and can be used for other tools. To generate just the open api spec you can run the command ``goblet openapi FUNCTION_NAME``.
 Note that gcp `gateway`_ only supports openapi spec 2.0. 
 
 
@@ -311,7 +288,7 @@ Multiple Files
 ^^^^^^^^^^^^^^
 
 It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
-them in the main.py folder under your main app. You can do this with simple addition notation or with the `Goblet.combine` function
+them in the main.py folder under your main app. You can do this with simple addition notation or with the ``Goblet.combine`` function
 
 other.py 
 
@@ -346,11 +323,11 @@ combine all routes in main.py
 Stages
 ^^^^^^^
 
-You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using `goblet stage create STAGE` or by 
+You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using ``goblet stage create STAGE`` or by 
 manually adding an entry in config.json under stages. A stage will require a unique function_name which is used to create resources in gcp. Any fields in your stage will 
 override those in the general config file. 
 
-For example the dev deployment will override the environment variable `env` with `dev` and the prod deployment will yield `prod`
+For example the dev deployment will override the environment variable ``env`` with ``dev`` and the prod deployment will yield ``prod``
 
 .. code:: json 
 
@@ -380,5 +357,5 @@ For example the dev deployment will override the environment variable `env` with
         }
     }
 
-You can view your current stages using `goblet stage list`. To deploy or destroy a specific stage use the `--stage` or `-s` flag with the stage. You can also use the 
-environment variable `STAGE`. For example `goblet deploy -s dev`.
+You can view your current stages using ``goblet stage list``. To deploy or destroy a specific stage use the ``--stage`` or ``-s`` flag with the stage. You can also use the 
+environment variable ``STAGE``. For example ``goblet deploy -s dev``.

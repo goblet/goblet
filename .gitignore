@@ -4,6 +4,7 @@ other.py
 .pytest_cache
 .goblet
 _build 
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

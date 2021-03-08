@@ -58,6 +58,18 @@ def response():
 def scheduled_job():
     return jsonify("success")
 
+# pubsub topic
+@app.topic('test')
+def topic(data):
+    app.log.info(data)
+    return 
+
+# pubsub topic with matching message attributes
+@app.topic('test', attributes={'key': 'value'})
+def home2(data):
+    app.log.info(data)
+    return 
+
 # Example middleware
 @app.middleware()
 def add_db(event):
