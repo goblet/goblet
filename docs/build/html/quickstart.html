@@ -1,38 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Quickstart &mdash; goblet 0.3.3 documentation</title>
+  <title>Quickstart &mdash; goblet 0.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Topics" href="topics.html" />
@@ -73,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -94,10 +98,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+</ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,18 +140,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Quickstart</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -182,12 +192,12 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 </div>
 <div class="section" id="credentials">
 <h2>Credentials<a class="headerlink" href="#credentials" title="Permalink to this headline">¶</a></h2>
-<p>Before you can deploy an application, be sure you have credentials configured. You should run <cite>gcloud auth login</cite> and sign in to the desired project.</p>
-<p>When setting the defaut location note tha api-gateway is only available in <cite>asia-east1</cite>, <cite>europe-west1</cite>, and <cite>us-central1</cite>.</p>
+<p>Before you can deploy an application, be sure you have credentials configured. You should run <code class="docutils literal notranslate"><span class="pre">gcloud</span> <span class="pre">auth</span> <span class="pre">application-default</span> <span class="pre">login</span></code> and sign in to the desired project.</p>
+<p>When setting the defaut location note tha api-gateway is only available in <code class="docutils literal notranslate"><span class="pre">asia-east1</span></code>, <code class="docutils literal notranslate"><span class="pre">europe-west1</span></code>, and <code class="docutils literal notranslate"><span class="pre">us-central1</span></code>.</p>
 </div>
 <div class="section" id="creating-your-project">
 <h2>Creating Your Project<a class="headerlink" href="#creating-your-project" title="Permalink to this headline">¶</a></h2>
-<p>create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes <cite>goblet-gcp</cite></p>
+<p>create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes <code class="docutils literal notranslate"><span class="pre">goblet-gcp</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls -la
 drwxr-xr-x   .goblet
 -rw-r--r--   main.py
@@ -205,7 +215,7 @@ drwxr-xr-x   .goblet
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>This app with deploy an api with endpoint <cite>/home</cite>.</p>
+<p>This app with deploy an api with endpoint <code class="docutils literal notranslate"><span class="pre">/home</span></code>.</p>
 </div>
 <div class="section" id="running-locally">
 <h2>Running Locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
@@ -215,8 +225,8 @@ drwxr-xr-x   .goblet
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then run <cite>goblet local test</cite> and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at <cite>localhost:8080</cite> with your routes.</p>
+<p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code> and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code> with your routes.</p>
 </div>
 <div class="section" id="deploying">
 <h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
@@ -236,12 +246,12 @@ INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
 {&quot;hello&quot;: &quot;world&quot;}
 </pre></div>
 </div>
-<p>Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running <cite>golet deploy</cite>.</p>
+<p>Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running <code class="docutils literal notranslate"><span class="pre">golet</span> <span class="pre">deploy</span></code>.</p>
 </div>
 <div class="section" id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
 <p>You’ve now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.</p>
-<p>If you’re done experimenting with Goblet and you’d like to cleanup, you can use the <cite>goblet destroy</cite> command, and Goblet will delete all the resources it created when running the goblet deploy command.</p>
+<p>If you’re done experimenting with Goblet and you’d like to cleanup, you can use the <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">destroy</span></code> command, and Goblet will delete all the resources it created when running the goblet deploy command.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ goblet destroy
 INFO:goblet.deployer:destroying api gateway......
 INFO:goblet.deployer:api configs destroying....
@@ -258,29 +268,29 @@ INFO:goblet.deployer:deleting storage bucket......
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="topics.html" class="btn btn-neutral float-right" title="Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to goblet’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="topics.html" class="btn btn-neutral float-right" title="Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to goblet’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, austen novis
+        &#169; Copyright 2020, austen novis.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -288,7 +298,6 @@ INFO:goblet.deployer:deleting storage bucket......
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

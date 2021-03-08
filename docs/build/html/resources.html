@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Resources &mdash; goblet 0.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Topics" href="topics.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> goblet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#routes">Routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pubsub">PubSub</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">goblet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Resources</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/resources.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="resources">
+<h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="routes">
+<h2>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h2>
+<p>The Goblet.route() method is used to construct which routes you want to create for your API.
+Behind the scenese goblet will configure an Api Config and Api Gateway on gcp.</p>
+<p>The concept of routes are the same mechanism used by Flask. You decorate a function with <code class="docutils literal notranslate"><span class="pre">&#64;app.route(...)</span></code>,
+and whenever a user requests that URL from the api gateway url, the function you’ve decorated is called. For example,
+suppose you deployed this app:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s1">&#39;helloworld&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;index&#39;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/a&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">a</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/b&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">b</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you go to <a class="reference external" href="https://endpoint/">https://endpoint/</a>, the index() function would be called. If you went to <a class="reference external" href="https://endpoint/a">https://endpoint/a</a> and <a class="reference external" href="https://endpoint/b">https://endpoint/b</a>, then the a() and b() function would be called, respectively.</p>
+<p>You can also create a route that captures part of the URL. This captured value will then be passed in as arguments to your view function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you then go to <a class="reference external" href="https://endpoint/users/james">https://endpoint/users/james</a>, then the view function will be called as: users(‘james’).
+The parameters are passed as keyword parameters based on the name as they appear in the URL.
+The argument names for the view function must match the name of the captured argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/a/</span><span class="si">{first}</span><span class="s1">/b/</span><span class="si">{second}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scheduled-jobs">
+<h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this headline">¶</a></h2>
+<p>To deploy scheduled jobs using a cron schedule use the <code class="docutils literal notranslate"><span class="pre">&#64;app.schedule(...)</span></code> decorator. The cron schedule follows the unix-cron format.
+More information on the cron format can be found <a class="reference external" href="https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules">here</a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
+scheduled jobs.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pubsub">
+<h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>
+<p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
+provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pubsub topic</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="c1"># pubsub topic with matching message attributes</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">home2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, austen novis.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

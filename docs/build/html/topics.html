@@ -1,40 +1,44 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.3.3 documentation</title>
+  <title>Topics &mdash; goblet 0.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Resources" href="resources.html" />
     <link rel="prev" title="Quickstart" href="quickstart.html" /> 
 </head>
 
@@ -72,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -85,7 +90,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Topics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
@@ -97,10 +101,14 @@
 </ul>
 </li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+</ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -135,18 +143,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Topics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/topics.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -201,23 +211,11 @@ The argument names for the view function must match the name of the captured arg
 </pre></div>
 </div>
 </div>
-<div class="section" id="scheduled-jobs">
-<h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this headline">¶</a></h2>
-<p>To deploy scheduled jobs using a cron schedule use the Goblet.schedule decorator. The cron schedule follows the unix-cron format.
-More information on the cron format can be found <a class="reference external" href="https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules">here</a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
-scheduled jobs.</p>
-<p>Example usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="config">
 <h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
 <p>You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be
 located in the .goblet folder. If one doesn’t exist then you should add one.</p>
-<p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <cite>cloudfunction</cite> key. See below for example.</p>
+<p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <code class="docutils literal notranslate"><span class="pre">cloudfunction</span></code> key. See below for example.</p>
 <p>Example fields include</p>
 <ul class="simple">
 <li><p>environmentVariables</p></li>
@@ -237,7 +235,7 @@ located in the .goblet folder. If one doesn’t exist then you should add one.</
 </pre></div>
 </div>
 <p>see the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunction</a> docs for more details on the fields.</p>
-<p>By default goblet includes all python files located in the directory. To include other files use the <cite>customFiles</cite> key
+<p>By default goblet includes all python files located in the directory. To include other files use the <code class="docutils literal notranslate"><span class="pre">customFiles</span></code> key
 which takes in a list of python <a class="reference external" href="https://docs.python.org/3/library/glob.html">glob</a> formatted strings.</p>
 <p>Example config.json:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -254,10 +252,10 @@ which takes in a list of python <a class="reference external" href="https://docs
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then run <cite>goblet local test</cite> and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at <cite>localhost:8080</cite>.</p>
-<p>To test a scheduled job locally you will need to include two headers in your request. One <cite>X-Goblet-Type:schedule</cite> and
-<cite>X-Goblet-Name:FUNCTION_NAME</cite> which is the name of your function.</p>
+<p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code> and replace test with whatever variable you decide to use.
+Now you can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
+<p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
+<code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
 </pre></div>
 </div>
@@ -265,9 +263,9 @@ Now you can hit your functions endpoint at <cite>localhost:8080</cite>.</p>
 <div class="section" id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
 <p>API gateway supports several authentication options including, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-jwt">jwt</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-firebase">firebase</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-auth0">auth0</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-okta">Okta</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-googleid">google_id</a>,</p>
-<p>To configure authentication with goblet simply add the desired configuration in the <cite>securityDefinitions</cite> option in config.json. See the
+<p>To configure authentication with goblet simply add the desired configuration in the <code class="docutils literal notranslate"><span class="pre">securityDefinitions</span></code> option in config.json. See the
 API gateway docs linked above for more details on how to set up the configuration.</p>
-<p>An api using JWT authentication would require the following in <cite>config.json</cite></p>
+<p>An api using JWT authentication would require the following in <code class="docutils literal notranslate"><span class="pre">config.json</span></code></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:{</span>
         <span class="nt">&quot;your_custom_auth_id&quot;</span><span class="p">:{</span>
@@ -285,8 +283,9 @@ API gateway docs linked above for more details on how to set up the configuratio
 <div class="section" id="request">
 <h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
 <p>The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture.
-To access other parts of the request including headers, query strings, and post data you can use <cite>app.current_request</cite> to get
-the request object. To see all fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">Request</a>. Note, that this also means you cannot control the routing based on query strings or headers.
+To access other parts of the request including headers, query strings, and post data you can use <code class="docutils literal notranslate"><span class="pre">app.current_request</span></code> to get
+the request object. To see all fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">request</a>
+Note, that this also means you cannot control the routing based on query strings or headers.
 Here’s an example for accessing query string data in a view function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
@@ -303,13 +302,13 @@ Here’s an example for accessing query string data in a view function:</p>
     <span class="k">return</span> <span class="n">json_data</span>
 </pre></div>
 </div>
-<p>To see the full list of available fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">Request</a></p>
+<p>To see the full list of available fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">request</a></p>
 </div>
 <div class="section" id="response">
 <h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
-<p>Goblet http function response should be of the form a flask <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">Response</a>. See more at the <a class="reference external" href="https://cloud.google.com/functions/docs/writing/http">cloudfunctions</a> documentation</p>
-<p>To see the full list of available fields see <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">Response</a></p>
-<p>You can use goblet’s <cite>Response</cite> class to make it easier to pass in custom headers and response codes.</p>
+<p>Goblet http function response should be of the form a flask <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">response</a>. See more at the <a class="reference external" href="https://cloud.google.com/functions/docs/writing/http">cloudfunctions</a> documentation</p>
+<p>To see the full list of available fields see <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">response</a></p>
+<p>You can use goblet’s <code class="docutils literal notranslate"><span class="pre">Response</span></code> class to make it easier to pass in custom headers and response codes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Response</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/response&#39;</span><span class="p">)</span>
@@ -317,7 +316,7 @@ Here’s an example for accessing query string data in a view function:</p>
     <span class="k">return</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">400</span><span class="p">},</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Another option is goblet’s <cite>jsonify</cite>, which is a helper to create response objects.</p>
+<p>Another option is goblet’s <code class="docutils literal notranslate"><span class="pre">jsonify</span></code>, which is a helper to create response objects.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">jsonify</span>
 
 <span class="n">jsonify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -351,7 +350,7 @@ multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and 
 <div class="section" id="openapi-spec">
 <h2>OpenApi Spec<a class="headerlink" href="#openapi-spec" title="Permalink to this headline">¶</a></h2>
 <p>Goblet generates an <a class="reference external" href="https://swagger.io/specification/">OpenApi</a> spec from your route endpoints in order to create the api gateway. The open api spec is written to the
-<cite>.goblet</cite> folder and can be used for other tools. To generate just the open api spec you can run the command <cite>goblet openapi FUNCTION_NAME</cite>.
+<code class="docutils literal notranslate"><span class="pre">.goblet</span></code> folder and can be used for other tools. To generate just the open api spec you can run the command <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">openapi</span> <span class="pre">FUNCTION_NAME</span></code>.
 Note that gcp <a class="reference external" href="https://cloud.google.com/api-gateway/docs/openapi-overview">gateway</a> only supports openapi spec 2.0.</p>
 <p>By default the param types will be created in the spec as strings and a base 200 response.
 You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.</p>
@@ -362,7 +361,7 @@ You can specify custom param and response types using python typing and pass in 
 <span class="c1"># Typed Path Param</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home/</span><span class="si">{name}</span><span class="s1">/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">namer</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">: </span><span class="si">{id}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
     <span class="n">lat</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
@@ -387,7 +386,7 @@ You can specify custom param and response types using python typing and pass in 
 <div class="section" id="multiple-files">
 <h2>Multiple Files<a class="headerlink" href="#multiple-files" title="Permalink to this headline">¶</a></h2>
 <p>It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
-them in the main.py folder under your main app. You can do this with simple addition notation or with the <cite>Goblet.combine</cite> function</p>
+them in the main.py folder under your main app. You can do this with simple addition notation or with the <code class="docutils literal notranslate"><span class="pre">Goblet.combine</span></code> function</p>
 <p>other.py</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
 
@@ -416,10 +415,10 @@ them in the main.py folder under your main app. You can do this with simple addi
 </div>
 <div class="section" id="stages">
 <h2>Stages<a class="headerlink" href="#stages" title="Permalink to this headline">¶</a></h2>
-<p>You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using <cite>goblet stage create STAGE</cite> or by
+<p>You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">stage</span> <span class="pre">create</span> <span class="pre">STAGE</span></code> or by
 manually adding an entry in config.json under stages. A stage will require a unique function_name which is used to create resources in gcp. Any fields in your stage will
 override those in the general config file.</p>
-<p>For example the dev deployment will override the environment variable <cite>env</cite> with <cite>dev</cite> and the prod deployment will yield <cite>prod</cite></p>
+<p>For example the dev deployment will override the environment variable <code class="docutils literal notranslate"><span class="pre">env</span></code> with <code class="docutils literal notranslate"><span class="pre">dev</span></code> and the prod deployment will yield <code class="docutils literal notranslate"><span class="pre">prod</span></code></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -447,8 +446,8 @@ override those in the general config file.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>You can view your current stages using <cite>goblet stage list</cite>. To deploy or destroy a specific stage use the <cite>–stage</cite> or <cite>-s</cite> flag with the stage. You can also use the
-environment variable <cite>STAGE</cite>. For example <cite>goblet deploy -s dev</cite>.</p>
+<p>You can view your current stages using <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">stage</span> <span class="pre">list</span></code>. To deploy or destroy a specific stage use the <code class="docutils literal notranslate"><span class="pre">--stage</span></code> or <code class="docutils literal notranslate"><span class="pre">-s</span></code> flag with the stage. You can also use the
+environment variable <code class="docutils literal notranslate"><span class="pre">STAGE</span></code>. For example <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">deploy</span> <span class="pre">-s</span> <span class="pre">dev</span></code>.</p>
 </div>
 </div>
 
@@ -457,27 +456,29 @@ environment variable <cite>STAGE</cite>. For example <cite>goblet deploy -s dev<
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="resources.html" class="btn btn-neutral float-right" title="Resources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, austen novis
+        &#169; Copyright 2020, austen novis.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -485,7 +486,6 @@ environment variable <cite>STAGE</cite>. For example <cite>goblet deploy -s dev<
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
