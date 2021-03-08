@@ -181,8 +181,9 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
  &#9744; Placebo Tests \
  &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
- &#9745; Configuration Options (function names, ...)\
- &#9744; Cleanup gcp buckets\
+ &#9745; Configuration Options (function names, ...) \
+ &#9744; Cleanup gcp buckets \
+ &#9744; Use checksum for updates \
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
  &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
