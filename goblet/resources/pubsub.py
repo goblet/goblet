@@ -54,14 +54,14 @@ class PubSub(Handler):
         self.topics.update(other.topics)
         return self
 
-    def deploy(self):
+    def deploy(self, sourceUrl=None, entrypoint=None):
         if not self.topics:
             return
 
-        cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-        resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
-        if not resp:
-            raise ValueError(f"Function {self.cloudfunction} not found")
+        # cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
+        # resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
+        # if not resp:
+        #     raise ValueError(f"Function {self.cloudfunction} not found")
 
         log.info("deploying topic functions......")
         config = GConfig()
@@ -70,8 +70,8 @@ class PubSub(Handler):
             req_body = {
                 "name": f"{self.cloudfunction}-topic-{topic}",
                 "description": config.description or "created by goblet",
-                "entryPoint": resp["entryPoint"],
-                "sourceUploadUrl": resp["sourceUploadUrl"],
+                "entryPoint": entrypoint,
+                "sourceUploadUrl": sourceUrl,
                 "eventTrigger": {
                     "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
                     "resource": f"projects/{get_default_project()}/topics/{topic}"

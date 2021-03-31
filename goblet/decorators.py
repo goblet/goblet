@@ -114,15 +114,21 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
-    def deploy(self):
+    def deploy(self, sourceUrl):
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy()
+            v.deploy(sourceUrl, self.entrypoint)
 
     def destroy(self):
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
             v.destroy()
+
+    def is_http(self):
+        if len(self.handlers["route"].routes) > 0 or \
+          len(self.handlers["schedule"].jobs) > 0:
+          return True
+        return False
 
     def register_middleware(self, func, event_type='all'):
         middleware_list = self.middleware_handlers.get(event_type, [])

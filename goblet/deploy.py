@@ -44,15 +44,17 @@ class Deployer:
         self.zip()
 
     def deploy(self, goblet, skip_function=False, only_function=False, config=None):
+        url = None
         if not skip_function:
             log.info("zipping function......")
             self.zip()
             log.info("uploading function zip to gs......")
             url = self._upload_zip()
             # TODO: CHECK IF VERSION IS DEPLOYED
-            self.create_function(url, goblet.entrypoint)
+            if goblet.is_http():
+                self.create_function(url, goblet.entrypoint)
         if not only_function:
-            goblet.deploy()
+            goblet.deploy(url)
 
         return goblet
 
