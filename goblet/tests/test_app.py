@@ -77,9 +77,9 @@ class TestDecoraters:
         app1 = Goblet("test1")
         app2 = Goblet("test2")
         app3 = Goblet("test3")
-        
+
         @app1.schedule('1 * * * *')
-        def dummy_function2(self):
+        def dummy_function1(self):
             return True
 
         @app2.route('/home')
@@ -87,10 +87,9 @@ class TestDecoraters:
             return True
 
         @app3.topic('test')
-        def dummy_function2(self):
+        def dummy_function3(self):
             return True
 
         assert app1.is_http()
         assert app2.is_http()
         assert not app3.is_http()
-        

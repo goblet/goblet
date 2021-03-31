@@ -125,9 +125,8 @@ class Register_Handlers(DecoratorAPI):
             v.destroy()
 
     def is_http(self):
-        if len(self.handlers["route"].routes) > 0 or \
-          len(self.handlers["schedule"].jobs) > 0:
-          return True
+        if len(self.handlers["route"].routes) > 0 or len(self.handlers["schedule"].jobs) > 0:
+            return True
         return False
 
     def register_middleware(self, func, event_type='all'):

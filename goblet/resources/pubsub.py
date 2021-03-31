@@ -5,7 +5,7 @@ from goblet.config import GConfig
 import logging
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import get_default_project, get_default_location
 
 
 log = logging.getLogger('goblet.deployer')
@@ -57,11 +57,6 @@ class PubSub(Handler):
     def deploy(self, sourceUrl=None, entrypoint=None):
         if not self.topics:
             return
-
-        # cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-        # resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
-        # if not resp:
-        #     raise ValueError(f"Function {self.cloudfunction} not found")
 
         log.info("deploying topic functions......")
         config = GConfig()
