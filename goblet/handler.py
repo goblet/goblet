@@ -1,6 +1,6 @@
 class Handler:
 
-    def deploy(self):
+    def deploy(self, sourceUrl=None, entrypoint=None):
         raise NotImplementedError("deploy")
 
     def destroy(self):

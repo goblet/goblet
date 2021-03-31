@@ -71,3 +71,25 @@ class TestDecoraters:
 
         assert list(app1.handlers['route'].routes.keys()) == ['/home', '/home2']
         assert list(app1.handlers['schedule'].jobs.keys()) == ['dummy_function', 'dummy_function2']
+
+    def test_is_http(self):
+
+        app1 = Goblet("test1")
+        app2 = Goblet("test2")
+        app3 = Goblet("test3")
+
+        @app1.schedule('1 * * * *')
+        def dummy_function1(self):
+            return True
+
+        @app2.route('/home')
+        def dummy_function2(self):
+            return True
+
+        @app3.topic('test')
+        def dummy_function3(self):
+            return True
+
+        assert app1.is_http()
+        assert app2.is_http()
+        assert not app3.is_http()
