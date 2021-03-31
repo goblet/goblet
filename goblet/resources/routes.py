@@ -99,7 +99,7 @@ class ApiGateway(Handler):
     def _patch_gateway_client(self):
         return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
 
-    def deploy(self):
+    def deploy(self, sourceUrl=None, entrypoint=None):
         if len(self.routes) == 0:
             return
         log.info("deploying api......")

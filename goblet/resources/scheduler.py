@@ -65,7 +65,7 @@ class Scheduler(Handler):
         self.jobs.update(other.jobs)
         return self
 
-    def deploy(self):
+    def deploy(self, sourceUrl=None, entrypoint=None):
         if not self.jobs:
             return
 
