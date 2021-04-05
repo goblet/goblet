@@ -287,8 +287,11 @@ class OpenApiSpec:
             method_spec["parameters"] = params
         if entry.request_body:
             if isinstance(entry.request_body, dict):
-                method_spec["requestBody"] = entry.request_body
-
+                method_spec["params"] = {
+                    "in": "body",
+                    "name": "requestBody",
+                    "schema": entry.request_body["schema"]
+                }
         # TODO: add query strings
 
         return_type = type_hints.get('return')

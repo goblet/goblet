@@ -114,8 +114,8 @@ class TestOpenApiSpec:
         assert response['400'] == {'description': '400'}
 
     def test_request_body(self):
-        route = RouteEntry(dummy, "route", "/home", "GET", request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}})
+        route = RouteEntry(dummy, "route", "/home", "GET", request_body={'schema': {"type": "array", "items": {'type': 'string'}}})
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        request_body = spec.spec['paths']['/home']['get']['requestBody']
-        assert request_body == {'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}}
+        params = spec.spec['paths']['/home']['get']['params']
+        assert params == {'in': 'body', 'name': 'requestBody', 'schema': {'type': 'array', 'items': {'type': 'string'}}}
