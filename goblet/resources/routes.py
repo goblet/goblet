@@ -283,15 +283,24 @@ class OpenApiSpec:
                 **param_type
             }
             params.append(param_entry)
-        if params:
-            method_spec["parameters"] = params
+
         if entry.request_body:
             if isinstance(entry.request_body, dict):
-                method_spec["params"] = {
+                params.append({
                     "in": "body",
                     "name": "requestBody",
                     "schema": entry.request_body["schema"]
-                }
+                })
+
+        if entry.form_data:
+            params.append({
+                "in": "formData",
+                "name": "file",
+                "type": "file"
+            })
+        if params:
+            method_spec["parameters"] = params
+
         # TODO: add query strings
 
         return_type = type_hints.get('return')
@@ -358,6 +367,7 @@ class RouteEntry:
         self.method = method
         self.api_key_required = api_key_required
         self.request_body = kwargs.get("request_body")
+        self.form_data = kwargs.get("form_data")
         self.responses = kwargs.get("responses")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']
