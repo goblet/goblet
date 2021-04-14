@@ -78,7 +78,7 @@ class Register_Handlers(DecoratorAPI):
         if event_type == "pubsub":
             return self.handlers['pubsub'](request, context)
         if event_type == "http":
-            self.handlers["route"](request)
+            return self.handlers["route"](request)
 
         raise ValueError(f"{event_type} not a valid event type")
 
