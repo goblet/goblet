@@ -1,4 +1,5 @@
 from goblet import Goblet
+from goblet.resources.scheduler import Scheduler
 
 
 class TestScheduler:
@@ -29,3 +30,14 @@ class TestScheduler:
         }
         assert(scheduler.jobs['dummy_function']['job_json'] == scheule_json)
         assert(scheduler.jobs['dummy_function']['func'] == dummy_function)
+
+    def test_deploy_schedule(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "PROJECT")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+
+        scheduler = Scheduler('test')
+        scheduler.register_job('test-job', None, kwargs={'schedule':'* * * * *', 'kwargs': {}})
+        scheduler.deploy()
+        

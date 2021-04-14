@@ -1,10 +1,10 @@
 import os
 import time
+import google.auth
+import google_auth_httplib2
 
 from googleapiclient.discovery import build
-
-import google.auth
-
+from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
 
 def get_default_project():
     for k in ('GOOGLE_PROJECT', 'GCLOUD_PROJECT',
@@ -45,9 +45,18 @@ class Client:
         self.resource = resource
         self.version = version
         self.parent_schema = parent_schema
-        self.credentials = credentials or get_credentials()
+        
+        self.http = self.http_for_tests()
+        self._credentials = credentials or get_credentials()
+        if self.http:
+            self.credentials = None
+            self.http = google_auth_httplib2.AuthorizedHttp(
+                self._credentials, http=self.http)        
+        else:
+            self.credentials = self._credentials
 
-        self.client = build(resource, version, credentials=self.credentials, cache_discovery=False)
+
+        self.client = build(resource, version, credentials=self.credentials, cache_discovery=False, http=self.http)
 
         self.parent = None
         if self.parent_schema:
@@ -55,6 +64,16 @@ class Client:
 
     def __call__(self):
         return self.client
+
+    def http_for_tests(self):
+        discovery_dir = os.path.join(DATA_DIR, "discovery")
+        test_dir = os.path.join(DATA_DIR, os.environ.get('GOBLET_TEST_NAME', ''))
+
+        if os.environ.get('GOBLET_HTTP_TEST') == "RECORD":
+            return HttpRecorder(test_dir,discovery_dir)
+        if os.environ.get('GOBLET_HTTP_TEST') == "REPLAY":
+            return HttpReplay(test_dir,discovery_dir)
+        return None
 
     def wait_for_operation(self, operation, timeout=600, calls="projects.locations.operations"):
         done = False
