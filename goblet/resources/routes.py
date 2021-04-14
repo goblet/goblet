@@ -24,7 +24,7 @@ class ApiGateway(Handler):
         self.name = self.format_name(app_name)
         self.routes = routes or {}
         self._api_client = None
-        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}"
+        self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
 
     @property
     def api_client(self):
