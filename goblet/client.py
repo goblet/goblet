@@ -2,9 +2,10 @@ import os
 import time
 import google.auth
 import google_auth_httplib2
-
 from googleapiclient.discovery import build
 from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
+
+from google.oauth2 import service_account
 
 def get_default_project():
     for k in ('GOOGLE_PROJECT', 'GCLOUD_PROJECT',
@@ -36,7 +37,6 @@ def get_credentials():
     credentials, project = google.auth.default()
     return credentials
 
-
 class Client:
     def __init__(self, resource, version='v1', credentials=None, calls=None, parent_schema=None):
         self.project_id = get_default_project()
@@ -50,8 +50,12 @@ class Client:
         self._credentials = credentials or get_credentials()
         if self.http:
             self.credentials = None
+            # scopes = ['https://www.googleapis.com/auth/cloud-platform']
+            # self._credentials = service_account.Credentials.from_service_account_file(
+            #         "/Users/austennovis/repos/goblet/premise-governance-rd-3e82cdf52d62.json", scopes=scopes)
             self.http = google_auth_httplib2.AuthorizedHttp(
-                self._credentials, http=self.http)        
+                self._credentials, http=self.http)   
+            
         else:
             self.credentials = self._credentials
 
