@@ -10,7 +10,7 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project
+from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from googleapiclient.errors import HttpError
@@ -24,7 +24,7 @@ class ApiGateway(Handler):
         self.name = self.format_name(app_name)
         self.routes = routes or {}
         self._api_client = None
-        # self.cloudfunction = None
+        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}"
 
     @property
     def api_client(self):
@@ -103,7 +103,7 @@ class ApiGateway(Handler):
         if len(self.routes) == 0:
             return
         log.info("deploying api......")
-        self.generate_openapi_spec(self.name)
+        self.generate_openapi_spec(self.cloudfunction)
         try:
             resp = self.api_client.execute('create', params={'apiId': self.name})
             self.api_client.wait_for_operation(resp["name"])
