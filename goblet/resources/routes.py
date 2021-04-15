@@ -10,7 +10,7 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project
+from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from googleapiclient.errors import HttpError
@@ -24,7 +24,7 @@ class ApiGateway(Handler):
         self.name = self.format_name(app_name)
         self.routes = routes or {}
         self._api_client = None
-        # self.cloudfunction = None
+        self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
 
     @property
     def api_client(self):
@@ -103,7 +103,7 @@ class ApiGateway(Handler):
         if len(self.routes) == 0:
             return
         log.info("deploying api......")
-        self.generate_openapi_spec(self.name)
+        self.generate_openapi_spec(self.cloudfunction)
         try:
             resp = self.api_client.execute('create', params={'apiId': self.name})
             self.api_client.wait_for_operation(resp["name"])
@@ -283,11 +283,23 @@ class OpenApiSpec:
                 **param_type
             }
             params.append(param_entry)
-        if params:
-            method_spec["parameters"] = params
+
         if entry.request_body:
             if isinstance(entry.request_body, dict):
-                method_spec["requestBody"] = entry.request_body
+                params.append({
+                    "in": "body",
+                    "name": "requestBody",
+                    "schema": entry.request_body["schema"]
+                })
+
+        if entry.form_data:
+            params.append({
+                "in": "formData",
+                "name": "file",
+                "type": "file"
+            })
+        if params:
+            method_spec["parameters"] = params
 
         # TODO: add query strings
 
@@ -355,6 +367,7 @@ class RouteEntry:
         self.method = method
         self.api_key_required = api_key_required
         self.request_body = kwargs.get("request_body")
+        self.form_data = kwargs.get("form_data")
         self.responses = kwargs.get("responses")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']

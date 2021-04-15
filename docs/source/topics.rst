@@ -274,7 +274,8 @@ If you use a custom schema type you should create a schema class that inherits f
         return [point]
 
     # custom responses and request_types
-    @app.route('/custom', request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}},
+    # Request body must be schema defition valid with openapi spec 2
+    @app.route('/custom', request_body={'schema': {"type": "array", "items": {'type': 'string'}}}),
     responses={'400': {'description': '400'}})
     def custom():
         request = app.current_request
