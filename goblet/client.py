@@ -40,6 +40,8 @@ def get_credentials():
         scopes = ['https://www.googleapis.com/auth/cloud-platform']
         return service_account.Credentials.from_service_account_file(
             os.environ["GOBLET_TEST_SERVICE_ACCOUNT"], scopes=scopes)
+    if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
+        return google.auth.credentials.AnonymousCredentials()
     return credentials
 
 
