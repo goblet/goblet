@@ -1,4 +1,8 @@
 from goblet import Goblet
+from goblet.deploy import Deployer
+from goblet.resources.pubsub import PubSub
+from goblet.test_utils import get_responses
+
 from unittest.mock import Mock
 import base64
 import pytest
@@ -75,3 +79,40 @@ class TestPubSub:
         # assert dummy function2 is run
         with pytest.raises(Exception):
             app(event3, mock_context)
+
+    def test_deploy_pubsub(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        
+        app = Goblet(function_name="goblet_topic")
+        setattr(app, "entrypoint", 'app')
+
+        @app.topic('test-topic')
+        def dummy_function(data):
+            assert data == 'test'
+
+        Deployer().deploy(app)
+
+        responses = get_responses('pubsub-deploy')
+
+        assert(len(responses) == 4)
+        assert(responses[3]['body']['metadata']['target'].endswith('goblet_topic-topic-test-topic'))
+        assert(responses[3]['body']['metadata']['request']['eventTrigger']['resource'] == 'projects/goblet/topics/test-topic')
+        assert(responses[3]['body']['metadata']['request']['eventTrigger']['eventType'] == 'providers/cloud.pubsub/eventTypes/topic.publish')
+
+    def test_destroy_pubsub(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        
+        pubsub = PubSub('goblet_topic', topics={'test-topic':{}})
+        pubsub.destroy()
+
+        responses = get_responses('pubsub-destroy')
+
+        assert(len(responses) == 1)
+        assert(responses[0]['body']['metadata']['type'] == 'DELETE_FUNCTION')
+        assert(responses[0]['body']['metadata']['target'].endswith('goblet_topic-topic-test-topic'))

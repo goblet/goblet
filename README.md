@@ -179,7 +179,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
 ## Roadmap
 
- &#9744; Placebo Tests \
+ &#9745; Integration Tests \
  &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
  &#9745; Configuration Options (function names, ...) \
  &#9744; Cleanup gcp buckets \

@@ -1,18 +1,21 @@
 import bz2
 import json
-import os
 import re
+
+from os import listdir
+from os.path import join, exists, dirname
 
 from httplib2 import Http, Response
 from six.moves.urllib.parse import urlparse
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'tests', 'data', 'http')
+DATA_DIR = join(dirname(__file__), 'tests', 'data', 'http')
 PROJECT_ID = "goblet"
 
 
 def sanitize_project_name(dirty_str):
     sanitized = 'projects/{}/'.format(PROJECT_ID)
     return re.sub(r'projects/([0-9a-zA-Z_-]+)/', sanitized, dirty_str)
+
 
 class HttpFiles(Http):
 
@@ -30,9 +33,7 @@ class HttpFiles(Http):
 
         is_discovery = False
         # We don't record authentication
-        if (base_name.startswith('post-oauth2-v4') or
-                base_name.startswith('post-o-oauth2') or
-                base_name.startswith('post-token')):
+        if (base_name.startswith('post-oauth2-v4') or base_name.startswith('post-o-oauth2') or base_name.startswith('post-token')):
             return
         # Use a common directory for discovery metadata across tests.
         if base_name.startswith('get-discovery'):
@@ -42,10 +43,10 @@ class HttpFiles(Http):
         next_file = None
         while next_file is None:
             index = self._index.setdefault(base_name, 1)
-            fn = os.path.join(data_dir, '{}_{}.json'.format(base_name, index))
+            fn = join(data_dir, '{}_{}.json'.format(base_name, index))
             if is_discovery:
                 fn += '.bz2'
-            if os.path.exists(fn):
+            if exists(fn):
                 # if we already have discovery metadata, don't re-record it.
                 if record and is_discovery:
                     return None
@@ -122,3 +123,12 @@ class HttpReplay(HttpFiles):
             if fpath.endswith('bz2'):
                 self._cache[fpath] = response, serialized
             return response, serialized
+
+
+def get_responses(folder):
+    responses = []
+    for response in listdir(f"{DATA_DIR}/{folder}"):
+        with open(f"{DATA_DIR}/{folder}/{response}") as f:
+            responses.append(json.loads(f.read()))
+
+    return responses

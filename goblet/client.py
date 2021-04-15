@@ -7,6 +7,7 @@ from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
 
 from google.oauth2 import service_account
 
+
 def get_default_project():
     for k in ('GOOGLE_PROJECT', 'GCLOUD_PROJECT',
               'GOOGLE_CLOUD_PROJECT', 'CLOUDSDK_CORE_PROJECT'):
@@ -35,7 +36,12 @@ def get_credentials():
     """get user credentials and save them for future use
     """
     credentials, project = google.auth.default()
+    if os.environ.get("GOBLET_HTTP_TEST") == "RECORD":
+        scopes = ['https://www.googleapis.com/auth/cloud-platform']
+        return service_account.Credentials.from_service_account_file(
+            os.environ["GOBLET_TEST_SERVICE_ACCOUNT"], scopes=scopes)
     return credentials
+
 
 class Client:
     def __init__(self, resource, version='v1', credentials=None, calls=None, parent_schema=None):
@@ -45,20 +51,15 @@ class Client:
         self.resource = resource
         self.version = version
         self.parent_schema = parent_schema
-        
+
         self.http = self.http_for_tests()
         self._credentials = credentials or get_credentials()
         if self.http:
             self.credentials = None
-            # scopes = ['https://www.googleapis.com/auth/cloud-platform']
-            # self._credentials = service_account.Credentials.from_service_account_file(
-            #         "/Users/austennovis/repos/goblet/premise-governance-rd-3e82cdf52d62.json", scopes=scopes)
             self.http = google_auth_httplib2.AuthorizedHttp(
-                self._credentials, http=self.http)   
-            
+                self._credentials, http=self.http)
         else:
             self.credentials = self._credentials
-
 
         self.client = build(resource, version, credentials=self.credentials, cache_discovery=False, http=self.http)
 
@@ -74,9 +75,9 @@ class Client:
         test_dir = os.path.join(DATA_DIR, os.environ.get('GOBLET_TEST_NAME', ''))
 
         if os.environ.get('GOBLET_HTTP_TEST') == "RECORD":
-            return HttpRecorder(test_dir,discovery_dir)
+            return HttpRecorder(test_dir, discovery_dir)
         if os.environ.get('GOBLET_HTTP_TEST') == "REPLAY":
-            return HttpReplay(test_dir,discovery_dir)
+            return HttpReplay(test_dir, discovery_dir)
         return None
 
     def wait_for_operation(self, operation, timeout=600, calls="projects.locations.operations"):

@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "content-type": "application/json; charset=UTF-8",
+    "vary": "Origin, X-Origin, Referer",
+    "date": "Wed, 14 Apr 2021 20:09:59 GMT",
+    "server": "ESF",
+    "cache-control": "private",
+    "x-xss-protection": "0",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "transfer-encoding": "chunked",
+    "status": "200",
+    "content-length": "759",
+    "-content-encoding": "gzip"
+  },
+  "body": {
+    "name": "projects/goblet/locations/us-central1/jobs/goblet_example-test-job",
+    "description": "Created by goblet",
+    "httpTarget": {
+      "uri": "https://us-central1-goblet.cloudfunctions.net/goblet_example",
+      "httpMethod": "GET",
+      "headers": {
+        "X-Goblet-Name": "test-job",
+        "X-Goblet-Type": "schedule",
+        "User-Agent": "Google-Cloud-Scheduler"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+        "audience": "https://us-central1-goblet.cloudfunctions.net/goblet_example"
+      }
+    },
+    "userUpdateTime": "2021-04-14T20:09:59Z",
+    "state": "ENABLED",
+    "schedule": "* * * * *",
+    "timeZone": "UTC",
+    "attemptDeadline": "180s"
+  }
+}
