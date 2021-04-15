@@ -35,13 +35,14 @@ def get_default_location():
 def get_credentials():
     """get user credentials and save them for future use
     """
-    credentials, project = google.auth.default()
     if os.environ.get("GOBLET_HTTP_TEST") == "RECORD":
         scopes = ['https://www.googleapis.com/auth/cloud-platform']
         return service_account.Credentials.from_service_account_file(
             os.environ["GOBLET_TEST_SERVICE_ACCOUNT"], scopes=scopes)
     if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
         return google.auth.credentials.AnonymousCredentials()
+
+    credentials, project = google.auth.default()
     return credentials
 
 
