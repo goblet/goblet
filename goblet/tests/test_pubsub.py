@@ -85,7 +85,7 @@ class TestPubSub:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-        
+
         app = Goblet(function_name="goblet_topic")
         setattr(app, "entrypoint", 'app')
 
@@ -107,8 +107,8 @@ class TestPubSub:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-        
-        pubsub = PubSub('goblet_topic', topics={'test-topic':{}})
+
+        pubsub = PubSub('goblet_topic', topics={'test-topic': {}})
         pubsub.destroy()
 
         responses = get_responses('pubsub-destroy')
