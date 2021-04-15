@@ -1,3 +1,4 @@
+from unittest.mock import Mock
 from goblet import Goblet
 from goblet.resources.routes import ApiGateway
 
@@ -66,6 +67,36 @@ class TestRoutes:
         assert(len(gateway.routes) == 2)
         assert(gateway.routes['/home']['GET'])
         assert(gateway.routes['/home2']['GET'])
+
+    def test_call_route(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        app = Goblet(function_name="goblet_example")
+        mock = Mock()
+        mock_param = Mock()
+
+        @app.route('/test')
+        def mock_function():
+            mock()
+            return True
+
+        @app.route('/test/{param}', methods=['POST'])
+        def mock_function2(param):
+            mock_param(param)
+            return True
+
+        mock_event1 = Mock()
+        mock_event1.path = '/test'
+        mock_event1.method = 'GET'
+        app(mock_event1, None)
+
+        mock_event2 = Mock()
+        mock_event2.path = '/test/param'
+        mock_event2.method = 'POST'
+        app(mock_event2, None)
+
+        assert(mock.call_count == 1)
+        mock_param.assert_called_once_with('param')
 
 
 class TestApiGateway:

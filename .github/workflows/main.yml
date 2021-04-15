@@ -36,11 +36,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest
+          pip install coverage
           pip install -r requirements.txt
       - name: Run pytest
         run: |
           export PYTHONPATH=$(pwd)
-          pytest goblet/tests -v
+          coverage run -m pytest goblet/tests;
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v1
 
   Test_python38:
     runs-on: ubuntu-latest
