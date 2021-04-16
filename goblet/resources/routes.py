@@ -179,7 +179,7 @@ class ApiGateway(Handler):
             log.info("api configs destroying....")
             if api_client:
                 api_client.wait_for_operation(resp["name"])
-                sleep(2)
+                sleep(10)
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("api configs already destroyed")
