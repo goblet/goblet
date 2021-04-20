@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.4.1 documentation</title>
+  <title>Topics &mdash; goblet 0.4.4 documentation</title>
   
 
   
@@ -374,7 +374,8 @@ You can specify custom param and response types using python typing and pass in 
     <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
 
 <span class="c1"># custom responses and request_types</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;application/json&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}}}},</span>
+<span class="c1"># Request body must be schema defition valid with openapi spec 2</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}}}),</span>
 <span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;400&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;400&#39;</span><span class="p">}})</span>
 <span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>

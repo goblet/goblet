@@ -2,6 +2,20 @@
 Resources
 =========
 
+Http
+^^^^
+You can have one http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
+only deploy a cloudfunction. The function takes in a flask request object
+
+.. code:: python 
+
+    from goblet import Goblet
+
+    app = Goblet(function_name='simple_http')
+
+    @app.http()
+    def http_entrypoint(request):
+        return request.json
 
 Routes
 ^^^^^^

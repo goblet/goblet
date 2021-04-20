@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.4.1 documentation</title>
+  <title>Resources &mdash; goblet 0.4.4 documentation</title>
   
 
   
@@ -91,6 +91,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#http">Http</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#routes">Routes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pubsub">PubSub</a></li>
@@ -165,6 +166,20 @@
             
   <div class="section" id="resources">
 <h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="http">
+<h2>Http<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
+<p>You can have one http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
+only deploy a cloudfunction. The function takes in a flask request object</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s1">&#39;simple_http&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">http_entrypoint</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="routes">
 <h2>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h2>
 <p>The Goblet.route() method is used to construct which routes you want to create for your API.
