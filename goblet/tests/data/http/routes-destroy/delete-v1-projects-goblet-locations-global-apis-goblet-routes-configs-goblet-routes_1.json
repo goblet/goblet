@@ -1,0 +1,29 @@
+{
+  "headers": {
+    "content-type": "application/json; charset=UTF-8",
+    "vary": "Origin, X-Origin, Referer",
+    "date": "Tue, 20 Apr 2021 18:12:57 GMT",
+    "server": "ESF",
+    "cache-control": "private",
+    "x-xss-protection": "0",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "transfer-encoding": "chunked",
+    "status": "200",
+    "content-length": "489",
+    "-content-encoding": "gzip"
+  },
+  "body": {
+    "name": "projects/goblet/locations/global/operations/operation-1618942377069-5c06b654c0cb4-68003920-34f27ad0",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.apigateway.v1.OperationMetadata",
+      "createTime": "2021-04-20T18:12:57.246131846Z",
+      "target": "projects/goblet/locations/global/apis/goblet-routes/configs/goblet-routes",
+      "verb": "delete",
+      "requestedCancellation": false,
+      "apiVersion": "v1"
+    },
+    "done": false
+  }
+}
