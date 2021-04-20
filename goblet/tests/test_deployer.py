@@ -1,6 +1,7 @@
 from goblet.deploy import Deployer
+from goblet.resources.http import HTTP
 from goblet import Goblet
-from goblet.test_utils import get_responses
+from goblet.test_utils import get_responses, dummy_function
 
 
 class TestDeployer:
@@ -14,8 +15,7 @@ class TestDeployer:
         app = Goblet(function_name="goblet_example", region='us-central-1')
         setattr(app, "entrypoint", 'app')
 
-        # TODO: switch to http
-        app.handlers['schedule'].register_job('test-job', None, kwargs={'schedule': '* * * * *', 'kwargs': {}})
+        app.handlers['http'] = HTTP(dummy_function)
 
         Deployer().deploy(app, only_function=True)
 

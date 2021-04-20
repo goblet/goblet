@@ -17,6 +17,10 @@ def sanitize_project_name(dirty_str):
     return re.sub(r'projects/([0-9a-zA-Z_-]+)/', sanitized, dirty_str)
 
 
+def dummy_function():
+    return None
+
+
 class HttpFiles(Http):
 
     def __init__(self, data_path, discovery_path):
@@ -36,6 +40,8 @@ class HttpFiles(Http):
         if (base_name.startswith('post-oauth2-v4') or base_name.startswith('post-o-oauth2') or base_name.startswith('post-token')):
             return
         # Use a common directory for discovery metadata across tests.
+        if base_name.startswith('get-$discovery'):
+            base_name = base_name.replace('-$d', '-d')
         if base_name.startswith('get-discovery'):
             data_dir = self._discovery_path
             is_discovery = True
@@ -132,3 +138,8 @@ def get_responses(folder):
             responses.append(json.loads(f.read()))
 
     return responses
+
+
+def get_response(folder, filename):
+    with open(f"{DATA_DIR}/{folder}/{filename}") as f:
+        return json.loads(f.read())

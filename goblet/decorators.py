@@ -1,11 +1,13 @@
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
+from goblet.resources.http import HTTP
+
 import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ["all", 'http', 'schedule', 'pubsub']
+EVENT_TYPES = ["all", 'http', 'route', 'schedule', 'pubsub']
 
 
 class DecoratorAPI:
@@ -37,6 +39,11 @@ class DecoratorAPI:
             registration_kwargs={'topic': topic, 'kwargs': kwargs},
         )
 
+    def http(self):
+        return self._create_registration_function(
+            handler_type='http'
+        )
+
     def _create_registration_function(self, handler_type,
                                       registration_kwargs=None):
         def _register_handler(user_handler):
@@ -61,7 +68,8 @@ class Register_Handlers(DecoratorAPI):
         self.handlers = {
             "route": ApiGateway(function_name),
             "schedule": Scheduler(function_name),
-            "pubsub": PubSub(function_name)
+            "pubsub": PubSub(function_name),
+            "http": HTTP()
         }
         self.middleware_handlers = {}
         self.current_request = None
@@ -77,8 +85,10 @@ class Register_Handlers(DecoratorAPI):
             return self.handlers['schedule'](request)
         if event_type == "pubsub":
             return self.handlers['pubsub'](request, context)
-        if event_type == "http":
+        if event_type == "route":
             return self.handlers["route"](request)
+        if event_type == "http":
+            return self.handlers["http"](request)
 
         raise ValueError(f"{event_type} not a valid event type")
 
@@ -95,6 +105,8 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split('.')[1].split('/')[0]
         if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"
+        if request.path and request.headers.get('X-Envoy-Original-Path'):
+            return "route"
         return 'http'
 
     def _call_middleware(self, event, event_type):
@@ -125,7 +137,7 @@ class Register_Handlers(DecoratorAPI):
             v.destroy()
 
     def is_http(self):
-        if len(self.handlers["route"].routes) > 0 or len(self.handlers["schedule"].jobs) > 0:
+        if len(self.handlers["route"].routes) > 0 or len(self.handlers["schedule"].jobs) > 0 or self.handlers["http"].http:
             return True
         return False
 
@@ -133,6 +145,9 @@ class Register_Handlers(DecoratorAPI):
         middleware_list = self.middleware_handlers.get(event_type, [])
         middleware_list.append(func)
         self.middleware_handlers[event_type] = middleware_list
+
+    def _register_http(self, name, func, kwargs):
+        self.handlers["http"].register_http(func)
 
     def _register_route(self, name, func, kwargs):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
