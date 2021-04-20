@@ -1,11 +1,13 @@
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
+from goblet.resources.storage import Storage
+
 import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ["all", 'http', 'schedule', 'pubsub']
+EVENT_TYPES = ["all", 'http', 'schedule', 'pubsub', 'storage']
 
 
 class DecoratorAPI:
@@ -36,6 +38,12 @@ class DecoratorAPI:
             handler_type='pubsub',
             registration_kwargs={'topic': topic, 'kwargs': kwargs},
         )
+    
+    def storage(self, bucket, event_type):
+        return self._create_registration_function(
+            handler_type='storage',
+            registration_kwargs={'bucket': bucket, 'event_type': event_type},
+        )
 
     def _create_registration_function(self, handler_type,
                                       registration_kwargs=None):
@@ -61,7 +69,8 @@ class Register_Handlers(DecoratorAPI):
         self.handlers = {
             "route": ApiGateway(function_name),
             "schedule": Scheduler(function_name),
-            "pubsub": PubSub(function_name)
+            "pubsub": PubSub(function_name),
+            "storage": Storage(function_name)
         }
         self.middleware_handlers = {}
         self.current_request = None
@@ -77,6 +86,8 @@ class Register_Handlers(DecoratorAPI):
             return self.handlers['schedule'](request)
         if event_type == "pubsub":
             return self.handlers['pubsub'](request, context)
+        if event_type == "storage":
+            return self.handlers['storage'](request, context)
         if event_type == "http":
             return self.handlers["route"](request)
 
@@ -142,3 +153,6 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_pubsub(self, name, func, kwargs):
         self.handlers["pubsub"].register_topic(name=name, func=func, kwargs=kwargs)
+
+    def _register_storage(self, name, func, kwargs):
+        self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)
