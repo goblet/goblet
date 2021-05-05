@@ -1,6 +1,8 @@
 from unittest.mock import Mock
 from goblet import Goblet
 from goblet.resources.routes import ApiGateway
+from goblet.deploy import Deployer
+from goblet.test_utils import get_responses, get_response
 
 
 class TestRoutes:
@@ -88,15 +90,64 @@ class TestRoutes:
         mock_event1 = Mock()
         mock_event1.path = '/test'
         mock_event1.method = 'GET'
+        mock_event1.headers = {"X-Envoy-Original-Path": True}
         app(mock_event1, None)
 
         mock_event2 = Mock()
         mock_event2.path = '/test/param'
         mock_event2.method = 'POST'
+        mock_event2.headers = {"X-Envoy-Original-Path": True}
         app(mock_event2, None)
 
         assert(mock.call_count == 1)
         mock_param.assert_called_once_with('param')
+
+    def test_deploy_routes(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "routes-deploy")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet_routes")
+        setattr(app, "entrypoint", 'app')
+
+        @app.route('/')
+        def dummy_function(data):
+            return
+
+        Deployer().deploy(app)
+
+        post_api = get_response('routes-deploy', 'post-v1-projects-goblet-locations-global-apis_1.json')
+        post_config = get_response('routes-deploy', 'post-v1-projects-goblet-locations-global-apis-goblet-routes-configs_1.json')
+        post_gw = get_response('routes-deploy', 'post-v1-projects-goblet-locations-us-central1-gateways_1.json')
+        get_gw = get_response('routes-deploy', 'get-v1-projects-goblet-locations-us-central1-gateways-goblet-routes_1.json')
+
+        assert(post_api['body']['metadata']['verb'] == 'create')
+        assert(post_api['body']['metadata']['target'].endswith('goblet-routes'))
+        assert(post_config['body']['metadata']['verb'] == 'create')
+        assert(post_config['body']['metadata']['target'].endswith('goblet-routes'))
+        assert(post_gw['body']['metadata']['verb'] == 'create')
+        assert(post_gw['body']['metadata']['target'].endswith('goblet-routes'))
+        assert(get_gw['body']['state'] == 'ACTIVE')
+        assert(get_gw['body']['displayName'] == 'goblet-routes')
+
+    def test_destroy_routes(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "routes-destroy")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        apigw = ApiGateway('goblet_routes', routes=['not_empty'])
+        apigw.destroy()
+
+        responses = get_responses('routes-destroy')
+
+        assert(responses[0]['body']['metadata']['verb'] == 'delete')
+        assert(responses[0]['body']['metadata']['target'].endswith('goblet-routes'))
+        assert(responses[1]['body']['metadata']['verb'] == 'delete')
+        assert(responses[1]['body']['metadata']['target'].endswith('goblet-routes'))
+        assert(responses[2]['body']['metadata']['verb'] == 'delete')
+        assert(responses[2]['body']['metadata']['target'].endswith('goblet-routes'))
 
 
 class TestApiGateway:
