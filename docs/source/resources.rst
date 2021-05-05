@@ -106,3 +106,32 @@ Example usage:
     def home2(data):
         app.log.info(data)
         return 
+
+Storage
+^^^^^^^
+
+You can trigger functions from storage events using the ``@app.storage(BUCKET, EVENT)`` decorator. It is required to pass in the bucket name and the event_type.
+The following events are supported by GCP 
+
+* finalize
+* delete
+* archive
+* metadataUpdate
+
+Example usage:
+
+.. code:: python 
+
+    @app.storage('BUCKET_NAME', 'finalize')
+    def storage(event):
+        app.log.info(event)
+
+To trigger a function on multiple events or multiple buckets you can specify multiple decorators.
+
+.. code:: python 
+
+    @app.storage('BUCKET_NAME', 'archive')
+    @app.storage('BUCKET_NAME', 'delete')
+    @app.storage('BUCKET_NAME2', 'finalize')
+    def storage(event):
+        app.log.info(event)

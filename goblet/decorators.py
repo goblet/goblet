@@ -39,7 +39,7 @@ class DecoratorAPI:
             handler_type='pubsub',
             registration_kwargs={'topic': topic, 'kwargs': kwargs},
         )
-    
+
     def storage(self, bucket, event_type):
         return self._create_registration_function(
             handler_type='storage',

@@ -1,4 +1,3 @@
-import base64
 from goblet.deploy import create_cloudfunction, destroy_cloudfunction
 
 from goblet.config import GConfig
@@ -6,7 +5,6 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project, get_default_location
-
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -17,44 +15,43 @@ STORAGE_EVENT_TYPES = [
     "archive",
     "metadataUpdate"
 ]
+
+
 class Storage(Handler):
     def __init__(self, name, buckets=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
-        self.buckets = buckets or {}
+        self.buckets = buckets or []
 
     def validate_event_type(self, event_type):
         if event_type not in STORAGE_EVENT_TYPES:
             raise ValueError(f"{event_type} not in {STORAGE_EVENT_TYPES}")
 
     def register_bucket(self, name, func, kwargs):
-        bucket = kwargs["bucket"]
+        bucket_name = kwargs["bucket"]
         event_type = kwargs["event_type"]
         self.validate_event_type(event_type)
-        key = f"{bucket}-{event_type}"
-        if self.buckets.get(key):
-            # TODO: mulitple functions can be triggered on same event?
-        self.buckets[] = {
-            "bucket": bucket,
+        self.buckets.append({
+            "bucket": bucket_name,
             "event_type": event_type,
             "name": name,
             "func": func
-        }
+        })
 
     def __call__(self, event, context):
         event_type = context.event_type.split('.')[-1]
         bucket_name = event['bucket']
 
-        buckets = [b for b in self.buckets if b.startswith(f"{bucket_name}-{event_type}")
-        if not buckets:
+        matched_buckets = [b for b in self.buckets if b["bucket"] == bucket_name and b["event_type"] == event_type]
+        if not matched_buckets:
             raise ValueError("No functions found")
-        for key in buckets:
-            self.buckets[key]["func"](event)
+        for b in matched_buckets:
+            b["func"](event)
 
         return
 
     def __add__(self, other):
-        self.buckets.update(other.buckets)
+        self.buckets.extend(other.buckets)
         return self
 
     def deploy(self, sourceUrl=None, entrypoint=None):
@@ -64,15 +61,15 @@ class Storage(Handler):
         log.info("deploying storage functions......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
-        for key, bucket in self.buckets.items():
+        for bucket in self.buckets:
             req_body = {
-                "name": f"{self.cloudfunction}-storage-{key}",
+                "name": f"{self.cloudfunction}-storage-{bucket['bucket']}-{bucket['event_type']}",
                 "description": config.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": sourceUrl,
                 "eventTrigger": {
-                    "eventType": f"providers/cloud.storage/eventTypes/google.storage.object.{bucket["event_type"]}",
-                    "resource": bucket["bucket"]
+                    "eventType": f"google.storage.object.{bucket['event_type']}",
+                    "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}"
                 },
                 "runtime": config.runtime or "python37",
                 **user_configs
@@ -80,5 +77,5 @@ class Storage(Handler):
             create_cloudfunction(req_body)
 
     def destroy(self):
-        for key in self.buckets:
-            destroy_cloudfunction(f"{self.cloudfunction}-storage-{key}")
+        for bucket in self.buckets:
+            destroy_cloudfunction(f"{self.name}-storage-{bucket['bucket']}-{bucket['event_type']}")
