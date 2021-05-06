@@ -2,7 +2,7 @@
   "headers": {
     "content-type": "application/json; charset=UTF-8",
     "vary": "Origin, X-Origin, Referer",
-    "date": "Thu, 15 Apr 2021 15:57:53 GMT",
+    "date": "Thu, 15 Apr 2021 15:59:47 GMT",
     "server": "ESF",
     "cache-control": "private",
     "x-xss-protection": "0",
@@ -11,7 +11,7 @@
     "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
     "transfer-encoding": "chunked",
     "status": "200",
-    "content-length": "1605",
+    "content-length": "3097",
     "-content-encoding": "gzip",
     "content-location": "https://cloudfunctions.googleapis.com/v1/operations/cHJlbWlzZS1nb3Zlcm5hbmNlLXJkL3VzLWNlbnRyYWwxL2dvYmxldF90b3BpYy10b3BpYy10ZXN0LXRvcGljLzJCMEZlcS1NaTAw?alt=json"
   },
@@ -34,7 +34,30 @@
         "runtime": "python37"
       },
       "versionId": "1",
-      "updateTime": "2021-04-15T15:57:51Z",
+      "updateTime": "2021-04-15T15:59:44Z",
+      "buildId": "4021a65a-9de9-48b8-90d2-0a48ec9fd323"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+      "name": "projects/goblet/locations/us-central1/functions/goblet_topic-topic-test-topic",
+      "description": "created by goblet",
+      "eventTrigger": {
+        "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
+        "resource": "projects/goblet/topics/test-topic",
+        "service": "pubsub.googleapis.com",
+        "failurePolicy": {}
+      },
+      "status": "ACTIVE",
+      "entryPoint": "app",
+      "timeout": "60s",
+      "availableMemoryMb": 256,
+      "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+      "updateTime": "2021-04-15T15:59:44.343Z",
+      "versionId": "1",
+      "sourceUploadUrl": "https://storage.googleapis.com/gcf-upload-us-central1-db550cf8-9d78-456c-96b1-6069320edaa3/f7bdc817-994e-4549-a3fe-8db010c983ae.zip?GoogleAccessId=service-871545765989@gcf-admin-robot.iam.gserviceaccount.com&Expires=1618504068&Signature=nxClpt%2F4B4LLmWuyD3ViN2kRHlXZVyVPbArU1v6Ox%2B8gYdP0zpujTu6GTfcfROd2Rl7pGmr37Z0knBmfQjrJdqSm19W%2FcOZO4dYBbiVrQYmYrO5azcIKzFyvaFqw4SID7Fde3JD8%2Fmu0tTRxMP%2Fjq0rfD6GBkzDHLnZeOpSS2S9KYtyDt70QXapqaIaTooOE0NFb2BO2nM7hvD4f0VFSG4fR2R8VGoQ5NzD%2FBxpZTzmfForvL0GpqgsnrcDNqKY96n%2FnM7uRDtt4sY6jv1jy5cvOndsyUNS51nLAi%2F6T6nCteM2J80brANZei2WHDXvmMZnV4pCgaOgwWigqnmj8tA%3D%3D",
+      "runtime": "python37",
+      "ingressSettings": "ALLOW_ALL",
       "buildId": "4021a65a-9de9-48b8-90d2-0a48ec9fd323"
     }
   }

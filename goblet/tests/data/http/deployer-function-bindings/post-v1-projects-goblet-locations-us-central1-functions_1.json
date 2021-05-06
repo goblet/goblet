@@ -1,0 +1,36 @@
+{
+  "headers": {
+    "content-type": "application/json; charset=UTF-8",
+    "vary": "Origin, X-Origin, Referer",
+    "date": "Thu, 06 May 2021 01:34:35 GMT",
+    "server": "ESF",
+    "cache-control": "private",
+    "x-xss-protection": "0",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "transfer-encoding": "chunked",
+    "status": "200",
+    "content-length": "1354",
+    "-content-encoding": "gzip"
+  },
+  "body": {
+    "name": "operations/cHJlbWlzZS1nb3Zlcm5hbmNlLXJkL3VzLWNlbnRyYWwxL2dvYmxldF90ZXN0X2FwcC9qcllVUlZoWW5EZw",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/goblet/locations/us-central1/functions/goblet_test_app",
+      "type": "CREATE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+        "name": "projects/goblet/locations/us-central1/functions/goblet_test_app",
+        "description": "created by goblet",
+        "httpsTrigger": {},
+        "entryPoint": "app",
+        "sourceUploadUrl": "https://storage.googleapis.com/gcf-upload-us-central1-db550cf8-9d78-456c-96b1-6069320edaa3/24ca7f84-3b7f-4b9b-bc74-ecdfd9e823fe.zip?GoogleAccessId=service-871545765989@gcf-admin-robot.iam.gserviceaccount.com&Expires=1620266673&Signature=1ff20UAg7se%2Fv1W22PWX3N60sy4u%2B3OcUYER86D8lHamEdpOh87PihmE7Mab1w%2BJoaXt1VsTQGqoaG5LqPXntKiXFrayYjRE4glYq2ZN3%2B6sWXcM3xMG79N0CvRzhshIHeHz1IYs110ap6ZV0MHJek9nMkNefPtRLbZj4bm6j7%2FRmxhWjRYfoTBDNvOPKWOWHMB34Bs2vLcjJGQfbMUPQ8lxuqKwrAEGRmLakP3eRC7Hfut%2BNaF1tqtqNKq5yqTf%2BKC7DFy6Dv41a4BD9JRGvxunEemjtqnfX1gqa2QccOnXXNtpqhD23gzKWlU5h50d8qE3QjatSk%2BEEqkY9YNfAQ%3D%3D",
+        "runtime": "python37"
+      },
+      "versionId": "1",
+      "updateTime": "2021-05-06T01:34:35Z"
+    }
+  }
+}

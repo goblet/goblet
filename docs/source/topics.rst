@@ -95,6 +95,42 @@ Example config.json:
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
 
+Iam Bindings
+^^^^^^^^^^^^
+
+You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `congig.json` file.
+The bindings should be in the `GCP Policy format <https://cloud.google.com/functions/docs/reference/rest/v1/Policy>`_
+
+For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
+member `allUsers`
+
+    .. code:: json
+
+        {
+            "bindings": [
+                {
+                    "role": "roles/cloudfunctions.invoker",
+                    "members": [
+                        "allUsers"
+                    ]
+                }
+            ]
+        }
+
+To remove bindings once they are deploy you should update your `bindings` in `config.json` and change the `members` to be an empty list
+
+.. code:: json
+
+    {
+        "bindings": [
+            {
+                "role": "roles/cloudfunctions.invoker",
+                "members": []
+            }
+        ]
+    }
+
+
 Run Locally
 ^^^^^^^^^^^
 

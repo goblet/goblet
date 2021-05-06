@@ -61,10 +61,10 @@ class TestPubSub:
 
         responses = get_responses('storage-deploy')
 
-        assert(len(responses) == 4)
-        assert(responses[3]['body']['metadata']['target'].endswith('goblet_storage-storage-test-finalize'))
-        assert(responses[3]['body']['metadata']['request']['eventTrigger']['resource'] == 'projects/goblet/buckets/test')
-        assert(responses[3]['body']['metadata']['request']['eventTrigger']['eventType'] == 'google.storage.object.finalize')
+        assert(len(responses) == 3)
+        assert(responses[2]['body']['metadata']['target'].endswith('goblet_storage-storage-test-finalize'))
+        assert(responses[2]['body']['metadata']['request']['eventTrigger']['resource'] == 'projects/goblet/buckets/test')
+        assert(responses[2]['body']['metadata']['request']['eventTrigger']['eventType'] == 'google.storage.object.finalize')
 
     def test_destroy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
