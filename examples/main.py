@@ -7,6 +7,11 @@ app.log.setLevel(logging.INFO) # configure goblet logger level
 from typing import List
 from marshmallow import Schema, fields
 
+# Example http trigger
+@app.http()
+def main(request):
+    return jsonify(request.json)
+
 # path param
 @app.route('/home/{test}')
 def home(test):
@@ -68,6 +73,12 @@ def topic(data):
 @app.topic('test', attributes={'key': 'value'})
 def home2(data):
     app.log.info(data)
+    return 
+
+# Example Storage trigger on the create/finalize event
+@app.storage('BUCKET_NAME', 'finalize')
+def storage(event):
+    app.log.info(event)
     return 
 
 # Example middleware

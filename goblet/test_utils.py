@@ -133,7 +133,7 @@ class HttpReplay(HttpFiles):
 
 def get_responses(folder):
     responses = []
-    for response in listdir(f"{DATA_DIR}/{folder}"):
+    for response in sorted(listdir(f"{DATA_DIR}/{folder}")):
         with open(f"{DATA_DIR}/{folder}/{response}") as f:
             responses.append(json.loads(f.read()))
 
