@@ -189,7 +189,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9745; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
- &#9744; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
+ &#9745; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
  &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
  &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger
 
