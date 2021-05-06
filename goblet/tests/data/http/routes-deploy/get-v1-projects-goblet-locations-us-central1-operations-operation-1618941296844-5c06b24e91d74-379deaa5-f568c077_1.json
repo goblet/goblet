@@ -2,7 +2,7 @@
   "headers": {
     "content-type": "application/json; charset=UTF-8",
     "vary": "Origin, X-Origin, Referer",
-    "date": "Tue, 20 Apr 2021 17:55:00 GMT",
+    "date": "Tue, 20 Apr 2021 17:56:34 GMT",
     "server": "ESF",
     "cache-control": "private",
     "x-xss-protection": "0",
@@ -11,7 +11,7 @@
     "alt-svc": "h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
     "transfer-encoding": "chunked",
     "status": "200",
-    "content-length": "481",
+    "content-length": "1038",
     "-content-encoding": "gzip",
     "content-location": "https://apigateway.googleapis.com/v1/projects/goblet/locations/us-central1/operations/operation-1618941296844-5c06b24e91d74-379deaa5-f568c077?alt=json"
   },
@@ -20,11 +20,22 @@
     "metadata": {
       "@type": "type.googleapis.com/google.cloud.apigateway.v1.OperationMetadata",
       "createTime": "2021-04-20T17:54:57.551102193Z",
+      "endTime": "2021-04-20T17:56:31.752988260Z",
       "target": "projects/goblet/locations/us-central1/gateways/goblet-routes",
       "verb": "create",
       "requestedCancellation": false,
       "apiVersion": "v1"
     },
-    "done": false
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.apigateway.v1.Gateway",
+      "name": "projects/goblet/locations/us-central1/gateways/goblet-routes",
+      "createTime": "2021-04-20T17:54:57.547643051Z",
+      "updateTime": "2021-04-20T17:54:57.547643051Z",
+      "displayName": "goblet-routes",
+      "apiConfig": "projects/goblet/locations/global/apis/goblet-routes/configs/goblet-routes",
+      "state": "ACTIVE",
+      "defaultHostname": "goblet-routes-b4drugyt.uc.gateway.dev"
+    }
   }
 }
