@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.4.4 documentation</title>
+  <title>Resources &mdash; goblet 0.4.5 documentation</title>
   
 
   
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#routes">Routes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pubsub">PubSub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
 </ul>
 </li>
 </ul>
@@ -248,6 +249,31 @@ provide an attribute dictionary which will only trigger the function if the pubs
 <span class="k">def</span> <span class="nf">home2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="storage">
+<h2>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h2>
+<p>You can trigger functions from storage events using the <code class="docutils literal notranslate"><span class="pre">&#64;app.storage(BUCKET,</span> <span class="pre">EVENT)</span></code> decorator. It is required to pass in the bucket name and the event_type.
+The following events are supported by GCP</p>
+<ul class="simple">
+<li><p>finalize</p></li>
+<li><p>delete</p></li>
+<li><p>archive</p></li>
+<li><p>metadataUpdate</p></li>
+</ul>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;finalize&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To trigger a function on multiple events or multiple buckets you can specify multiple decorators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;archive&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME2&#39;</span><span class="p">,</span> <span class="s1">&#39;finalize&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
