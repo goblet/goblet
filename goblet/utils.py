@@ -79,3 +79,14 @@ def main(request):
 #     app.log.info(data)
 #     return
 """)
+    with open('README.md', 'w') as f:
+        f.write(f"""
+# goblet-{name}
+
+autocreated by goblet
+
+To test endpoints locally run `goblet local local`
+To deploy cloudfunctions and other gcp resources defined in `main.py` run `goblet deploy`
+
+To check out goblet documentation go to [docs](https://anovis.github.io/goblet/docs/build/html/index.html)
+""")

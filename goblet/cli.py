@@ -134,6 +134,7 @@ def init(name):
     click.echo("created .goblet/json.config")
     click.echo("created requirements.txt")
     click.echo("created main.py")
+    click.echo("created README.md")
 
 
 @main.group()
