@@ -1,6 +1,8 @@
 import os
 import importlib.util
 from contextlib import contextmanager
+import json
+from goblet.__version__ import __version__
 
 
 @contextmanager
@@ -40,3 +42,40 @@ def get_g_dir():
 
 def get_dir():
     return os.path.realpath('.')
+
+
+def create_goblet_dir(name):
+    try:
+        os.mkdir(get_g_dir())
+    except FileExistsError:
+        pass
+    with open(f'{get_g_dir()}/config.json', 'w') as f:
+        f.write(json.dumps({'cloudfunction': {}}, indent=4))
+    with open('requirements.txt', 'w') as f:
+        f.write(f'goblet-gcp=={__version__}')
+    with open('main.py', 'w') as f:
+        f.write(f"""
+from goblet import Goblet
+
+app = Goblet(function_name="goblet-{name}", local="local")
+
+@app.http()
+def main(request):
+    return jsonify(request.json)
+
+# route
+# @app.route('/hello')
+# def home():
+#     return jsonify("goodbye")
+
+# schedule
+# @app.schedule('5 * * * *')
+# def scheduled_job():
+#     return jsonify("success")
+
+# pubsub topic
+# @app.topic('test_topic')
+# def topic(data):
+#     app.log.info(data)
+#     return
+""")
