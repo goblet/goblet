@@ -20,7 +20,7 @@ You can create Rest APIs:
 ```python
 from goblet import Goblet, jsonify
 
-app = Goblet(function_name="goblet_example",region='us-central-1')
+app = Goblet(function_name="goblet_example")
 
 @app.route('/home')
 def home():
@@ -38,7 +38,7 @@ $ goblet deploy
 ...
 https://api.uc.gateway.dev
 
-$ curl https://api.uc.gateway.dev/home
+$ curl -H X-Envoy-Original-Path:true https://api.uc.gateway.dev/home
 {"hello": "world"}
 ```
 
@@ -105,7 +105,7 @@ Let's take a look at the main.py file:
 ```python
 from goblet import Goblet
 
-app = Goblet(function_name="goblet_example",region='us-central-1')
+app = Goblet(function_name="goblet_example")
 
 @app.route('/home')
 def index():
@@ -121,7 +121,7 @@ Running your functions locally for testing and debugging is easy to do with gobl
 ```python
 from goblet import Goblet
 
-app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
+app = Goblet(function_name="goblet_example", local='test')
 
 ```
 
