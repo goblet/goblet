@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.4.5 documentation</title>
+  <title>Topics &mdash; goblet 0.4.6 documentation</title>
   
 
   
@@ -91,6 +91,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Topics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iam-bindings">Iam Bindings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
@@ -244,6 +245,38 @@ which takes in a list of python <a class="reference external" href="https://docs
 </pre></div>
 </div>
 </div>
+<div class="section" id="iam-bindings">
+<h2>Iam Bindings<a class="headerlink" href="#iam-bindings" title="Permalink to this headline">¶</a></h2>
+<p>You can add Iam bindings to your cloudfunctions by adding a <cite>binding</cite> section to your <cite>congig.json</cite> file.
+The bindings should be in the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/Policy">GCP Policy format</a></p>
+<p>For example to allow unauthenticated (public) access to your cloudfunctions you would add the <cite>roles/cloudfunctions.invoker</cite> to
+member <cite>allUsers</cite></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;bindings&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;members&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;allUsers&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To remove bindings once they are deploy you should update your <cite>bindings</cite> in <cite>config.json</cite> and change the <cite>members</cite> to be an empty list</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;bindings&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;members&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="run-locally">
 <h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this headline">¶</a></h2>
 <p>Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class</p>
@@ -254,6 +287,10 @@ which takes in a list of python <a class="reference external" href="https://docs
 </div>
 <p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code> and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
+<p>To test a route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">http()</span></code></p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Envoy-Original-Path:true  localhost:8080/endpoint
+</pre></div>
+</div>
 <p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
 <code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
@@ -375,8 +412,7 @@ You can specify custom param and response types using python typing and pass in 
 
 <span class="c1"># custom responses and request_types</span>
 <span class="c1"># Request body must be schema defition valid with openapi spec 2</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}}}),</span>
-<span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;400&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;400&#39;</span><span class="p">}})</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}}},</span> <span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;400&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;400&#39;</span><span class="p">}})</span>
 <span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span> <span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">]</span>

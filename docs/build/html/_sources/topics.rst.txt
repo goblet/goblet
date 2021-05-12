@@ -95,6 +95,42 @@ Example config.json:
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
 
+Iam Bindings
+^^^^^^^^^^^^
+
+You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `congig.json` file.
+The bindings should be in the `GCP Policy format <https://cloud.google.com/functions/docs/reference/rest/v1/Policy>`_
+
+For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
+member `allUsers`
+
+    .. code:: json
+
+        {
+            "bindings": [
+                {
+                    "role": "roles/cloudfunctions.invoker",
+                    "members": [
+                        "allUsers"
+                    ]
+                }
+            ]
+        }
+
+To remove bindings once they are deploy you should update your `bindings` in `config.json` and change the `members` to be an empty list
+
+.. code:: json
+
+    {
+        "bindings": [
+            {
+                "role": "roles/cloudfunctions.invoker",
+                "members": []
+            }
+        ]
+    }
+
+
 Run Locally
 ^^^^^^^^^^^
 
@@ -109,6 +145,12 @@ Running your functions locally for testing and debugging is easy to do with gobl
 
 Then run ``goblet local test`` and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at ``localhost:8080``.
+
+To test a route locally make sure to add the header ``X-Envoy-Original-Path``. Otherwise the route will default to ``http()``
+
+.. code:: sh 
+
+    curl -H X-Envoy-Original-Path:true  localhost:8080/endpoint
 
 To test a scheduled job locally you will need to include two headers in your request. One ``X-Goblet-Type:schedule`` and 
 ``X-Goblet-Name:FUNCTION_NAME`` which is the name of your function.
@@ -275,8 +317,7 @@ If you use a custom schema type you should create a schema class that inherits f
 
     # custom responses and request_types
     # Request body must be schema defition valid with openapi spec 2
-    @app.route('/custom', request_body={'schema': {"type": "array", "items": {'type': 'string'}}}),
-    responses={'400': {'description': '400'}})
+    @app.route('/custom', request_body={'schema': {"type": "array", "items": {'type': 'string'}}}, responses={'400': {'description': '400'}})
     def custom():
         request = app.current_request
         assert request.data ["string1", "string2"]
