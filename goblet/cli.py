@@ -4,7 +4,7 @@ import os
 import logging
 import subprocess
 
-from goblet.utils import get_goblet_app
+from goblet.utils import get_goblet_app, create_goblet_dir
 from goblet.deploy import Deployer
 from goblet.client import get_default_project
 from goblet.__version__ import __version__
@@ -124,6 +124,17 @@ def package(stage):
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+
+
+@click.argument('name',)
+@main.command()
+def init(name):
+    """Create new goblet app with files main.py, requirements.txt, and directory .goblet"""
+    create_goblet_dir(name)
+    click.echo("created .goblet/json.config")
+    click.echo("created requirements.txt")
+    click.echo("created main.py")
+    click.echo("created README.md")
 
 
 @main.group()

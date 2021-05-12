@@ -52,7 +52,7 @@ class Deployer:
             url = self._upload_zip()
             # TODO: CHECK IF VERSION IS DEPLOYED
             if goblet.is_http():
-                self.create_function(url, goblet.entrypoint)
+                self.create_function(url, goblet.entrypoint, config)
         if not only_function:
             goblet.deploy(url)
 
@@ -64,8 +64,8 @@ class Deployer:
 
         return goblet
 
-    def create_function(self, url, entrypoint):
-        config = GConfig()
+    def create_function(self, url, entrypoint, config=None):
+        config = GConfig(config=config)
         user_configs = config.cloudfunction or {}
         req_body = {
             "name": f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}",
@@ -76,7 +76,7 @@ class Deployer:
             "runtime": "python37",
             **user_configs
         }
-        create_cloudfunction(req_body)
+        create_cloudfunction(req_body, config=config.config)
 
     def _upload_zip(self):
         self.zipf.close()
@@ -123,18 +123,31 @@ class Deployer:
                 self.zipf.write(str(path))
 
 
-def create_cloudfunction(req_body):
+def create_cloudfunction(req_body, config=None):
+    function_name = req_body['name'].split('/')[-1]
     function_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
     try:
         resp = function_client.execute('create', parent_key="location", params={'body': req_body})
-        log.info(f"creating cloudfunction {req_body['name']}")
+        log.info(f"creating cloudfunction {function_name}")
     except HttpError as e:
         if e.resp.status == 409:
-            log.info(f"updating cloudfunction {req_body['name']}")
+            log.info(f"updating cloudfunction {function_name}")
             resp = function_client.execute('patch', parent_key="name", parent_schema=req_body["name"], params={'body': req_body})
         else:
             raise e
     function_client.wait_for_operation(resp["name"], calls="operations")
+
+    # Set IAM Bindings
+    config = GConfig(config=config)
+    if config.bindings:
+        policy_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions',
+                               parent_schema=req_body['name'])
+
+        log.info(f"adding IAM bindings for cloudfunction {function_name}")
+        policy_bindings = {
+            'policy': {'bindings': config.bindings}
+        }
+        resp = policy_client.execute('setIamPolicy', parent_key="resource", params={'body': policy_bindings})
 
 
 def destroy_cloudfunction(name):
