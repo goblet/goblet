@@ -115,9 +115,11 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split('.')[1].split('/')[0]
         if request.headers.get("X-Goblet-Type") == 'schedule':
             return "schedule"
-        if request.path and request.headers.get('X-Envoy-Original-Path'):
+        if request.path and request.path == '/' and not request.headers.get('X-Envoy-Original-Path'):
+            return "http"
+        if request.path:
             return "route"
-        return 'http'
+        return None
 
     def _call_middleware(self, event, event_type):
         middleware = self.middleware_handlers.get('all', [])
