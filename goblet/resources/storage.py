@@ -18,6 +18,9 @@ STORAGE_EVENT_TYPES = [
 
 
 class Storage(Handler):
+    """Pubsub topic trigger
+    https://cloud.google.com/functions/docs/calling/storage
+    """
     def __init__(self, name, buckets=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"

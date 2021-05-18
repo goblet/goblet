@@ -12,7 +12,7 @@ class TestDeployer:
         monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
         setattr(app, "entrypoint", 'app')
 
         app.handlers['http'] = HTTP(dummy_function)
@@ -28,7 +28,7 @@ class TestDeployer:
         monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
 
         Deployer().destroy(app)
 
