@@ -9,10 +9,13 @@ logging.basicConfig()
 
 
 class Goblet(Register_Handlers):
-    def __init__(self, function_name="goblet", region="us-east4", local=None):
+    """
+    Main class which inherits most of its logic from the Register_Handlers class. Local param is used
+    to set the entrypoint for running goblet locally
+    """
+    def __init__(self, function_name="goblet", local=None):
         self.function_name = GConfig().function_name or function_name
         super(Goblet, self).__init__(function_name=self.function_name)
-        self.region = region
         self.log = logging.getLogger(__name__)
         self.headers = {}
         self.g = G()
@@ -21,25 +24,11 @@ class Goblet(Register_Handlers):
                 return self(request)
             setattr(sys.modules['main'], local, local_func)
 
-    # Will deprecate
-    def jsonify(self, *args, **kwargs):
-        indent = None
-        separators = (',', ':')
-        headers = {'Content-Type': 'application/json'}
-        headers.update(self.headers)
-
-        if args and kwargs:
-            raise TypeError('jsonify() behavior undefined when passed both args and kwargs')
-        elif len(args) == 1:  # single args are passed directly to dumps()
-            data = args[0]
-        else:
-            data = args or kwargs
-
-        json_string = json.dumps(data, indent=indent, separators=separators)
-        return (json_string, 200, headers)
-
 
 class Response(object):
+    """
+    Generic Response class based on Flask Response
+    """
     def __init__(self, body, headers=None, status_code=200):
         self.body = body
         if headers is None:
@@ -58,6 +47,9 @@ class Response(object):
 
 
 def jsonify(*args, **kwargs):
+    """
+    Helper based on flask jsonify and helsp convert lists and dicts into valid reponses.
+    """
     indent = None
     separators = (',', ':')
     headers = {'Content-Type': 'application/json'}
@@ -76,4 +68,7 @@ def jsonify(*args, **kwargs):
 
 
 class G:
+    """
+    Global class that allows users to set and pass variables between middlewares.
+    """
     pass

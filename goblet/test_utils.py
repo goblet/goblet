@@ -22,6 +22,7 @@ def dummy_function():
 
 
 class HttpFiles(Http):
+    """Logic to interate through files in the DATA_DIR for both recording and replaying http responses"""
 
     def __init__(self, data_path, discovery_path):
         self._data_path = data_path
@@ -71,6 +72,7 @@ class HttpFiles(Http):
 
 
 class HttpRecorder(HttpFiles):
+    """Save the output of http responses for future testing"""
 
     def request(self, uri, method="GET", body=None, headers=None,
                 redirections=1, connection_type=None):
@@ -96,6 +98,7 @@ class HttpRecorder(HttpFiles):
 
 
 class HttpReplay(HttpFiles):
+    """Replay the output of http responses for tests"""
 
     static_responses = {
         ('POST', 'https://accounts.google.com/o/oauth2/token'): json.dumps({
@@ -132,6 +135,7 @@ class HttpReplay(HttpFiles):
 
 
 def get_responses(folder):
+    """Get responses from the DATA_DIR for validating tests"""
     responses = []
     for response in sorted(listdir(f"{DATA_DIR}/{folder}")):
         with open(f"{DATA_DIR}/{folder}/{response}") as f:
@@ -141,5 +145,6 @@ def get_responses(folder):
 
 
 def get_response(folder, filename):
+    """Get a response from the DATA_DIR for validating tests"""
     with open(f"{DATA_DIR}/{folder}/{filename}") as f:
         return json.loads(f.read())

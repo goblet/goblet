@@ -27,7 +27,7 @@ You can create Rest APIs:
 
    from goblet import Goblet
 
-   app = Goblet(function_name="goblet_example",region='us-central-1')
+   app = Goblet(function_name="goblet_example")
 
    @app.route('/home')
    def home():

@@ -25,7 +25,7 @@ def get_app_from_module(m):
 
 
 def get_goblet_app():
-    # looks for main.py and gets goblet app
+    """Look for main.py and return goblet app instance. Also sets the entrypoint for the app"""
     dir_path = os.path.realpath('.')
     spec = importlib.util.spec_from_file_location("main", f"{dir_path}/main.py")
     main = importlib.util.module_from_spec(spec)
@@ -37,6 +37,7 @@ def get_goblet_app():
 
 
 def get_g_dir():
+    """Gets the .goblet directory"""
     return f"{os.path.realpath('.')}/.goblet"
 
 
@@ -45,6 +46,7 @@ def get_dir():
 
 
 def create_goblet_dir(name):
+    """Creates a new goblet directory with a sample main.py, requirements.txt, and config.json"""
     try:
         os.mkdir(get_g_dir())
     except FileExistsError:

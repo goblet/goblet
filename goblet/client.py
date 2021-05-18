@@ -74,6 +74,7 @@ class Client:
         return self.client
 
     def http_for_tests(self):
+        """Used for recording and replaying GCP api responses in tests."""
         discovery_dir = os.path.join(DATA_DIR, "discovery")
         test_dir = os.path.join(DATA_DIR, os.environ.get('GOBLET_TEST_NAME', ''))
 
@@ -84,6 +85,7 @@ class Client:
         return None
 
     def wait_for_operation(self, operation, timeout=600, calls="projects.locations.operations"):
+        """Helper function which calls the operation endpoint until an operation in completed"""
         done = False
         operation_client = Client(
             self.resource,
@@ -101,6 +103,9 @@ class Client:
             count += sleep_duration
 
     def execute(self, api, calls=None, parent_schema=None, parent=True, parent_key='parent', params=None):
+        """Executes the GCP client api call. parent_schema is the name or parent param required for most api calls. project
+        and location is automatically added if the schema contains {project_id} or {location_id}. The parent_key is used if
+        the api call uses a different key than parent"""
         api_chain = self.client
         _params = params or {}
         _calls = calls or self.calls

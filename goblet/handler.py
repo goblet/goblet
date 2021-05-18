@@ -1,4 +1,5 @@
 class Handler:
+    """Base Handler class"""
 
     def deploy(self, sourceUrl=None, entrypoint=None):
         raise NotImplementedError("deploy")
