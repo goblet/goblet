@@ -115,7 +115,7 @@ class TestRoutes:
         def dummy_function(data):
             return
 
-        Deployer().deploy(app)
+        Deployer().deploy(app, force=True)
 
         post_api = get_response('routes-deploy', 'post-v1-projects-goblet-locations-global-apis_1.json')
         post_config = get_response('routes-deploy', 'post-v1-projects-goblet-locations-global-apis-goblet-routes-configs_1.json')

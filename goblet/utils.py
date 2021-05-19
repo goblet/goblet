@@ -17,6 +17,15 @@ def add_to_path(p):
         sys.path = old_path
 
 
+def checksum(fh, hasher, blocksize=65536):
+    """Calculates checksum of file"""
+    buf = fh.read(blocksize)
+    while len(buf) > 0:
+        hasher.update(buf)
+        buf = fh.read(blocksize)
+    return hasher.digest()
+
+
 def get_app_from_module(m):
     from goblet import Goblet
     for obj in dir(m):

@@ -93,7 +93,7 @@ class TestPubSub:
         def dummy_function(data):
             assert data == 'test'
 
-        Deployer().deploy(app)
+        Deployer().deploy(app, force=True)
 
         responses = get_responses('pubsub-deploy')
 
