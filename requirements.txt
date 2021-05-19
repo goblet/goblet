@@ -4,4 +4,3 @@ functions-framework==2.1.0
 google-api-python-client==1.12.5
 marshmallow==3.10.0
 ruamel.yaml==0.16.12
-requests-mock==1.9.2
