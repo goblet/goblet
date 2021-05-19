@@ -38,7 +38,7 @@ $ goblet deploy
 ...
 https://api.uc.gateway.dev
 
-$ curl -H X-Envoy-Original-Path:true https://api.uc.gateway.dev/home
+$ curl https://api.uc.gateway.dev/home
 {"hello": "world"}
 ```
 
@@ -48,9 +48,9 @@ To install goblet, open an interactive shell and run:
 
 ```pip install goblet-gcp```
 
-Make sure to have the correct services enabled in your gcp project
+Make sure to have the correct services enabled in your gcp project depending on what you want to deploy
 
-`api-gateway`, `cloudfunctions`, `storage`
+`api-gateway`, `cloudfunctions`, `storage`, `pubsub`, `scheduler`
 
 You will also need to install [gcloud cli](https://cloud.google.com/sdk/docs/install) for authentication
 
@@ -112,7 +112,7 @@ def index():
     return {"hello": "world"}
 ```
 
-This app with deploy an api with endpoint `/home`.
+This app will deploy an api with endpoint `/home`.
 
 ### Running Locally
 
@@ -183,15 +183,16 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Integration Tests \
  &#9745; [Api Gateway Auth](https://cloud.google.com/api-gateway/docs/authenticate-service-account) \
  &#9745; Configuration Options (function names, ...) \
- &#9744; Cleanup gcp buckets \
- &#9744; Use checksum for updates \
+ &#9745; Use checksum for updates \
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
  &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9745; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
  &#9745; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
  &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
- &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger
+ &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger \
+ &#9744; [Cloud Tasks](https://cloud.google.com/tasks/docs/creating-http-target-tasks) trigger \
+ &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger
 
 ## Want to Contribute
 
