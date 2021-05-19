@@ -43,13 +43,13 @@ class Deployer:
             log.info("zipping function......")
             self.zip()
             if not force and self.get_function() and not self._cloudfunction_delta(f'.goblet/{self.name}.zip'):
-                log.info("function already uploaded and no changes detected......")
+                log.info("No changes detected......")
             else:
                 log.info("uploading function zip to gs......")
                 url = self._upload_zip()
                 if goblet.is_http():
                     self.create_function(url, goblet.entrypoint, config)
-        if not only_function:
+        if not only_function and url:
             goblet.deploy(url)
 
         return goblet
