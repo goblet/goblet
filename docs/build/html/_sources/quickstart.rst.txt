@@ -58,7 +58,7 @@ Let's take a look at the main.py file:
 
     from goblet import Goblet
 
-    app = Goblet(function_name="goblet_example",region='us-central-1')
+    app = Goblet(function_name="goblet_example")
 
     @app.route('/home')
     def index():
@@ -76,7 +76,7 @@ Running your functions locally for testing and debugging is easy to do with gobl
 
     from goblet import Goblet
 
-    app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
+    app = Goblet(function_name="goblet_example", local='test')
 
 
 Then run ``goblet local test`` and replace test with whatever variable you decide to use.

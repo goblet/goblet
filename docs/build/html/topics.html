@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.4.6 documentation</title>
+  <title>Topics &mdash; goblet 0.4.7 documentation</title>
   
 
   
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#iam-bindings">Iam Bindings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-with-vscode">Debugging with VScode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
@@ -282,18 +283,40 @@ member <cite>allUsers</cite></p>
 <p>Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code> and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
-<p>To test a route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">http()</span></code></p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Envoy-Original-Path:true  localhost:8080/endpoint
+<p>Note: If you have both <cite>http()</cite> and <cite>route(“/”)</cite> in order to test the route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">&#64;http()</span></code></p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl localhost:8080/endpoint
 </pre></div>
 </div>
 <p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
 <code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+</pre></div>
+</div>
+</div>
+<div class="section" id="debugging-with-vscode">
+<h2>Debugging with VScode<a class="headerlink" href="#debugging-with-vscode" title="Permalink to this headline">¶</a></h2>
+<p>To debug your functions locally with Vscode you can use the following configuration. Replace LOCAL_NAME with the name you
+passed into <code class="docutils literal notranslate"><span class="pre">goblet(NAME,</span> <span class="pre">local=LOCAL_NAME)</span></code>. Make sure that there are no naming collisions with any function names used in your app.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;configurations&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Python: Module&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;functions_framework&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;--target&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;LOCAL_NAME&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;--debug&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
