@@ -1,7 +1,7 @@
 from goblet.deploy import Deployer
 from goblet.resources.http import HTTP
 from goblet import Goblet
-from goblet.test_utils import get_responses, dummy_function
+from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN
 
 
 class TestDeployer:
@@ -17,7 +17,7 @@ class TestDeployer:
 
         app.handlers['http'] = HTTP(dummy_function)
 
-        Deployer().deploy(app, only_function=True)
+        Deployer().deploy(app, only_function=True, force=True)
 
         responses = get_responses('deployer-function-deploy')
         assert(len(responses) == 3)
@@ -48,8 +48,19 @@ class TestDeployer:
 
         app.handlers['http'] = HTTP(dummy_function)
         bindings = [{"role": "roles/cloudfunctions.invoker", "members": ["allUsers"]}]
-        Deployer().deploy(app, only_function=True, config={'bindings': bindings})
+        Deployer().deploy(app, only_function=True, config={'bindings': bindings}, force=True)
 
         responses = get_responses('deployer-function-bindings')
         assert(len(responses) == 4)
         assert(responses[2]['body']['bindings'] == bindings)
+
+    def test_cloudfunction_delta(self, monkeypatch, requests_mock):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-east1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudfunction-delta")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("HEAD", 'https://storage.googleapis.com/mock', headers={'x-goog-hash': 'crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=='})
+
+        assert not Deployer()._cloudfunction_delta(f"{DATA_DIR_MAIN}/test_zip.txt.zip")
+        assert Deployer()._cloudfunction_delta(f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip")

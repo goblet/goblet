@@ -10,6 +10,7 @@ from six.moves.urllib.parse import urlparse
 
 DATA_DIR = join(dirname(__file__), 'tests', 'data', 'http')
 PROJECT_ID = "goblet"
+DATA_DIR_MAIN = join(dirname(__file__), 'tests', 'data')
 
 
 def sanitize_project_name(dirty_str):

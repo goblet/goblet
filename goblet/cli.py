@@ -34,7 +34,8 @@ def version():
 @click.option('-s', '--stage', 'stage', envvar='STAGE')
 @click.option('--skip-function', 'skip_function', is_flag=True)
 @click.option('--only-function', 'only_function', is_flag=True)
-def deploy(project, location, stage, skip_function, only_function):
+@click.option('-f', '--force', 'force', is_flag=True)
+def deploy(project, location, stage, skip_function, only_function, force):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
 
@@ -51,7 +52,7 @@ def deploy(project, location, stage, skip_function, only_function):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app()
-        Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function)
+        Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function, force=force)
 
     except FileNotFoundError:
         click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
