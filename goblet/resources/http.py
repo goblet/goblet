@@ -2,6 +2,7 @@ from goblet.handler import Handler
 
 
 class HTTP(Handler):
+    """Http Trigger"""
     def __init__(self, http=None):
         self.http = http
 

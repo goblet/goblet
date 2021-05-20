@@ -20,6 +20,9 @@ log.setLevel(logging.INFO)
 
 
 class ApiGateway(Handler):
+    """Api Gateway instance, which includes api, api config, api gateway instances
+    https://cloud.google.com/api-gateway
+    """
     def __init__(self, app_name, routes=None):
         self.name = self.format_name(app_name)
         self.routes = routes or {}

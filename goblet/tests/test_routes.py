@@ -8,7 +8,7 @@ from goblet.test_utils import get_responses, get_response
 class TestRoutes:
 
     def test_add_base_route(self):
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
 
         @app.route('/home')
         def dummy_function(self):
@@ -23,7 +23,7 @@ class TestRoutes:
         assert(route_entry.route_function == dummy_function)
 
     def test_add_route_path_params(self):
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
 
         @app.route('/home/{home_id}', content_types={'home_id': 'boolean'})
         def dummy_function(self, home_id):
@@ -38,7 +38,7 @@ class TestRoutes:
         assert(route_entry.route_function == dummy_function)
 
     def test_add_multiple_methods(self):
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
 
         @app.route('/home', methods=['POST', 'GET'])
         def dummy_function(self):
@@ -56,7 +56,7 @@ class TestRoutes:
         assert(gateway.routes['/home']['GET'].route_function != gateway.routes['/home']['PUT'].route_function)
 
     def test_add_multiple_routes(self):
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
 
         @app.route('/home')
         def dummy_function(self, home_id):
@@ -115,7 +115,7 @@ class TestRoutes:
         def dummy_function(data):
             return
 
-        Deployer().deploy(app)
+        Deployer().deploy(app, force=True)
 
         post_api = get_response('routes-deploy', 'post-v1-projects-goblet-locations-global-apis_1.json')
         post_config = get_response('routes-deploy', 'post-v1-projects-goblet-locations-global-apis-goblet-routes-configs_1.json')

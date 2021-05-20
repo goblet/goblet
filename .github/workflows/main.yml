@@ -37,6 +37,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
           pip install coverage
+          pip install requests-mock
           pip install -r requirements.txt
       - name: Run pytest
         run: |
@@ -57,6 +58,26 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest
+          pip install requests-mock
+          pip install -r requirements.txt
+      - name: Run pytest
+        run: |
+          export PYTHONPATH=$(pwd)
+          pytest goblet/tests -v
+
+  Test_python39:
+    runs-on: ubuntu-latest
+    needs: Lint
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install pytest & goblet
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install requests-mock
           pip install -r requirements.txt
       - name: Run pytest
         run: |

@@ -140,17 +140,17 @@ Running your functions locally for testing and debugging is easy to do with gobl
 
     from goblet import Goblet
 
-    app = Goblet(function_name="goblet_example",region='us-central-1', local='test')
+    app = Goblet(function_name="goblet_example", local='test')
 
 
 Then run ``goblet local test`` and replace test with whatever variable you decide to use.
 Now you can hit your functions endpoint at ``localhost:8080``.
 
-To test a route locally make sure to add the header ``X-Envoy-Original-Path``. Otherwise the route will default to ``http()``
+Note: If you have both `http()` and `route("/")` in order to test the route locally make sure to add the header ``X-Envoy-Original-Path``. Otherwise the route will default to ``@http()``
 
 .. code:: sh 
 
-    curl -H X-Envoy-Original-Path:true  localhost:8080/endpoint
+    curl localhost:8080/endpoint
 
 To test a scheduled job locally you will need to include two headers in your request. One ``X-Goblet-Type:schedule`` and 
 ``X-Goblet-Name:FUNCTION_NAME`` which is the name of your function.
@@ -158,6 +158,31 @@ To test a scheduled job locally you will need to include two headers in your req
 .. code:: sh 
 
     curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+
+
+Debugging with VScode
+^^^^^^^^^^^^^^^^^^^^^
+
+To debug your functions locally with Vscode you can use the following configuration. Replace LOCAL_NAME with the name you 
+passed into ``goblet(NAME, local=LOCAL_NAME)``. Make sure that there are no naming collisions with any function names used in your app.
+
+.. code:: json 
+
+    {
+        "configurations": [
+            {
+                "name": "Python: Module",
+                "type": "python",
+                "request": "launch",
+                "module": "functions_framework",
+                "args": [
+                    "--target",
+                    "LOCAL_NAME",
+                    "--debug"
+                ]
+            }
+        ]
+    }
 
 
 Authentication

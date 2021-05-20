@@ -57,7 +57,7 @@ class TestPubSub:
         def dummy_function(event):
             return
 
-        Deployer().deploy(app)
+        Deployer().deploy(app, force=True)
 
         responses = get_responses('storage-deploy')
 

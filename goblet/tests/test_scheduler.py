@@ -7,7 +7,7 @@ from goblet.test_utils import get_responses
 class TestScheduler:
 
     def test_add_schedule(self, monkeypatch):
-        app = Goblet(function_name="goblet_example", region='us-central-1')
+        app = Goblet(function_name="goblet_example")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 

@@ -13,6 +13,9 @@ log.setLevel(logging.INFO)
 
 
 class PubSub(Handler):
+    """Pubsub topic trigger
+    https://cloud.google.com/functions/docs/calling/pubsub
+    """
     def __init__(self, name, topics=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"

@@ -9,6 +9,9 @@ log.setLevel(logging.INFO)
 
 
 class Scheduler(Handler):
+    """Cloud Scheduler job which calls http endpoint
+    https://cloud.google.com/scheduler/docs
+    """
     def __init__(self, name, jobs=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"

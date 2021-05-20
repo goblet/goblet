@@ -4,11 +4,13 @@ import os
 import requests
 import logging
 import hashlib
+from requests import request
+import base64
 
 from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location
-from goblet.utils import get_dir, get_g_dir
+from goblet.utils import get_dir, get_g_dir, checksum
 from goblet.config import GConfig
 
 log = logging.getLogger('goblet.deployer')
@@ -16,7 +18,7 @@ log.setLevel(logging.INFO)
 
 
 class Deployer:
-
+    """Deploys/Destroys goblet app and main cloudfunction. The main methods are deploy and destroy which both take in a Goblet instance"""
     def __init__(self, config={}):
         self.config = config
         if not config:
@@ -25,50 +27,54 @@ class Deployer:
             }
         self.name = self.config["name"]
         self.zipf = self.create_zip()
-        self.goblet_hash_name = self.project_hash()
         self.function_client = self._create_function_client()
+        self.func_name = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}"
 
     def _create_function_client(self):
         return Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
 
-    def project_hash(self):
-        if not get_default_project():
-            return None
-        m = hashlib.md5()
-        m.update(get_default_project().encode('utf-8'))
-        m.update(self.config["name"].encode('utf-8'))
-        m.update(b"goblet")
-        return "goblet-" + m.hexdigest()
-
     def package(self):
         self.zip()
 
-    def deploy(self, goblet, skip_function=False, only_function=False, config=None):
+    def deploy(self, goblet, skip_function=False, only_function=False, config=None, force=False):
+        """Deploys http cloudfunction and then calls goblet.deploy() to deploy any handler's required infrastructure"""
         url = None
         if not skip_function:
             log.info("zipping function......")
             self.zip()
-            log.info("uploading function zip to gs......")
-            url = self._upload_zip()
-            # TODO: CHECK IF VERSION IS DEPLOYED
-            if goblet.is_http():
-                self.create_function(url, goblet.entrypoint, config)
-        if not only_function:
+            if not force and self.get_function() and not self._cloudfunction_delta(f'.goblet/{self.name}.zip'):
+                log.info("No changes detected......")
+            else:
+                log.info("uploading function zip to gs......")
+                url = self._upload_zip()
+                if goblet.is_http():
+                    self.create_function(url, goblet.entrypoint, config)
+        if not only_function and url:
             goblet.deploy(url)
 
         return goblet
 
     def destroy(self, goblet):
+        """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         goblet.destroy()
         destroy_cloudfunction(self.name)
 
         return goblet
 
+    def get_function(self):
+        """Returns cloudfunction currently deployed or None"""
+        try:
+            return self.function_client.execute('get', parent_key="name", parent_schema=self.func_name)
+        except HttpError as e:
+            if e.resp.status != 404:
+                raise
+
     def create_function(self, url, entrypoint, config=None):
+        """Creates http cloudfunction"""
         config = GConfig(config=config)
         user_configs = config.cloudfunction or {}
         req_body = {
-            "name": f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}",
+            "name": self.func_name,
             "description": config.description or "created by goblet",
             "entryPoint": entrypoint,
             "sourceUploadUrl": url,
@@ -78,7 +84,20 @@ class Deployer:
         }
         create_cloudfunction(req_body, config=config.config)
 
+    def _cloudfunction_delta(self, filename):
+        """Compares md5 hash between local zipfile and cloudfunction already deployed"""
+        self.zipf.close()
+        with open(filename, 'rb') as fh:
+            local_checksum = base64.b64encode(checksum(fh, hashlib.md5())).decode('ascii')
+
+        source_info = self.function_client.execute('generateDownloadUrl', parent_key="name", parent_schema=self.func_name)
+        resp = request('HEAD', source_info['downloadUrl'])
+        deployed_checksum = resp.headers['x-goog-hash'].split(',')[-1].split('=', 1)[-1]
+        modified = deployed_checksum != local_checksum
+        return modified
+
     def _upload_zip(self):
+        """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
         self.zipf.close()
         zip_size = os.stat(f'.goblet/{self.name}.zip').st_size
         with open(f'.goblet/{self.name}.zip', 'rb') as f:
@@ -99,11 +118,13 @@ class Deployer:
         return resp["uploadUrl"]
 
     def create_zip(self):
+        """Creates initial goblet zipfile"""
         if not os.path.isdir(get_g_dir()):
             os.mkdir(get_g_dir())
         return zipfile.ZipFile(get_g_dir() + f'/{self.name}.zip', 'w', zipfile.ZIP_DEFLATED)
 
     def zip(self):
+        """Zips requirements.txt, python files and any additional files based on config.customFiles"""
         config = GConfig()
         self.zip_file("requirements.txt")
         include = config.customFiles or []
@@ -124,6 +145,7 @@ class Deployer:
 
 
 def create_cloudfunction(req_body, config=None):
+    """Creates a cloudfunction based on req_body"""
     function_name = req_body['name'].split('/')[-1]
     function_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
     try:
@@ -151,6 +173,7 @@ def create_cloudfunction(req_body, config=None):
 
 
 def destroy_cloudfunction(name):
+    """Destroys cloudfunction"""
     try:
         client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/' + name)
         client.execute('delete', parent_key="name")

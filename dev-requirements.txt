@@ -4,3 +4,4 @@ twine
 coverage
 flake8
 pytest
+requests-mock
