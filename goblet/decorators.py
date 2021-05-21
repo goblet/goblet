@@ -54,7 +54,7 @@ class DecoratorAPI:
             registration_kwargs={'bucket': bucket, 'event_type': event_type},
         )
 
-    def http(self, headers={}):
+    def http(self, headers):
         """Base http trigger"""
         return self._create_registration_function(
             handler_type='http',
@@ -176,7 +176,7 @@ class Register_Handlers(DecoratorAPI):
         self.middleware_handlers[event_type] = middleware_list
 
     def _register_http(self, name, func, kwargs):
-        self.handlers["http"].register_http(func=func, kwargs=kwargs)
+        self.handlers["http"].register_http(func, kwargs=kwargs)
 
     def _register_route(self, name, func, kwargs):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
