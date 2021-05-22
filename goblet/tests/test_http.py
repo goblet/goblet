@@ -1,5 +1,6 @@
 from goblet import Goblet
 from unittest.mock import Mock
+from goblet.test_utils import mock_dummy_function
 
 
 class TestHttp():
@@ -7,10 +8,7 @@ class TestHttp():
         app = Goblet(function_name="goblet_example")
         mock = Mock()
 
-        @app.http()
-        def mock_function(request):
-            mock()
-            return True
+        app.http()(mock_dummy_function(mock))
 
         mock_request = Mock()
         mock_request.path = '/'

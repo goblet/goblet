@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 from goblet import Goblet
 from goblet.resources.scheduler import Scheduler
-from goblet.test_utils import get_responses
+from goblet.test_utils import get_responses, mock_dummy_function, dummy_function
 
 
 class TestScheduler:
@@ -11,9 +11,8 @@ class TestScheduler:
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
-        @app.schedule('* * * * *', description='test')
-        def dummy_function(self):
-            return True
+        app.schedule('* * * * *', description='test')(dummy_function)
+
         scheduler = app.handlers["schedule"]
         assert(len(scheduler.jobs) == 1)
         scheule_json = {
@@ -40,13 +39,10 @@ class TestScheduler:
 
         mock = Mock()
 
-        @app.schedule('* * * * *', description='test')
-        def scheduled_job():
-            mock()
-            return True
+        app.schedule('* * * * *', description='test')(mock_dummy_function(mock))
 
         headers = {
-            "X-Goblet-Name": "scheduled_job",
+            "X-Goblet-Name": "dummy_function",
             "X-Goblet-Type": "schedule",
             "X-Cloudscheduler": True
         }
