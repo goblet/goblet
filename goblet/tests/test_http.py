@@ -3,9 +3,7 @@ from unittest.mock import Mock
 
 
 class TestHttp():
-    def test_call_route(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    def test_call_route(self):
         app = Goblet(function_name="goblet_example")
         mock = Mock()
 

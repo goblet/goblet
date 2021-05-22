@@ -10,10 +10,8 @@ import pytest
 
 class TestPubSub:
 
-    def test_add_topic(self, monkeypatch):
+    def test_add_topic(self):
         app = Goblet(function_name="goblet_example")
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         @app.topic('test')
         def dummy_function(self):
@@ -22,10 +20,8 @@ class TestPubSub:
         assert(len(pubsub.topics) == 1)
         assert(pubsub.topics['test']['dummy_function'] == {'func': dummy_function, 'attributes': {}})
 
-    def test_add_topic_attributes(self, monkeypatch):
+    def test_add_topic_attributes(self):
         app = Goblet(function_name="goblet_example")
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         @app.topic('test', attributes={'test': True})
         def dummy_function(self):
@@ -34,10 +30,8 @@ class TestPubSub:
         assert(len(pubsub.topics) == 1)
         assert(pubsub.topics['test']['dummy_function'] == {'func': dummy_function, 'attributes': {'test': True}})
 
-    def test_call_topic(self, monkeypatch):
+    def test_call_topic(self):
         app = Goblet(function_name="goblet_example")
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         @app.topic('test')
         def dummy_function(data):
@@ -52,10 +46,8 @@ class TestPubSub:
         # assert dummy_function is run
         app(event, mock_context)
 
-    def test_call_topic_attributes(self, monkeypatch):
+    def test_call_topic_attributes(self):
         app = Goblet(function_name="goblet_example")
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         @app.topic('test', attributes={'t': 1})
         def dummy_function(data):
