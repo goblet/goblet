@@ -12,6 +12,16 @@ from marshmallow import Schema, fields
 def main(request):
     return jsonify(request.json)
 
+# Example http trigger that contains header
+@app.http(headers={"X-Github-Event"})
+def main(request):
+    return jsonify(request.json)
+
+# Example http triggers that matches header
+@app.http(headers={"X-Github-Event": "issue"})
+def main(request):
+    return jsonify(request.json)
+
 # path param
 @app.route('/home/{test}')
 def home(test):
