@@ -2,7 +2,7 @@ from unittest.mock import Mock
 from goblet import Goblet
 from goblet.resources.routes import ApiGateway
 from goblet.deploy import Deployer
-from goblet.test_utils import get_responses, get_response
+from goblet.test_utils import get_responses, get_response, dummy_function, mock_dummy_function
 
 
 class TestRoutes:
@@ -10,9 +10,7 @@ class TestRoutes:
     def test_add_base_route(self):
         app = Goblet(function_name="goblet_example")
 
-        @app.route('/home')
-        def dummy_function(self):
-            return True
+        app.route('/home')(dummy_function)
 
         gateway = app.handlers["route"]
         assert(len(gateway.routes) == 1)
@@ -25,9 +23,7 @@ class TestRoutes:
     def test_add_route_path_params(self):
         app = Goblet(function_name="goblet_example")
 
-        @app.route('/home/{home_id}', content_types={'home_id': 'boolean'})
-        def dummy_function(self, home_id):
-            return True
+        app.route('/home/{home_id}', content_types={'home_id': 'boolean'})(dummy_function)
 
         gateway = app.handlers["route"]
         assert(len(gateway.routes) == 1)
@@ -58,29 +54,20 @@ class TestRoutes:
     def test_add_multiple_routes(self):
         app = Goblet(function_name="goblet_example")
 
-        @app.route('/home')
-        def dummy_function(self, home_id):
-            return True
+        app.route('/home')(dummy_function)
+        app.route('/home2')(dummy_function)
 
-        @app.route('/home2')
-        def dummy_function2(self, home_id):
-            return True
         gateway = app.handlers["route"]
         assert(len(gateway.routes) == 2)
         assert(gateway.routes['/home']['GET'])
         assert(gateway.routes['/home2']['GET'])
 
-    def test_call_route(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    def test_call_route(self):
         app = Goblet(function_name="goblet_example")
         mock = Mock()
         mock_param = Mock()
 
-        @app.route('/test')
-        def mock_function():
-            mock()
-            return True
+        app.route('/test')(mock_dummy_function(mock))
 
         @app.route('/test/{param}', methods=['POST'])
         def mock_function2(param):
@@ -111,9 +98,7 @@ class TestRoutes:
         app = Goblet(function_name="goblet_routes")
         setattr(app, "entrypoint", 'app')
 
-        @app.route('/')
-        def dummy_function(data):
-            return
+        app.route('/')(dummy_function)
 
         Deployer().deploy(app, force=True)
 

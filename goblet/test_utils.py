@@ -22,6 +22,12 @@ def dummy_function():
     return None
 
 
+def mock_dummy_function(mock):
+    def dummy_function(event=None):
+        return mock()
+    return dummy_function
+
+
 class HttpFiles(Http):
     """Logic to interate through files in the DATA_DIR for both recording and replaying http responses"""
 

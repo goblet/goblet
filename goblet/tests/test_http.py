@@ -1,18 +1,14 @@
 from goblet import Goblet
 from unittest.mock import Mock
+from goblet.test_utils import mock_dummy_function
 
 
 class TestHttp():
-    def test_call_route(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    def test_call_route(self):
         app = Goblet(function_name="goblet_example")
         mock = Mock()
 
-        @app.http()
-        def mock_function(request):
-            mock()
-            return True
+        app.http()(mock_dummy_function(mock))
 
         mock_request = Mock()
         mock_request.path = '/'
