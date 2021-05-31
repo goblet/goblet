@@ -267,7 +267,7 @@ class OpenApiSpec:
     def add_route(self, entry):
         method_spec = OrderedDict()
         method_spec["x-google-backend"] = {
-            "address": self.cloudfunction,
+            "address": entry.backend or self.cloudfunction,
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS"
         }
@@ -372,6 +372,7 @@ class RouteEntry:
         self.request_body = kwargs.get("request_body")
         self.form_data = kwargs.get("form_data")
         self.responses = kwargs.get("responses")
+        self.backend = kwargs.get("backend")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']
         self.view_args = self._parse_view_args()

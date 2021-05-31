@@ -95,4 +95,19 @@ Resources
 
    resources
 
+Blogs
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   blogs
+
+Examples
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   examples
 

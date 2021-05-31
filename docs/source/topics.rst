@@ -426,3 +426,16 @@ For example the dev deployment will override the environment variable ``env`` wi
 
 You can view your current stages using ``goblet stage list``. To deploy or destroy a specific stage use the ``--stage`` or ``-s`` flag with the stage. You can also use the 
 environment variable ``STAGE``. For example ``goblet deploy -s dev``.
+
+
+API Gateway Backends
+^^^^^^^^^^^^^^^^^^^^
+
+Api Gateway supports all available backend services including app engine, GKE, GCE, cloudrun, and cloudfunctions. To add an endpoint to a backend service other than the deployed
+cloudfunction, specify the endpoint in the `backend` argment in `route`. Note that the function will not be invoked since the request will be routed to a different backend.
+
+.. code:: python 
+
+    @app.route('/custom_backend', backend="https://www.CLOUDRUN_URL.com/home")
+    def home():
+        return 

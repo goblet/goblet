@@ -126,3 +126,10 @@ class TestOpenApiSpec:
         spec.add_route(route)
         params = spec.spec['paths']['/home']['get']['parameters'][0]
         assert params == {'in': 'formData', 'name': 'file', 'type': 'file'}
+
+    def test_custom_backend(self):
+        route = RouteEntry(dummy, "route", "/home", "GET", form_data=True, backend="CLOUDRUN/URL")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        entry = spec.spec['paths']['/home']['get']
+        assert entry["x-google-backend"]["address"] == "CLOUDRUN/URL"

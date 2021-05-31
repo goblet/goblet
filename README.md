@@ -174,6 +174,14 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Goblet Documentation](https://anovis.github.io/goblet/docs/build/html/index.html)
 
+## Blog Posts
+
+[Building Python Serverless Applications on GCP](https://austennovis.medium.com/building-python-serverless-applications-on-gcp-141a806eb7a5)
+
+## Examples
+
+[Goblet Examples](https://github.com/anovis/goblet/blob/master/examples/main.py)
+
 ## Issues
 
 Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/anovis/goblet/issues) page.
