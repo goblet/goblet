@@ -12,12 +12,22 @@ from marshmallow import Schema, fields
 def main(request):
     return jsonify(request.json)
 
-# path param
+# Example http trigger that contains header
+@app.http(headers={"X-Github-Event"})
+def main(request):
+    return jsonify(request.json)
+
+# Example http triggers that matches header
+@app.http(headers={"X-Github-Event": "issue"})
+def main(request):
+    return jsonify(request.json)
+
+# Path param
 @app.route('/home/{test}')
 def home(test):
     return jsonify(test)
     
-# example query args
+# Example query args
 @app.route('/home')
 def query_args():
     request = app.current_request
@@ -39,13 +49,18 @@ class Point(Schema):
     lat = fields.Int()
     lng = fields.Int()
 
-# custom schema types
+# Custom schema types
 @app.route('/points')
 def points() -> List[Point]:
     point = Point().load({"lat":0, "lng":0})
     return [point]
 
-# custom responses and request_types
+# Custom Backend
+@app.route('/custom_backend', backend="https://www.CLOUDRUN_URL.com/home")
+def home():
+    return
+
+# Custom responses and request_types
 @app.route('/custom', request_body={'application/json': {'schema': {"type": "array", "items": {'type': 'string'}}}},
 responses={'400': {'description': '400'}})
 def custom():
@@ -53,23 +68,23 @@ def custom():
     assert request.data ["string1", "string2"]
     return
 
-# example response object
+# Example response object
 @app.route('/response')
 def response():
     return Response({"failed":400},headers={"Content-Type":"application/json"}, status_code=400)
 
-# scheduled job
+# Scheduled job
 @app.schedule('5 * * * *')
 def scheduled_job():
     return jsonify("success")
 
-# pubsub topic
+# Pubsub topic
 @app.topic('test')
 def topic(data):
     app.log.info(data)
     return 
 
-# pubsub topic with matching message attributes
+# Pubsub topic with matching message attributes
 @app.topic('test', attributes={'key': 'value'})
 def home2(data):
     app.log.info(data)

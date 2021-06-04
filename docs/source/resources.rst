@@ -4,7 +4,7 @@ Resources
 
 Http
 ^^^^
-You can have one http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
+You can have a http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
 only deploy a cloudfunction. The function takes in a flask request object
 
 .. code:: python 
@@ -16,6 +16,31 @@ only deploy a cloudfunction. The function takes in a flask request object
     @app.http()
     def http_entrypoint(request):
         return request.json
+
+
+You can have multiple http endpoints that get triggered based on the request headers. Note if multiple header filters match, only the first match will be 
+triggered.
+
+
+The following endpoint will be triggered on any request that has a "X-Github-Event" header
+
+.. code:: python 
+
+    @app.http(headers={"X-Github-Event"})
+    def main(request):
+        return jsonify(request.json)
+
+The following endpoints will be triggered if the request contains a "X-Github-Event" header that matches the corresponding value
+
+.. code:: python 
+
+    @app.http(headers={"X-Github-Event": "issue"})
+    def main(request):
+        return jsonify("triggered on issue")
+
+    @app.http(headers={"X-Github-Event": "pr"})
+        def main(request):
+            return jsonify("triggered on pr")
 
 Routes
 ^^^^^^
