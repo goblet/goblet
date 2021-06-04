@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.4.7 documentation</title>
+  <title>Topics &mdash; goblet 0.4.8 documentation</title>
   
 
   
@@ -100,11 +100,18 @@
 <li class="toctree-l2"><a class="reference internal" href="#openapi-spec">OpenApi Spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multiple-files">Multiple Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stages">Stages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-gateway-backends">API Gateway Backends</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
             
@@ -508,6 +515,16 @@ override those in the general config file.</p>
 </div>
 <p>You can view your current stages using <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">stage</span> <span class="pre">list</span></code>. To deploy or destroy a specific stage use the <code class="docutils literal notranslate"><span class="pre">--stage</span></code> or <code class="docutils literal notranslate"><span class="pre">-s</span></code> flag with the stage. You can also use the
 environment variable <code class="docutils literal notranslate"><span class="pre">STAGE</span></code>. For example <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">deploy</span> <span class="pre">-s</span> <span class="pre">dev</span></code>.</p>
+</div>
+<div class="section" id="api-gateway-backends">
+<h2>API Gateway Backends<a class="headerlink" href="#api-gateway-backends" title="Permalink to this headline">¶</a></h2>
+<p>Api Gateway supports all available backend services including app engine, GKE, GCE, cloudrun, and cloudfunctions. To add an endpoint to a backend service other than the deployed
+cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite>route</cite>. Note that the function will not be invoked since the request will be routed to a different backend.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_backend&#39;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.4.7 documentation</title>
+  <title>Resources &mdash; goblet 0.4.8 documentation</title>
   
 
   
@@ -38,6 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Blogs" href="blogs.html" />
     <link rel="prev" title="Topics" href="topics.html" /> 
 </head>
 
@@ -98,6 +99,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
             
@@ -169,7 +176,7 @@
 <h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="http">
 <h2>Http<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
-<p>You can have one http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
+<p>You can have a http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
 only deploy a cloudfunction. The function takes in a flask request object</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
 
@@ -178,6 +185,24 @@ only deploy a cloudfunction. The function takes in a flask request object</p>
 <span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">http_entrypoint</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>You can have multiple http endpoints that get triggered based on the request headers. Note if multiple header filters match, only the first match will be
+triggered.</p>
+<p>The following endpoint will be triggered on any request that has a “X-Github-Event” header</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following endpoints will be triggered if the request contains a “X-Github-Event” header that matches the corresponding value</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">:</span> <span class="s2">&quot;issue&quot;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on issue&quot;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">:</span> <span class="s2">&quot;pr&quot;</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on pr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -285,6 +310,7 @@ The following events are supported by GCP</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="blogs.html" class="btn btn-neutral float-right" title="Blogs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
