@@ -1,6 +1,10 @@
 import json
 from goblet.utils import get_g_dir
 import os
+import logging
+
+log = logging.getLogger('goblet.config')
+log.setLevel(logging.INFO)
 
 
 class GConfig:
@@ -19,6 +23,9 @@ class GConfig:
             with open(f'{get_g_dir()}/config.json') as f:
                 return json.load(f)
         except FileNotFoundError:
+            return {}
+        except json.decoder.JSONDecodeError:
+            log.info('JSONDecodeError. config.json is not valid. Returning empty config')
             return {}
 
     def __getattr__(self, name):
