@@ -178,6 +178,8 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Building Python Serverless Applications on GCP](https://austennovis.medium.com/building-python-serverless-applications-on-gcp-141a806eb7a5)
 
+[Tutorial: Publishing GitHub Findings to Security Command Center](https://engineering.premise.com/tutorial-publishing-github-findings-to-security-command-center-2d1749f530bc)
+
 ## Examples
 
 [Goblet Examples](https://github.com/anovis/goblet/blob/master/examples/main.py)
@@ -185,6 +187,10 @@ INFO:goblet.deployer:deleting storage bucket......
 ## Issues
 
 Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/anovis/goblet/issues) page.
+
+## Github Action
+
+[Goblet Github Action](https://github.com/marketplace/actions/goblet-deploy)
 
 ## Roadmap
 
