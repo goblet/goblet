@@ -54,8 +54,8 @@ def deploy(project, location, stage, skip_function, only_function, force):
         app = get_goblet_app()
         Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function, force=force)
 
-    except FileNotFoundError:
-        click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+    except FileNotFoundError as not_found:
+        click.echo(f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists")
 
 
 @main.command()
@@ -77,8 +77,8 @@ def destroy(project, location, stage):
         app = get_goblet_app()
         Deployer({"name": app.function_name}).destroy(app)
 
-    except FileNotFoundError:
-        click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+    except FileNotFoundError as not_found:
+        click.echo(f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists")
 
 
 @main.command()
@@ -93,8 +93,8 @@ def openapi(cloudfunction):
         app = get_goblet_app()
         app.handlers["route"].generate_openapi_spec(cloudfunction)
 
-    except FileNotFoundError:
-        click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+    except FileNotFoundError as not_found:
+        click.echo(f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists")
 
 
 @main.command()
@@ -123,8 +123,8 @@ def package(stage):
         app = get_goblet_app()
         Deployer({"name": app.function_name}).package()
 
-    except FileNotFoundError:
-        click.echo("Missing main.py. This is the required entrypoint for google cloud functions")
+    except FileNotFoundError as not_found:
+        click.echo(f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists")
 
 
 @click.argument('name',)

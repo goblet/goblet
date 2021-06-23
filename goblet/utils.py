@@ -66,7 +66,7 @@ def create_goblet_dir(name):
         f.write(f'goblet-gcp=={__version__}')
     with open('main.py', 'w') as f:
         f.write(f"""
-from goblet import Goblet
+from goblet import Goblet, jsonify
 
 app = Goblet(function_name="goblet-{name}", local="local")
 

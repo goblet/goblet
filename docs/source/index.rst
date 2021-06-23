@@ -103,6 +103,14 @@ Blogs
 
    blogs
 
+Integrations
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   integrations
+
 Examples
 --------
 
