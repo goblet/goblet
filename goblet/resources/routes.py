@@ -115,7 +115,7 @@ class ApiGateway(Handler):
                 log.info("api already deployed")
             else:
                 raise e
-
+        goblet_config = GConfig()
         config = {
             "openapiDocuments": [
                 {
@@ -124,7 +124,8 @@ class ApiGateway(Handler):
                         "contents": base64.b64encode(open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'rb').read()).decode('utf-8')
                     }
                 }
-            ]
+            ],
+            **(goblet_config.apiConfig or {})
         }
         try:
             config_version_name = self.name
@@ -202,7 +203,7 @@ class ApiGateway(Handler):
 
     def generate_openapi_spec(self, cloudfunction):
         config = GConfig()
-        spec = OpenApiSpec(self.name, cloudfunction, security_definitions=config.securityDefinitions)
+        spec = OpenApiSpec(self.name, cloudfunction, security_definitions=config.securityDefinitions, security=config.security)
         spec.add_apigateway_routes(self.routes)
         with open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'w') as f:
             spec.write(f)
@@ -216,7 +217,7 @@ PRIMITIVE_MAPPINGS = {
 
 
 class OpenApiSpec:
-    def __init__(self, app_name, cloudfunction, version="1.0.0", security_definitions=None):
+    def __init__(self, app_name, cloudfunction, version="1.0.0", security_definitions=None, security=None):
         self.spec = OrderedDict()
         self.app_name = app_name
         self.cloudfunction = cloudfunction
@@ -229,6 +230,7 @@ class OpenApiSpec:
         }
         if security_definitions:
             self.spec["securityDefinitions"] = security_definitions
+            self.spec["security"] = security or list(map(lambda s: {s:[]}, security_definitions))
         self.spec["schemes"] = ["https"]
         self.spec['produces'] = ["application/json"]
         self.spec["paths"] = {}
