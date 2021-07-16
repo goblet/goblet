@@ -59,8 +59,7 @@ class TestOpenApiSpec:
         }
         spec = OpenApiSpec("test", "xyz.cloudfunction", security_definitions=security_def)
         assert(spec.spec["securityDefinitions"] == security_def)
-        assert(spec.spec["security"] == [{"your_custom_auth_id":[]}])
-
+        assert(spec.spec["security"] == [{"your_custom_auth_id": []}])
 
     def test_security_config(self):
         security_def = {
@@ -72,9 +71,9 @@ class TestOpenApiSpec:
                 "x-google-jwks_uri": "url to the public key"
             }
         }
-        spec = OpenApiSpec("test", "xyz.cloudfunction", security_definitions=security_def,security=[{"custom":[]}])
+        spec = OpenApiSpec("test", "xyz.cloudfunction", security_definitions=security_def, security=[{"custom": []}])
         assert(spec.spec["securityDefinitions"] == security_def)
-        assert(spec.spec["security"] == [{"custom":[]}])
+        assert(spec.spec["security"] == [{"custom": []}])
 
     def test_add_primitive_types(self):
         def prim_typed(param: str, param2: bool) -> int:

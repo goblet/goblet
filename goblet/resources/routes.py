@@ -230,7 +230,7 @@ class OpenApiSpec:
         }
         if security_definitions:
             self.spec["securityDefinitions"] = security_definitions
-            self.spec["security"] = security or list(map(lambda s: {s:[]}, security_definitions))
+            self.spec["security"] = security or list(map(lambda s: {s: []}, security_definitions))
         self.spec["schemes"] = ["https"]
         self.spec['produces'] = ["application/json"]
         self.spec["paths"] = {}
