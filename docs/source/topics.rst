@@ -472,3 +472,31 @@ cloudfunction, specify the endpoint in the `backend` argment in `route`. Note th
     @app.route('/custom_backend', backend="https://www.CLOUDRUN_URL.com/home")
     def home():
         return 
+
+Cors
+^^^^
+
+Cors can be set on the route level or on the Goblet application level. Setting `cors=True` uses the default cors setting 
+
+.. code:: json 
+
+    headers : {
+        "Access-Control-Allow-Headers" : ['Content-Type', 'Authorization'],
+        "Access-Control-Allow-Origin": "*"
+    }
+
+.. code:: python 
+
+    @app.route('/custom_backend', cors=True)
+    def home():
+        return "cors headers"
+
+Use the `CORSConfig` class to set customized cors headers from the `goblet.resources.routes` class. 
+
+.. code:: python 
+
+    from goblet.resources.routes import CORSConfig
+
+    @app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost'))
+    def custom_cors():
+        return jsonify('localhost is allowed')

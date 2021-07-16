@@ -8,6 +8,7 @@ import re
 from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+import goblet
 
 from goblet.handler import Handler
 from goblet.client import Client, get_default_project, get_default_location
@@ -23,9 +24,10 @@ class ApiGateway(Handler):
     """Api Gateway instance, which includes api, api config, api gateway instances
     https://cloud.google.com/api-gateway
     """
-    def __init__(self, app_name, routes=None):
+    def __init__(self, app_name, routes=None, cors=None):
         self.name = self.format_name(app_name)
         self.routes = routes or {}
+        self.cors = cors or {}
         self._api_client = None
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
 
@@ -43,6 +45,8 @@ class ApiGateway(Handler):
         path = kwargs.pop("path")
         methods = kwargs.pop("methods")
         kwargs = kwargs.pop('kwargs')
+        if not kwargs.get("cors"):
+            kwargs["cors"] = self.cors
         path_entries = self.routes.get(path, {})
         for method in methods:
             if path_entries.get(method):
@@ -385,7 +389,10 @@ class RouteEntry:
         # headers, otherwise the CORSConfig object will determine which
         # headers are injected.
         if cors is True:
-            cors = CORSConfig()
+            if isinstance(cors, CORSConfig):
+                cors = cors
+            else:
+                cors = CORSConfig()
         elif cors is False:
             cors = None
         self.cors = cors
@@ -405,7 +412,8 @@ class RouteEntry:
     def __call__(self, request):
         # TODO: pass in args and kwargs and options
         args = self._extract_view_args(request.path)
-        return self.route_function(**args)
+        resp = self.route_function(**args)
+        return self._apply_cors(resp)
 
     def _parse_view_args(self):
         if '{' not in self.uri_pattern:
@@ -417,6 +425,19 @@ class RouteEntry:
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
+
+    def _apply_cors(self, resp):
+        """Apply cors to Response"""
+        if not self.cors:
+            return resp
+        # Apply to Response Obj
+        if isinstance(resp, goblet.Response):
+            resp.headers.update(self.cors.get_access_control_headers())
+        if isinstance(resp, tuple):
+            resp[2].update(self.cors.get_access_control_headers())
+        if isinstance(resp, str):
+            resp = goblet.Response(resp, headers=self.cors.get_access_control_headers())
+        return resp
 
 
 class CORSConfig(object):
