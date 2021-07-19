@@ -94,6 +94,23 @@ Example config.json:
 
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
+You can customize the configs for an Api Gateway using the `apiConfig` key in `config.json`. Allowed fields can be found 
+`here <https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig>`_ and include 
+
+* gatewayServiceAccount
+* labels 
+* displayName
+
+.. code:: json
+
+    {
+        "apiConfig": {
+            "gatewayServiceAccount": "projects/-/serviceAccounts/ServiceAccount@PROJECT",
+            "labels": {
+                "label1" : "value1"
+            }
+        }
+    }  
 
 Iam Bindings
 ^^^^^^^^^^^^
@@ -213,6 +230,22 @@ An api using JWT authentication would require the following in ``config.json``
             }
         }
     }
+
+This generates a `security section <https://swagger.io/docs/specification/2-0/authentication/>`_ in the openapi 
+spec with empty scopes. If you would like to customize the security section and add custom scopes use the `security` 
+section in `config.json`
+
+
+.. code:: json
+
+    {
+        "security":[
+            {
+                "OAuth2": ["read", "write"]
+            }
+        ]
+    }
+
 
 Request
 ^^^^^^^
