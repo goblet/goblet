@@ -94,7 +94,8 @@ Example config.json:
 
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
-You can customize the configs for an Api Gateway using the `apiGateway` key in `config.json`. Allowed fields can be found 
+
+You can customize the configs for an Api Gateway using the `apiConfig` key in `config.json`. Allowed fields can be found 
 `here <https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig>`_ and include 
 
 * gatewayServiceAccount
@@ -104,8 +105,8 @@ You can customize the configs for an Api Gateway using the `apiGateway` key in `
 .. code:: json
 
     {
-        "apiGateway": {
-            "gatewayServiceAccount": ServiceAccount@PROJECT,
+        "apiConfig": {
+            "gatewayServiceAccount": "projects/-/serviceAccounts/ServiceAccount@PROJECT",
             "labels": {
                 "label1" : "value1"
             }
