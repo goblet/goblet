@@ -6,7 +6,7 @@ import subprocess
 
 from goblet.utils import get_goblet_app, create_goblet_dir
 from goblet.deploy import Deployer
-from goblet.client import Client, get_default_project
+from goblet.client import get_default_project
 from goblet.__version__ import __version__
 
 logging.basicConfig()
@@ -136,6 +136,7 @@ def init(name):
     click.echo("created requirements.txt")
     click.echo("created main.py")
     click.echo("created README.md")
+
 
 @main.group()
 def stage():

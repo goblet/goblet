@@ -76,7 +76,7 @@ class TestOpenApiSpec:
         assert(spec.spec["security"] == [{"custom": []}])
 
     def test_security_method(self):
-        route = RouteEntry(dummy, "route", "/home", "POST", security=[{"your_custom_auth_id":[]}])
+        route = RouteEntry(dummy, "route", "/home", "POST", security=[{"your_custom_auth_id": []}])
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         assert(spec.spec['paths']['/home']['post']['security'] == [{"your_custom_auth_id": []}])
