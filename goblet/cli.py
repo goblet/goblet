@@ -137,36 +137,6 @@ def init(name):
     click.echo("created main.py")
     click.echo("created README.md")
 
-
-@main.command(name="logs")
-@click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT', required=True)
-@click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
-@click.option('-s', '--stage', 'stage', envvar='STAGE')
-def logs(project, location, stage):
-    """Get logs from deployed cloudfunctions"""
-    app = get_goblet_app()
-    function_name = app.function_name
-    if stage:
-        function_name = f"{app.function_name}-{stage}"
-    log_client = Client("logging", 'v2', calls='entries')
-    
-    log_filter = 'resource.type == "cloud_function"'
-    log_filter += f' AND resource.labels.function_name == "{function_name}"'
-    log_filter += f' AND resource.labels.region == "{location}"'
-    log_filter += f' AND severity>=DEFAULT'
-
-    log_request = {
-       "resourceNames": [
-           f"projects/{project}/"
-        ],
-        filter: log_filter
-    }
-    import pdb; pdb.set_trace()
-    resp = log_client.execute("list", params={'body':log_request})
-    for entry in resp["entries"]:
-        click.echo(entry["payload"])
-
-
 @main.group()
 def stage():
     """view and create different environment stages"""
