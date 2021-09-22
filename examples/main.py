@@ -57,7 +57,12 @@ def points() -> List[Point]:
 
 # Custom Backend
 @app.route('/custom_backend', backend="https://www.CLOUDRUN_URL.com/home")
-def home():
+def custom_backend():
+    return
+
+# Method Security
+@app.route('/method_security', security=[{"your_custom_auth_id": []}])
+def method_security():
     return
 
 # Custom responses and request_types
