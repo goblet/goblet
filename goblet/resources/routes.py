@@ -349,6 +349,9 @@ class OpenApiSpec:
                     **content
                 }
             }
+        if entry.security:
+            method_spec["security"] = entry.security
+
         path_exists = self.spec["paths"].get(entry.uri_pattern)
         if path_exists:
             self.spec["paths"][entry.uri_pattern][entry.method.lower()] = dict(method_spec)
@@ -379,6 +382,7 @@ class RouteEntry:
         self.form_data = kwargs.get("form_data")
         self.responses = kwargs.get("responses")
         self.backend = kwargs.get("backend")
+        self.security = kwargs.get("security")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']
         self.view_args = self._parse_view_args()

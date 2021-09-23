@@ -122,18 +122,18 @@ The bindings should be in the `GCP Policy format <https://cloud.google.com/funct
 For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
 member `allUsers`
 
-    .. code:: json
+.. code:: json
 
-        {
-            "bindings": [
-                {
-                    "role": "roles/cloudfunctions.invoker",
-                    "members": [
-                        "allUsers"
-                    ]
-                }
-            ]
-        }
+    {
+        "bindings": [
+            {
+                "role": "roles/cloudfunctions.invoker",
+                "members": [
+                    "allUsers"
+                ]
+            }
+        ]
+    }
 
 To remove bindings once they are deploy you should update your `bindings` in `config.json` and change the `members` to be an empty list
 
@@ -246,6 +246,13 @@ section in `config.json`
             }
         ]
     }
+
+
+If you would like to apply security at the method level then you can add security policy in the route decorator.
+
+.. code:: python 
+
+    @app.route('/method_security', security=[{"your_custom_auth_id": []}])
 
 
 Request
