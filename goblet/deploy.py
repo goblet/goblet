@@ -101,7 +101,7 @@ class Deployer:
         self.zipf.close()
         zip_size = os.stat(f'.goblet/{self.name}.zip').st_size
         with open(f'.goblet/{self.name}.zip', 'rb') as f:
-            resp = self.function_client.execute('generateUploadUrl')
+            resp = self.function_client.execute('generateUploadUrl', params={'body': {}})
 
             requests.put(
                 resp["uploadUrl"],
