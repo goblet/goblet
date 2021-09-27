@@ -35,7 +35,7 @@ def version():
 @click.option('-s', '--stage', 'stage', envvar='STAGE')
 @click.option('--skip-function', 'skip_function', is_flag=True)
 @click.option('--only-function', 'only_function', is_flag=True)
-@click.option('-c', '--config', 'config')
+@click.option('--config-from-json-string', 'config')
 @click.option('-f', '--force', 'force', is_flag=True)
 def deploy(project, location, stage, skip_function, only_function, config, force):
     """
