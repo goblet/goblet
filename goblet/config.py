@@ -29,12 +29,11 @@ class GConfig:
             return {}
 
     def __getattr__(self, name):
+        if os.environ.get(name):
+            return os.environ.get(name)
         attr = self.config.get(name)
         if attr:
             return attr
-        if os.environ.get(name):
-            return os.environ.get(name)
-
         return None
 
     def __setattr__(self, name, value):
