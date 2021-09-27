@@ -10,8 +10,10 @@ log.setLevel(logging.INFO)
 class GConfig:
     """Config class used to get variables from config.json or from the environment. If stage is set as an environment level
     if will parse the corresponding section in config.json and return those config values"""
-    def __init__(self, config={}, stage=None):
-        self.config = self.get_g_config().update(config)
+    def __init__(self, config=None, stage=None):
+        self.config = self.get_g_config()
+        if config:
+            self.config.update(config)
         self.stage = stage or os.environ.get("STAGE")
         self.validate()
         if self.stage:
