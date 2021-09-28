@@ -20,6 +20,8 @@ class Goblet(Register_Handlers):
         self.headers = {}
         self.g = G()
         if local and sys.modules.get('main'):
+            self.log = logging.getLogger('werkzeug')
+
             def local_func(request):
                 return self(request)
             setattr(sys.modules['main'], local, local_func)
