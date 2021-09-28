@@ -3,6 +3,7 @@ import click
 import os
 import logging
 import subprocess
+import json
 
 from goblet.utils import get_goblet_app, create_goblet_dir
 from goblet.deploy import Deployer
@@ -34,8 +35,9 @@ def version():
 @click.option('-s', '--stage', 'stage', envvar='STAGE')
 @click.option('--skip-function', 'skip_function', is_flag=True)
 @click.option('--only-function', 'only_function', is_flag=True)
+@click.option('--config-from-json-string', 'config')
 @click.option('-f', '--force', 'force', is_flag=True)
-def deploy(project, location, stage, skip_function, only_function, force):
+def deploy(project, location, stage, skip_function, only_function, config, force):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
 
@@ -51,8 +53,10 @@ def deploy(project, location, stage, skip_function, only_function, force):
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
+        if config:
+            config = json.loads(config)
         app = get_goblet_app()
-        Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function, force=force)
+        Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function, config=config, force=force)
 
     except FileNotFoundError as not_found:
         click.echo(f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists")
