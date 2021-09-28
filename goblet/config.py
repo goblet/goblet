@@ -2,6 +2,7 @@ import json
 from goblet.utils import get_g_dir
 import os
 import logging
+import collections.abc
 
 log = logging.getLogger('goblet.config')
 log.setLevel(logging.INFO)
@@ -13,11 +14,11 @@ class GConfig:
     def __init__(self, config=None, stage=None):
         self.config = self.get_g_config()
         if config:
-            self.config.update(config)
+            self.config = self.nested_update(self.config, config)
         self.stage = stage or os.environ.get("STAGE")
         self.validate()
         if self.stage:
-            self.config.update(self.config.get("stages", {}).get(self.stage, {}))
+            self.config = self.nested_update(self.config, self.config.get("stages", {}).get(self.stage, {}))
 
     @staticmethod
     def get_g_config():
@@ -29,6 +30,18 @@ class GConfig:
         except json.decoder.JSONDecodeError:
             log.info('JSONDecodeError. config.json is not valid. Returning empty config')
             return {}
+
+    @staticmethod
+    def nested_update(d, u):
+        """
+        Updates nested dictionary d with nested dictionary u
+        """
+        for k, v in u.items():
+            if isinstance(v, collections.abc.Mapping):
+                d[k] = nested_update(d.get(k, {}), v)
+            else:
+                d[k] = v
+        return d
 
     def __getattr__(self, name):
         if os.environ.get(name):
