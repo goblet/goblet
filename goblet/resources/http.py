@@ -13,9 +13,9 @@ class HTTP(Handler):
         headers = request.headers or {}
         for http_endpoint in self.http:
             endpoint_headers = http_endpoint["headers"]
-            if isinstance(endpoint_headers, dict) and endpoint_headers.items() <= headers.items():
+            if isinstance(endpoint_headers, dict) and endpoint_headers.items() <= dict(headers.items()).items():
                 return http_endpoint["func"](request)
-            if isinstance(endpoint_headers, set) and endpoint_headers <= headers.keys():
+            if isinstance(endpoint_headers, set) and endpoint_headers <= set(headers.keys()):
                 return http_endpoint["func"](request)
 
     def __add__(self, other):

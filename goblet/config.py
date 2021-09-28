@@ -1,13 +1,19 @@
 import json
 from goblet.utils import get_g_dir
 import os
+import logging
+
+log = logging.getLogger('goblet.config')
+log.setLevel(logging.INFO)
 
 
 class GConfig:
     """Config class used to get variables from config.json or from the environment. If stage is set as an environment level
     if will parse the corresponding section in config.json and return those config values"""
     def __init__(self, config=None, stage=None):
-        self.config = config or self.get_g_config()
+        self.config = self.get_g_config()
+        if config:
+            self.config.update(config)
         self.stage = stage or os.environ.get("STAGE")
         self.validate()
         if self.stage:
@@ -20,14 +26,16 @@ class GConfig:
                 return json.load(f)
         except FileNotFoundError:
             return {}
+        except json.decoder.JSONDecodeError:
+            log.info('JSONDecodeError. config.json is not valid. Returning empty config')
+            return {}
 
     def __getattr__(self, name):
+        if os.environ.get(name):
+            return os.environ.get(name)
         attr = self.config.get(name)
         if attr:
             return attr
-        if os.environ.get(name):
-            return os.environ.get(name)
-
         return None
 
     def __setattr__(self, name, value):

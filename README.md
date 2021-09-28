@@ -34,7 +34,7 @@ def post_example(id: int) -> List[int]:
 Once you've written your code, you just run goblet deploy and Goblet takes care of deploying your app.
 
 ```sh
-$ goblet deploy
+$ goblet deploy -l us-central1
 ...
 https://api.uc.gateway.dev
 
@@ -85,7 +85,7 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 
 Before you can deploy an application, be sure you have credentials configured. You should run `gcloud auth application-default login` and sign in to the desired project.
 
-When setting the defaut location note tha api-gateway is only available in `asia-east1`, `europe-west1`, `us-east-1` and `us-central1`.
+When setting the defaut location note that api-gateway is only available in `asia-east1`, `europe-west1`, `us-east-1` and `us-central1`.
 
 ### Creating Your Project
 
@@ -108,7 +108,7 @@ from goblet import Goblet
 app = Goblet(function_name="goblet_example")
 
 @app.route('/home')
-def index():
+def home():
     return {"hello": "world"}
 ```
 
@@ -130,13 +130,14 @@ Now you can hit your functions endpoint at `localhost:8080` with your routes.
 
 ### Deploying
 
-Let's deploy this app. Make sure you're in the app directory and run goblet deploy:
+Let's deploy this app. Make sure you're in the app directory and run goblet deploy making sure to specify the desired location:
 
 ```sh
-$ goblet deploy
+$ goblet deploy -l us-central1
 INFO:goblet.deployer:zipping function......
 INFO:goblet.deployer:uploading function zip to gs......
-INFO:goblet.deployer:creating google function......
+INFO:goblet.deployer:function code uploaded
+INFO:goblet.deployer:creating cloudfunction......
 INFO:goblet.deployer:deploying api......
 INFO:goblet.deployer:api successfully deployed...
 INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
@@ -159,10 +160,10 @@ At this point, there are several next steps you can take.
 
 Docs - [Goblet Documentation](https://anovis.github.io/goblet/docs/build/html/index.html)
 
-If you're done experimenting with Goblet and you'd like to cleanup, you can use the `goblet destroy` command, and Goblet will delete all the resources it created when running the goblet deploy command.
+If you're done experimenting with Goblet and you'd like to cleanup, you can use the `goblet destroy` command making sure to specify the desired location, and Goblet will delete all the resources it created when running the goblet deploy command.
 
 ```sh
-$ goblet destroy
+$ goblet destroy -l us-central1
 INFO:goblet.deployer:destroying api gateway......
 INFO:goblet.deployer:api configs destroying....
 INFO:goblet.deployer:apis successfully destroyed......
@@ -178,6 +179,8 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Building Python Serverless Applications on GCP](https://austennovis.medium.com/building-python-serverless-applications-on-gcp-141a806eb7a5)
 
+[Tutorial: Publishing GitHub Findings to Security Command Center](https://engineering.premise.com/tutorial-publishing-github-findings-to-security-command-center-2d1749f530bc)
+
 ## Examples
 
 [Goblet Examples](https://github.com/anovis/goblet/blob/master/examples/main.py)
@@ -185,6 +188,10 @@ INFO:goblet.deployer:deleting storage bucket......
 ## Issues
 
 Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/anovis/goblet/issues) page.
+
+## Github Action
+
+[Goblet Github Action](https://github.com/marketplace/actions/goblet-deploy)
 
 ## Roadmap
 
