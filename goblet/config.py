@@ -31,14 +31,13 @@ class GConfig:
             log.info('JSONDecodeError. config.json is not valid. Returning empty config')
             return {}
 
-    @staticmethod
-    def nested_update(d, u):
+    def nested_update(self, d, u):
         """
         Updates nested dictionary d with nested dictionary u
         """
         for k, v in u.items():
             if isinstance(v, collections.abc.Mapping):
-                d[k] = nested_update(d.get(k, {}), v)
+                d[k] = self.nested_update(d.get(k, {}), v)
             else:
                 d[k] = v
         return d
