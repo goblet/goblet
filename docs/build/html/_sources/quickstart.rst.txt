@@ -36,7 +36,7 @@ Credentials
 
 Before you can deploy an application, be sure you have credentials configured. You should run ``gcloud auth application-default login`` and sign in to the desired project.
 
-When setting the defaut location note tha api-gateway is only available in ``asia-east1``, ``europe-west1``, and ``us-central1``.
+When setting the defaut location note that api-gateway is only available in ``asia-east1``, ``europe-west1``, and ``us-central1``.
 
 Creating Your Project
 *********************
@@ -61,7 +61,7 @@ Let's take a look at the main.py file:
     app = Goblet(function_name="goblet_example")
 
     @app.route('/home')
-    def index():
+    def home():
         return {"hello": "world"}
 
 
@@ -85,14 +85,15 @@ Now you can hit your functions endpoint at ``localhost:8080`` with your routes.
 Deploying
 **********
 
-Let's deploy this app. Make sure you're in the app directory and run goblet deploy:
+Let's deploy this app. Make sure you're in the app directory and run goblet deploy making sure to specify the desired location:
 
 .. code::
 
-    $ goblet deploy
+    $ goblet deploy -l us-central1
     INFO:goblet.deployer:zipping function......
     INFO:goblet.deployer:uploading function zip to gs......
-    INFO:goblet.deployer:creating google function......
+    INFO:goblet.deployer:function code uploaded
+    INFO:goblet.deployer:creating cloudfunction......
     INFO:goblet.deployer:deploying api......
     INFO:goblet.deployer:api successfully deployed...
     INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
@@ -112,11 +113,11 @@ Cleanup
 
 You've now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.
 
-If you're done experimenting with Goblet and you'd like to cleanup, you can use the ``goblet destroy`` command, and Goblet will delete all the resources it created when running the goblet deploy command.
+If you're done experimenting with Goblet and you'd like to cleanup, you can use the ``goblet destroy`` command making sure to specify the desired location, and Goblet will delete all the resources it created when running the goblet deploy command.
 
 .. code:: bash
 
-    $ goblet destroy
+    $ goblet destroy -l us-central1
     INFO:goblet.deployer:destroying api gateway......
     INFO:goblet.deployer:api configs destroying....
     INFO:goblet.deployer:apis successfully destroyed......

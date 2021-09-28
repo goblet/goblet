@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.4.8 documentation</title>
+  <title>Topics &mdash; goblet 0.4.10 documentation</title>
   
 
   
@@ -101,6 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#multiple-files">Multiple Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stages">Stages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api-gateway-backends">API Gateway Backends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cors">Cors</a></li>
 </ul>
 </li>
 </ul>
@@ -109,6 +110,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -252,6 +256,23 @@ which takes in a list of python <a class="reference external" href="https://docs
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>You can customize the configs for an Api Gateway using the <cite>apiConfig</cite> key in <cite>config.json</cite>. Allowed fields can be found
+<a class="reference external" href="https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig">here</a> and include</p>
+<ul class="simple">
+<li><p>gatewayServiceAccount</p></li>
+<li><p>labels</p></li>
+<li><p>displayName</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;apiConfig&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;gatewayServiceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;projects/-/serviceAccounts/ServiceAccount@PROJECT&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;labels&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;label1&quot;</span> <span class="p">:</span> <span class="s2">&quot;value1&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="iam-bindings">
 <h2>Iam Bindings<a class="headerlink" href="#iam-bindings" title="Permalink to this headline">¶</a></h2>
@@ -259,8 +280,7 @@ which takes in a list of python <a class="reference external" href="https://docs
 The bindings should be in the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/Policy">GCP Policy format</a></p>
 <p>For example to allow unauthenticated (public) access to your cloudfunctions you would add the <cite>roles/cloudfunctions.invoker</cite> to
 member <cite>allUsers</cite></p>
-<blockquote>
-<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;bindings&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
             <span class="nt">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span>
@@ -272,7 +292,6 @@ member <cite>allUsers</cite></p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div></blockquote>
 <p>To remove bindings once they are deploy you should update your <cite>bindings</cite> in <cite>config.json</cite> and change the <cite>members</cite> to be an empty list</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;bindings&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -344,6 +363,22 @@ API gateway docs linked above for more details on how to set up the configuratio
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
+</pre></div>
+</div>
+<p>This generates a <a class="reference external" href="https://swagger.io/docs/specification/2-0/authentication/">security section</a> in the openapi
+spec with empty scopes. If you would like to customize the security section and add custom scopes use the <cite>security</cite>
+section in <cite>config.json</cite></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;security&quot;</span><span class="p">:[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;OAuth2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you would like to apply security at the method level then you can add security policy in the route decorator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/method_security&#39;</span><span class="p">,</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;your_custom_auth_id&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
 </pre></div>
 </div>
 </div>
@@ -523,6 +558,29 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_backend&#39;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
     <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cors">
+<h2>Cors<a class="headerlink" href="#cors" title="Permalink to this headline">¶</a></h2>
+<p>Cors can be set on the route level or on the Goblet application level. Setting <cite>cors=True</cite> uses the default cors setting</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>headers : {
+    &quot;Access-Control-Allow-Headers&quot; : [&#39;Content-Type&#39;, &#39;Authorization&#39;],
+    &quot;Access-Control-Allow-Origin&quot;: &quot;*&quot;
+}
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_backend&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;cors headers&quot;</span>
+</pre></div>
+</div>
+<p>Use the <cite>CORSConfig</cite> class to set customized cors headers from the <cite>goblet.resources.routes</cite> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet.resources.routes</span> <span class="kn">import</span> <span class="n">CORSConfig</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_cors&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="n">CORSConfig</span><span class="p">(</span><span class="n">allow_origin</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">custom_cors</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s1">&#39;localhost is allowed&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

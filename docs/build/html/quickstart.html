@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Quickstart &mdash; goblet 0.4.8 documentation</title>
+  <title>Quickstart &mdash; goblet 0.4.10 documentation</title>
   
 
   
@@ -105,6 +105,9 @@
 <li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -199,7 +202,7 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 <div class="section" id="credentials">
 <h2>Credentials<a class="headerlink" href="#credentials" title="Permalink to this headline">¶</a></h2>
 <p>Before you can deploy an application, be sure you have credentials configured. You should run <code class="docutils literal notranslate"><span class="pre">gcloud</span> <span class="pre">auth</span> <span class="pre">application-default</span> <span class="pre">login</span></code> and sign in to the desired project.</p>
-<p>When setting the defaut location note tha api-gateway is only available in <code class="docutils literal notranslate"><span class="pre">asia-east1</span></code>, <code class="docutils literal notranslate"><span class="pre">europe-west1</span></code>, and <code class="docutils literal notranslate"><span class="pre">us-central1</span></code>.</p>
+<p>When setting the defaut location note that api-gateway is only available in <code class="docutils literal notranslate"><span class="pre">asia-east1</span></code>, <code class="docutils literal notranslate"><span class="pre">europe-west1</span></code>, and <code class="docutils literal notranslate"><span class="pre">us-central1</span></code>.</p>
 </div>
 <div class="section" id="creating-your-project">
 <h2>Creating Your Project<a class="headerlink" href="#creating-your-project" title="Permalink to this headline">¶</a></h2>
@@ -217,7 +220,7 @@ drwxr-xr-x   .goblet
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">)</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
@@ -236,11 +239,12 @@ Now you can hit your functions endpoint at <code class="docutils literal notrans
 </div>
 <div class="section" id="deploying">
 <h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
-<p>Let’s deploy this app. Make sure you’re in the app directory and run goblet deploy:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ goblet deploy
+<p>Let’s deploy this app. Make sure you’re in the app directory and run goblet deploy making sure to specify the desired location:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ goblet deploy -l us-central1
 INFO:goblet.deployer:zipping function......
 INFO:goblet.deployer:uploading function zip to gs......
-INFO:goblet.deployer:creating google function......
+INFO:goblet.deployer:function code uploaded
+INFO:goblet.deployer:creating cloudfunction......
 INFO:goblet.deployer:deploying api......
 INFO:goblet.deployer:api successfully deployed...
 INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
@@ -257,8 +261,8 @@ INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
 <div class="section" id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
 <p>You’ve now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.</p>
-<p>If you’re done experimenting with Goblet and you’d like to cleanup, you can use the <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">destroy</span></code> command, and Goblet will delete all the resources it created when running the goblet deploy command.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ goblet destroy
+<p>If you’re done experimenting with Goblet and you’d like to cleanup, you can use the <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">destroy</span></code> command making sure to specify the desired location, and Goblet will delete all the resources it created when running the goblet deploy command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ goblet destroy -l us-central1
 INFO:goblet.deployer:destroying api gateway......
 INFO:goblet.deployer:api configs destroying....
 INFO:goblet.deployer:apis successfully destroyed......

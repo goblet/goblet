@@ -95,6 +95,24 @@ Example config.json:
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
 
+You can customize the configs for an Api Gateway using the `apiConfig` key in `config.json`. Allowed fields can be found 
+`here <https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig>`_ and include 
+
+* gatewayServiceAccount
+* labels 
+* displayName
+
+.. code:: json
+
+    {
+        "apiConfig": {
+            "gatewayServiceAccount": "projects/-/serviceAccounts/ServiceAccount@PROJECT",
+            "labels": {
+                "label1" : "value1"
+            }
+        }
+    }  
+
 Iam Bindings
 ^^^^^^^^^^^^
 
@@ -104,18 +122,18 @@ The bindings should be in the `GCP Policy format <https://cloud.google.com/funct
 For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
 member `allUsers`
 
-    .. code:: json
+.. code:: json
 
-        {
-            "bindings": [
-                {
-                    "role": "roles/cloudfunctions.invoker",
-                    "members": [
-                        "allUsers"
-                    ]
-                }
-            ]
-        }
+    {
+        "bindings": [
+            {
+                "role": "roles/cloudfunctions.invoker",
+                "members": [
+                    "allUsers"
+                ]
+            }
+        ]
+    }
 
 To remove bindings once they are deploy you should update your `bindings` in `config.json` and change the `members` to be an empty list
 
@@ -213,6 +231,29 @@ An api using JWT authentication would require the following in ``config.json``
             }
         }
     }
+
+This generates a `security section <https://swagger.io/docs/specification/2-0/authentication/>`_ in the openapi 
+spec with empty scopes. If you would like to customize the security section and add custom scopes use the `security` 
+section in `config.json`
+
+
+.. code:: json
+
+    {
+        "security":[
+            {
+                "OAuth2": ["read", "write"]
+            }
+        ]
+    }
+
+
+If you would like to apply security at the method level then you can add security policy in the route decorator.
+
+.. code:: python 
+
+    @app.route('/method_security', security=[{"your_custom_auth_id": []}])
+
 
 Request
 ^^^^^^^
@@ -439,3 +480,31 @@ cloudfunction, specify the endpoint in the `backend` argment in `route`. Note th
     @app.route('/custom_backend', backend="https://www.CLOUDRUN_URL.com/home")
     def home():
         return 
+
+Cors
+^^^^
+
+Cors can be set on the route level or on the Goblet application level. Setting `cors=True` uses the default cors setting 
+
+.. code:: json 
+
+    headers : {
+        "Access-Control-Allow-Headers" : ['Content-Type', 'Authorization'],
+        "Access-Control-Allow-Origin": "*"
+    }
+
+.. code:: python 
+
+    @app.route('/custom_backend', cors=True)
+    def home():
+        return "cors headers"
+
+Use the `CORSConfig` class to set customized cors headers from the `goblet.resources.routes` class. 
+
+.. code:: python 
+
+    from goblet.resources.routes import CORSConfig
+
+    @app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost'))
+    def custom_cors():
+        return jsonify('localhost is allowed')
