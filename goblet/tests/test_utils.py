@@ -1,6 +1,7 @@
 import unittest
 import goblet.utils as utils
 
+
 class TestUtils(unittest.TestCase):
     def test_nested_update(self):
         d = {"k1": "v1", "k2": {"k3": "v2", "k5": "v4"}}

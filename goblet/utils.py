@@ -103,6 +103,7 @@ To deploy cloudfunctions and other gcp resources defined in `main.py` run `goble
 To check out goblet documentation go to [docs](https://anovis.github.io/goblet/docs/build/html/index.html)
 """)
 
+
 def nested_update(d, u):
     """
     Updates nested dictionary d with nested dictionary u
