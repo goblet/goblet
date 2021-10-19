@@ -48,7 +48,9 @@ class Deployer:
                 log.info("uploading function zip to gs......")
                 url = self._upload_zip()
                 if goblet.is_http():
-                    self.create_function(url, goblet.entrypoint, config)
+                    # TODO: temporary workaround around the goblet entrypoint.
+                    self.create_function(url, "goblet_entrypoint", config)
+                    # self.create_function(url, goblet.entrypoint, config)
         if not only_function and url:
             goblet.deploy(url)
 

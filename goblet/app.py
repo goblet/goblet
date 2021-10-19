@@ -74,3 +74,7 @@ class G:
     Global class that allows users to set and pass variables between middlewares.
     """
     pass
+
+def add_entrypoint(app):
+    def goblet_entrypoint(request, context=None):
+        return app(request, context)
