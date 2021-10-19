@@ -75,6 +75,7 @@ class G:
     """
     pass
 
+
 def add_entrypoint(app):
     def goblet_entrypoint(request, context=None):
         return app(request, context)
