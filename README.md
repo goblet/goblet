@@ -18,9 +18,10 @@ It provides:
 You can create Rest APIs:
 
 ```python
-from goblet import Goblet, jsonify
+from goblet import Goblet, jsonify, add_entrypoint
 
 app = Goblet(function_name="goblet_example")
+add_entrypoint(app)
 
 @app.route('/home')
 def home():
@@ -103,9 +104,10 @@ You can ignore the .goblet directory for now, the two main files we'll focus on 
 Let's take a look at the main.py file:
 
 ```python
-from goblet import Goblet
+from goblet import Goblet, add_entrypoint
 
 app = Goblet(function_name="goblet_example")
+add_entrypoint(app)
 
 @app.route('/home')
 def home():

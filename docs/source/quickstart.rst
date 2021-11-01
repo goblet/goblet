@@ -56,9 +56,10 @@ Let's take a look at the main.py file:
 
 .. code:: python
 
-    from goblet import Goblet
+    from goblet import Goblet, add_entrypoint
 
     app = Goblet(function_name="goblet_example")
+    add_entrypoint(app)
 
     @app.route('/home')
     def home():

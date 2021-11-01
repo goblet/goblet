@@ -1,8 +1,9 @@
-from goblet import Goblet, jsonify, Response
+from goblet import Goblet, jsonify, Response, add_entrypoint
 import logging 
 
 app = Goblet(function_name="goblet_example",region='us-central-1', local="test")
 app.log.setLevel(logging.INFO) # configure goblet logger level
+add_entrypoint(app)
 
 from typing import List
 from marshmallow import Schema, fields
