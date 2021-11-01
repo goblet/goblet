@@ -43,6 +43,10 @@ $ curl https://api.uc.gateway.dev/home
 {"hello": "world"}
 ```
 
+> Note: Due to breaking changes in Cloudfunctions you will need to wrap your goblet class in a function. See [issue #88](https://github.com/anovis/goblet/issues/88). In the latest goblet version (0.5.0) there is a helper function `add_entrypoint` that can be used as well. 
+
+> `add_entrypoint(app)`
+
 ## Installation
 
 To install goblet, open an interactive shell and run:
