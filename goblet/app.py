@@ -81,6 +81,7 @@ def goblet_entrypoint(app, entrypoint="goblet_entrypoint"):
     Wrapper around Goblet app to make it a function, since a recent GCP bug forces the entrypoint to be of type function
     whereas before any type of callable was allowed.
     """
-    def goblet_entrypoint_wrapper(request, context=None):
-        return app(request, context)
-    setattr(sys.modules['main'], entrypoint, goblet_entrypoint_wrapper)
+    if sys.modules.get('main'):
+        def goblet_entrypoint_wrapper(request, context=None):
+            return app(request, context)
+        setattr(sys.modules['main'], entrypoint, goblet_entrypoint_wrapper)
