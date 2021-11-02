@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.4.10 documentation</title>
+  <title>Resources &mdash; goblet 0.5.0 documentation</title>
   
 
   
@@ -257,6 +257,16 @@ scheduled jobs.</p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for <a class="reference external" href="https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#HttpTarget">httpTarget</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-cron&quot;</span><span class="p">:</span> <span class="s2">&quot;5 * * * *&quot;</span><span class="p">},</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;a base64-encoded string&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;6 * * * *&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-cron&quot;</span><span class="p">:</span> <span class="s2">&quot;6 * * * *&quot;</span><span class="p">},</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;another base64-encoded string&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;10 * * * *&#39;</span><span class="p">,</span> <span class="n">httpMethod</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">body</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">headers</span>
     <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
