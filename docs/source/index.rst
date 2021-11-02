@@ -104,7 +104,7 @@ Blogs
    blogs
 
 Integrations
---------
+------------
 
 .. toctree::
    :maxdepth: 2
