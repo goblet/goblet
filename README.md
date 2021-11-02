@@ -18,9 +18,10 @@ It provides:
 You can create Rest APIs:
 
 ```python
-from goblet import Goblet, jsonify
+from goblet import Goblet, jsonify, goblet_entrypoint
 
 app = Goblet(function_name="goblet_example")
+goblet_entrypoint(app)
 
 @app.route('/home')
 def home():
@@ -41,6 +42,10 @@ https://api.uc.gateway.dev
 $ curl https://api.uc.gateway.dev/home
 {"hello": "world"}
 ```
+
+> Note: Due to breaking changes in Cloudfunctions you will need to wrap your goblet class in a function. See [issue #88](https://github.com/anovis/goblet/issues/88). In the latest goblet version (0.5.0) there is a helper function `goblet_entrypoint` that can be used as well. 
+
+> `goblet_entrypoint(app)`
 
 ## Installation
 
@@ -103,9 +108,10 @@ You can ignore the .goblet directory for now, the two main files we'll focus on 
 Let's take a look at the main.py file:
 
 ```python
-from goblet import Goblet
+from goblet import Goblet, goblet_entrypoint
 
 app = Goblet(function_name="goblet_example")
+goblet_entrypoint(app)
 
 @app.route('/home')
 def home():

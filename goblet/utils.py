@@ -1,5 +1,6 @@
 import os
 import importlib.util
+import collections.abc
 from contextlib import contextmanager
 import json
 from goblet.__version__ import __version__
@@ -101,3 +102,15 @@ To deploy cloudfunctions and other gcp resources defined in `main.py` run `goble
 
 To check out goblet documentation go to [docs](https://anovis.github.io/goblet/docs/build/html/index.html)
 """)
+
+
+def nested_update(d, u):
+    """
+    Updates nested dictionary d with nested dictionary u
+    """
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = nested_update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d

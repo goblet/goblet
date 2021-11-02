@@ -106,6 +106,18 @@ Example usage:
     def scheduled_job():
         return app.jsonify("success")
 
+You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for `httpTarget <https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#HttpTarget>`__.
+
+.. code:: python 
+
+    @app.schedule('5 * * * *', headers={"x-cron": "5 * * * *"}, body="a base64-encoded string")
+    @app.schedule('6 * * * *', headers={"x-cron": "6 * * * *"}, body="another base64-encoded string")
+    @app.schedule('10 * * * *', httpMethod="POST")
+    def scheduled_job():
+        app.current_request.body
+        app.current_request.headers
+        return app.jsonify("success")
+
 
 .. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
 .. _CLOUD SCHEDULER: https://cloud.google.com/scheduler

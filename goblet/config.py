@@ -1,5 +1,5 @@
 import json
-from goblet.utils import get_g_dir
+from goblet.utils import get_g_dir, nested_update
 import os
 import logging
 
@@ -13,11 +13,11 @@ class GConfig:
     def __init__(self, config=None, stage=None):
         self.config = self.get_g_config()
         if config:
-            self.config.update(config)
+            self.config = nested_update(self.config, config)
         self.stage = stage or os.environ.get("STAGE")
         self.validate()
         if self.stage:
-            self.config.update(self.config.get("stages", {}).get(self.stage, {}))
+            self.config = nested_update(self.config, self.config.get("stages", {}).get(self.stage, {}))
 
     @staticmethod
     def get_g_config():

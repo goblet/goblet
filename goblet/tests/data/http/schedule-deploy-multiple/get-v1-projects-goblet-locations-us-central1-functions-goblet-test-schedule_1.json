@@ -1,0 +1,35 @@
+{
+  "headers": {
+    "content-type": "application/json; charset=UTF-8",
+    "vary": "Origin, X-Origin, Referer",
+    "date": "Tue, 02 Nov 2021 14:45:13 GMT",
+    "server": "ESF",
+    "cache-control": "private",
+    "x-xss-protection": "0",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "transfer-encoding": "chunked",
+    "status": "200",
+    "content-length": "921",
+    "-content-encoding": "gzip",
+    "content-location": "https://cloudfunctions.googleapis.com/v1/projects/goblet/locations/us-central1/functions/goblet-test-schedule?alt=json"
+  },
+  "body": {
+    "name": "projects/goblet/locations/us-central1/functions/goblet-test-schedule",
+    "description": "created by goblet",
+    "httpsTrigger": {
+      "url": "https://us-central1-goblet.cloudfunctions.net/goblet-test-schedule",
+      "securityLevel": "SECURE_OPTIONAL"
+    },
+    "status": "ACTIVE",
+    "entryPoint": "goblet_entrypoint",
+    "timeout": "60s",
+    "availableMemoryMb": 256,
+    "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+    "updateTime": "2021-11-02T14:30:56.223Z",
+    "versionId": "6",
+    "runtime": "python37",
+    "ingressSettings": "ALLOW_ALL"
+  }
+}

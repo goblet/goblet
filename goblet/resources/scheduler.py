@@ -32,7 +32,17 @@ class Scheduler(Handler):
         kwargs = kwargs.pop('kwargs')
         timezone = kwargs.get("timezone", 'UTC')
         description = kwargs.get("description", "Created by goblet")
+        headers = kwargs.get("headers", {})
+        httpMethod = kwargs.get("httpMethod", "GET")
+        body = kwargs.get("body")
+        job_num = 1
+        if self.jobs.get(name):
+            # increment job_num if there is already a scheduled job for this func
+            job_num = self.jobs[name]["job_num"] + 1
+            self.jobs[name]["job_num"] = job_num
+            name = f"{name}-{job_num}"
         self.jobs[name] = {
+            "job_num": job_num,
             "job_json": {
                 "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
                 "schedule": schedule,
@@ -42,9 +52,11 @@ class Scheduler(Handler):
                     # "uri": ADDED AT runtime,
                     "headers": {
                         'X-Goblet-Type': 'schedule',
-                        'X-Goblet-Name': name
+                        'X-Goblet-Name': name,
+                        **headers
                     },
-                    "httpMethod": "GET",
+                    "body": body,
+                    "httpMethod": httpMethod,
                     'oidcToken': {
                         # "serviceAccountEmail": ADDED AT runtime
                     }
