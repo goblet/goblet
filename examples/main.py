@@ -84,6 +84,14 @@ def response():
 def scheduled_job():
     return jsonify("success")
 
+# Scheduled job with custom headers, method, and body
+@app.schedule('5 * * * *', httpMethod='POST', headers={'X-Custom': 'header'}, body='BASE64 ENCODED STRING')
+def scheduled_job():
+    headers = app.current_request.headers
+    body = app.current_request.body
+    method = app.current_request.method
+    return jsonify("success")
+
 # Pubsub topic
 @app.topic('test')
 def topic(data):
