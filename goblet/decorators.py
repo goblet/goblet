@@ -182,6 +182,7 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
 
     def _register_schedule(self, name, func, kwargs):
+        name = kwargs.get("name") or name 
         self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
 
     def _register_pubsub(self, name, func, kwargs):
