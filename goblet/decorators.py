@@ -155,7 +155,8 @@ class Register_Handlers(DecoratorAPI):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(sourceUrl, self.entrypoint)
+            # TODO: better handle entrypoint
+            v.deploy(sourceUrl, "goblet_entrypoint")
 
     def destroy(self):
         """Call each handlers destroy method"""
@@ -182,6 +183,7 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
 
     def _register_schedule(self, name, func, kwargs):
+        name = kwargs.get("kwargs", {}).get("name") or name
         self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
 
     def _register_pubsub(self, name, func, kwargs):

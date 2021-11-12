@@ -106,7 +106,7 @@ Example usage:
     def scheduled_job():
         return app.jsonify("success")
 
-You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for `httpTarget <https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#HttpTarget>`__.
+You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for `job <https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#Job>`__.
 
 .. code:: python 
 
@@ -117,6 +117,21 @@ You can pass in additional fields to your schedule to add custom headers, body, 
         app.current_request.body
         app.current_request.headers
         return app.jsonify("success")
+
+Note that several of customizable fields require specific formats which include `body` which is a base64 encoded string. In order 
+to use a json field for the body you would need to use the following code
+
+..code:: python 
+
+    base64.b64encode(json.dumps({"key":"value"}).encode('utf-8')).decode('ascii')
+
+and then in your function you would decode the body using 
+
+..code:: python 
+
+    json.loads(base64.b64decode(raw_payload).decode('utf-8'))
+
+Another unique field is `attemptDeadline` which requires a duration format such as `3.5s`
 
 
 .. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
