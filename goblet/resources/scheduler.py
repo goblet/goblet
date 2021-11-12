@@ -34,7 +34,10 @@ class Scheduler(Handler):
         description = kwargs.get("description", "Created by goblet")
         headers = kwargs.get("headers", {})
         httpMethod = kwargs.get("httpMethod", "GET")
+        retry_config = kwargs.get("retryConfig")
         body = kwargs.get("body")
+        attempt_deadline = kwargs.get("attemptDeadline")
+
         job_num = 1
         if self.jobs.get(name):
             # increment job_num if there is already a scheduled job for this func
@@ -48,6 +51,8 @@ class Scheduler(Handler):
                 "schedule": schedule,
                 "timeZone": timezone,
                 "description": description,
+                "retry_config": retry_config,
+                "attemptDeadline": attempt_deadline,
                 "httpTarget": {
                     # "uri": ADDED AT runtime,
                     "headers": {

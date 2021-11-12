@@ -20,6 +20,8 @@ class TestScheduler:
             'schedule': '* * * * *',
             'timeZone': 'UTC',
             'description': 'test',
+            'attemptDeadline': None,
+            'retry_config': None,
             'httpTarget': {
                 'body': None,
                 'headers': {
@@ -49,6 +51,8 @@ class TestScheduler:
             'schedule': '1 * * * *',
             'timeZone': 'UTC',
             'description': 'test',
+            'attemptDeadline': None,
+            'retry_config': None,
             'httpTarget': {
                 'body': None,
                 'headers': {
