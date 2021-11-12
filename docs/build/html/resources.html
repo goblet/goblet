@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.5.0 documentation</title>
+  <title>Resources &mdash; goblet 0.5.1 documentation</title>
   
 
   
@@ -260,7 +260,7 @@ scheduled jobs.</p>
     <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for <a class="reference external" href="https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#HttpTarget">httpTarget</a>.</p>
+<p>You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for <a class="reference external" href="https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#Job">job</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-cron&quot;</span><span class="p">:</span> <span class="s2">&quot;5 * * * *&quot;</span><span class="p">},</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;a base64-encoded string&quot;</span><span class="p">)</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;6 * * * *&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-cron&quot;</span><span class="p">:</span> <span class="s2">&quot;6 * * * *&quot;</span><span class="p">},</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;another base64-encoded string&quot;</span><span class="p">)</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;10 * * * *&#39;</span><span class="p">,</span> <span class="n">httpMethod</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">)</span>
@@ -270,6 +270,18 @@ scheduled jobs.</p>
     <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Note that several of customizable fields require specific formats which include <cite>body</cite> which is a base64 encoded string. In order
+to use a json field for the body you would need to use the following code</p>
+<p>..code:: python</p>
+<blockquote>
+<div><p>base64.b64encode(json.dumps({“key”:”value”}).encode(‘utf-8’)).decode(‘ascii’)</p>
+</div></blockquote>
+<p>and then in your function you would decode the body using</p>
+<p>..code:: python</p>
+<blockquote>
+<div><p>json.loads(base64.b64decode(raw_payload).decode(‘utf-8’))</p>
+</div></blockquote>
+<p>Another unique field is <cite>attemptDeadline</cite> which requires a duration format such as <cite>3.5s</cite></p>
 </div>
 <div class="section" id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>
