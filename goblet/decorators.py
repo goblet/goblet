@@ -190,5 +190,5 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["pubsub"].register_topic(name=name, func=func, kwargs=kwargs)
 
     def _register_storage(self, name, func, kwargs):
-        name = kwargs.get("name") or name
+        name = kwargs.get("name") or kwargs['bucket']
         self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)
