@@ -66,7 +66,7 @@ class Storage(Handler):
         user_configs = config.cloudfunction or {}
         for bucket in self.buckets:
             req_body = {
-                "name": f"{self.cloudfunction}-storage-{bucket['bucket']}-{bucket['event_type']}",
+                "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}",
                 "description": config.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": sourceUrl,

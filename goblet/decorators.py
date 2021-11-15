@@ -47,11 +47,11 @@ class DecoratorAPI:
             registration_kwargs={'topic': topic, 'kwargs': kwargs},
         )
 
-    def storage(self, bucket, event_type):
+    def storage(self, bucket, event_type, name=None):
         """Storage event trigger"""
         return self._create_registration_function(
             handler_type='storage',
-            registration_kwargs={'bucket': bucket, 'event_type': event_type},
+            registration_kwargs={'bucket': bucket, 'event_type': event_type, 'name': name},
         )
 
     def http(self, headers={}):
@@ -190,4 +190,5 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["pubsub"].register_topic(name=name, func=func, kwargs=kwargs)
 
     def _register_storage(self, name, func, kwargs):
+        name = kwargs.get("name") or name
         self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)
