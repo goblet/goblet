@@ -33,10 +33,12 @@ class Storage(Handler):
     def register_bucket(self, name, func, kwargs):
         bucket_name = kwargs["bucket"]
         event_type = kwargs["event_type"]
+        bucket_alias = kwargs.get("bucket_alias")
         self.validate_event_type(event_type)
         self.buckets.append({
             "bucket": bucket_name,
             "event_type": event_type,
+            "bucket_alias": bucket_alias,
             "name": name,
             "func": func
         })
@@ -66,7 +68,7 @@ class Storage(Handler):
         user_configs = config.cloudfunction or {}
         for bucket in self.buckets:
             req_body = {
-                "name": f"{self.cloudfunction}-storage-{bucket['event_type']}" if config.no_append_bucket else f"{self.cloudfunction}-storage-{bucket['bucket']}-{bucket['event_type']}".replace('.', '-'),
+                "name": f"{self.cloudfunction}-storage-{bucket['bucket_alias'] if bucket['bucket_alias'] else bucket['bucket']}-{bucket['event_type']}".replace('.', '-'),
                 "description": config.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": sourceUrl,
