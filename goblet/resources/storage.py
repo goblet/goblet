@@ -33,7 +33,7 @@ class Storage(Handler):
     def register_bucket(self, name, func, kwargs):
         bucket_name = kwargs["bucket"]
         event_type = kwargs["event_type"]
-        bucket_alias = kwargs.get("bucket_alias")
+        bucket_alias = kwargs.get("name")
         self.validate_event_type(event_type)
         self.buckets.append({
             "bucket": bucket_name,
