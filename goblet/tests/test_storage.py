@@ -7,7 +7,7 @@ from unittest.mock import Mock
 import pytest
 
 
-class TestPubSub:
+class TestStorage:
 
     def test_add_bucket(self, monkeypatch):
         app = Goblet(function_name="goblet_example")
@@ -59,13 +59,13 @@ class TestPubSub:
         assert(responses[2]['body']['metadata']['request']['eventTrigger']['resource'] == 'projects/goblet/buckets/test')
         assert(responses[2]['body']['metadata']['request']['eventTrigger']['eventType'] == 'google.storage.object.finalize')
 
-    def test_destroy_pubsub(self, monkeypatch):
+    def test_destroy_storage(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "storage-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        storage = Storage('goblet_storage', buckets=[{'bucket': 'test', 'event_type': 'finalize'}])
+        storage = Storage('goblet_storage', buckets=[{'bucket': 'test', 'event_type': 'finalize', 'name': 'test'}])
         storage.destroy()
 
         responses = get_responses('storage-destroy')
