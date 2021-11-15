@@ -28,13 +28,17 @@ Example
             - name: Setup Cloud SDK
             uses: google-github-actions/setup-gcloud@v0.2.0
             with:
-                project_id: ${{ env.GCLOUD_PROJECT }}
-                service_account_key: ${{ secrets.GCP_SA_KEY }}
-                export_default_credentials: true
+            project_id: ${{ env.GCLOUD_PROJECT }}
+            service_account_key: ${{ secrets.GCP_SA_KEY }}
+            export_default_credentials: true
             - name: goblet deploy
-            uses: anovis/goblet-github-actions@v1.0
-            env:
-                PROJECT: ${{ env.GCLOUD_PROJECT }}
-                LOCATION: us-east1
+            uses: anovis/goblet-github-actions@v2.3
+            with:
+                project: ${{ env.GCLOUD_PROJECT }}
+                location: us-central1
+                goblet-path: test
+                stage: dev
+                envars:  |-
+                SLACK_WEBHOOK:slack,BILLING_ORG:bill,BILLING_ID:bill_id
 
  
