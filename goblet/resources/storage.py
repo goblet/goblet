@@ -83,4 +83,4 @@ class Storage(Handler):
 
     def destroy(self):
         for bucket in self.buckets:
-            destroy_cloudfunction(f"{self.name}-storage-{bucket['bucket']}-{bucket['event_type']}".replace('.', '-'))
+            destroy_cloudfunction(f"{self.name}-storage-{bucket['bucket_alias'] if bucket['bucket_alias'] else bucket['bucket']}-{bucket['event_type']}".replace('.', '-'))
