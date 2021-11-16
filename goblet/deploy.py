@@ -191,21 +191,22 @@ def destroy_cloudfunction(name):
         else:
             raise e
 
+
 def destroy_cloudfunction_artifacts(name):
     """Destroys all images stored in cloud storage that are related to the function."""
-    client = Client("cloudresourcemanager", 'v1', calls=f'projects')
+    client = Client("cloudresourcemanager", 'v1', calls='projects')
     resp = client.execute('get', parent_key='projectId', parent_schema=get_default_project())
     project_number = resp["projectNumber"]
     region = get_default_location()
     if not region:
         raise Exception("Missing Region")
     bucket_name = f"gcf-sources-{project_number}-{get_default_location()}"
-    http =  google_auth_httplib2.AuthorizedHttp(get_credentials())
+    http = client.http or google_auth_httplib2.AuthorizedHttp(get_credentials())
     resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o?prefix={name}")
     objects = json.loads(resp[1])
     if not objects.get("items"):
-        log.info(f"Artifacts already deleted")
-        return 
+        log.info("Artifacts already deleted")
+        return
     for storage in objects["items"]:
         log.info(f"Deleting artifact {storage['name']}")
         resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}", method="DELETE")
