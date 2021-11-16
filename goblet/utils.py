@@ -69,7 +69,7 @@ def create_goblet_dir(name):
         f.write(f"""
 from goblet import Goblet, jsonify
 
-app = Goblet(function_name="goblet-{name}", local="local")
+app = Goblet(function_name="goblet-{name}")
 
 @app.http()
 def main(request):
@@ -97,7 +97,7 @@ def main(request):
 
 autocreated by goblet
 
-To test endpoints locally run `goblet local local`
+To test endpoints locally run `goblet local`
 To deploy cloudfunctions and other gcp resources defined in `main.py` run `goblet deploy`
 
 To check out goblet documentation go to [docs](https://anovis.github.io/goblet/docs/build/html/index.html)
