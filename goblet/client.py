@@ -42,7 +42,7 @@ def get_credentials():
     if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
         return google.auth.credentials.AnonymousCredentials()
 
-    credentials, project = google.auth.default()
+    credentials, _ = google.auth.default()
     return credentials
 
 

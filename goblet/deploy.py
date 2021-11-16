@@ -6,12 +6,15 @@ import logging
 import hashlib
 from requests import request
 import base64
+import json
+from urllib.parse import quote_plus
 
 from googleapiclient.errors import HttpError
 
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import Client, get_default_project, get_default_location, get_credentials
 from goblet.utils import get_dir, get_g_dir, checksum
 from goblet.config import GConfig
+import google_auth_httplib2
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -56,10 +59,12 @@ class Deployer:
 
         return goblet
 
-    def destroy(self, goblet):
+    def destroy(self, goblet, all=None):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         goblet.destroy()
         destroy_cloudfunction(self.name)
+        if all:
+            destroy_cloudfunction_artifacts(self.name)
 
         return goblet
 
@@ -185,3 +190,23 @@ def destroy_cloudfunction(name):
             log.info(f"cloudfunction {name} already destroyed")
         else:
             raise e
+
+
+def destroy_cloudfunction_artifacts(name):
+    """Destroys all images stored in cloud storage that are related to the function."""
+    client = Client("cloudresourcemanager", 'v1', calls='projects')
+    resp = client.execute('get', parent_key='projectId', parent_schema=get_default_project())
+    project_number = resp["projectNumber"]
+    region = get_default_location()
+    if not region:
+        raise Exception("Missing Region")
+    bucket_name = f"gcf-sources-{project_number}-{get_default_location()}"
+    http = client.http or google_auth_httplib2.AuthorizedHttp(get_credentials())
+    resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o?prefix={name}")
+    objects = json.loads(resp[1])
+    if not objects.get("items"):
+        log.info("Artifacts already deleted")
+        return
+    for storage in objects["items"]:
+        log.info(f"Deleting artifact {storage['name']}")
+        resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}", method="DELETE")

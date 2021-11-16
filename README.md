@@ -187,6 +187,8 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Tutorial: Publishing GitHub Findings to Security Command Center](https://engineering.premise.com/tutorial-publishing-github-findings-to-security-command-center-2d1749f530bc)
 
+[Tutorial: Cost Spike Alerting](https://engineering.premise.com/tutorial-cost-spike-alerting-for-google-cloud-platform-gcp-46fd26ae3f6a)
+
 ## Examples
 
 [Goblet Examples](https://github.com/anovis/goblet/blob/master/examples/main.py)

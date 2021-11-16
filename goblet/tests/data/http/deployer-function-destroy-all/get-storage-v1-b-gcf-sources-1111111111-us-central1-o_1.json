@@ -1,0 +1,36 @@
+{
+  "headers": {
+    "x-guploader-uploadid": "ADPycdvj2axKpSZ1YZyjTINQmDuGlWfjMutrKlgmhlbf-Lfaamj78ZuQB76N70ddRMtHkP3J48ZsWZYzPbsZn6TSYAIUosZ_yg",
+    "content-type": "application/json; charset=UTF-8",
+    "date": "Tue, 16 Nov 2021 17:15:08 GMT",
+    "vary": "Origin, X-Origin",
+    "cache-control": "private, max-age=0, must-revalidate, no-transform",
+    "expires": "Tue, 16 Nov 2021 17:15:08 GMT",
+    "content-length": "2453",
+    "server": "UploadServer",
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "status": "200"
+  },
+  "body": {
+    "kind": "storage#objects",
+    "items": [
+      {
+        "kind": "storage#object",
+        "id": "gcf-sources-1111111111-us-central1/goblet_example-503c256e-8aff-4628-9b0d-63e5eb4db248/version-1/function-source.zip/1618420886912092",
+        "name": "goblet_example-503c256e-8aff-4628-9b0d-63e5eb4db248/version-1/function-source.zip",
+        "bucket": "gcf-sources-1111111111-us-central1",
+        "generation": "1618420886912092",
+        "metageneration": "1",
+        "contentType": "application/zip",
+        "storageClass": "STANDARD",
+        "size": "24775",
+        "md5Hash": "UEIXXc9CjdokqKGmdgvIRA==",
+        "crc32c": "1JAfnw==",
+        "etag": "CNz4vtCf/u8CEAE=",
+        "timeCreated": "2021-04-14T17:21:26.943Z",
+        "updated": "2021-04-14T17:21:26.943Z",
+        "timeStorageClassUpdated": "2021-04-14T17:21:26.943Z"
+      }
+    ]
+  }
+}
