@@ -22,6 +22,7 @@ log.setLevel(logging.INFO)
 
 class Deployer:
     """Deploys/Destroys goblet app and main cloudfunction. The main methods are deploy and destroy which both take in a Goblet instance"""
+
     def __init__(self, config={}):
         self.config = config
         if not config:
@@ -141,7 +142,7 @@ class Deployer:
     def zip_file(self, filename):
         self.zipf.write(filename)
 
-    def zip_directory(self, dir, include=['*.py'], exclude=['build', 'docs', 'examples']):
+    def zip_directory(self, dir, include=['*.py'], exclude=['build', 'docs', 'examples', 'test', 'venv']):
         exclusion_set = set(exclude)
         globbed_files = []
         for pattern in include:
