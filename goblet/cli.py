@@ -105,7 +105,7 @@ def openapi(cloudfunction):
 
 
 @main.command()
-@click.argument('local_arg',)
+@click.argument('local_arg', default="local")
 def local(local_arg):
     """
     Requires the local argument to be set in the Goblet class.

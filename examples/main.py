@@ -1,7 +1,7 @@
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
 import logging 
 
-app = Goblet(function_name="goblet_example",region='us-central-1', local="test")
+app = Goblet(function_name="goblet_example",region='us-central-1')
 app.log.setLevel(logging.INFO) # configure goblet logger level
 goblet_entrypoint(app)
 

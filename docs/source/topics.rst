@@ -152,7 +152,10 @@ To remove bindings once they are deploy you should update your `bindings` in `co
 Run Locally
 ^^^^^^^^^^^
 
-Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class
+Running your functions locally for testing and debugging is easy to do with the goblet command `goblet local`. 
+You can hit your functions endpoint at ``localhost:8080``.
+
+You can have a custom local name by seting the local param in the goblet class
 
 .. code:: python
 
@@ -161,8 +164,7 @@ Running your functions locally for testing and debugging is easy to do with gobl
     app = Goblet(function_name="goblet_example", local='test')
 
 
-Then run ``goblet local test`` and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at ``localhost:8080``.
+Then run ``goblet local test``
 
 Note: If you have both `http()` and `route("/")` in order to test the route locally make sure to add the header ``X-Envoy-Original-Path``. Otherwise the route will default to ``@http()``
 
