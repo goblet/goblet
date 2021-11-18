@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-guploader-uploadid": "ADPycdsTM9Z9GE4ea8BJIAAzlZU-yYG8xmIU9tw61o7ymF4CVggIUtglBu35Y24tISpMs4uDW5Gslg-K8jIWoEZryuK8O7rt2g",
+    "content-type": "application/json",
+    "date": "Tue, 16 Nov 2021 17:15:08 GMT",
+    "vary": "Origin, X-Origin",
+    "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+    "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+    "pragma": "no-cache",
+    "content-length": "0",
+    "server": "UploadServer",
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "status": "204"
+  },
+  "body": {}
+}

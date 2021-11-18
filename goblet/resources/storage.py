@@ -18,7 +18,7 @@ STORAGE_EVENT_TYPES = [
 
 
 class Storage(Handler):
-    """Pubsub topic trigger
+    """Storage trigger
     https://cloud.google.com/functions/docs/calling/storage
     """
     def __init__(self, name, buckets=None):
@@ -66,7 +66,7 @@ class Storage(Handler):
         user_configs = config.cloudfunction or {}
         for bucket in self.buckets:
             req_body = {
-                "name": f"{self.cloudfunction}-storage-{bucket['bucket']}-{bucket['event_type']}",
+                "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace('.', '-'),
                 "description": config.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": sourceUrl,
@@ -81,4 +81,4 @@ class Storage(Handler):
 
     def destroy(self):
         for bucket in self.buckets:
-            destroy_cloudfunction(f"{self.name}-storage-{bucket['bucket']}-{bucket['event_type']}")
+            destroy_cloudfunction(f"{self.name}-storage-{bucket['name']}-{bucket['event_type']}".replace('.', '-'))

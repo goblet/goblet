@@ -37,6 +37,19 @@ class TestDeployer:
         assert(responses[0]['body']['metadata']['type'] == 'DELETE_FUNCTION')
         assert(responses[0]['body']['metadata']['target'] == "projects/goblet/locations/us-central1/functions/goblet_test_app")
 
+    def test_destroy_http_function_all(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-destroy-all")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet_example")
+
+        Deployer(config={'name': "goblet_example"}).destroy(app, all=True)
+
+        responses = get_responses('deployer-function-destroy-all')
+        assert(len(responses) == 4)
+
     def test_set_iam_bindings(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")

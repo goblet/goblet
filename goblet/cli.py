@@ -66,9 +66,12 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 @click.option('-p', '--project', 'project', envvar='GOOGLE_PROJECT')
 @click.option('-l', '--location', 'location', envvar='GOOGLE_LOCATION', required=True)
 @click.option('-s', '--stage', 'stage', envvar='STAGE')
-def destroy(project, location, stage):
+@click.option('-a', '--all', 'all', is_flag=True)
+def destroy(project, location, stage, all):
     """
     Deletes all resources in gcp that are defined the current deployment
+
+    The --all flagg removes cloudfunction artifacts in cloud storage as well
     """
     try:
         _project = project or get_default_project()
@@ -79,7 +82,7 @@ def destroy(project, location, stage):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app()
-        Deployer({"name": app.function_name}).destroy(app)
+        Deployer({"name": app.function_name}).destroy(app, all)
 
     except FileNotFoundError as not_found:
         click.echo(f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists")
@@ -102,7 +105,7 @@ def openapi(cloudfunction):
 
 
 @main.command()
-@click.argument('local_arg',)
+@click.argument('local_arg', default="local")
 def local(local_arg):
     """
     Requires the local argument to be set in the Goblet class.
