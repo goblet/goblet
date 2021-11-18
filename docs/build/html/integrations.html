@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Integrations &mdash; goblet 0.5.1 documentation</title>
+  <title>Integrations &mdash; goblet 0.5.2 documentation</title>
   
 
   
@@ -194,14 +194,18 @@
         <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup Cloud SDK</span>
         <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">google-github-actions/setup-gcloud@v0.2.0</span>
         <span class="nt">with</span><span class="p">:</span>
-            <span class="nt">project_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ env.GCLOUD_PROJECT }}</span>
-            <span class="nt">service_account_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ secrets.GCP_SA_KEY }}</span>
-            <span class="nt">export_default_credentials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">project_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ env.GCLOUD_PROJECT }}</span>
+        <span class="nt">service_account_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ secrets.GCP_SA_KEY }}</span>
+        <span class="nt">export_default_credentials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
         <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">goblet deploy</span>
-        <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">anovis/goblet-github-actions@v1.0</span>
-        <span class="nt">env</span><span class="p">:</span>
-            <span class="nt">PROJECT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ env.GCLOUD_PROJECT }}</span>
-            <span class="nt">LOCATION</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">us-east1</span>
+        <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">anovis/goblet-github-actions@v2.3</span>
+        <span class="nt">with</span><span class="p">:</span>
+            <span class="nt">project</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ env.GCLOUD_PROJECT }}</span>
+            <span class="nt">location</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">us-central1</span>
+            <span class="nt">goblet-path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+            <span class="nt">stage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev</span>
+            <span class="nt">envars</span><span class="p">:</span>  <span class="p p-Indicator">|-</span>
+            <span class="l l-Scalar l-Scalar-Plain">SLACK_WEBHOOK:slack,BILLING_ORG:bill,BILLING_ID:bill_id</span>
 </pre></div>
 </div>
 </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Examples &mdash; goblet 0.5.1 documentation</title>
+  <title>Examples &mdash; goblet 0.5.2 documentation</title>
   
 
   
@@ -288,7 +288,7 @@
 <span class="normal">117</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
 <span class="kn">import</span> <span class="nn">logging</span> 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-central-1&#39;</span><span class="p">)</span>
 <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="c1"># configure goblet logger level</span>
 <span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 

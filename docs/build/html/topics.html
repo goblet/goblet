@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.5.1 documentation</title>
+  <title>Topics &mdash; goblet 0.5.2 documentation</title>
   
 
   
@@ -306,14 +306,15 @@ member <cite>allUsers</cite></p>
 </div>
 <div class="section" id="run-locally">
 <h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this headline">¶</a></h2>
-<p>Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class</p>
+<p>Running your functions locally for testing and debugging is easy to do with the goblet command <cite>goblet local</cite>.
+You can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
+<p>You can have a custom local name by seting the local param in the goblet class</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code> and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
+<p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code></p>
 <p>Note: If you have both <cite>http()</cite> and <cite>route(“/”)</cite> in order to test the route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">&#64;http()</span></code></p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl localhost:8080/endpoint
 </pre></div>
