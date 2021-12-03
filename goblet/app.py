@@ -2,6 +2,7 @@ from goblet.config import GConfig
 import logging
 import json
 import sys
+import os
 
 from goblet.decorators import Register_Handlers
 
@@ -85,3 +86,8 @@ def goblet_entrypoint(app, entrypoint="goblet_entrypoint"):
         def goblet_entrypoint_wrapper(request, context=None):
             return app(request, context)
         setattr(sys.modules['main'], entrypoint, goblet_entrypoint_wrapper)
+
+
+def enable_gobletlib():
+    current_path = os.path.realpath('.')
+    sys.path.append(f'{current_path}/gobletlib')

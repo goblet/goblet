@@ -1,1 +1,1 @@
-from goblet.app import Goblet, jsonify, Response, goblet_entrypoint  # noqa: F401
+from goblet.app import Goblet, jsonify, Response, goblet_entrypoint, enable_gobletlib  # noqa: F401

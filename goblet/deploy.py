@@ -7,12 +7,14 @@ import hashlib
 from requests import request
 import base64
 import json
+import subprocess
 from urllib.parse import quote_plus
+import shutil
 
 from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location, get_credentials
-from goblet.utils import get_dir, get_g_dir, checksum
+from goblet.utils import get_dir, get_g_dir, checksum, addFolderToZip
 from goblet.config import GConfig
 import google_auth_httplib2
 
@@ -138,9 +140,20 @@ class Deployer:
         include = config.customFiles or []
         include.append('*.py')
         self.zip_directory(get_dir() + '/*', include=include)
+        if os.path.exists(f"{get_dir()}/goblet-requirements.txt"):
+            self.zip_private_libraries()
 
     def zip_file(self, filename):
         self.zipf.write(filename)
+
+    def zip_private_libraries(self):
+        """
+        Pip install's private libraries from goblet-requirements.txt into a gobletlib directory and adds to zipfile
+        """
+        log.info("Add libraries from goblet-requirements to zip package")
+        subprocess.check_output(["pip", "install", "-t", "gobletlib", "-r", "goblet-requirements.txt"])
+        addFolderToZip(self.zipf, f"{get_dir()}/gobletlib")
+        shutil.rmtree(f"{get_dir()}/gobletlib")
 
     def zip_directory(self, dir, include=['*.py'], exclude=['build', 'docs', 'examples', 'test', 'venv']):
         exclusion_set = set(exclude)

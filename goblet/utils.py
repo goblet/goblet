@@ -114,3 +114,12 @@ def nested_update(d, u):
         else:
             d[k] = v
     return d
+
+
+def addFolderToZip(zip_file, folder):
+    for file in os.listdir(folder):
+        full_path = os.path.join(folder, file)
+        if os.path.isfile(full_path):
+            zip_file.write(full_path)
+        elif os.path.isdir(full_path):
+            addFolderToZip(zip_file, full_path)
