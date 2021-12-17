@@ -382,6 +382,71 @@ section in <cite>config.json</cite></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/method_security&#39;</span><span class="p">,</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;your_custom_auth_id&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
 </pre></div>
 </div>
+<p>Another common use case is to authenticate via a service account, which requires the follow secuirty definition. You can specify
+multiple service accounts by adding additional entries to the <cite>securityDefinitions</cite> dictionary.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;SERVICE_ACCOUNT_NAME&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;authorizationUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;flow&quot;</span><span class="p">:</span> <span class="s2">&quot;implicit&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;oauth2&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;x-google-audiences&quot;</span><span class="p">:</span> <span class="s2">&quot;SERVICE_ACCOUNT_EMAIL&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;x-google-issuer&quot;</span><span class="p">:</span> <span class="s2">&quot;SERVICE_ACCOUNT_EMAIL&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;x-google-jwks_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.googleapis.com/service_accounts/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now to access your api endpoint you can use the following python script to generate a jwt token and add it as a bearer token to your request.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">oauth2client.client</span> <span class="kn">import</span> <span class="n">GoogleCredentials</span>
+<span class="kn">from</span> <span class="nn">googleapiclient</span> <span class="kn">import</span> <span class="n">discovery</span>
+
+<span class="k">def</span> <span class="nf">generate_jwt_payload</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates jwt payload&quot;&quot;&quot;</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;iat&#39;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+        <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">now</span> <span class="o">+</span> <span class="mi">3600</span><span class="p">,</span>
+        <span class="s1">&#39;iss&#39;</span><span class="p">:</span> <span class="n">service_account_email</span><span class="p">,</span>
+        <span class="s1">&#39;aud&#39;</span><span class="p">:</span>  <span class="n">service_account_email</span><span class="p">,</span>
+        <span class="s1">&#39;sub&#39;</span><span class="p">:</span> <span class="n">service_account_email</span><span class="p">,</span>
+        <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">service_account_email</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">payload</span>
+
+<span class="k">def</span> <span class="nf">get_jwt</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a signed JSON Web Token using a Google API Service Account.&quot;&quot;&quot;</span>
+
+    <span class="n">credentials</span> <span class="o">=</span> <span class="n">GoogleCredentials</span><span class="o">.</span><span class="n">get_application_default</span><span class="p">()</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">discovery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;iamcredentials&#39;</span><span class="p">,</span> <span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">generate_jwt_payload</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="n">encoded_sa</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">)</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">serviceAccounts</span><span class="p">()</span><span class="o">.</span><span class="n">signJwt</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;projects/-/serviceAccounts/</span><span class="si">{</span><span class="n">encoded_sa</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&quot;signedJwt&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">make_jwt_request</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Makes an authorized request to the endpoint&quot;&quot;&quot;</span>
+    <span class="n">signed_jwt</span> <span class="o">=</span> <span class="n">get_jwt</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">signed_jwt</span><span class="p">),</span>
+        <span class="s1">&#39;content-type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">make_jwt_request</span><span class="p">(</span><span class="n">SERVICE_ACCOUNT_EMAIL</span><span class="p">,</span><span class="n">GATEWAY_URL</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="request">
 <h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
@@ -565,10 +630,12 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
 <div class="section" id="cors">
 <h2>Cors<a class="headerlink" href="#cors" title="Permalink to this headline">¶</a></h2>
 <p>Cors can be set on the route level or on the Goblet application level. Setting <cite>cors=True</cite> uses the default cors setting</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>headers : {
-    &quot;Access-Control-Allow-Headers&quot; : [&#39;Content-Type&#39;, &#39;Authorization&#39;],
-    &quot;Access-Control-Allow-Origin&quot;: &quot;*&quot;
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Access-Control-Allow-Headers&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Authorization&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_backend&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

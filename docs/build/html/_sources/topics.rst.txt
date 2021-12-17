@@ -257,6 +257,77 @@ If you would like to apply security at the method level then you can add securit
     @app.route('/method_security', security=[{"your_custom_auth_id": []}])
 
 
+Another common use case is to authenticate via a service account, which requires the follow secuirty definition. You can specify
+multiple service accounts by adding additional entries to the `securityDefinitions` dictionary.
+
+.. code:: json 
+
+    {
+        "securityDefinitions": {
+            "SERVICE_ACCOUNT_NAME": {
+                "authorizationUrl": "",
+                "flow": "implicit",
+                "type": "oauth2",
+                "x-google-audiences": "SERVICE_ACCOUNT_EMAIL",
+                "x-google-issuer": "SERVICE_ACCOUNT_EMAIL",
+                "x-google-jwks_uri": "https://www.googleapis.com/service_accounts/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL"
+            }
+        }
+    }
+
+Now to access your api endpoint you can use the following python script to generate a jwt token and add it as a bearer token to your request.
+
+
+.. code:: python 
+
+    import time
+    import json 
+    import urllib.parse
+    import requests
+    from oauth2client.client import GoogleCredentials
+    from googleapiclient import discovery
+
+    def generate_jwt_payload(service_account_email):
+        """Generates jwt payload"""
+        now = int(time.time())
+        payload = {
+            'iat': now,
+            "exp": now + 3600,
+            'iss': service_account_email,
+            'aud':  service_account_email,
+            'sub': service_account_email,
+            'email': service_account_email
+        }
+        return payload
+
+    def get_jwt(service_account_email):
+        """Generate a signed JSON Web Token using a Google API Service Account."""
+
+        credentials = GoogleCredentials.get_application_default()
+        service = discovery.build('iamcredentials', 'v1', credentials=credentials)
+        body = {
+            "payload": json.dumps(generate_jwt_payload(service_account_email))
+        }
+        encoded_sa = urllib.parse.quote_plus(service_account_email)
+        resp = service.projects().serviceAccounts().signJwt(name=f"projects/-/serviceAccounts/{encoded_sa}", body=body).execute()
+        return resp["signedJwt"]
+
+
+    def make_jwt_request(service_account_email, url):
+        """Makes an authorized request to the endpoint"""
+        signed_jwt = get_jwt(service_account_email)
+        headers = {
+            'Authorization': 'Bearer {}'.format(signed_jwt),
+            'content-type': 'application/json'
+        }
+        response = requests.get(url, headers=headers)
+        return response
+
+
+    if __name__ == '__main__':
+        print(make_jwt_request(SERVICE_ACCOUNT_EMAIL,GATEWAY_URL).text)
+
+
 Request
 ^^^^^^^
  
@@ -490,9 +561,11 @@ Cors can be set on the route level or on the Goblet application level. Setting `
 
 .. code:: json 
 
-    headers : {
-        "Access-Control-Allow-Headers" : ['Content-Type', 'Authorization'],
-        "Access-Control-Allow-Origin": "*"
+    {
+        "headers" : {
+            "Access-Control-Allow-Headers" : ["Content-Type", "Authorization"],
+            "Access-Control-Allow-Origin": "*"
+        }
     }
 
 .. code:: python 
