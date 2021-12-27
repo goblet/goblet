@@ -583,3 +583,38 @@ Use the `CORSConfig` class to set customized cors headers from the `goblet.resou
     @app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost'))
     def custom_cors():
         return jsonify('localhost is allowed')
+
+Multiple Cloudfunctions
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Using the field `main_file` in `config.json` allows you to set any file as the entrypoint `main.py` file, which is required by cloudfunctions. 
+This allows for multiple functions to be deploying using similar code bases.
+
+For example with the following files which each contain a function and share code in `shared.py`
+
+`func1.py`
+`func2.py`
+
+Could have the goblet `.config`
+
+.. code: json 
+    {
+        "stages": {
+            "func1": {
+                "function_name": "func1",
+                "main_file" : "func1"
+
+            },
+            "func2": {
+                "function_name": "func2",
+                "main_file" : "func2"
+        }
+    }
+
+To test each function locally you can simply run `goblet local -s func1` and to deploy `goblet local -s func1 -p Project -l Region`
+
+Note: This may cause some imports to break if something is importing directly from the func1.py or func2.py since they will be renamed to `main.py` 
+in the packaged zipfile.
+
+Note: There is a bug when uploading a different `main_file`, while also having `main.py` in your code, so if you decide to use `main_file` remove `main.py`. The bug 
+shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct `main.py` 
