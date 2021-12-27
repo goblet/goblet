@@ -55,7 +55,7 @@ def deploy(project, location, stage, skip_function, only_function, config, force
             os.environ["STAGE"] = stage
         if config:
             config = json.loads(config)
-        app = get_goblet_app()
+        app = get_goblet_app(GConfig().main_file or "main.py")
         Deployer({"name": app.function_name}).deploy(app, skip_function=skip_function, only_function=only_function, config=config, force=force)
 
     except FileNotFoundError as not_found:
@@ -81,7 +81,7 @@ def destroy(project, location, stage, all):
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
-        app = get_goblet_app()
+        app = get_goblet_app(GConfig().main_file or "main.py")
         Deployer({"name": app.function_name}).destroy(app, all)
 
     except FileNotFoundError as not_found:
@@ -90,14 +90,17 @@ def destroy(project, location, stage, all):
 
 @main.command()
 @click.argument('cloudfunction')
-def openapi(cloudfunction):
+@click.option('-s', '--stage', 'stage', envvar='STAGE')
+def openapi(cloudfunction, stage):
     """
     You can find the generated openapi spec in /.goblet folder.
 
     The cloudfunction argument sets the correct x-google-backend address in the openapi spec.
     """
+    if stage:
+        os.environ["STAGE"] = stage
     try:
-        app = get_goblet_app()
+        app = get_goblet_app(GConfig().main_file or "main.py")
         app.handlers["route"].generate_openapi_spec(cloudfunction)
 
     except FileNotFoundError as not_found:
@@ -106,16 +109,21 @@ def openapi(cloudfunction):
 
 @main.command()
 @click.argument('local_arg', default="local")
-def local(local_arg):
+@click.option('-s', '--stage', 'stage', envvar='STAGE')
+def local(local_arg, stage):
     """
-    Requires the local argument to be set in the Goblet class.
+    Requires the local argument to be set in the Goblet class. The default is local.
 
     For example in this case you would use local_function
 
     Goblet("test_function",local="local_function")
     """
     try:
-        subprocess.check_output(["functions-framework", f"--target={local_arg}", "--debug"])
+        if stage:
+            os.environ["STAGE"] = stage
+        config = GConfig()
+        source = config.main_file or "main.py"
+        subprocess.check_output(["functions-framework", f"--target={local_arg}", "--debug", f"--source={source}"])
     except subprocess.CalledProcessError:
         click.echo("Incorrect argument. Make sure you set the local param in your Goblet class and that it matches the arg used in goblet local")
 
@@ -127,7 +135,7 @@ def package(stage):
     try:
         if stage:
             os.environ["STAGE"] = stage
-        app = get_goblet_app()
+        app = get_goblet_app(GConfig().main_file or "main.py")
         Deployer({"name": app.function_name}).package()
 
     except FileNotFoundError as not_found:
@@ -166,7 +174,7 @@ def create(stage):
     config = GConfig()
     if config.stages and stage in config.stages:
         return click.echo(f"stage {stage} already exists")
-    app = get_goblet_app()
+    app = get_goblet_app(GConfig().main_file or "main.py")
     function_name = f"{app.function_name}-{stage}"
     if not config.stages:
         config.stages = {stage: {"function_name": function_name}}

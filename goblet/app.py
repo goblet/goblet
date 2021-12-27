@@ -19,12 +19,17 @@ class Goblet(Register_Handlers):
         self.log = logging.getLogger(__name__)
         self.headers = {}
         self.g = G()
-        if local and sys.modules.get('main'):
+
+        # Setup Local
+        module_name = GConfig().main_file or "main"
+        module_name = module_name.replace(".py", "")
+        if local and sys.modules.get(module_name):
             self.log = logging.getLogger('werkzeug')
 
             def local_func(request):
                 return self(request)
-            setattr(sys.modules['main'], local, local_func)
+
+            setattr(sys.modules[module_name], local, local_func)
 
 
 class Response(object):
