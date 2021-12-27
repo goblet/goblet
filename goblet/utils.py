@@ -34,15 +34,15 @@ def get_app_from_module(m):
             return getattr(m, obj), obj
 
 
-def get_goblet_app():
-    """Look for main.py and return goblet app instance. Also sets the entrypoint for the app"""
+def get_goblet_app(main_file="main.py"):
+    """Look for main.py or main_file if defined and return goblet app instance."""
     dir_path = os.path.realpath('.')
-    spec = importlib.util.spec_from_file_location("main", f"{dir_path}/main.py")
+    spec = importlib.util.spec_from_file_location("main", f"{dir_path}/{main_file}")
     main = importlib.util.module_from_spec(spec)
     with add_to_path(dir_path):
         spec.loader.exec_module(main)
         app, app_name = get_app_from_module(main)
-    setattr(app, "entrypoint", app_name)
+    # setattr(app, "entrypoint", app_name)
     return app
 
 

@@ -8,6 +8,7 @@ from requests import request
 import base64
 import json
 from urllib.parse import quote_plus
+import warnings
 
 from googleapiclient.errors import HttpError
 
@@ -135,12 +136,16 @@ class Deployer:
         """Zips requirements.txt, python files and any additional files based on config.customFiles"""
         config = GConfig()
         self.zip_file("requirements.txt")
+        if config.main_file:
+            self.zip_file(config.main_file, "main.py")
         include = config.customFiles or []
         include.append('*.py')
-        self.zip_directory(get_dir() + '/*', include=include)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.zip_directory(get_dir() + '/*', include=include)
 
-    def zip_file(self, filename):
-        self.zipf.write(filename)
+    def zip_file(self, filename, arcname=None):
+        self.zipf.write(filename, arcname)
 
     def zip_directory(self, dir, include=['*.py'], exclude=['build', 'docs', 'examples', 'test', 'venv']):
         exclusion_set = set(exclude)
