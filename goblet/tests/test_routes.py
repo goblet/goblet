@@ -13,8 +13,8 @@ class TestRoutes:
         app.route('/home')(dummy_function)
 
         gateway = app.handlers["route"]
-        assert(len(gateway.routes) == 1)
-        route_entry = gateway.routes['/home']['GET']
+        assert(len(gateway.resources) == 1)
+        route_entry = gateway.resources['/home']['GET']
         assert(route_entry.method == 'GET')
         assert(route_entry.function_name == 'dummy_function')
         assert(route_entry.uri_pattern == '/home')
@@ -26,8 +26,8 @@ class TestRoutes:
         app.route('/home/{home_id}', content_types={'home_id': 'boolean'})(dummy_function)
 
         gateway = app.handlers["route"]
-        assert(len(gateway.routes) == 1)
-        route_entry = gateway.routes['/home/{home_id}']['GET']
+        assert(len(gateway.resources) == 1)
+        route_entry = gateway.resources['/home/{home_id}']['GET']
         assert(route_entry.method == 'GET')
         assert(route_entry.function_name == 'dummy_function')
         assert(route_entry.uri_pattern == '/home/{home_id}')
@@ -44,12 +44,12 @@ class TestRoutes:
         def dummy_function2(self):
             return True
         gateway = app.handlers["route"]
-        assert(len(gateway.routes) == 1)
-        assert(gateway.routes['/home']['GET'])
-        assert(gateway.routes['/home']['POST'])
-        assert(gateway.routes['/home']['PUT'])
-        assert(gateway.routes['/home']['GET'].route_function == gateway.routes['/home']['POST'].route_function)
-        assert(gateway.routes['/home']['GET'].route_function != gateway.routes['/home']['PUT'].route_function)
+        assert(len(gateway.resources) == 1)
+        assert(gateway.resources['/home']['GET'])
+        assert(gateway.resources['/home']['POST'])
+        assert(gateway.resources['/home']['PUT'])
+        assert(gateway.resources['/home']['GET'].route_function == gateway.resources['/home']['POST'].route_function)
+        assert(gateway.resources['/home']['GET'].route_function != gateway.resources['/home']['PUT'].route_function)
 
     def test_add_multiple_routes(self):
         app = Goblet(function_name="goblet_example")
@@ -58,9 +58,9 @@ class TestRoutes:
         app.route('/home2')(dummy_function)
 
         gateway = app.handlers["route"]
-        assert(len(gateway.routes) == 2)
-        assert(gateway.routes['/home']['GET'])
-        assert(gateway.routes['/home2']['GET'])
+        assert(len(gateway.resources) == 2)
+        assert(gateway.resources['/home']['GET'])
+        assert(gateway.resources['/home2']['GET'])
 
     def test_call_route(self):
         app = Goblet(function_name="goblet_example")
@@ -164,7 +164,7 @@ class TestRoutes:
         monkeypatch.setenv("GOBLET_TEST_NAME", "routes-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        apigw = ApiGateway('goblet_routes', routes=['not_empty'])
+        apigw = ApiGateway('goblet_routes', resources=['not_empty'])
         apigw.destroy()
 
         responses = get_responses('routes-destroy')

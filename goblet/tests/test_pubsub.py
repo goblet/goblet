@@ -16,8 +16,8 @@ class TestPubSub:
         app.topic('test')(dummy_function)
 
         pubsub = app.handlers["pubsub"]
-        assert(len(pubsub.topics) == 1)
-        assert(pubsub.topics['test']['dummy_function'] == {'func': dummy_function, 'attributes': {}})
+        assert(len(pubsub.resources) == 1)
+        assert(pubsub.resources['test']['dummy_function'] == {'func': dummy_function, 'attributes': {}})
 
     def test_add_topic_attributes(self):
         app = Goblet(function_name="goblet_example")
@@ -25,8 +25,8 @@ class TestPubSub:
         app.topic('test', attributes={'test': True})(dummy_function)
 
         pubsub = app.handlers["pubsub"]
-        assert(len(pubsub.topics) == 1)
-        assert(pubsub.topics['test']['dummy_function'] == {'func': dummy_function, 'attributes': {'test': True}})
+        assert(len(pubsub.resources) == 1)
+        assert(pubsub.resources['test']['dummy_function'] == {'func': dummy_function, 'attributes': {'test': True}})
 
     def test_call_topic(self):
         app = Goblet(function_name="goblet_example")
@@ -96,7 +96,7 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub('goblet_topic', topics={'test-topic': {}})
+        pubsub = PubSub('goblet_topic', resources={'test-topic': {}})
         pubsub.destroy()
 
         responses = get_responses('pubsub-destroy')

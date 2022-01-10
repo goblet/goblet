@@ -16,9 +16,9 @@ class TestStorage:
         app.storage('test2', 'archive')(dummy_function)
 
         storage = app.handlers["storage"]
-        assert(len(storage.buckets) == 2)
-        assert(storage.buckets[0]['event_type'] == 'finalize')
-        assert(storage.buckets[1]['event_type'] == 'archive')
+        assert(len(storage.resources) == 2)
+        assert(storage.resources[0]['event_type'] == 'finalize')
+        assert(storage.resources[1]['event_type'] == 'archive')
 
     def test_add_invalid_event(self):
         app = Goblet(function_name="goblet_example")
@@ -65,7 +65,7 @@ class TestStorage:
         monkeypatch.setenv("GOBLET_TEST_NAME", "storage-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        storage = Storage('goblet_storage', buckets=[{'bucket': 'test', 'event_type': 'finalize', 'name': 'test'}])
+        storage = Storage('goblet_storage', resources=[{'bucket': 'test', 'event_type': 'finalize', 'name': 'test'}])
         storage.destroy()
 
         responses = get_responses('storage-destroy')

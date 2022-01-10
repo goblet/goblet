@@ -50,8 +50,8 @@ class TestDecoraters:
 
         app1 + app2
 
-        assert list(app1.handlers['route'].routes.keys()) == ['/home', '/home2']
-        assert list(app1.handlers['schedule'].jobs.keys()) == ['dummy_function', 'dummy_function2']
+        assert list(app1.handlers['route'].resources.keys()) == ['/home', '/home2']
+        assert list(app1.handlers['schedule'].resources.keys()) == ['dummy_function', 'dummy_function2']
 
     def test_combine(self):
         app1 = Goblet("test")
@@ -69,8 +69,8 @@ class TestDecoraters:
 
         app1.combine(app2)
 
-        assert list(app1.handlers['route'].routes.keys()) == ['/home', '/home2']
-        assert list(app1.handlers['schedule'].jobs.keys()) == ['dummy_function', 'dummy_function2']
+        assert list(app1.handlers['route'].resources.keys()) == ['/home', '/home2']
+        assert list(app1.handlers['schedule'].resources.keys()) == ['dummy_function', 'dummy_function2']
 
     def test_is_http(self):
 

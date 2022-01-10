@@ -14,7 +14,7 @@ class TestScheduler:
         app.schedule('* * * * *', description='test')(dummy_function)
 
         scheduler = app.handlers["schedule"]
-        assert(len(scheduler.jobs) == 1)
+        assert(len(scheduler.resources) == 1)
         scheule_json = {
             'name': 'projects/TEST_PROJECT/locations/us-central1/jobs/goblet_example-dummy_function',
             'schedule': '* * * * *',
@@ -32,8 +32,8 @@ class TestScheduler:
                 'oidcToken': {}
             }
         }
-        assert(scheduler.jobs['dummy_function']['job_json'] == scheule_json)
-        assert(scheduler.jobs['dummy_function']['func'] == dummy_function)
+        assert(scheduler.resources['dummy_function']['job_json'] == scheule_json)
+        assert(scheduler.resources['dummy_function']['func'] == dummy_function)
 
     def test_multiple_schedules(self, monkeypatch):
         app = Goblet(function_name="goblet_example")
@@ -45,7 +45,7 @@ class TestScheduler:
         app.schedule('3 * * * *', httpMethod='POST')(dummy_function)
 
         scheduler = app.handlers["schedule"]
-        assert(len(scheduler.jobs) == 3)
+        assert(len(scheduler.resources) == 3)
         scheule_json = {
             'name': 'projects/TEST_PROJECT/locations/us-central1/jobs/goblet_example-dummy_function',
             'schedule': '1 * * * *',
@@ -63,11 +63,11 @@ class TestScheduler:
                 'oidcToken': {}
             }
         }
-        assert(scheduler.jobs['dummy_function']['job_json'] == scheule_json)
-        assert(scheduler.jobs['dummy_function-2']['job_json']['httpTarget']['headers']['test'] == 'header')
-        assert(scheduler.jobs['dummy_function-2']['job_json']['httpTarget']['headers']['X-Goblet-Name'] == 'dummy_function-2')
-        assert(scheduler.jobs['dummy_function-3']['job_json']['httpTarget']['headers']['X-Goblet-Name'] == 'dummy_function-3')
-        assert(scheduler.jobs['dummy_function-3']['job_json']['httpTarget']['httpMethod'] == 'POST')
+        assert(scheduler.resources['dummy_function']['job_json'] == scheule_json)
+        assert(scheduler.resources['dummy_function-2']['job_json']['httpTarget']['headers']['test'] == 'header')
+        assert(scheduler.resources['dummy_function-2']['job_json']['httpTarget']['headers']['X-Goblet-Name'] == 'dummy_function-2')
+        assert(scheduler.resources['dummy_function-3']['job_json']['httpTarget']['headers']['X-Goblet-Name'] == 'dummy_function-3')
+        assert(scheduler.resources['dummy_function-3']['job_json']['httpTarget']['httpMethod'] == 'POST')
 
     def test_call_scheduler(self, monkeypatch):
         app = Goblet(function_name="goblet_example")

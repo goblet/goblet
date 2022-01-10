@@ -16,22 +16,26 @@ class PubSub(Handler):
     """Pubsub topic trigger
     https://cloud.google.com/functions/docs/calling/pubsub
     """
-    def __init__(self, name, topics=None):
+
+    valid_backends = ["cloudfunction", "cloudrun"]
+    resource_type = "pubsub"
+
+    def __init__(self, name, resources=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
-        self.topics = topics or {}
+        self.resources = resources or {}
 
     def register_topic(self, name, func, kwargs):
         topic = kwargs["topic"]
         kwargs = kwargs.pop('kwargs')
         attributes = kwargs.get("attributes", {})
-        if self.topics.get(topic):
-            self.topics[topic][name] = {
+        if self.resources.get(topic):
+            self.resources[topic][name] = {
                 "func": func,
                 "attributes": attributes
             }
         else:
-            self.topics[topic] = {
+            self.resources[topic] = {
                 name: {
                     "func": func,
                     "attributes": attributes
@@ -43,7 +47,7 @@ class PubSub(Handler):
         data = base64.b64decode(event['data']).decode('utf-8')
         attributes = event.get("attributes") or {}
 
-        topic = self.topics.get(topic_name)
+        topic = self.resources.get(topic_name)
         if not topic:
             raise ValueError(f"Topic {topic_name} not found")
 
@@ -53,18 +57,14 @@ class PubSub(Handler):
                 info["func"](data)
         return
 
-    def __add__(self, other):
-        self.topics.update(other.topics)
-        return self
-
-    def deploy(self, sourceUrl=None, entrypoint=None):
-        if not self.topics:
+    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
+        if not self.resources:
             return
 
         log.info("deploying topic functions......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
-        for topic in self.topics:
+        for topic in self.resources:
             req_body = {
                 "name": f"{self.cloudfunction}-topic-{topic}",
                 "description": config.description or "created by goblet",
@@ -80,5 +80,5 @@ class PubSub(Handler):
             create_cloudfunction(req_body)
 
     def destroy(self):
-        for topic in self.topics:
+        for topic in self.resources:
             destroy_cloudfunction(f"{self.name}-topic-{topic}")

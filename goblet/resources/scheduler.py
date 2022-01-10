@@ -12,10 +12,14 @@ class Scheduler(Handler):
     """Cloud Scheduler job which calls http endpoint
     https://cloud.google.com/scheduler/docs
     """
-    def __init__(self, name, jobs=None):
+
+    resource_type = "scheduler"
+    valid_backends = ["cloudfunction", "cloudrun"]
+
+    def __init__(self, name, resources=None):
         self.name = name
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
-        self.jobs = jobs or {}
+        self.resources = resources or {}
         self._api_client = None
 
     @property
@@ -39,12 +43,12 @@ class Scheduler(Handler):
         attempt_deadline = kwargs.get("attemptDeadline")
 
         job_num = 1
-        if self.jobs.get(name):
+        if self.resources.get(name):
             # increment job_num if there is already a scheduled job for this func
-            job_num = self.jobs[name]["job_num"] + 1
-            self.jobs[name]["job_num"] = job_num
+            job_num = self.resources[name]["job_num"] + 1
+            self.resources[name]["job_num"] = job_num
             name = f"{name}-{job_num}"
-        self.jobs[name] = {
+        self.resources[name] = {
             "job_num": job_num,
             "job_json": {
                 "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
@@ -76,17 +80,13 @@ class Scheduler(Handler):
         if not func_name:
             raise ValueError("No X-Goblet-Name header found")
 
-        job = self.jobs[func_name]
+        job = self.resources[func_name]
         if not job:
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def __add__(self, other):
-        self.jobs.update(other.jobs)
-        return self
-
-    def deploy(self, sourceUrl=None, entrypoint=None):
-        if not self.jobs:
+    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
+        if not self.resources:
             return
 
         cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
@@ -97,7 +97,7 @@ class Scheduler(Handler):
         service_account = resp["serviceAccountEmail"]
 
         log.info("deploying scheduled jobs......")
-        for job_name, job in self.jobs.items():
+        for job_name, job in self.resources.items():
             job["job_json"]["httpTarget"]['uri'] = cloudfunction_target
             job["job_json"]["httpTarget"]['oidcToken']["serviceAccountEmail"] = service_account
 
@@ -115,9 +115,9 @@ class Scheduler(Handler):
                 raise e
 
     def destroy(self):
-        if not self.jobs:
+        if not self.resources:
             return
-        for job_name in self.jobs.keys():
+        for job_name in self.resources.keys():
             self._destroy_job(job_name)
 
     def _destroy_job(self, job_name):

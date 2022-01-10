@@ -43,7 +43,7 @@ class Deployer:
 
     def deploy(self, goblet, skip_function=False, only_function=False, config=None, force=False):
         """Deploys http cloudfunction and then calls goblet.deploy() to deploy any handler's required infrastructure"""
-        url = None
+        source_url = None
         if not skip_function:
             log.info("zipping function......")
             self.zip()
@@ -51,13 +51,11 @@ class Deployer:
                 log.info("No changes detected......")
             else:
                 log.info("uploading function zip to gs......")
-                url = self._upload_zip()
+                source_url = self._upload_zip()
                 if goblet.is_http():
-                    # TODO: temporary workaround around the goblet entrypoint.
-                    self.create_function(url, "goblet_entrypoint", config)
-                    # self.create_function(url, goblet.entrypoint, config)
-        if not only_function and url:
-            goblet.deploy(url)
+                    self.create_function(source_url, "goblet_entrypoint", config)
+        if not only_function and source_url:
+            goblet.deploy(source_url)
 
         return goblet
 

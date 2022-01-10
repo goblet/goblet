@@ -9,6 +9,7 @@ import logging
 log = logging.getLogger(__name__)
 
 EVENT_TYPES = ['all', 'http', 'schedule', 'pubsub', 'storage', 'route']
+BACKEND_TYPES = ["cloudfunction", "cloudrun"]
 
 
 class DecoratorAPI:
@@ -82,7 +83,7 @@ class DecoratorAPI:
 class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
-    def __init__(self, function_name, cors=None):
+    def __init__(self, function_name, backend="cloudfunction", cors=None):
         self.handlers = {
             "route": ApiGateway(function_name, cors=cors),
             "schedule": Scheduler(function_name),
@@ -92,6 +93,9 @@ class Register_Handlers(DecoratorAPI):
         }
         self.middleware_handlers = {}
         self.current_request = None
+        self.backend = backend
+        if backend not in BACKEND_TYPES:
+            raise ValueError(f"{backend} not a valid backend")
 
     def __call__(self, request, context=None):
         """Goblet entrypoint"""
@@ -151,12 +155,12 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
-    def deploy(self, sourceUrl):
+    def deploy(self, source_url):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
             # TODO: better handle entrypoint
-            v.deploy(sourceUrl, "goblet_entrypoint")
+            v.deploy(source_url, entrypoint="goblet_entrypoint", backend=self.backend)
 
     def destroy(self):
         """Call each handlers destroy method"""
@@ -167,7 +171,7 @@ class Register_Handlers(DecoratorAPI):
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
         function"""
-        if len(self.handlers["route"].routes) > 0 or len(self.handlers["schedule"].jobs) > 0 or self.handlers["http"].http:
+        if len(self.handlers["route"].resources) > 0 or len(self.handlers["schedule"].resources) > 0 or self.handlers["http"].resources:
             return True
         return False
 
