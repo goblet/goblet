@@ -5,6 +5,7 @@ class HTTP(Handler):
     """Http Trigger"""
 
     resource_type = "http"
+    valid_backends = ["cloudfunction", "cloudrun"]
 
     def __init__(self, resources=None):
         self.resources = resources or []

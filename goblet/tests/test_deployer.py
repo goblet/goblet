@@ -2,6 +2,8 @@ from goblet.deploy import Deployer
 from goblet.resources.http import HTTP
 from goblet import Goblet
 from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN
+import subprocess
+from unittest.mock import Mock
 
 
 class TestDeployer:
@@ -21,6 +23,39 @@ class TestDeployer:
 
         responses = get_responses('deployer-function-deploy')
         assert(len(responses) == 3)
+
+    def test_deploy_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        mock = Mock()
+
+        monkeypatch.setattr(subprocess, 'check_output', mock)
+
+        app = Goblet(function_name="goblet", backend="cloudrun")
+        setattr(app, "entrypoint", 'app')
+
+        app.handlers['http'] = HTTP(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(app, only_function=True, force=True, config={"cloudrun": {"no-allow-unauthenticated": "", "max-instances": "2"}})
+
+        assert set(['gcloud', 'run', 'deploy', "--no-allow-unauthenticated", "--max-instances", "2"]).issubset(set(mock.call_args_list[0].args[0]))
+
+    def test_destroy_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-destroy")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet", backend="cloudrun")
+
+        Deployer({"name": app.function_name}).destroy(app)
+
+        responses = get_responses('deployer-cloudrun-destroy')
+        assert(len(responses) == 1)
+        assert(responses[0]['body']['status'] == 'Success')
+        assert(responses[0]['body']['details']['name'] == "goblet")
 
     def test_destroy_http_function(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
