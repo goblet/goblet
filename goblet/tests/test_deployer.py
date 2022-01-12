@@ -40,7 +40,7 @@ class TestDeployer:
 
         Deployer({"name": app.function_name}).deploy(app, only_function=True, force=True, config={"cloudrun": {"no-allow-unauthenticated": "", "max-instances": "2"}})
 
-        assert set(['gcloud', 'run', 'deploy', "--no-allow-unauthenticated", "--max-instances", "2"]).issubset(set(mock.call_args_list[0].args[0]))
+        assert set(['gcloud', 'run', 'deploy', "--no-allow-unauthenticated", "--max-instances", "2"]).issubset(set(mock.call_args[0][0]))
 
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
