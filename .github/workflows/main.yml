@@ -23,6 +23,9 @@ jobs:
       - name: Lint Check
         run: |
           make lint
+      - uses: psf/black@stable
+        with:
+          src: "./goblet"
 
   Test_python37:
     runs-on: ubuntu-latest

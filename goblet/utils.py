@@ -7,6 +7,7 @@ from contextlib import contextmanager
 @contextmanager
 def add_to_path(p):
     import sys
+
     old_path = sys.path
     sys.path = sys.path[:]
     sys.path.insert(0, p)
@@ -27,6 +28,7 @@ def checksum(fh, hasher, blocksize=65536):
 
 def get_app_from_module(m):
     from goblet import Goblet
+
     for obj in dir(m):
         if isinstance(getattr(m, obj), Goblet):
             return getattr(m, obj), obj
@@ -34,7 +36,7 @@ def get_app_from_module(m):
 
 def get_goblet_app(main_file="main.py"):
     """Look for main.py or main_file if defined and return goblet app instance."""
-    dir_path = os.path.realpath('.')
+    dir_path = os.path.realpath(".")
     spec = importlib.util.spec_from_file_location("main", f"{dir_path}/{main_file}")
     main = importlib.util.module_from_spec(spec)
     with add_to_path(dir_path):
@@ -50,7 +52,7 @@ def get_g_dir():
 
 
 def get_dir():
-    return os.path.realpath('.')
+    return os.path.realpath(".")
 
 
 def nested_update(d, u):

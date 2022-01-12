@@ -7,7 +7,7 @@ from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError
 
-log = logging.getLogger('goblet.deployer')
+log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
@@ -33,12 +33,17 @@ class Scheduler(Handler):
         return self._api_client
 
     def _create_api_client(self):
-        return Client("cloudscheduler", 'v1', calls='projects.locations.jobs', parent_schema='projects/{project_id}/locations/{location_id}')
+        return Client(
+            "cloudscheduler",
+            "v1",
+            calls="projects.locations.jobs",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
 
     def register_job(self, name, func, kwargs):
         schedule = kwargs["schedule"]
-        kwargs = kwargs.pop('kwargs')
-        timezone = kwargs.get("timezone", 'UTC')
+        kwargs = kwargs.pop("kwargs")
+        timezone = kwargs.get("timezone", "UTC")
         description = kwargs.get("description", "Created by goblet")
         headers = kwargs.get("headers", {})
         httpMethod = kwargs.get("httpMethod", "GET")
@@ -64,18 +69,18 @@ class Scheduler(Handler):
                 "httpTarget": {
                     # "uri": ADDED AT runtime,
                     "headers": {
-                        'X-Goblet-Type': 'schedule',
-                        'X-Goblet-Name': name,
-                        **headers
+                        "X-Goblet-Type": "schedule",
+                        "X-Goblet-Name": name,
+                        **headers,
                     },
                     "body": body,
                     "httpMethod": httpMethod,
-                    'oidcToken': {
+                    "oidcToken": {
                         # "serviceAccountEmail": ADDED AT runtime
-                    }
-                }
+                    },
+                },
             },
-            "func": func
+            "func": func,
         }
 
     def __call__(self, request, context=None):
@@ -94,8 +99,15 @@ class Scheduler(Handler):
             return
 
         if self.backend == "cloudfunction":
-            cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-            resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
+            cloudfunction_client = Client(
+                "cloudfunctions",
+                "v1",
+                calls="projects.locations.functions",
+                parent_schema="projects/{project_id}/locations/{location_id}",
+            )
+            resp = cloudfunction_client.execute(
+                "get", parent_key="name", parent_schema=self.cloudfunction
+            )
             if not resp:
                 raise ValueError(f"Function {self.cloudfunction} not found")
             target = resp["httpsTrigger"]["url"]
@@ -106,25 +118,34 @@ class Scheduler(Handler):
             config = GConfig(config=config)
             if config.cloudrun and config.cloudrun.get("service-account"):
                 service_account = config.cloudrun.get("service-account")
-            elif config.scheduler and config.scheduler.get('serviceAccount'):
-                service_account = config.scheduler.get('serviceAccount')
+            elif config.scheduler and config.scheduler.get("serviceAccount"):
+                service_account = config.scheduler.get("serviceAccount")
             else:
-                raise ValueError("Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`")
+                raise ValueError(
+                    "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
+                )
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
-            job["job_json"]["httpTarget"]['uri'] = target
-            job["job_json"]["httpTarget"]['oidcToken']["serviceAccountEmail"] = service_account
+            job["job_json"]["httpTarget"]["uri"] = target
+            job["job_json"]["httpTarget"]["oidcToken"][
+                "serviceAccountEmail"
+            ] = service_account
 
             self.deploy_job(job_name, job["job_json"])
 
     def deploy_job(self, job_name, job):
         try:
-            self.api_client.execute('create', params={'body': job})
+            self.api_client.execute("create", params={"body": job})
             log.info(f"created scheduled job: {job_name} for {self.name}")
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"updated scheduled job: {job_name} for {self.name}")
-                self.api_client.execute('patch', parent_key="name", parent_schema=job['name'], params={'body': job})
+                self.api_client.execute(
+                    "patch",
+                    parent_key="name",
+                    parent_schema=job["name"],
+                    params={"body": job},
+                )
             else:
                 raise e
 
@@ -136,8 +157,16 @@ class Scheduler(Handler):
 
     def _destroy_job(self, job_name):
         try:
-            scheduler_client = Client("cloudscheduler", 'v1', calls='projects.locations.jobs', parent_schema='projects/{project_id}/locations/{location_id}/jobs/' + self.name + '-' + job_name)
-            scheduler_client.execute('delete', parent_key="name")
+            scheduler_client = Client(
+                "cloudscheduler",
+                "v1",
+                calls="projects.locations.jobs",
+                parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+                + self.name
+                + "-"
+                + job_name,
+            )
+            scheduler_client.execute("delete", parent_key="name")
             log.info("destroying scheduled functions......")
         except HttpError as e:
             if e.resp.status == 404:

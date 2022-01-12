@@ -1,26 +1,17 @@
 from goblet.config import GConfig
 
 test_config = {
-    "cloudfunction": {
-        "environmentVariables": {
-            "key": "value"
-        }
-    },
+    "cloudfunction": {"environmentVariables": {"key": "value"}},
     "stages": {
         "dev": {
             "function_name": "dev",
-            "cloudfunction": {
-                "environmentVariables": {
-                    "key": "dev"
-                }
-            }
+            "cloudfunction": {"environmentVariables": {"key": "dev"}},
         }
-    }
+    },
 }
 
 
 class TestGConfig:
-
     def test_get_item(self):
         config = GConfig(test_config)
         assert config.cloudfunction == {"environmentVariables": {"key": "value"}}

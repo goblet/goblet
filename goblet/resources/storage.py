@@ -6,15 +6,10 @@ import logging
 from goblet.handler import Handler
 from goblet.client import get_default_project, get_default_location
 
-log = logging.getLogger('goblet.deployer')
+log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
-STORAGE_EVENT_TYPES = [
-    "finalize",
-    "delete",
-    "archive",
-    "metadataUpdate"
-]
+STORAGE_EVENT_TYPES = ["finalize", "delete", "archive", "metadataUpdate"]
 
 
 class Storage(Handler):
@@ -39,18 +34,24 @@ class Storage(Handler):
         bucket_name = kwargs["bucket"]
         event_type = kwargs["event_type"]
         self.validate_event_type(event_type)
-        self.resources.append({
-            "bucket": bucket_name,
-            "event_type": event_type,
-            "name": name,
-            "func": func
-        })
+        self.resources.append(
+            {
+                "bucket": bucket_name,
+                "event_type": event_type,
+                "name": name,
+                "func": func,
+            }
+        )
 
     def __call__(self, event, context):
-        event_type = context.event_type.split('.')[-1]
-        bucket_name = event['bucket']
+        event_type = context.event_type.split(".")[-1]
+        bucket_name = event["bucket"]
 
-        matched_buckets = [b for b in self.resources if b["bucket"] == bucket_name and b["event_type"] == event_type]
+        matched_buckets = [
+            b
+            for b in self.resources
+            if b["bucket"] == bucket_name and b["event_type"] == event_type
+        ]
         if not matched_buckets:
             raise ValueError("No functions found")
         for b in matched_buckets:
@@ -71,19 +72,25 @@ class Storage(Handler):
         user_configs = config.cloudfunction or {}
         for bucket in self.resources:
             req_body = {
-                "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace('.', '-'),
+                "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
+                    ".", "-"
+                ),
                 "description": config.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": sourceUrl,
                 "eventTrigger": {
                     "eventType": f"google.storage.object.{bucket['event_type']}",
-                    "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}"
+                    "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
                 },
                 "runtime": config.runtime or "python37",
-                **user_configs
+                **user_configs,
             }
             create_cloudfunction(req_body)
 
     def destroy(self):
         for bucket in self.resources:
-            destroy_cloudfunction(f"{self.name}-storage-{bucket['name']}-{bucket['event_type']}".replace('.', '-'))
+            destroy_cloudfunction(
+                f"{self.name}-storage-{bucket['name']}-{bucket['event_type']}".replace(
+                    ".", "-"
+                )
+            )

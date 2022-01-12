@@ -8,7 +8,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ['all', 'http', 'schedule', 'pubsub', 'storage', 'route']
+EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route"]
 BACKEND_TYPES = ["cloudfunction", "cloudrun"]
 
 
@@ -17,7 +17,7 @@ class DecoratorAPI:
     registration function in the Register_Handlers class. For example _create_registration_function with type route will call
     _register_route"""
 
-    def middleware(self, event_type='all'):
+    def middleware(self, event_type="all"):
         """Middleware functions that are called before events for preprocessing"""
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not in {EVENT_TYPES}")
@@ -25,58 +25,61 @@ class DecoratorAPI:
         def _middleware_wrapper(func):
             self.register_middleware(func, event_type)
             return func
+
         return _middleware_wrapper
 
-    def route(self, path, methods=['GET'], **kwargs):
+    def route(self, path, methods=["GET"], **kwargs):
         """Api Gateway route"""
         return self._create_registration_function(
-            handler_type='route',
-            registration_kwargs={'path': path, 'methods': methods, 'kwargs': kwargs},
+            handler_type="route",
+            registration_kwargs={"path": path, "methods": methods, "kwargs": kwargs},
         )
 
     def schedule(self, schedule, **kwargs):
         """Scheduler job Http trigger"""
         return self._create_registration_function(
-            handler_type='schedule',
-            registration_kwargs={'schedule': schedule, 'kwargs': kwargs},
+            handler_type="schedule",
+            registration_kwargs={"schedule": schedule, "kwargs": kwargs},
         )
 
     def topic(self, topic, **kwargs):
         """Pubsub topic trigger"""
         return self._create_registration_function(
-            handler_type='pubsub',
-            registration_kwargs={'topic': topic, 'kwargs': kwargs},
+            handler_type="pubsub",
+            registration_kwargs={"topic": topic, "kwargs": kwargs},
         )
 
     def storage(self, bucket, event_type, name=None):
         """Storage event trigger"""
         return self._create_registration_function(
-            handler_type='storage',
-            registration_kwargs={'bucket': bucket, 'event_type': event_type, 'name': name},
+            handler_type="storage",
+            registration_kwargs={
+                "bucket": bucket,
+                "event_type": event_type,
+                "name": name,
+            },
         )
 
     def http(self, headers={}):
         """Base http trigger"""
         return self._create_registration_function(
-            handler_type='http',
-            registration_kwargs={'headers': headers},
+            handler_type="http",
+            registration_kwargs={"headers": headers},
         )
 
-    def _create_registration_function(self, handler_type,
-                                      registration_kwargs=None):
+    def _create_registration_function(self, handler_type, registration_kwargs=None):
         def _register_handler(user_handler):
             handler_name = user_handler.__name__
             kwargs = registration_kwargs or {}
-            self._register_handler(handler_type, handler_name,
-                                   user_handler, kwargs)
+            self._register_handler(handler_type, handler_name, user_handler, kwargs)
             return user_handler
+
         return _register_handler
 
-    def _register_handler(self, handler_type, name,
-                          func, kwargs, options=None):
+    def _register_handler(self, handler_type, name, func, kwargs, options=None):
         raise NotImplementedError("_register_handler")
 
-    def register_middleware(self, func, event_type='all'):
+    def register_middleware(self, func, event_type="all"):
         raise NotImplementedError("register_middleware")
 
 
@@ -93,7 +96,7 @@ class Register_Handlers(DecoratorAPI):
             "schedule": Scheduler(function_name, backend=backend),
             "pubsub": PubSub(function_name, backend=backend),
             "storage": Storage(function_name, backend=backend),
-            "http": HTTP(backend=backend)
+            "http": HTTP(backend=backend),
         }
         self.middleware_handlers = {}
         self.current_request = None
@@ -107,11 +110,11 @@ class Register_Handlers(DecoratorAPI):
         request = self._call_middleware(request, event_type)
 
         if event_type == "schedule":
-            return self.handlers['schedule'](request)
+            return self.handlers["schedule"](request)
         if event_type == "pubsub":
-            return self.handlers['pubsub'](request, context)
+            return self.handlers["pubsub"](request, context)
         if event_type == "storage":
-            return self.handlers['storage'](request, context)
+            return self.handlers["storage"](request, context)
         if event_type == "route":
             return self.handlers["route"](request)
         if event_type == "http":
@@ -130,27 +133,30 @@ class Register_Handlers(DecoratorAPI):
     def get_event_type(self, request, context=None):
         """Parse event type from the event request and context"""
         if context and context.event_type:
-            return context.event_type.split('.')[1].split('/')[0]
-        if request.headers.get("X-Goblet-Type") == 'schedule':
+            return context.event_type.split(".")[1].split("/")[0]
+        if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
-        if request.path and request.path == '/' and not request.headers.get('X-Envoy-Original-Path'):
+        if (
+            request.path
+            and request.path == "/"
+            and not request.headers.get("X-Envoy-Original-Path")
+        ):
             return "http"
         if request.path:
             return "route"
         return None
 
     def _call_middleware(self, event, event_type):
-        middleware = self.middleware_handlers.get('all', [])
+        middleware = self.middleware_handlers.get("all", [])
         middleware.extend(self.middleware_handlers.get(event_type, []))
         for m in middleware:
             event = m(event)
 
         return event
 
-    def _register_handler(self, handler_type, name,
-                          func, kwargs, options=None):
+    def _register_handler(self, handler_type, name, func, kwargs, options=None):
 
-        getattr(self, '_register_%s' % handler_type)(
+        getattr(self, "_register_%s" % handler_type)(
             name=name,
             func=func,
             kwargs=kwargs,
@@ -171,11 +177,15 @@ class Register_Handlers(DecoratorAPI):
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
         function"""
-        if len(self.handlers["route"].resources) > 0 or len(self.handlers["schedule"].resources) > 0 or self.handlers["http"].resources:
+        if (
+            len(self.handlers["route"].resources) > 0
+            or len(self.handlers["schedule"].resources) > 0
+            or self.handlers["http"].resources
+        ):
             return True
         return False
 
-    def register_middleware(self, func, event_type='all'):
+    def register_middleware(self, func, event_type="all"):
         middleware_list = self.middleware_handlers.get(event_type, [])
         middleware_list.append(func)
         self.middleware_handlers[event_type] = middleware_list
@@ -194,5 +204,5 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["pubsub"].register_topic(name=name, func=func, kwargs=kwargs)
 
     def _register_storage(self, name, func, kwargs):
-        name = kwargs.get("name") or kwargs['bucket']
+        name = kwargs.get("name") or kwargs["bucket"]
         self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)

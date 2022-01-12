@@ -1,5 +1,9 @@
 import base64
-from goblet.common_cloud_actions import create_pubsub_subscription, destroy_pubsub_subscription, get_cloudrun_url
+from goblet.common_cloud_actions import (
+    create_pubsub_subscription,
+    destroy_pubsub_subscription,
+    get_cloudrun_url,
+)
 from goblet.deploy import create_cloudfunction, destroy_cloudfunction
 
 from goblet.config import GConfig
@@ -9,7 +13,7 @@ from goblet.handler import Handler
 from goblet.client import get_default_project, get_default_location
 
 
-log = logging.getLogger('goblet.deployer')
+log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
@@ -29,24 +33,16 @@ class PubSub(Handler):
 
     def register_topic(self, name, func, kwargs):
         topic = kwargs["topic"]
-        kwargs = kwargs.pop('kwargs')
+        kwargs = kwargs.pop("kwargs")
         attributes = kwargs.get("attributes", {})
         if self.resources.get(topic):
-            self.resources[topic][name] = {
-                "func": func,
-                "attributes": attributes
-            }
+            self.resources[topic][name] = {"func": func, "attributes": attributes}
         else:
-            self.resources[topic] = {
-                name: {
-                    "func": func,
-                    "attributes": attributes
-                }
-            }
+            self.resources[topic] = {name: {"func": func, "attributes": attributes}}
 
     def __call__(self, event, context):
-        topic_name = context.resource.split('/')[-1]
-        data = base64.b64decode(event['data']).decode('utf-8')
+        topic_name = context.resource.split("/")[-1]
+        data = base64.b64decode(event["data"]).decode("utf-8")
         attributes = event.get("attributes") or {}
 
         topic = self.resources.get(topic_name)
@@ -74,10 +70,12 @@ class PubSub(Handler):
         config = GConfig(config=config)
         if config.cloudrun and config.cloudrun.get("service-account"):
             service_account = config.cloudrun.get("service-account")
-        elif config.pubsub and config.pubsub.get('serviceAccountEmail'):
-            service_account = config.pubsub.get('serviceAccountEmail')
+        elif config.pubsub and config.pubsub.get("serviceAccountEmail"):
+            service_account = config.pubsub.get("serviceAccountEmail")
         else:
-            raise ValueError("Service account not found in cloudrun. You can set `serviceAccountEmail` field in config.json under `pubsub`")
+            raise ValueError(
+                "Service account not found in cloudrun. You can set `serviceAccountEmail` field in config.json under `pubsub`"
+            )
 
         for topic in self.resources:
             sub_name = f"{self.name}-{topic}"
@@ -88,9 +86,9 @@ class PubSub(Handler):
                     "pushEndpoint": push_url,
                     "oidcToken": {
                         "serviceAccountEmail": service_account,
-                        "audience": push_url
-                    }
-                }
+                        "audience": push_url,
+                    },
+                },
             }
             create_pubsub_subscription(sub_name=sub_name, req_body=req_body)
 
@@ -106,10 +104,10 @@ class PubSub(Handler):
                 "sourceUploadUrl": sourceUrl,
                 "eventTrigger": {
                     "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
-                    "resource": f"projects/{get_default_project()}/topics/{topic}"
+                    "resource": f"projects/{get_default_project()}/topics/{topic}",
                 },
                 "runtime": config.runtime or "python37",
-                **user_configs
+                **user_configs,
             }
             create_cloudfunction(req_body)
 
