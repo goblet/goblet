@@ -208,7 +208,6 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Configuration Options (function names, ...) \
  &#9745; Use checksum for updates \
  &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
- &#9745; User generated dataclasses for openapi spec \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9745; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
  &#9745; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \

@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "apiVersion": "serving.knative.dev/v1",
+    "kind": "Service",
+    "status": {
+      "url": "https://goblet-12345.a.run.app"
+    }
+  }
+}

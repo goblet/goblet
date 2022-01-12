@@ -14,9 +14,11 @@ from goblet.handler import Handler
 from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
+from goblet.common_cloud_actions import get_cloudrun_url
+
 from googleapiclient.errors import HttpError
 
-log = logging.getLogger('goblet.deployer')
+log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
@@ -24,9 +26,14 @@ class ApiGateway(Handler):
     """Api Gateway instance, which includes api, api config, api gateway instances
     https://cloud.google.com/api-gateway
     """
-    def __init__(self, app_name, routes=None, cors=None):
+
+    resource_type = "apigateway"
+    valid_backends = ["cloudfunction", "cloudrun"]
+
+    def __init__(self, app_name, resources=None, cors=None, backend="cloudfunction"):
+        self.backend = backend
         self.name = self.format_name(app_name)
-        self.routes = routes or {}
+        self.resources = resources or {}
         self.cors = cors or {}
         self._api_client = None
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
@@ -39,51 +46,46 @@ class ApiGateway(Handler):
 
     def format_name(self, name):
         # ([a-z0-9-.]+) for api gateway name
-        return name.replace('_', '-')
+        return name.replace("_", "-")
 
     def register_route(self, name, func, kwargs):
         path = kwargs.pop("path")
         methods = kwargs.pop("methods")
-        kwargs = kwargs.pop('kwargs')
+        kwargs = kwargs.pop("kwargs")
         if not kwargs.get("cors"):
             kwargs["cors"] = self.cors
-        path_entries = self.routes.get(path, {})
+        path_entries = self.resources.get(path, {})
         for method in methods:
             if path_entries.get(method):
                 raise ValueError(
                     "Duplicate method: '%s' detected for route: '%s'\n"
-                    "between view functions: \"%s\" and \"%s\". A specific "
+                    'between view functions: "%s" and "%s". A specific '
                     "method may only be specified once for "
-                    "a particular path." % (
-                        method, path, self.routes[path][method].function_name,
-                        name)
+                    "a particular path."
+                    % (method, path, self.resources[path][method].function_name, name)
                 )
             entry = RouteEntry(func, name, path, method, **kwargs)
             path_entries[method] = entry
-        self.routes[path] = path_entries
+        self.resources[path] = path_entries
 
     def __call__(self, request, context=None):
         method = request.method
         path = request.path
-        entry = self.routes.get(path, {}).get(method)
+        entry = self.resources.get(path, {}).get(method)
         if not entry:
             # test param paths
-            for p in self.routes:
-                if '{' in p and self._matched_path(p, path):
-                    entry = self.routes.get(p, {}).get(method)
+            for p in self.resources:
+                if "{" in p and self._matched_path(p, path):
+                    entry = self.resources.get(p, {}).get(method)
         # TODO: better handling
         if not entry:
             raise ValueError(f"No route found for {path} with {method}")
         return entry(request)
 
-    def __add__(self, other):
-        self.routes.update(other.routes)
-        return self
-
     @staticmethod
     def _matched_path(org_path, path):
-        split_org = re.sub(r'{[\w]+}', '', org_path).split('/')
-        split_path = path.split('/')
+        split_org = re.sub(r"{[\w]+}", "", org_path).split("/")
+        split_path = path.split("/")
         if len(split_path) != len(split_org):
             return False
         for i, item in enumerate(split_org):
@@ -92,27 +94,59 @@ class ApiGateway(Handler):
         return True
 
     def _create_api_client(self):
-        return Client("apigateway", 'v1', calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global')
+        return Client(
+            "apigateway",
+            "v1",
+            calls="projects.locations.apis",
+            parent_schema="projects/{project_id}/locations/global",
+        )
 
     def _create_config_client(self):
-        return Client("apigateway", 'v1', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
+        return Client(
+            "apigateway",
+            "v1",
+            calls="projects.locations.apis.configs",
+            parent_schema="projects/{project_id}/locations/global/apis/" + self.name,
+        )
 
     def _patch_config_client(self):
-        return Client("apigateway", 'v1', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + self.name)
+        return Client(
+            "apigateway",
+            "v1",
+            calls="projects.locations.apis.configs",
+            parent_schema="projects/{project_id}/locations/global/apis/"
+            + self.name
+            + "/configs/"
+            + self.name,
+        )
 
     def _create_gateway_client(self):
-        return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}')
+        return Client(
+            "apigateway",
+            "v1",
+            calls="projects.locations.gateways",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
 
     def _patch_gateway_client(self):
-        return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
+        return Client(
+            "apigateway",
+            "v1",
+            calls="projects.locations.gateways",
+            parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
+            + self.name,
+        )
 
-    def deploy(self, sourceUrl=None, entrypoint=None):
-        if len(self.routes) == 0:
+    def _deploy(self, sourceUrl=None, entrypoint=None):
+        if len(self.resources) == 0:
             return
         log.info("deploying api......")
-        self.generate_openapi_spec(self.cloudfunction)
+        base_url = self.cloudfunction
+        if self.backend == "cloudrun":
+            base_url = get_cloudrun_url(self.name)
+        self.generate_openapi_spec(base_url)
         try:
-            resp = self.api_client.execute('create', params={'apiId': self.name})
+            resp = self.api_client.execute("create", params={"apiId": self.name})
             self.api_client.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
@@ -124,52 +158,73 @@ class ApiGateway(Handler):
             "openapiDocuments": [
                 {
                     "document": {
-                        "path": f'{get_g_dir()}/{self.name}_openapi_spec.yml',
-                        "contents": base64.b64encode(open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'rb').read()).decode('utf-8')
+                        "path": f"{get_g_dir()}/{self.name}_openapi_spec.yml",
+                        "contents": base64.b64encode(
+                            open(
+                                f"{get_g_dir()}/{self.name}_openapi_spec.yml", "rb"
+                            ).read()
+                        ).decode("utf-8"),
                     }
                 }
             ],
-            **(goblet_config.apiConfig or {})
+            **(goblet_config.apiConfig or {}),
         }
         try:
             config_version_name = self.name
-            self._create_config_client().execute('create', params={'apiConfigId': self.name, 'body': config})
+            self._create_config_client().execute(
+                "create", params={"apiConfigId": self.name, "body": config}
+            )
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("updating api endpoints")
-                configs = self._create_config_client().execute('list')
+                configs = self._create_config_client().execute("list")
                 # TODO: use hash
-                version = len(configs['apiConfigs'])
+                version = len(configs["apiConfigs"])
                 config_version_name = f"{self.name}-v{version}"
-                self._create_config_client().execute('create', params={'apiConfigId': config_version_name, 'body': config})
+                self._create_config_client().execute(
+                    "create",
+                    params={"apiConfigId": config_version_name, "body": config},
+                )
             else:
                 raise e
         gateway = {
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
         }
         try:
-            gateway_resp = self._create_gateway_client().execute('create', params={'gatewayId': self.name, 'body': gateway})
+            gateway_resp = self._create_gateway_client().execute(
+                "create", params={"gatewayId": self.name, "body": gateway}
+            )
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("updating gateway")
-                gateway_resp = self._patch_gateway_client().execute('patch', parent_key='name', params={'updateMask': 'apiConfig', 'body': gateway})
+                gateway_resp = self._patch_gateway_client().execute(
+                    "patch",
+                    parent_key="name",
+                    params={"updateMask": "apiConfig", "body": gateway},
+                )
             else:
                 raise e
         if gateway_resp:
             self._create_gateway_client().wait_for_operation(gateway_resp["name"])
         log.info("api successfully deployed...")
-        gateway_resp = self._patch_gateway_client().execute('get', parent_key='name')
+        gateway_resp = self._patch_gateway_client().execute("get", parent_key="name")
         log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
         return
 
     def destroy(self):
-        if len(self.routes) == 0:
+        if len(self.resources) == 0:
             return
 
         # destroy api gateway
         try:
-            gateway_client = Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
-            gateway_client.execute('delete', parent_key="name")
+            gateway_client = Client(
+                "apigateway",
+                "v1",
+                calls="projects.locations.gateways",
+                parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
+                + self.name,
+            )
+            gateway_client.execute("delete", parent_key="name")
             log.info("destroying api gateway......")
         except HttpError as e:
             if e.resp.status == 404:
@@ -178,12 +233,20 @@ class ApiGateway(Handler):
                 raise e
         # destroy api config
         try:
-            configs = self._create_config_client().execute('list')
+            configs = self._create_config_client().execute("list")
             api_client = None
             resp = {}
-            for c in configs.get('apiConfigs', []):
-                api_client = Client("apigateway", 'v1', calls='projects.locations.apis.configs', parent_schema='projects/{project_id}/locations/global/apis/' + self.name + '/configs/' + c['displayName'])
-                resp = api_client.execute('delete', parent_key="name")
+            for c in configs.get("apiConfigs", []):
+                api_client = Client(
+                    "apigateway",
+                    "v1",
+                    calls="projects.locations.apis.configs",
+                    parent_schema="projects/{project_id}/locations/global/apis/"
+                    + self.name
+                    + "/configs/"
+                    + c["displayName"],
+                )
+                resp = api_client.execute("delete", parent_key="name")
             log.info("api configs destroying....")
             if api_client:
                 api_client.wait_for_operation(resp["name"])
@@ -196,8 +259,14 @@ class ApiGateway(Handler):
 
         # destroy api
         try:
-            api_client = Client("apigateway", 'v1', calls='projects.locations.apis', parent_schema='projects/{project_id}/locations/global/apis/' + self.name)
-            api_client.execute('delete', parent_key="name")
+            api_client = Client(
+                "apigateway",
+                "v1",
+                calls="projects.locations.apis",
+                parent_schema="projects/{project_id}/locations/global/apis/"
+                + self.name,
+            )
+            api_client.execute("delete", parent_key="name")
             log.info("apis successfully destroyed......")
         except HttpError as e:
             if e.resp.status == 404:
@@ -207,21 +276,29 @@ class ApiGateway(Handler):
 
     def generate_openapi_spec(self, cloudfunction):
         config = GConfig()
-        spec = OpenApiSpec(self.name, cloudfunction, security_definitions=config.securityDefinitions, security=config.security)
-        spec.add_apigateway_routes(self.routes)
-        with open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'w') as f:
+        spec = OpenApiSpec(
+            self.name,
+            cloudfunction,
+            security_definitions=config.securityDefinitions,
+            security=config.security,
+        )
+        spec.add_apigateway_routes(self.resources)
+        with open(f"{get_g_dir()}/{self.name}_openapi_spec.yml", "w") as f:
             spec.write(f)
 
 
-PRIMITIVE_MAPPINGS = {
-    str: "string",
-    bool: "boolean",
-    int: "integer"
-}
+PRIMITIVE_MAPPINGS = {str: "string", bool: "boolean", int: "integer"}
 
 
 class OpenApiSpec:
-    def __init__(self, app_name, cloudfunction, version="1.0.0", security_definitions=None, security=None):
+    def __init__(
+        self,
+        app_name,
+        cloudfunction,
+        version="1.0.0",
+        security_definitions=None,
+        security=None,
+    ):
         self.spec = OrderedDict()
         self.app_name = app_name
         self.cloudfunction = cloudfunction
@@ -230,13 +307,15 @@ class OpenApiSpec:
         self.spec["info"] = {
             "title": self.app_name,
             "description": "Goblet Autogenerated Spec",
-            "version": self.version
+            "version": self.version,
         }
         if security_definitions:
             self.spec["securityDefinitions"] = security_definitions
-            self.spec["security"] = security or list(map(lambda s: {s: []}, security_definitions))
+            self.spec["security"] = security or list(
+                map(lambda s: {s: []}, security_definitions)
+            )
         self.spec["schemes"] = ["https"]
-        self.spec['produces'] = ["application/json"]
+        self.spec["produces"] = ["application/json"]
         self.spec["paths"] = {}
         self.component_spec = APISpec(
             title="",
@@ -250,7 +329,7 @@ class OpenApiSpec:
         if component.__name__ in self.component_spec.components.schemas:
             return
         self.component_spec.components.schema(component.__name__, schema=component)
-        self.spec["definitions"] = self.component_spec.to_dict()['definitions']
+        self.spec["definitions"] = self.component_spec.to_dict()["definitions"]
 
     def add_apigateway_routes(self, apigateway):
         for path, methods in apigateway.items():
@@ -266,8 +345,10 @@ class OpenApiSpec:
             self.add_component(type_info)
             param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
         else:
-            raise ValueError(f"param_type has type {type_info}. \
-                It must be of type {PRIMITIVE_MAPPINGS.values} or a dataclass inheriting from Schema")
+            raise ValueError(
+                f"param_type has type {type_info}. \
+                It must be of type {PRIMITIVE_MAPPINGS.values} or a dataclass inheriting from Schema"
+            )
         return param_type
 
     def add_route(self, entry):
@@ -275,7 +356,7 @@ class OpenApiSpec:
         method_spec["x-google-backend"] = {
             "address": entry.backend or self.cloudfunction,
             "protocol": "h2",
-            "path_translation": "APPEND_PATH_TO_ADDRESS"
+            "path_translation": "APPEND_PATH_TO_ADDRESS",
         }
         method_spec["operationId"] = entry.function_name
 
@@ -285,76 +366,53 @@ class OpenApiSpec:
             type_info = type_hints.get(param, str)
             param_type = self.get_param_type(type_info, only_primititves=True)
 
-            param_entry = {
-                "in": "path",
-                "name": param,
-                "required": True,
-                **param_type
-            }
+            param_entry = {"in": "path", "name": param, "required": True, **param_type}
             params.append(param_entry)
 
         if entry.request_body:
             if isinstance(entry.request_body, dict):
-                params.append({
-                    "in": "body",
-                    "name": "requestBody",
-                    "schema": entry.request_body["schema"]
-                })
+                params.append(
+                    {
+                        "in": "body",
+                        "name": "requestBody",
+                        "schema": entry.request_body["schema"],
+                    }
+                )
 
         if entry.form_data:
-            params.append({
-                "in": "formData",
-                "name": "file",
-                "type": "file"
-            })
+            params.append({"in": "formData", "name": "file", "type": "file"})
         if params:
             method_spec["parameters"] = params
 
         # TODO: add query strings
 
-        return_type = type_hints.get('return')
+        return_type = type_hints.get("return")
         content = {}
         if return_type:
             if return_type in PRIMITIVE_MAPPINGS.keys():
-                content = {
-                    "schema": {
-                        "type": PRIMITIVE_MAPPINGS[return_type]
-                    }
-                }
+                content = {"schema": {"type": PRIMITIVE_MAPPINGS[return_type]}}
             # list
             elif "typing.List" in str(return_type):
                 type_info = return_type.__args__[0]
                 param_type = self.get_param_type(type_info)
-                content = {
-                    "schema": {
-                        "type": "array",
-                        "items": {
-                            **param_type
-                        }
-                    }
-                }
+                content = {"schema": {"type": "array", "items": {**param_type}}}
             elif issubclass(return_type, Schema):
                 param_type = self.get_param_type(return_type)
-                content = {
-                    "schema": {
-                        **param_type
-                    }
-                }
+                content = {"schema": {**param_type}}
         if entry.responses:
             method_spec["responses"] = entry.responses
         else:
             method_spec["responses"] = {
-                '200': {
-                    "description": "A successful response",
-                    **content
-                }
+                "200": {"description": "A successful response", **content}
             }
         if entry.security:
             method_spec["security"] = entry.security
 
         path_exists = self.spec["paths"].get(entry.uri_pattern)
         if path_exists:
-            self.spec["paths"][entry.uri_pattern][entry.method.lower()] = dict(method_spec)
+            self.spec["paths"][entry.uri_pattern][entry.method.lower()] = dict(
+                method_spec
+            )
         else:
             self.spec["paths"][entry.uri_pattern] = {
                 entry.method.lower(): dict(method_spec)
@@ -365,14 +423,21 @@ class OpenApiSpec:
         yaml.YAML().dump(dict(self.spec), file)
 
 
-_PARAMS = re.compile(r'{\w+}')
+_PARAMS = re.compile(r"{\w+}")
 
 
 class RouteEntry:
-
-    def __init__(self, route_function, function_name, path, method,
-                 api_key_required=None, content_types=None,
-                 cors=False, **kwargs):
+    def __init__(
+        self,
+        route_function,
+        function_name,
+        path,
+        method,
+        api_key_required=None,
+        content_types=None,
+        cors=False,
+        **kwargs,
+    ):
         self.route_function = route_function
         self.function_name = function_name
         self.uri_pattern = path
@@ -403,8 +468,8 @@ class RouteEntry:
         self.kwargs = {**kwargs}
 
     def _extract_view_args(self, path):
-        components = path.split('/')
-        original_components = self.uri_pattern.split('/')
+        components = path.split("/")
+        original_components = self.uri_pattern.split("/")
         matches = 0
         args = {}
         for i, component in enumerate(components):
@@ -420,7 +485,7 @@ class RouteEntry:
         return self._apply_cors(resp)
 
     def _parse_view_args(self):
-        if '{' not in self.uri_pattern:
+        if "{" not in self.uri_pattern:
             return []
         # The [1:-1] slice is to remove the braces
         # e.g {foobar} -> foobar
@@ -447,10 +512,16 @@ class RouteEntry:
 class CORSConfig(object):
     """A cors configuration to attach to a route."""
 
-    _REQUIRED_HEADERS = ['Content-Type', 'Authorization']
+    _REQUIRED_HEADERS = ["Content-Type", "Authorization"]
 
-    def __init__(self, allow_origin='*', allow_headers=None,
-                 expose_headers=None, max_age=None, allow_credentials=None):
+    def __init__(
+        self,
+        allow_origin="*",
+        allow_headers=None,
+        expose_headers=None,
+        max_age=None,
+        allow_credentials=None,
+    ):
         self.allow_origin = allow_origin
 
         if allow_headers is None:
@@ -468,30 +539,27 @@ class CORSConfig(object):
 
     @property
     def allow_headers(self):
-        return ','.join(sorted(self._allow_headers))
+        return ",".join(sorted(self._allow_headers))
 
     def get_access_control_headers(self):
         headers = {
-            'Access-Control-Allow-Origin': self.allow_origin,
-            'Access-Control-Allow-Headers': self.allow_headers
+            "Access-Control-Allow-Origin": self.allow_origin,
+            "Access-Control-Allow-Headers": self.allow_headers,
         }
         if self._expose_headers:
-            headers.update({
-                'Access-Control-Expose-Headers': ','.join(self._expose_headers)
-            })
+            headers.update(
+                {"Access-Control-Expose-Headers": ",".join(self._expose_headers)}
+            )
         if self._max_age is not None:
-            headers.update({
-                'Access-Control-Max-Age': str(self._max_age)
-            })
+            headers.update({"Access-Control-Max-Age": str(self._max_age)})
         if self._allow_credentials is True:
-            headers.update({
-                'Access-Control-Allow-Credentials': 'true'
-            })
+            headers.update({"Access-Control-Allow-Credentials": "true"})
 
         return headers
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.get_access_control_headers() == \
-                other.get_access_control_headers()
+            return (
+                self.get_access_control_headers() == other.get_access_control_headers()
+            )
         return False
