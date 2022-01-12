@@ -19,8 +19,9 @@ class Scheduler(Handler):
     resource_type = "scheduler"
     valid_backends = ["cloudfunction", "cloudrun"]
 
-    def __init__(self, name, resources=None):
+    def __init__(self, name, resources=None, backend="cloudfunction"):
         self.name = name
+        self.backend = backend
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
         self.resources = resources or {}
         self._api_client = None
@@ -88,11 +89,11 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction", config ={}):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config ={}):
         if not self.resources:
             return
 
-        if backend == "cloudfunction":
+        if self.backend == "cloudfunction":
             cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
             resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
             if not resp:
@@ -100,7 +101,7 @@ class Scheduler(Handler):
             target = resp["httpsTrigger"]["url"]
             service_account = resp["serviceAccountEmail"]
 
-        if backend == "cloudrun":
+        if self.backend == "cloudrun":
             target = get_cloudrun_url(self.name)
             config = GConfig(config=config)
             if config.cloudrun and config.cloudrun.get("service-account"):

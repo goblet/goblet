@@ -126,7 +126,7 @@ class Deployer:
         if config.bindings:
             policy_client = Client("run", 'v1', calls='projects.locations.services', parent_schema=self.run_name)
 
-            log.info(f"adding IAM bindings for cloudfunction {self.name}")
+            log.info(f"adding IAM bindings for cloudrun {self.name}")
             policy_bindings = {
                 'policy': {'bindings': config.bindings}
             }

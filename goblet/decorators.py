@@ -84,18 +84,19 @@ class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
     def __init__(self, function_name, backend="cloudfunction", cors=None):
-        self.handlers = {
-            "route": ApiGateway(function_name, cors=cors),
-            "schedule": Scheduler(function_name),
-            "pubsub": PubSub(function_name),
-            "storage": Storage(function_name),
-            "http": HTTP()
-        }
-        self.middleware_handlers = {}
-        self.current_request = None
         self.backend = backend
         if backend not in BACKEND_TYPES:
             raise ValueError(f"{backend} not a valid backend")
+
+        self.handlers = {
+            "route": ApiGateway(function_name, cors=cors, backend= backend),
+            "schedule": Scheduler(function_name, backend= backend),
+            "pubsub": PubSub(function_name, backend= backend),
+            "storage": Storage(function_name, backend= backend),
+            "http": HTTP(backend= backend)
+        }
+        self.middleware_handlers = {}
+        self.current_request = None
 
     def __call__(self, request, context=None):
         """Goblet entrypoint"""
@@ -159,12 +160,12 @@ class Register_Handlers(DecoratorAPI):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(source_url, entrypoint="goblet_entrypoint", backend=self.backend)
+            v.deploy(source_url, entrypoint="goblet_entrypoint")
 
     def destroy(self):
         """Call each handlers destroy method"""
         for k, v in self.handlers.items():
-            log.info(f"deploying {k}")
+            log.info(f"destroying {k}")
             v.destroy()
 
     def is_http(self):

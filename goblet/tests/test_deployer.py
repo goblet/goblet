@@ -65,7 +65,7 @@ class TestDeployer:
 
         app = Goblet(function_name="goblet_example")
 
-        Deployer().destroy(app)
+        Deployer(config={"name":"goblet_test_app"}).destroy(app)
 
         responses = get_responses('deployer-function-destroy')
         assert(len(responses) == 1)
@@ -96,7 +96,7 @@ class TestDeployer:
 
         app.handlers['http'] = HTTP(dummy_function)
         bindings = [{"role": "roles/cloudfunctions.invoker", "members": ["allUsers"]}]
-        Deployer().deploy(app, only_function=True, config={'bindings': bindings}, force=True)
+        Deployer(config={"name":"goblet_test_app"}).deploy(app, only_function=True, config={'bindings': bindings}, force=True)
 
         responses = get_responses('deployer-function-bindings')
         assert(len(responses) == 4)
@@ -110,5 +110,5 @@ class TestDeployer:
 
         requests_mock.register_uri("HEAD", 'https://storage.googleapis.com/mock', headers={'x-goog-hash': 'crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=='})
 
-        assert not Deployer()._cloudfunction_delta(f"{DATA_DIR_MAIN}/test_zip.txt.zip")
-        assert Deployer()._cloudfunction_delta(f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip")
+        assert not Deployer(config={"name":"goblet_test_app"})._cloudfunction_delta(f"{DATA_DIR_MAIN}/test_zip.txt.zip")
+        assert Deployer(config={"name":"goblet_test_app"})._cloudfunction_delta(f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip")

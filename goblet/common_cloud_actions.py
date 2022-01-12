@@ -96,3 +96,28 @@ def get_cloudrun_url(name):
             log.info(f"cloudrun {name} not found")
         else:
             raise e
+
+def create_pubsub_subscription(sub_name, req_body):
+    """Creates a pubsub subscription from req_body"""
+    pubsub_client = Client("pubsub", 'v1', calls='projects.subscriptions', parent_schema='projects/{project_id}/subscriptions/' + sub_name)
+    try:
+        pubsub_client.execute('create', parent_key="name", params={'body': req_body})
+        log.info(f"creating pubsub subscription {sub_name}")
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info(f"updating pubsub subscription {sub_name}")
+            pubsub_client.execute('patch', parent_key="name", parent_schema='projects/{project_id}/subscriptions/' + sub_name, params={'body': req_body})
+        else:
+            raise e
+
+def destroy_pubsub_subscription(name):
+    """Destroys pubsub subscription"""
+    try:
+        client = Client("pubsub", 'v1', calls='projects.subscriptions', parent_schema='projects/{project_id}/subscriptions/' + name)
+        client.execute('delete', parent_key="subscription")
+        log.info(f"deleting pubsub subscription {name}......")
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"pubsub subscription {name} already destroyed")
+        else:
+            raise e

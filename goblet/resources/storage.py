@@ -25,8 +25,9 @@ class Storage(Handler):
     resource_type = "storage"
     valid_backends = ["cloudfunction"]
 
-    def __init__(self, name, resources=None):
+    def __init__(self, name, resources=None, backend="cloudfunction"):
         self.name = name
+        self.backend = backend
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
         self.resources = resources or []
 
@@ -61,7 +62,7 @@ class Storage(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
+    def _deploy(self, sourceUrl=None, entrypoint=None):
         if not self.resources or not sourceUrl:
             return
 

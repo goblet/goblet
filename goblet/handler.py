@@ -10,14 +10,15 @@ class Handler:
     valid_backends = []
     resources = None
     resource_type = ""
+    backend = "cloudfunction"
 
-    def deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
-        if self.resources and backend not in self.valid_backends:
-            log.info(f"skipping... {backend} not supported for {self.resource_type}")
+    def deploy(self, sourceUrl=None, entrypoint=None):
+        if self.resources and self.backend not in self.valid_backends:
+            log.info(f"skipping... {self.backend} not supported for {self.resource_type}")
             return
-        self._deploy(sourceUrl, entrypoint, backend)
+        self._deploy(sourceUrl, entrypoint)
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
+    def _deploy(self, sourceUrl=None, entrypoint=None):
         raise NotImplementedError("deploy")
 
     def destroy(self):

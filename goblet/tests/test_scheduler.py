@@ -110,16 +110,16 @@ class TestScheduler:
         assert(responses[1]['body']['schedule'] == '* * * * *')
 
     def test_deploy_schedule_cloudrun(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-governance-rd")
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        scheduler = Scheduler('goblet')
+        scheduler = Scheduler('goblet', backend="cloudrun")
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
         scheduler.register_job('test-job', None, kwargs={'schedule': '* * * * *', 'kwargs': {}})
-        scheduler._deploy(backend='cloudrun', config={"scheduler":{"serviceAccount": service_account}})
+        scheduler._deploy(config={"scheduler":{"serviceAccount": service_account}})
 
         responses = get_responses('schedule-deploy-cloudrun')
 

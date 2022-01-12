@@ -30,7 +30,8 @@ class ApiGateway(Handler):
     resource_type = "apigateway"
     valid_backends = ["cloudfunction", "cloudrun"]
 
-    def __init__(self, app_name, resources=None, cors=None):
+    def __init__(self, app_name, resources=None, cors=None, backend="cloudfunction"):
+        self.backend = backend
         self.name = self.format_name(app_name)
         self.resources = resources or {}
         self.cors = cors or {}
@@ -108,12 +109,12 @@ class ApiGateway(Handler):
     def _patch_gateway_client(self):
         return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
+    def _deploy(self, sourceUrl=None, entrypoint=None):
         if len(self.resources) == 0:
             return
         log.info("deploying api......")
         base_url = self.cloudfunction
-        if backend == "cloudrun":
+        if self.backend == "cloudrun":
             base_url = get_cloudrun_url(self.name)
         self.generate_openapi_spec(base_url)
         try:

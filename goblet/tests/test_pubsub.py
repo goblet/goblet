@@ -1,4 +1,4 @@
-from goblet import Goblet
+from goblet import Goblet, config
 from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import get_responses, dummy_function
@@ -104,3 +104,41 @@ class TestPubSub:
         assert(len(responses) == 1)
         assert(responses[0]['body']['metadata']['type'] == 'DELETE_FUNCTION')
         assert(responses[0]['body']['metadata']['target'].endswith('goblet_topic-topic-test-topic'))
+
+    def test_deploy_pubsub_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cloudrun")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub('goblet', backend="cloudrun")
+        pubsub.register_topic('test', None, kwargs={'topic':'test', "kwargs":{}})
+
+        cloudrun_url = "https://goblet-12345.a.run.app"
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        pubsub._deploy(config={'pubsub':{'serviceAccountEmail':service_account}})
+
+        responses = get_responses('pubsub-deploy-cloudrun')
+
+        assert(len(responses) == 2)
+        assert(responses[0]['body']['status']['url'] == cloudrun_url)
+        assert(responses[1]['body']['pushConfig']['oidcToken']['serviceAccountEmail'] == service_account)
+        assert(responses[1]['body']['pushConfig']['oidcToken']['audience'] == cloudrun_url)
+        assert(responses[1]['body']['pushConfig']['pushEndpoint'] == cloudrun_url)
+        assert(responses[1]['body']['topic'] == "projects/goblet/topics/test")
+
+
+    def test_destroy_pubsub_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy-cloudrun")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub('goblet', resources={'test': {}}, backend="cloudrun")
+        pubsub.destroy()
+
+        responses = get_responses('pubsub-destroy-cloudrun')
+
+        assert(len(responses) == 1)
+        assert(responses[0]['body'] == {})
