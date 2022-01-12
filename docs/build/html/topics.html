@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.5.2 documentation</title>
+  <title>Topics &mdash; goblet 0.6.0 documentation</title>
   
 
   
@@ -102,11 +102,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#stages">Stages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api-gateway-backends">API Gateway Backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cors">Cors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiple-cloudfunctions">Multiple Cloudfunctions</a></li>
 </ul>
 </li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends.html">Backends</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
@@ -651,6 +655,20 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
     <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s1">&#39;localhost is allowed&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="multiple-cloudfunctions">
+<h2>Multiple Cloudfunctions<a class="headerlink" href="#multiple-cloudfunctions" title="Permalink to this headline">¶</a></h2>
+<p>Using the field <cite>main_file</cite> in <cite>config.json</cite> allows you to set any file as the entrypoint <cite>main.py</cite> file, which is required by cloudfunctions.
+This allows for multiple functions to be deploying using similar code bases.</p>
+<p>For example with the following files which each contain a function and share code in <cite>shared.py</cite></p>
+<p><cite>func1.py</cite>
+<cite>func2.py</cite></p>
+<p>Could have the goblet <cite>.config</cite></p>
+<p>To test each function locally you can simply run <cite>goblet local -s func1</cite> and to deploy <cite>goblet local -s func1 -p Project -l Region</cite></p>
+<p>Note: This may cause some imports to break if something is importing directly from the func1.py or func2.py since they will be renamed to <cite>main.py</cite>
+in the packaged zipfile.</p>
+<p>Note: There is a bug when uploading a different <cite>main_file</cite>, while also having <cite>main.py</cite> in your code, so if you decide to use <cite>main_file</cite> remove <cite>main.py</cite>. The bug
+shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct <cite>main.py</cite></p>
 </div>
 </div>
 

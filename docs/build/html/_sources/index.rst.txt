@@ -95,6 +95,14 @@ Resources
 
    resources
 
+Backends
+----------
+
+.. toctree::
+   :maxdepth: 2
+
+   backends
+
 Blogs
 --------
 
