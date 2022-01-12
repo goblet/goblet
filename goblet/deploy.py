@@ -11,9 +11,10 @@ import subprocess
 
 from googleapiclient.errors import HttpError
 
-from goblet.client import Client, get_default_project, get_default_location, get_credentials
+from goblet.client import Client, get_default_project, get_default_location
 from goblet.common_cloud_actions import create_cloudfunction, destroy_cloudfunction, destroy_cloudfunction_artifacts, destroy_cloudrun
-from goblet.utils import get_dir, get_g_dir, checksum, write_dockerfile
+from goblet.utils import get_dir, get_g_dir, checksum
+from goblet.write_files import write_dockerfile
 from goblet.config import GConfig
 
 log = logging.getLogger('goblet.deployer')
@@ -117,7 +118,7 @@ class Deployer:
                 log.info("No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile")
                 write_dockerfile()
             subprocess.check_output(base_command, env=os.environ)
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             log.error("Error during cloudrun deployment while running the following command")
             log.error((" ").join(base_command))
 

@@ -1,5 +1,5 @@
 import google_auth_httplib2
-import logging 
+import logging
 import json
 from urllib.parse import quote_plus
 from googleapiclient.errors import HttpError
@@ -9,6 +9,7 @@ from goblet.client import Client, get_default_project, get_default_location, get
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
+
 
 def create_cloudfunction(req_body, config=None):
     """Creates a cloudfunction based on req_body"""
@@ -82,6 +83,7 @@ def destroy_cloudfunction_artifacts(name):
     for storage in objects["items"]:
         log.info(f"Deleting artifact {storage['name']}")
         resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}", method="DELETE")
+
 
 def get_cloudrun_url(name):
     """Get the cloudrun url"""
