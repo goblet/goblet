@@ -1,6 +1,7 @@
 from pathlib import Path
 import zipfile
 import os
+import sys
 import requests
 import logging
 import hashlib
@@ -121,6 +122,7 @@ class Deployer:
         except subprocess.CalledProcessError:
             log.error("Error during cloudrun deployment while running the following command")
             log.error((" ").join(base_command))
+            sys.exit(1)
 
         # Set IAM Bindings
         if config.bindings:
