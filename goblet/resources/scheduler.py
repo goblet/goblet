@@ -1,7 +1,7 @@
 import logging
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project, get_default_location, get_credentials
+from goblet.client import Client, get_default_project, get_default_location
 from goblet.common_cloud_actions import get_cloudrun_url
 from goblet.config import GConfig
 
@@ -89,7 +89,7 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config ={}):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
             return
 

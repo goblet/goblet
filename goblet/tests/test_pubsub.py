@@ -1,4 +1,4 @@
-from goblet import Goblet, config
+from goblet import Goblet
 from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import get_responses, dummy_function
@@ -112,12 +112,12 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub('goblet', backend="cloudrun")
-        pubsub.register_topic('test', None, kwargs={'topic':'test', "kwargs":{}})
+        pubsub.register_topic('test', None, kwargs={'topic': 'test', "kwargs": {}})
 
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        pubsub._deploy(config={'pubsub':{'serviceAccountEmail':service_account}})
+        pubsub._deploy(config={'pubsub': {'serviceAccountEmail': service_account}})
 
         responses = get_responses('pubsub-deploy-cloudrun')
 
@@ -127,7 +127,6 @@ class TestPubSub:
         assert(responses[1]['body']['pushConfig']['oidcToken']['audience'] == cloudrun_url)
         assert(responses[1]['body']['pushConfig']['pushEndpoint'] == cloudrun_url)
         assert(responses[1]['body']['topic'] == "projects/goblet/topics/test")
-
 
     def test_destroy_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

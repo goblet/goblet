@@ -89,11 +89,11 @@ class Register_Handlers(DecoratorAPI):
             raise ValueError(f"{backend} not a valid backend")
 
         self.handlers = {
-            "route": ApiGateway(function_name, cors=cors, backend= backend),
-            "schedule": Scheduler(function_name, backend= backend),
-            "pubsub": PubSub(function_name, backend= backend),
-            "storage": Storage(function_name, backend= backend),
-            "http": HTTP(backend= backend)
+            "route": ApiGateway(function_name, cors=cors, backend=backend),
+            "schedule": Scheduler(function_name, backend=backend),
+            "pubsub": PubSub(function_name, backend=backend),
+            "storage": Storage(function_name, backend=backend),
+            "http": HTTP(backend=backend)
         }
         self.middleware_handlers = {}
         self.current_request = None

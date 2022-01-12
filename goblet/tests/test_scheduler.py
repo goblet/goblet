@@ -1,5 +1,5 @@
 from unittest.mock import Mock
-from goblet import Goblet, config
+from goblet import Goblet
 from goblet.resources.scheduler import Scheduler
 from goblet.test_utils import get_responses, get_response, mock_dummy_function, dummy_function
 
@@ -119,7 +119,7 @@ class TestScheduler:
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
         scheduler.register_job('test-job', None, kwargs={'schedule': '* * * * *', 'kwargs': {}})
-        scheduler._deploy(config={"scheduler":{"serviceAccount": service_account}})
+        scheduler._deploy(config={"scheduler": {"serviceAccount": service_account}})
 
         responses = get_responses('schedule-deploy-cloudrun')
 

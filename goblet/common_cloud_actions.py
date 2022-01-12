@@ -97,6 +97,7 @@ def get_cloudrun_url(name):
         else:
             raise e
 
+
 def create_pubsub_subscription(sub_name, req_body):
     """Creates a pubsub subscription from req_body"""
     pubsub_client = Client("pubsub", 'v1', calls='projects.subscriptions', parent_schema='projects/{project_id}/subscriptions/' + sub_name)
@@ -109,6 +110,7 @@ def create_pubsub_subscription(sub_name, req_body):
             pubsub_client.execute('patch', parent_key="name", parent_schema='projects/{project_id}/subscriptions/' + sub_name, params={'body': req_body})
         else:
             raise e
+
 
 def destroy_pubsub_subscription(name):
     """Destroys pubsub subscription"""

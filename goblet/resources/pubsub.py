@@ -1,5 +1,5 @@
 import base64
-from goblet.common_cloud_actions import create_pubsub_subscription, destroy_cloudrun, destroy_pubsub_subscription, get_cloudrun_url
+from goblet.common_cloud_actions import create_pubsub_subscription, destroy_pubsub_subscription, get_cloudrun_url
 from goblet.deploy import create_cloudfunction, destroy_cloudfunction
 
 from goblet.config import GConfig
@@ -59,7 +59,7 @@ class PubSub(Handler):
                 info["func"](data)
         return
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config ={}):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
             return
         if self.backend == "cloudfunction":
@@ -80,7 +80,7 @@ class PubSub(Handler):
             raise ValueError("Service account not found in cloudrun. You can set `serviceAccountEmail` field in config.json under `pubsub`")
 
         for topic in self.resources:
-            sub_name=f"{self.name}-{topic}"
+            sub_name = f"{self.name}-{topic}"
             req_body = {
                 "name": sub_name,
                 "topic": f"projects/{get_default_project()}/topics/{topic}",
@@ -90,12 +90,11 @@ class PubSub(Handler):
                         "serviceAccountEmail": service_account,
                         "audience": push_url
                     }
-                }            
+                }
             }
-            
-            create_pubsub_subscription(sub_name=sub_name,req_body=req_body)
+            create_pubsub_subscription(sub_name=sub_name, req_body=req_body)
 
-    def _deploy_cloudfunction(self, sourceUrl=None, entrypoint=None,):
+    def _deploy_cloudfunction(self, sourceUrl=None, entrypoint=None):
         log.info("deploying topic functions......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
