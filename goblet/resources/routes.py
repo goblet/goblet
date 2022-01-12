@@ -14,6 +14,8 @@ from goblet.handler import Handler
 from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
+from goblet.common_cloud_actions import get_cloudrun_url
+
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger('goblet.deployer')
@@ -24,9 +26,14 @@ class ApiGateway(Handler):
     """Api Gateway instance, which includes api, api config, api gateway instances
     https://cloud.google.com/api-gateway
     """
-    def __init__(self, app_name, routes=None, cors=None):
+
+    resource_type = "apigateway"
+    valid_backends = ["cloudfunction", "cloudrun"]
+
+    def __init__(self, app_name, resources=None, cors=None, backend="cloudfunction"):
+        self.backend = backend
         self.name = self.format_name(app_name)
-        self.routes = routes or {}
+        self.resources = resources or {}
         self.cors = cors or {}
         self._api_client = None
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
@@ -47,7 +54,7 @@ class ApiGateway(Handler):
         kwargs = kwargs.pop('kwargs')
         if not kwargs.get("cors"):
             kwargs["cors"] = self.cors
-        path_entries = self.routes.get(path, {})
+        path_entries = self.resources.get(path, {})
         for method in methods:
             if path_entries.get(method):
                 raise ValueError(
@@ -55,30 +62,26 @@ class ApiGateway(Handler):
                     "between view functions: \"%s\" and \"%s\". A specific "
                     "method may only be specified once for "
                     "a particular path." % (
-                        method, path, self.routes[path][method].function_name,
+                        method, path, self.resources[path][method].function_name,
                         name)
                 )
             entry = RouteEntry(func, name, path, method, **kwargs)
             path_entries[method] = entry
-        self.routes[path] = path_entries
+        self.resources[path] = path_entries
 
     def __call__(self, request, context=None):
         method = request.method
         path = request.path
-        entry = self.routes.get(path, {}).get(method)
+        entry = self.resources.get(path, {}).get(method)
         if not entry:
             # test param paths
-            for p in self.routes:
+            for p in self.resources:
                 if '{' in p and self._matched_path(p, path):
-                    entry = self.routes.get(p, {}).get(method)
+                    entry = self.resources.get(p, {}).get(method)
         # TODO: better handling
         if not entry:
             raise ValueError(f"No route found for {path} with {method}")
         return entry(request)
-
-    def __add__(self, other):
-        self.routes.update(other.routes)
-        return self
 
     @staticmethod
     def _matched_path(org_path, path):
@@ -106,11 +109,14 @@ class ApiGateway(Handler):
     def _patch_gateway_client(self):
         return Client("apigateway", 'v1', calls='projects.locations.gateways', parent_schema='projects/{project_id}/locations/{location_id}/gateways/' + self.name)
 
-    def deploy(self, sourceUrl=None, entrypoint=None):
-        if len(self.routes) == 0:
+    def _deploy(self, sourceUrl=None, entrypoint=None):
+        if len(self.resources) == 0:
             return
         log.info("deploying api......")
-        self.generate_openapi_spec(self.cloudfunction)
+        base_url = self.cloudfunction
+        if self.backend == "cloudrun":
+            base_url = get_cloudrun_url(self.name)
+        self.generate_openapi_spec(base_url)
         try:
             resp = self.api_client.execute('create', params={'apiId': self.name})
             self.api_client.wait_for_operation(resp["name"])
@@ -163,7 +169,7 @@ class ApiGateway(Handler):
         return
 
     def destroy(self):
-        if len(self.routes) == 0:
+        if len(self.resources) == 0:
             return
 
         # destroy api gateway
@@ -208,7 +214,7 @@ class ApiGateway(Handler):
     def generate_openapi_spec(self, cloudfunction):
         config = GConfig()
         spec = OpenApiSpec(self.name, cloudfunction, security_definitions=config.securityDefinitions, security=config.security)
-        spec.add_apigateway_routes(self.routes)
+        spec.add_apigateway_routes(self.resources)
         with open(f'{get_g_dir()}/{self.name}_openapi_spec.yml', 'w') as f:
             spec.write(f)
 

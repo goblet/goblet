@@ -1,21 +1,22 @@
 from pathlib import Path
 import zipfile
 import os
+import sys
 import requests
 import logging
 import hashlib
 from requests import request
 import base64
-import json
-from urllib.parse import quote_plus
 import warnings
+import subprocess
 
 from googleapiclient.errors import HttpError
 
-from goblet.client import Client, get_default_project, get_default_location, get_credentials
+from goblet.client import Client, get_default_project, get_default_location
+from goblet.common_cloud_actions import create_cloudfunction, destroy_cloudfunction, destroy_cloudfunction_artifacts, destroy_cloudrun
 from goblet.utils import get_dir, get_g_dir, checksum
+from goblet.write_files import write_dockerfile
 from goblet.config import GConfig
-import google_auth_httplib2
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -28,12 +29,13 @@ class Deployer:
         self.config = config
         if not config:
             self.config = {
-                "name": "goblet_test_app"
+                "name": "goblet"
             }
         self.name = self.config["name"]
         self.zipf = self.create_zip()
         self.function_client = self._create_function_client()
         self.func_name = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}"
+        self.run_name = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{self.name}"
 
     def _create_function_client(self):
         return Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
@@ -43,28 +45,32 @@ class Deployer:
 
     def deploy(self, goblet, skip_function=False, only_function=False, config=None, force=False):
         """Deploys http cloudfunction and then calls goblet.deploy() to deploy any handler's required infrastructure"""
-        url = None
+        source_url = None
         if not skip_function:
-            log.info("zipping function......")
-            self.zip()
-            if not force and self.get_function() and not self._cloudfunction_delta(f'.goblet/{self.name}.zip'):
-                log.info("No changes detected......")
-            else:
-                log.info("uploading function zip to gs......")
-                url = self._upload_zip()
-                if goblet.is_http():
-                    # TODO: temporary workaround around the goblet entrypoint.
-                    self.create_function(url, "goblet_entrypoint", config)
-                    # self.create_function(url, goblet.entrypoint, config)
-        if not only_function and url:
-            goblet.deploy(url)
+            if goblet.backend == "cloudfunction":
+                log.info("zipping function......")
+                self.zip()
+                if not force and self.get_function() and not self._cloudfunction_delta(f'.goblet/{self.name}.zip'):
+                    log.info("No changes detected......")
+                else:
+                    log.info("uploading function zip to gs......")
+                    source_url = self._upload_zip()
+                    if goblet.is_http():
+                        self.create_function(source_url, "goblet_entrypoint", config)
+            if goblet.backend == "cloudrun":
+                self.create_cloudrun(config)
+        if not only_function:
+            goblet.deploy(source_url)
 
         return goblet
 
     def destroy(self, goblet, all=None):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         goblet.destroy()
-        destroy_cloudfunction(self.name)
+        if goblet.backend == "cloudfunction":
+            destroy_cloudfunction(self.name)
+        if goblet.backend == "cloudrun":
+            destroy_cloudrun(self.name)
         if all:
             destroy_cloudfunction_artifacts(self.name)
 
@@ -92,6 +98,41 @@ class Deployer:
             **user_configs
         }
         create_cloudfunction(req_body, config=config.config)
+
+    def create_cloudrun(self, config=None):
+        """Creates http cloudfunction"""
+        config = GConfig(config=config)
+        cloudrun_configs = config.cloudrun or {}
+        if not cloudrun_configs.get("no-allow-unauthenticated") or cloudrun_configs.get("allow-unauthenticated"):
+            cloudrun_configs["no-allow-unauthenticated"] = None
+        cloudrun_options = []
+        for k, v in cloudrun_configs.items():
+            cloudrun_options.append(f"--{k}")
+            if v:
+                cloudrun_options.append(v)
+
+        base_command = ["gcloud", "run", "deploy", self.name, "--project", get_default_project(), "--region", get_default_location(), "--source",
+                        get_dir(), "--command", "functions-framework,--target=goblet_entrypoint", "--port", "8080"]
+        base_command.extend(cloudrun_options)
+        try:
+            if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(get_dir() + "/Procfile"):
+                log.info("No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile")
+                write_dockerfile()
+            subprocess.check_output(base_command, env=os.environ)
+        except subprocess.CalledProcessError:
+            log.error("Error during cloudrun deployment while running the following command")
+            log.error((" ").join(base_command))
+            sys.exit(1)
+
+        # Set IAM Bindings
+        if config.bindings:
+            policy_client = Client("run", 'v1', calls='projects.locations.services', parent_schema=self.run_name)
+
+            log.info(f"adding IAM bindings for cloudrun {self.name}")
+            policy_bindings = {
+                'policy': {'bindings': config.bindings}
+            }
+            policy_client.execute('setIamPolicy', parent_key="resource", params={'body': policy_bindings})
 
     def _cloudfunction_delta(self, filename):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
@@ -155,64 +196,3 @@ class Deployer:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
-
-
-def create_cloudfunction(req_body, config=None):
-    """Creates a cloudfunction based on req_body"""
-    function_name = req_body['name'].split('/')[-1]
-    function_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-    try:
-        resp = function_client.execute('create', parent_key="location", params={'body': req_body})
-        log.info(f"creating cloudfunction {function_name}")
-    except HttpError as e:
-        if e.resp.status == 409:
-            log.info(f"updating cloudfunction {function_name}")
-            resp = function_client.execute('patch', parent_key="name", parent_schema=req_body["name"], params={'body': req_body})
-        else:
-            raise e
-    function_client.wait_for_operation(resp["name"], calls="operations")
-
-    # Set IAM Bindings
-    config = GConfig(config=config)
-    if config.bindings:
-        policy_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions',
-                               parent_schema=req_body['name'])
-
-        log.info(f"adding IAM bindings for cloudfunction {function_name}")
-        policy_bindings = {
-            'policy': {'bindings': config.bindings}
-        }
-        resp = policy_client.execute('setIamPolicy', parent_key="resource", params={'body': policy_bindings})
-
-
-def destroy_cloudfunction(name):
-    """Destroys cloudfunction"""
-    try:
-        client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/' + name)
-        client.execute('delete', parent_key="name")
-        log.info(f"deleting google cloudfunction {name}......")
-    except HttpError as e:
-        if e.resp.status == 404:
-            log.info(f"cloudfunction {name} already destroyed")
-        else:
-            raise e
-
-
-def destroy_cloudfunction_artifacts(name):
-    """Destroys all images stored in cloud storage that are related to the function."""
-    client = Client("cloudresourcemanager", 'v1', calls='projects')
-    resp = client.execute('get', parent_key='projectId', parent_schema=get_default_project())
-    project_number = resp["projectNumber"]
-    region = get_default_location()
-    if not region:
-        raise Exception("Missing Region")
-    bucket_name = f"gcf-sources-{project_number}-{get_default_location()}"
-    http = client.http or google_auth_httplib2.AuthorizedHttp(get_credentials())
-    resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o?prefix={name}")
-    objects = json.loads(resp[1])
-    if not objects.get("items"):
-        log.info("Artifacts already deleted")
-        return
-    for storage in objects["items"]:
-        log.info(f"Deleting artifact {storage['name']}")
-        resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}", method="DELETE")

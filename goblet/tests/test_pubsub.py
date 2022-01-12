@@ -16,8 +16,8 @@ class TestPubSub:
         app.topic('test')(dummy_function)
 
         pubsub = app.handlers["pubsub"]
-        assert(len(pubsub.topics) == 1)
-        assert(pubsub.topics['test']['dummy_function'] == {'func': dummy_function, 'attributes': {}})
+        assert(len(pubsub.resources) == 1)
+        assert(pubsub.resources['test']['dummy_function'] == {'func': dummy_function, 'attributes': {}})
 
     def test_add_topic_attributes(self):
         app = Goblet(function_name="goblet_example")
@@ -25,8 +25,8 @@ class TestPubSub:
         app.topic('test', attributes={'test': True})(dummy_function)
 
         pubsub = app.handlers["pubsub"]
-        assert(len(pubsub.topics) == 1)
-        assert(pubsub.topics['test']['dummy_function'] == {'func': dummy_function, 'attributes': {'test': True}})
+        assert(len(pubsub.resources) == 1)
+        assert(pubsub.resources['test']['dummy_function'] == {'func': dummy_function, 'attributes': {'test': True}})
 
     def test_call_topic(self):
         app = Goblet(function_name="goblet_example")
@@ -96,7 +96,7 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub('goblet_topic', topics={'test-topic': {}})
+        pubsub = PubSub('goblet_topic', resources={'test-topic': {}})
         pubsub.destroy()
 
         responses = get_responses('pubsub-destroy')
@@ -104,3 +104,40 @@ class TestPubSub:
         assert(len(responses) == 1)
         assert(responses[0]['body']['metadata']['type'] == 'DELETE_FUNCTION')
         assert(responses[0]['body']['metadata']['target'].endswith('goblet_topic-topic-test-topic'))
+
+    def test_deploy_pubsub_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cloudrun")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub('goblet', backend="cloudrun")
+        pubsub.register_topic('test', None, kwargs={'topic': 'test', "kwargs": {}})
+
+        cloudrun_url = "https://goblet-12345.a.run.app"
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        pubsub._deploy(config={'pubsub': {'serviceAccountEmail': service_account}})
+
+        responses = get_responses('pubsub-deploy-cloudrun')
+
+        assert(len(responses) == 2)
+        assert(responses[0]['body']['status']['url'] == cloudrun_url)
+        assert(responses[1]['body']['pushConfig']['oidcToken']['serviceAccountEmail'] == service_account)
+        assert(responses[1]['body']['pushConfig']['oidcToken']['audience'] == cloudrun_url)
+        assert(responses[1]['body']['pushConfig']['pushEndpoint'] == cloudrun_url)
+        assert(responses[1]['body']['topic'] == "projects/goblet/topics/test")
+
+    def test_destroy_pubsub_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy-cloudrun")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub('goblet', resources={'test': {}}, backend="cloudrun")
+        pubsub.destroy()
+
+        responses = get_responses('pubsub-destroy-cloudrun')
+
+        assert(len(responses) == 1)
+        assert(responses[0]['body'] == {})

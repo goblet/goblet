@@ -5,7 +5,8 @@ import logging
 import subprocess
 import json
 
-from goblet.utils import get_goblet_app, create_goblet_dir
+from goblet.utils import get_goblet_app
+from goblet.write_files import create_goblet_dir
 from goblet.deploy import Deployer
 from goblet.client import get_default_project
 from goblet.__version__ import __version__

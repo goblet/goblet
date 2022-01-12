@@ -13,9 +13,9 @@ class Goblet(Register_Handlers):
     Main class which inherits most of its logic from the Register_Handlers class. Local param is used
     to set the entrypoint for running goblet locally
     """
-    def __init__(self, function_name="goblet", local="local", cors=None):
+    def __init__(self, function_name="goblet", backend="cloudfunction", local="local", cors=None):
         self.function_name = GConfig().function_name or function_name
-        super(Goblet, self).__init__(function_name=self.function_name, cors=cors)
+        super(Goblet, self).__init__(function_name=self.function_name, backend=backend, cors=cors)
         self.log = logging.getLogger(__name__)
         self.headers = {}
         self.g = G()

@@ -1,0 +1,12 @@
+{
+  "headers": {},
+  "body": {
+    "status": "Success",
+    "details": {
+      "name": "goblet",
+      "group": "v1",
+      "kind": "service",
+      "uid": "e0069f86-97aa-4d7d-83a1-30031356c24e"
+    }
+  }
+}

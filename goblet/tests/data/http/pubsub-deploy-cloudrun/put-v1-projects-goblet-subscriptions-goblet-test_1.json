@@ -1,0 +1,22 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/subscriptions/goblet-test",
+    "topic": "projects/goblet/topics/test",
+    "pushConfig": {
+      "pushEndpoint": "https://goblet-12345.a.run.app",
+      "attributes": {
+        "x-goog-version": "v1"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "SERVICE_ACCOUNT@developer.gserviceaccount.com",
+        "audience": "https://goblet-12345.a.run.app"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "2678400s"
+    }
+  }
+}

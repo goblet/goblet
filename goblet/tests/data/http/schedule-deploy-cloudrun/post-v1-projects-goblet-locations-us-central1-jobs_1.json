@@ -1,0 +1,25 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/jobs/goblet-test-job",
+    "description": "Created by goblet",
+    "httpTarget": {
+      "uri": "https://goblet-12345.a.run.app",
+      "httpMethod": "GET",
+      "headers": {
+        "User-Agent": "Google-Cloud-Scheduler",
+        "X-Goblet-Type": "schedule",
+        "X-Goblet-Name": "test-job"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "SERVICE_ACCOUNT@developer.gserviceaccount.com",
+        "audience": "https://goblet-12345.a.run.app"
+      }
+    },
+    "userUpdateTime": "2022-01-12T15:34:18Z",
+    "state": "ENABLED",
+    "schedule": "* * * * *",
+    "timeZone": "UTC",
+    "attemptDeadline": "180s"
+  }
+}
