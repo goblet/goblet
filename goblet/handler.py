@@ -1,6 +1,6 @@
 import logging
 
-log = logging.getLogger('goblet.deployer')
+log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
@@ -14,7 +14,9 @@ class Handler:
 
     def deploy(self, sourceUrl=None, entrypoint=None):
         if self.resources and self.backend not in self.valid_backends:
-            log.info(f"skipping... {self.backend} not supported for {self.resource_type}")
+            log.info(
+                f"skipping... {self.backend} not supported for {self.resource_type}"
+            )
             return
         self._deploy(sourceUrl, entrypoint)
 
