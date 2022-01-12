@@ -1,5 +1,5 @@
 from unittest.mock import Mock
-from goblet import Goblet
+from goblet import Goblet, config
 from goblet.resources.scheduler import Scheduler
 from goblet.test_utils import get_responses, get_response, mock_dummy_function, dummy_function
 
@@ -107,6 +107,25 @@ class TestScheduler:
         assert(goblet_name in responses[0]['body']['name'])
         assert(responses[1]['body']['httpTarget']['headers']['X-Goblet-Name'] == 'test-job')
         assert(responses[1]['body']['httpTarget']['headers']['X-Goblet-Type'] == 'schedule')
+        assert(responses[1]['body']['schedule'] == '* * * * *')
+
+    def test_deploy_schedule_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-governance-rd")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy-cloudrun")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        scheduler = Scheduler('goblet')
+        cloudrun_url = "https://goblet-12345.a.run.app"
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+        scheduler.register_job('test-job', None, kwargs={'schedule': '* * * * *', 'kwargs': {}})
+        scheduler._deploy(backend='cloudrun', config={"scheduler":{"serviceAccount": service_account}})
+
+        responses = get_responses('schedule-deploy-cloudrun')
+
+        assert(responses[0]['body']['status']['url'] == cloudrun_url)
+        assert(responses[1]['body']['httpTarget']['oidcToken']['serviceAccountEmail'] == service_account)
+        assert(responses[1]['body']['httpTarget']['oidcToken']['audience'] == cloudrun_url)
         assert(responses[1]['body']['schedule'] == '* * * * *')
 
     def test_deploy_multiple_schedule(self, monkeypatch):

@@ -1,7 +1,10 @@
 import logging
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import Client, get_default_project, get_default_location, get_credentials
+from goblet.common_cloud_actions import get_cloudrun_url
+from goblet.config import GConfig
+
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger('goblet.deployer')
@@ -85,20 +88,30 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
+    def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction", config ={}):
         if not self.resources:
             return
 
-        cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-        resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
-        if not resp:
-            raise ValueError(f"Function {self.cloudfunction} not found")
-        cloudfunction_target = resp["httpsTrigger"]["url"]
-        service_account = resp["serviceAccountEmail"]
+        if backend == "cloudfunction":
+            cloudfunction_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
+            resp = cloudfunction_client.execute('get', parent_key="name", parent_schema=self.cloudfunction)
+            if not resp:
+                raise ValueError(f"Function {self.cloudfunction} not found")
+            target = resp["httpsTrigger"]["url"]
+            service_account = resp["serviceAccountEmail"]
 
+        if backend == "cloudrun":
+            target = get_cloudrun_url(self.name)
+            config = GConfig(config=config)
+            if config.cloudrun and config.cloudrun.get("service-account"):
+                service_account = config.cloudrun.get("service-account")
+            elif config.scheduler and config.scheduler.get('serviceAccount'):
+                service_account = config.scheduler.get('serviceAccount')
+            else:
+                raise ValueError("Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`")
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
-            job["job_json"]["httpTarget"]['uri'] = cloudfunction_target
+            job["job_json"]["httpTarget"]['uri'] = target
             job["job_json"]["httpTarget"]['oidcToken']["serviceAccountEmail"] = service_account
 
             self.deploy_job(job_name, job["job_json"])
