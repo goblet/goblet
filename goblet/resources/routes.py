@@ -14,6 +14,8 @@ from goblet.handler import Handler
 from goblet.client import Client, get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
+from goblet.common_cloud_actions import get_cloudrun_url
+
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger('goblet.deployer')
@@ -110,7 +112,10 @@ class ApiGateway(Handler):
         if len(self.resources) == 0:
             return
         log.info("deploying api......")
-        self.generate_openapi_spec(self.cloudfunction)
+        base_url = self.cloudfunction
+        if backend == "cloudrun":
+            base_url = get_cloudrun_url(self.name)
+        self.generate_openapi_spec(base_url)
         try:
             resp = self.api_client.execute('create', params={'apiId': self.name})
             self.api_client.wait_for_operation(resp["name"])

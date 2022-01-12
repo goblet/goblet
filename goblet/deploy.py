@@ -6,17 +6,15 @@ import logging
 import hashlib
 from requests import request
 import base64
-import json
-from urllib.parse import quote_plus
 import warnings
 import subprocess
 
 from googleapiclient.errors import HttpError
 
 from goblet.client import Client, get_default_project, get_default_location, get_credentials
-from goblet.utils import get_dir, get_g_dir, checksum
+from goblet.common_cloud_actions import create_cloudfunction, destroy_cloudfunction, destroy_cloudfunction_artifacts, destroy_cloudrun
+from goblet.utils import get_dir, get_g_dir, checksum, write_dockerfile
 from goblet.config import GConfig
-import google_auth_httplib2
 
 log = logging.getLogger('goblet.deployer')
 log.setLevel(logging.INFO)
@@ -29,7 +27,7 @@ class Deployer:
         self.config = config
         if not config:
             self.config = {
-                "name": "goblet_test_app"
+                "name": "goblet"
             }
         self.name = self.config["name"]
         self.zipf = self.create_zip()
@@ -59,7 +57,7 @@ class Deployer:
                         self.create_function(source_url, "goblet_entrypoint", config)
             if goblet.backend == "cloudrun":
                 self.create_cloudrun(config)
-        if not only_function and source_url:
+        if not only_function:
             goblet.deploy(source_url)
 
         return goblet
@@ -115,9 +113,14 @@ class Deployer:
                         get_dir(), "--command", "functions-framework,--target=goblet_entrypoint", "--port", "8080"]
         base_command.extend(cloudrun_options)
         try:
-            subprocess.check_output(base_command)
+            if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(get_dir() + "/Procfile"):
+                log.info("No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile")
+                write_dockerfile()
+            subprocess.check_output(base_command, env=os.environ)
         except subprocess.CalledProcessError as e:
-            log.error(e.output)
+            log.error("Error during cloudrun deployment while running the following command")
+            log.error((" ").join(base_command))
+
         # Set IAM Bindings
         if config.bindings:
             policy_client = Client("run", 'v1', calls='projects.locations.services', parent_schema=self.run_name)
@@ -190,77 +193,3 @@ class Deployer:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
-
-
-def create_cloudfunction(req_body, config=None):
-    """Creates a cloudfunction based on req_body"""
-    function_name = req_body['name'].split('/')[-1]
-    function_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}')
-    try:
-        resp = function_client.execute('create', parent_key="location", params={'body': req_body})
-        log.info(f"creating cloudfunction {function_name}")
-    except HttpError as e:
-        if e.resp.status == 409:
-            log.info(f"updating cloudfunction {function_name}")
-            resp = function_client.execute('patch', parent_key="name", parent_schema=req_body["name"], params={'body': req_body})
-        else:
-            raise e
-    function_client.wait_for_operation(resp["name"], calls="operations")
-
-    # Set IAM Bindings
-    config = GConfig(config=config)
-    if config.bindings:
-        policy_client = Client("cloudfunctions", 'v1', calls='projects.locations.functions',
-                               parent_schema=req_body['name'])
-
-        log.info(f"adding IAM bindings for cloudfunction {function_name}")
-        policy_bindings = {
-            'policy': {'bindings': config.bindings}
-        }
-        resp = policy_client.execute('setIamPolicy', parent_key="resource", params={'body': policy_bindings})
-
-
-def destroy_cloudfunction(name):
-    """Destroys cloudfunction"""
-    try:
-        client = Client("cloudfunctions", 'v1', calls='projects.locations.functions', parent_schema='projects/{project_id}/locations/{location_id}/functions/' + name)
-        client.execute('delete', parent_key="name")
-        log.info(f"deleting google cloudfunction {name}......")
-    except HttpError as e:
-        if e.resp.status == 404:
-            log.info(f"cloudfunction {name} already destroyed")
-        else:
-            raise e
-
-
-def destroy_cloudrun(name):
-    """Destroys cloudrun"""
-    try:
-        client = Client("run", 'v1', calls='projects.locations.services', parent_schema='projects/{project_id}/locations/{location_id}/services/' + name)
-        client.execute('delete', parent_key="name")
-        log.info(f"deleting cloudrun {name}......")
-    except HttpError as e:
-        if e.resp.status == 404:
-            log.info(f"cloudrun {name} already destroyed")
-        else:
-            raise e
-
-
-def destroy_cloudfunction_artifacts(name):
-    """Destroys all images stored in cloud storage that are related to the function."""
-    client = Client("cloudresourcemanager", 'v1', calls='projects')
-    resp = client.execute('get', parent_key='projectId', parent_schema=get_default_project())
-    project_number = resp["projectNumber"]
-    region = get_default_location()
-    if not region:
-        raise Exception("Missing Region")
-    bucket_name = f"gcf-sources-{project_number}-{get_default_location()}"
-    http = client.http or google_auth_httplib2.AuthorizedHttp(get_credentials())
-    resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o?prefix={name}")
-    objects = json.loads(resp[1])
-    if not objects.get("items"):
-        log.info("Artifacts already deleted")
-        return
-    for storage in objects["items"]:
-        log.info(f"Deleting artifact {storage['name']}")
-        resp = http.request(f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}", method="DELETE")

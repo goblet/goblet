@@ -4,6 +4,7 @@ import collections.abc
 from contextlib import contextmanager
 import json
 from goblet.__version__ import __version__
+from goblet.client import Client
 
 
 @contextmanager
@@ -101,6 +102,24 @@ To test endpoints locally run `goblet local`
 To deploy cloudfunctions and other gcp resources defined in `main.py` run `goblet deploy`
 
 To check out goblet documentation go to [docs](https://anovis.github.io/goblet/docs/build/html/index.html)
+""")
+
+def write_dockerfile():
+    with open(f'{get_dir()}/Dockerfile', 'w') as f:
+        f.write(f"""
+# https://hub.docker.com/_/python
+FROM python:3.7-slim
+
+# Copy local code to the container image.
+ENV APP_HOME /app
+WORKDIR $APP_HOME
+COPY . .
+
+# Install dependencies.
+RUN pip install -r requirements.txt
+
+# Run the web service on container startup.
+CMD exec functions-framework --target=goblet_entrypoint
 """)
 
 

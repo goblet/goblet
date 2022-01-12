@@ -62,7 +62,7 @@ class Storage(Handler):
         return self
 
     def _deploy(self, sourceUrl=None, entrypoint=None, backend="cloudfunction"):
-        if not self.resources:
+        if not self.resources or not sourceUrl:
             return
 
         log.info("deploying storage functions......")

@@ -159,8 +159,7 @@ class Register_Handlers(DecoratorAPI):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            # TODO: better handle entrypoint
-            v.deploy(source_url, entrypoint="goblet_entrypoint", backend=self.backend)
+            v._deploy(source_url, entrypoint="goblet_entrypoint", backend=self.backend)
 
     def destroy(self):
         """Call each handlers destroy method"""
