@@ -133,6 +133,19 @@ class Scheduler(Handler):
 
             self.deploy_job(job_name, job["job_json"])
 
+    def _sync(self, dryrun=False):
+        jobs = self.api_client.execute("list").get("jobs", [])
+        filtered_jobs = list(
+            filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
+        )
+        for filtered_job in filtered_jobs:
+            split_name = filtered_job["name"].split("/")[-1].split("-")
+            filtered_name = split_name[1]
+            if not self.resources.get(filtered_name):
+                log.info(f'Detected unused job in GCP {filtered_job["name"]}')
+                if not dryrun:
+                    self._destroy_job(filtered_job["name"])
+
     def deploy_job(self, job_name, job):
         try:
             self.api_client.execute("create", params={"body": job})
@@ -167,9 +180,9 @@ class Scheduler(Handler):
                 + job_name,
             )
             scheduler_client.execute("delete", parent_key="name")
-            log.info("destroying scheduled functions......")
+            log.info(f"Destroying scheduled job {job_name}......")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info("scheduled functions already destroyed")
+                log.info("Scheduled jobs already destroyed")
             else:
                 raise e

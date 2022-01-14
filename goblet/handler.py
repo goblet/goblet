@@ -26,6 +26,14 @@ class Handler:
     def destroy(self):
         raise NotImplementedError("destroy")
 
+    def sync(self, dryrun=False):
+        if self.resources:
+            log.info(f"syncing {self.resource_type}")
+            self._sync(dryrun)
+
+    def _sync(self, dryrun=False):
+        pass
+
     def __call__(self, request, context=None):
         raise NotImplementedError("__call__")
 
