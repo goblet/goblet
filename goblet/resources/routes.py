@@ -384,15 +384,16 @@ class OpenApiSpec:
 
         if entry.query:
             if isinstance(entry.query, dict):
-                params.append(
-                    {
-                        "in": "query",
-                        "name": entry.query['name'],
-                        "type": entry.query['type'],
-                        "required": entry.query['required']
-                    }
-                )
-
+                for query in entry.query.params:
+                    params.append(
+                        {
+                            "in": "query",
+                            "name": query.get('name'),
+                            "type": query.get('type'),
+                            "required": query.get('required', False),
+                            "description": query.get('description', '')
+                        }
+                    )
         if params:
             method_spec["parameters"] = params
 
