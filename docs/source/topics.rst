@@ -464,11 +464,10 @@ If you use a custom schema type you should create a schema class that inherits f
 
     # Defining Query Params
     @app.route("/custom",query_params=[{'name': 'test', 'type': 'string', 'required': True},{'name': 'test2', 'type': 'string', 'required': True}]
-    @app.route('/custom', request_body={'schema': {"type": "array", "items": {'type': 'string'}}}, responses={'400': {'description': '400'}})
     def custom():
-        request = app.current_request
-        assert request.data ["string1", "string2"]
-        return
+        task_id = request.args.get('test')
+        
+        return task_id
 
 .. _OPENAPI: https://swagger.io/specification/
 .. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
