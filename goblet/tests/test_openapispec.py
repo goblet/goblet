@@ -187,6 +187,31 @@ class TestOpenApiSpec:
         params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
         assert params == {"in": "formData", "name": "file", "type": "file"}
 
+    def test_query_params(self):
+        route = RouteEntry(
+            dummy,
+            "route",
+            "/home",
+            "GET",
+            query_params=[{'name': 'test', 'type': 'string', 'required': True}, {'name': 'test2', 'type': 'string', 'required': True}]
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        params2 = spec.spec["paths"]["/home"]["get"]["parameters"][1]
+        assert params == {
+            "in": "query",
+            "name": "test",
+            'type': 'string',
+            "required": True
+        }
+        assert params2 == {
+            "in": "query",
+            "name": "test2",
+            'type': 'string',
+            "required": True
+        }
+
     def test_custom_backend(self):
         route = RouteEntry(
             dummy, "route", "/home", "GET", form_data=True, backend="CLOUDRUN/URL"
