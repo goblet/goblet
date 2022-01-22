@@ -465,9 +465,9 @@ If you use a custom schema type you should create a schema class that inherits f
     # Defining Query Params
     @app.route("/custom",query_params=[{'name': 'test', 'type': 'string', 'required': True},{'name': 'test2', 'type': 'string', 'required': True}]
     def custom():
-        task_id = request.args.get('test')
+        data = request.args.get('test')
         
-        return task_id
+        return data
 
 .. _OPENAPI: https://swagger.io/specification/
 .. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
