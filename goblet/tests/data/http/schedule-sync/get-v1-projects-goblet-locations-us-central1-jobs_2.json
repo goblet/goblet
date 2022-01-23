@@ -1,0 +1,61 @@
+{
+  "headers": {},
+  "body": {
+    "jobs": [
+      {
+        "name": "projects/goblet/locations/us-central1/jobs/goblet-custom",
+        "description": "Created by goblet",
+        "httpTarget": {
+          "uri": "https://us-central1-goblet.cloudfunctions.net/goblet",
+          "httpMethod": "POST",
+          "headers": {
+            "X-Goblet-Type": "schedule",
+            "X-Goblet-Name": "custom",
+            "User-Agent": "Google-Cloud-Scheduler"
+          },
+          "oidcToken": {
+            "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+            "audience": "https://us-central1-goblet.cloudfunctions.net/goblet"
+          }
+        },
+        "userUpdateTime": "2022-01-23T16:05:17Z",
+        "state": "ENABLED",
+        "scheduleTime": "2022-01-23T17:05:00.623911Z",
+        "schedule": "5 * * * *",
+        "timeZone": "UTC",
+        "attemptDeadline": "180s"
+      },
+      {
+        "name": "projects/goblet/locations/us-central1/jobs/goblet-scheduled_job",
+        "description": "Created by goblet",
+        "httpTarget": {
+          "uri": "https://us-central1-goblet.cloudfunctions.net/goblet",
+          "httpMethod": "GET",
+          "headers": {
+            "User-Agent": "Google-Cloud-Scheduler",
+            "X-Goblet-Name": "scheduled_job",
+            "X-Goblet-Type": "schedule",
+            "X-TEST": "TRUE"
+          },
+          "oidcToken": {
+            "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+            "audience": "https://us-central1-goblet.cloudfunctions.net/goblet"
+          }
+        },
+        "userUpdateTime": "2022-01-23T16:05:16Z",
+        "state": "ENABLED",
+        "scheduleTime": "2022-01-23T17:04:00Z",
+        "retryConfig": {
+          "retryCount": 1,
+          "maxRetryDuration": "0s",
+          "minBackoffDuration": "5s",
+          "maxBackoffDuration": "3600s",
+          "maxDoublings": 5
+        },
+        "schedule": "4 * * * *",
+        "timeZone": "UTC",
+        "attemptDeadline": "180s"
+      }
+    ]
+  }
+}

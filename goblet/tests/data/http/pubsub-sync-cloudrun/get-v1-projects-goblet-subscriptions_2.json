@@ -1,0 +1,39 @@
+{
+  "headers": {},
+  "body": {
+    "subscriptions": [
+      {
+        "name": "projects/goblet/subscriptions/gcf-goblet-test",
+        "topic": "projects/goblet/topics/rotation",
+        "pushConfig": {
+          "pushEndpoint": "",
+          "attributes": {
+            "x-goog-version": "v1"
+          }
+        },
+        "ackDeadlineSeconds": 600,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {}
+      },
+      {
+        "name": "projects/goblet/subscriptions/goblet-test",
+        "topic": "projects/goblet/topics/test",
+        "pushConfig": {
+          "pushEndpoint": "",
+          "attributes": {
+            "x-goog-version": "v1"
+          },
+          "oidcToken": {
+            "serviceAccountEmail": "",
+            "audience": ""
+          }
+        },
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        }
+      }
+    ]
+  }
+}

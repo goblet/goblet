@@ -18,6 +18,7 @@ class Scheduler(Handler):
 
     resource_type = "scheduler"
     valid_backends = ["cloudfunction", "cloudrun"]
+    can_sync = True
 
     def __init__(self, name, resources=None, backend="cloudfunction"):
         self.name = name
@@ -144,7 +145,8 @@ class Scheduler(Handler):
             if not self.resources.get(filtered_name):
                 log.info(f'Detected unused job in GCP {filtered_job["name"]}')
                 if not dryrun:
-                    self._destroy_job(filtered_job["name"])
+                    # TODO: Handle deleting multiple jobs with same name
+                    self._destroy_job(filtered_name)
 
     def deploy_job(self, job_name, job):
         try:

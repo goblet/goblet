@@ -233,3 +233,22 @@ class TestScheduler:
 
         assert len(responses) == 1
         assert responses[0]["body"] == {}
+
+    def test_sync_schedule(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-sync")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        goblet_name = "goblet"
+        scheduler = Scheduler(goblet_name)
+        scheduler.register_job(
+            "scheduled_job", None, kwargs={"schedule": "* * * * *", "kwargs": {}}
+        )
+        scheduler.sync(dryrun=True)
+        scheduler.sync(dryrun=False)
+
+        responses = get_responses("schedule-sync")
+        assert len(responses) == 3
+        assert responses[1] == responses[2]
+        assert responses[0]["body"] == {}

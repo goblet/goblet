@@ -11,6 +11,7 @@ class Handler:
     resources = None
     resource_type = ""
     backend = "cloudfunction"
+    can_sync = False
 
     def deploy(self, sourceUrl=None, entrypoint=None):
         if self.resources and self.backend not in self.valid_backends:
@@ -27,7 +28,7 @@ class Handler:
         raise NotImplementedError("destroy")
 
     def sync(self, dryrun=False):
-        if self.resources:
+        if self.can_sync:
             log.info(f"syncing {self.resource_type}")
             self._sync(dryrun)
 
