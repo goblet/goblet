@@ -462,6 +462,13 @@ If you use a custom schema type you should create a schema class that inherits f
         assert request.data ["string1", "string2"]
         return
 
+    # Defining Query Params
+    @app.route("/custom",query_params=[{'name': 'test', 'type': 'string', 'required': True},{'name': 'test2', 'type': 'string', 'required': True}]
+    def custom():
+        data = request.args.get('test')
+        
+        return data
+
 .. _OPENAPI: https://swagger.io/specification/
 .. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
 
@@ -618,7 +625,6 @@ in the packaged zipfile.
 
 Note: There is a bug when uploading a different `main_file`, while also having `main.py` in your code, so if you decide to use `main_file` remove `main.py`. The bug 
 shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct `main.py` 
-
 
 Syncing State
 ^^^^^^^^^^^^^
