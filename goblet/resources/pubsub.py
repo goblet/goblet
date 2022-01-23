@@ -10,7 +10,7 @@ from goblet.config import GConfig
 import logging
 
 from goblet.handler import Handler
-from goblet.client import get_default_project, get_default_location
+from goblet.client import get_default_project, get_default_location, Client
 
 
 log = logging.getLogger("goblet.deployer")
@@ -24,6 +24,7 @@ class PubSub(Handler):
 
     valid_backends = ["cloudfunction", "cloudrun"]
     resource_type = "pubsub"
+    can_sync = True
 
     def __init__(self, name, resources=None, backend="cloudfunction"):
         self.name = name
@@ -110,6 +111,32 @@ class PubSub(Handler):
                 **user_configs,
             }
             create_cloudfunction(req_body)
+
+    def _sync(self, dryrun=False):
+        if not self.backend == "cloudrun":
+            return
+        pubsub_client = Client(
+            "pubsub",
+            "v1",
+            calls="projects.subscriptions",
+            parent_schema="projects/{project_id}",
+        )
+        subscriptions = pubsub_client.execute("list", parent_key="project").get(
+            "subscriptions", []
+        )
+        filtered_subscriptions = list(
+            filter(
+                lambda sub: f"subscriptions/{self.name}-" in sub["name"], subscriptions
+            )
+        )
+
+        for filtered_sub in filtered_subscriptions:
+            split_name = filtered_sub["name"].split("/")[-1].split("-")
+            filtered_name = split_name[1]
+            if not self.resources.get(filtered_name):
+                log.info(f'Detected unused subscription in GCP {filtered_sub["name"]}')
+                if not dryrun:
+                    destroy_pubsub_subscription(f"{self.name}-{filtered_name}")
 
     def destroy(self):
         if self.backend == "cloudfunction":

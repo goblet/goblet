@@ -84,7 +84,7 @@ def destroy(project, location, stage, all):
     """
     Deletes all resources in gcp that are defined the current deployment
 
-    The --all flagg removes cloudfunction artifacts in cloud storage as well
+    The --all flag removes cloudfunction artifacts in cloud storage as well
     """
     try:
         _project = project or get_default_project()
@@ -98,6 +98,37 @@ def destroy(project, location, stage, all):
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
         Deployer({"name": app.function_name}).destroy(app, all)
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists"
+        )
+
+
+@main.command()
+@click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
+@click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+@click.option("-d", "--dryrun", "dryrun", is_flag=True)
+def sync(project, location, stage, dryrun):
+    """
+    Syncs resources that are deployed with current app configuration. This command will delete resources based on naming
+    convention that are no longer in the app configuration.
+
+    Use --dryrun flag to see what resources are flagged as being deleted.
+    """
+    try:
+        _project = project or get_default_project()
+        if not _project:
+            click.echo(
+                "Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT"
+            )
+        os.environ["GOOGLE_PROJECT"] = _project
+        os.environ["GOOGLE_LOCATION"] = location
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        Deployer({"name": app.function_name}).sync(app, dryrun)
 
     except FileNotFoundError as not_found:
         click.echo(

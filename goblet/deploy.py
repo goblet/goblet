@@ -78,6 +78,11 @@ class Deployer:
 
         return goblet
 
+    def sync(self, goblet, dryrun=False):
+        """Call's handler's sync function to determine if gcp resources should be deleted based on the current configuration"""
+        goblet.sync(dryrun=dryrun)
+        return goblet
+
     def destroy(self, goblet, all=None):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         goblet.destroy()
