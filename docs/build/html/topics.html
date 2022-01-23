@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.6.0 documentation</title>
+  <title>Topics &mdash; goblet 0.6.1 documentation</title>
   
 
   
@@ -103,6 +103,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#api-gateway-backends">API Gateway Backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cors">Cors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multiple-cloudfunctions">Multiple Cloudfunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#syncing-state">Syncing State</a></li>
 </ul>
 </li>
 </ul>
@@ -552,6 +553,13 @@ You can specify custom param and response types using python typing and pass in 
     <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
     <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span> <span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">]</span>
     <span class="k">return</span>
+
+<span class="c1"># Defining Query Params</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/custom&quot;</span><span class="p">,</span><span class="n">query_params</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;test2&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}]</span>
+<span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span>
 </pre></div>
 </div>
 </div>
@@ -669,6 +677,13 @@ This allows for multiple functions to be deploying using similar code bases.</p>
 in the packaged zipfile.</p>
 <p>Note: There is a bug when uploading a different <cite>main_file</cite>, while also having <cite>main.py</cite> in your code, so if you decide to use <cite>main_file</cite> remove <cite>main.py</cite>. The bug
 shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct <cite>main.py</cite></p>
+</div>
+<div class="section" id="syncing-state">
+<h2>Syncing State<a class="headerlink" href="#syncing-state" title="Permalink to this headline">¶</a></h2>
+<p>The cli command <cite>goblet sync</cite> will sync resources that are deployed in GCP based on the current goblet app configuration. This command will delete resources based on naming
+convention that are no longer in the app configuration. For example schuduled jobs start with the function_name prefix so if the function_name is goblet_function
+the sync command will flag any scheduled jobs that start with the prefix <cite>goblet_function</cite> that are not in the current app config. Note this may cause some resources
+that are named similar to be deleted so make sure to run the command with <cite>–dryrun</cite> flag to see what resources are flagged for deletion.</p>
 </div>
 </div>
 
