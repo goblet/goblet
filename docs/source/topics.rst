@@ -462,6 +462,13 @@ If you use a custom schema type you should create a schema class that inherits f
         assert request.data ["string1", "string2"]
         return
 
+    # Defining Query Params
+    @app.route("/custom",query_params=[{'name': 'test', 'type': 'string', 'required': True},{'name': 'test2', 'type': 'string', 'required': True}]
+    def custom():
+        data = request.args.get('test')
+        
+        return data
+
 .. _OPENAPI: https://swagger.io/specification/
 .. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
 

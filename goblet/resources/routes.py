@@ -381,24 +381,19 @@ class OpenApiSpec:
 
         if entry.form_data:
             params.append({"in": "formData", "name": "file", "type": "file"})
+
+        if entry.query_params:
+            for query in entry.query_params:
+                if isinstance(query, dict):
+                    params.append({"in": "query", **query})
         if params:
             method_spec["parameters"] = params
-
-        # TODO: add query strings
 
         return_type = type_hints.get("return")
         content = {}
         if return_type:
-            if return_type in PRIMITIVE_MAPPINGS.keys():
-                content = {"schema": {"type": PRIMITIVE_MAPPINGS[return_type]}}
-            # list
-            elif "typing.List" in str(return_type):
-                type_info = return_type.__args__[0]
-                param_type = self.get_param_type(type_info)
-                content = {"schema": {"type": "array", "items": {**param_type}}}
-            elif issubclass(return_type, Schema):
-                param_type = self.get_param_type(return_type)
-                content = {"schema": {**param_type}}
+            content = self._extract_return_content(return_type)
+
         if entry.responses:
             method_spec["responses"] = entry.responses
         else:
@@ -417,6 +412,21 @@ class OpenApiSpec:
             self.spec["paths"][entry.uri_pattern] = {
                 entry.method.lower(): dict(method_spec)
             }
+
+    def _extract_return_content(self, return_type):
+        """
+        Return openapi spec response content for the given return type
+        """
+        if return_type in PRIMITIVE_MAPPINGS.keys():
+            return {"schema": {"type": PRIMITIVE_MAPPINGS[return_type]}}
+        # list
+        if "typing.List" in str(return_type):
+            type_info = return_type.__args__[0]
+            param_type = self.get_param_type(type_info)
+            return {"schema": {"type": "array", "items": {**param_type}}}
+        if issubclass(return_type, Schema):
+            param_type = self.get_param_type(return_type)
+            return {"schema": {**param_type}}
 
     def write(self, file):
         yaml.Representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
@@ -444,6 +454,7 @@ class RouteEntry:
         self.method = method
         self.api_key_required = api_key_required
         self.request_body = kwargs.get("request_body")
+        self.query_params = kwargs.get("query_params")
         self.form_data = kwargs.get("form_data")
         self.responses = kwargs.get("responses")
         self.backend = kwargs.get("backend")
