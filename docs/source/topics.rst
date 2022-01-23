@@ -625,3 +625,11 @@ in the packaged zipfile.
 
 Note: There is a bug when uploading a different `main_file`, while also having `main.py` in your code, so if you decide to use `main_file` remove `main.py`. The bug 
 shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct `main.py` 
+
+Syncing State
+^^^^^^^^^^^^^
+
+The cli command `goblet sync` will sync resources that are deployed in GCP based on the current goblet app configuration. This command will delete resources based on naming 
+convention that are no longer in the app configuration. For example schuduled jobs start with the function_name prefix so if the function_name is goblet_function
+the sync command will flag any scheduled jobs that start with the prefix `goblet_function` that are not in the current app config. Note this may cause some resources
+that are named similar to be deleted so make sure to run the command with `--dryrun` flag to see what resources are flagged for deletion.

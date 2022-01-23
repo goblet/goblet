@@ -161,3 +161,19 @@ class TestPubSub:
 
         assert len(responses) == 1
         assert responses[0]["body"] == {}
+
+    def test_sync_pubsub_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-sync-cloudrun")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub("goblet", backend="cloudrun")
+        pubsub.sync(dryrun=True)
+        pubsub.sync()
+
+        responses = get_responses("pubsub-sync-cloudrun")
+
+        assert len(responses) == 3
+        assert responses[1] == responses[2]
+        assert responses[0]["body"] == {}

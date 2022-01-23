@@ -168,6 +168,11 @@ class Register_Handlers(DecoratorAPI):
             log.info(f"deploying {k}")
             v.deploy(source_url, entrypoint="goblet_entrypoint")
 
+    def sync(self, dryrun=False):
+        """Call each handlers sync method"""
+        for _, v in self.handlers.items():
+            v.sync(dryrun)
+
     def destroy(self):
         """Call each handlers destroy method"""
         for k, v in self.handlers.items():
