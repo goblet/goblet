@@ -193,7 +193,10 @@ class TestOpenApiSpec:
             "route",
             "/home",
             "GET",
-            query_params=[{'name': 'test', 'type': 'string', 'required': True}, {'name': 'test2', 'type': 'string', 'required': True}]
+            query_params=[
+                {"name": "test", "type": "string", "required": True},
+                {"name": "test2", "type": "string", "required": True},
+            ],
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
@@ -202,14 +205,14 @@ class TestOpenApiSpec:
         assert params == {
             "in": "query",
             "name": "test",
-            'type': 'string',
-            "required": True
+            "type": "string",
+            "required": True,
         }
         assert params2 == {
             "in": "query",
             "name": "test2",
-            'type': 'string',
-            "required": True
+            "type": "string",
+            "required": True,
         }
 
     def test_custom_backend(self):
