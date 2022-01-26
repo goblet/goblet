@@ -357,6 +357,15 @@ Here’s an example for accessing post data in a view function:
 
 To see the full list of available fields see `request <https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html>`__
 
+In some cases there is additional context passed with the event. For example for pubsub events. This context can be accessed via `app.request_context`
+
+.. code:: python 
+
+    @app.topic("TOPIC")
+    def context():
+        context = app.request_context
+        return "context"
+
 Response
 ^^^^^^^^
 Goblet http function response should be of the form a flask `response <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response>`__. See more at the `cloudfunctions`_ documentation
