@@ -75,6 +75,21 @@ class TestPubSub:
         with pytest.raises(Exception):
             app(event3, mock_context)
 
+    def test_context(self):
+        app = Goblet(function_name="goblet_example")
+
+        @app.topic("test")
+        def dummy_function(data):
+            assert app.request_context.resource == "projects/GOOGLE_PROJECT/topics/test"
+
+        mock_context = Mock()
+        mock_context.resource = "projects/GOOGLE_PROJECT/topics/test"
+        mock_context.event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
+        event = {"data": base64.b64encode("test".encode())}
+
+        # assert dummy_function is run
+        app(event, mock_context)
+
     def test_deploy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
