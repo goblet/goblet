@@ -1,4 +1,3 @@
-from urllib import response
 from goblet import jsonify, Response, Goblet
 from unittest.mock import Mock
 
