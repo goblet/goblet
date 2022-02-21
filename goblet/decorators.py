@@ -146,6 +146,9 @@ class Register_Handlers(DecoratorAPI):
         request = self._call_middleware(request, event_type, before_or_after="before")
         response = None
 
+        if event_type not in EVENT_TYPES:
+            raise ValueError(f"{event_type} not a valid event type")
+
         if event_type == "schedule":
             response = self.handlers["schedule"](request)
         if event_type == "pubsub":
@@ -156,9 +159,6 @@ class Register_Handlers(DecoratorAPI):
             response = self.handlers["route"](request)
         if event_type == "http":
             response = self.handlers["http"](request)
-
-        if not response:
-            raise ValueError(f"{event_type} not a valid event type")
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
