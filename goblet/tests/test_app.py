@@ -101,7 +101,6 @@ class TestDecoraters:
         assert app2.is_http()
         assert not app3.is_http()
 
-
     def test_before_request(self):
         app = Goblet("test")
 
@@ -109,17 +108,16 @@ class TestDecoraters:
         mock_request.path = "/test"
         mock_request.method = "GET"
 
-
         @app.before_request()
         def before_request(request):
             request.custom_header = "test"
             return request
-        
+
         @app.route("/test")
         def dummy_function():
             return app.current_request.custom_header
-     
-        assert  app(mock_request, {}) == "test"
+
+        assert app(mock_request, {}) == "test"
 
     def test_after_request(self):
         app = Goblet("test")
@@ -128,13 +126,12 @@ class TestDecoraters:
         mock_request.path = "/test"
         mock_request.method = "GET"
 
-
         @app.after_request()
         def after_request(response):
             return response + " after request"
-        
+
         @app.route("/test")
         def dummy_function():
             return "test"
-     
+
         assert app(mock_request, {}) == "test after request"

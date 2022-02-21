@@ -23,7 +23,7 @@ class DecoratorAPI:
 
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not in {EVENT_TYPES}")
-        
+
         def _middleware_wrapper(func):
             self.register_middleware(func, event_type, before_or_after="before")
             return func
@@ -35,7 +35,7 @@ class DecoratorAPI:
 
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not in {EVENT_TYPES}")
-        
+
         def _middleware_wrapper(func):
             self.register_middleware(func, event_type, before_or_after="after")
             return func
@@ -43,9 +43,13 @@ class DecoratorAPI:
         return _middleware_wrapper
 
     def middleware(self, event_type="all"):
-        """Middleware functions that are called before events for preprocessing. 
+        """Middleware functions that are called before events for preprocessing.
         This is deprecated and will be removed in the future. Use before_request instead"""
-        warn('Middleware method is deprecated. Use before_request instead', DeprecationWarning, stacklevel=2)
+        warn(
+            "Middleware method is deprecated. Use before_request instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not in {EVENT_TYPES}")
@@ -140,22 +144,22 @@ class Register_Handlers(DecoratorAPI):
 
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
-        response = None 
+        response = None
 
         if event_type == "schedule":
             response = self.handlers["schedule"](request)
         if event_type == "pubsub":
-            response =  self.handlers["pubsub"](request, context)
+            response = self.handlers["pubsub"](request, context)
         if event_type == "storage":
-            response =  self.handlers["storage"](request, context)
+            response = self.handlers["storage"](request, context)
         if event_type == "route":
-            response =  self.handlers["route"](request)
+            response = self.handlers["route"](request)
         if event_type == "http":
-            response =  self.handlers["http"](request)
+            response = self.handlers["http"](request)
 
         if not response:
             raise ValueError(f"{event_type} not a valid event type")
-        
+
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
         return response
