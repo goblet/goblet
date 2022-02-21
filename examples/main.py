@@ -110,8 +110,14 @@ def storage(event):
     app.log.info(event)
     return 
 
-# Example middleware
-@app.middleware()
-def add_db(event):
+# Example before request
+@app.before_request()
+def add_db(request):
     app.g.db = "db"
-    return event
+    return request
+
+# Example after request
+@app.after_request()
+def add_header(response):
+    response.headers["X-Custom"] = "custom header"
+    return response
