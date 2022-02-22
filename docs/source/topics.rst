@@ -357,6 +357,15 @@ Here’s an example for accessing post data in a view function:
 
 To see the full list of available fields see `request <https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html>`__
 
+In some cases there is additional context passed with the event. For example for pubsub events. This context can be accessed via `app.request_context`
+
+.. code:: python 
+
+    @app.topic("TOPIC")
+    def context():
+        context = app.request_context
+        return "context"
+
 Response
 ^^^^^^^^
 Goblet http function response should be of the form a flask `response <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response>`__. See more at the `cloudfunctions`_ documentation
@@ -633,3 +642,24 @@ The cli command `goblet sync` will sync resources that are deployed in GCP based
 convention that are no longer in the app configuration. For example schuduled jobs start with the function_name prefix so if the function_name is goblet_function
 the sync command will flag any scheduled jobs that start with the prefix `goblet_function` that are not in the current app config. Note this may cause some resources
 that are named similar to be deleted so make sure to run the command with `--dryrun` flag to see what resources are flagged for deletion.
+
+Middleware
+^^^^^^^^^^
+
+You can trigger custom middlware using the `before_request` and `after_request` decorators. These allow you to trigger custom functions before a request is passed to your request 
+handler or do post prosessing on your responses. 
+
+.. code: python
+
+    @app.before_request()
+    def add_db(request):
+        app.g.db = "db"
+        return request
+
+    @app.after_request(event_type="pubsub")
+    def add_header(response):
+        response.headers["X-Custom"] = "custom header"
+        return response
+
+You can have your middleware trigger only on certain event types using the `event_type` argument. Default is `all`. Possible 
+event types are `["all", "http", "schedule", "pubsub", "storage", "route"]`

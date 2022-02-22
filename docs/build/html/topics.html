@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.6.1 documentation</title>
+  <title>Topics &mdash; goblet 0.6.2 documentation</title>
   
 
   
@@ -104,6 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#cors">Cors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multiple-cloudfunctions">Multiple Cloudfunctions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#syncing-state">Syncing State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#middleware">Middleware</a></li>
 </ul>
 </li>
 </ul>
@@ -476,6 +477,13 @@ Here’s an example for accessing query string data in a view function:</p>
 </pre></div>
 </div>
 <p>To see the full list of available fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">request</a></p>
+<p>In some cases there is additional context passed with the event. For example for pubsub events. This context can be accessed via <cite>app.request_context</cite></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;TOPIC&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">context</span><span class="p">():</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request_context</span>
+    <span class="k">return</span> <span class="s2">&quot;context&quot;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="response">
 <h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
@@ -684,6 +692,13 @@ shows the previos main.py in the gcp console, however the local zipfile and uplo
 convention that are no longer in the app configuration. For example schuduled jobs start with the function_name prefix so if the function_name is goblet_function
 the sync command will flag any scheduled jobs that start with the prefix <cite>goblet_function</cite> that are not in the current app config. Note this may cause some resources
 that are named similar to be deleted so make sure to run the command with <cite>–dryrun</cite> flag to see what resources are flagged for deletion.</p>
+</div>
+<div class="section" id="middleware">
+<h2>Middleware<a class="headerlink" href="#middleware" title="Permalink to this headline">¶</a></h2>
+<p>You can trigger custom middlware using the <cite>before_request</cite> and <cite>after_request</cite> decorators. These allow you to trigger custom functions before a request is passed to your request
+handler or do post prosessing on your responses.</p>
+<p>You can have your middleware trigger only on certain event types using the <cite>event_type</cite> argument. Default is <cite>all</cite>. Possible
+event types are <cite>[“all”, “http”, “schedule”, “pubsub”, “storage”, “route”]</cite></p>
 </div>
 </div>
 

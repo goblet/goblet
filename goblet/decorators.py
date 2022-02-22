@@ -3,6 +3,7 @@ from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
+from warnings import warn
 
 import logging
 
@@ -17,8 +18,39 @@ class DecoratorAPI:
     registration function in the Register_Handlers class. For example _create_registration_function with type route will call
     _register_route"""
 
+    def before_request(self, event_type="all"):
+        """Function called before request for preeprocessing"""
+
+        if event_type not in EVENT_TYPES:
+            raise ValueError(f"{event_type} not in {EVENT_TYPES}")
+
+        def _middleware_wrapper(func):
+            self.register_middleware(func, event_type, before_or_after="before")
+            return func
+
+        return _middleware_wrapper
+
+    def after_request(self, event_type="all"):
+        """Function called after request for postprocessing"""
+
+        if event_type not in EVENT_TYPES:
+            raise ValueError(f"{event_type} not in {EVENT_TYPES}")
+
+        def _middleware_wrapper(func):
+            self.register_middleware(func, event_type, before_or_after="after")
+            return func
+
+        return _middleware_wrapper
+
     def middleware(self, event_type="all"):
-        """Middleware functions that are called before events for preprocessing"""
+        """Middleware functions that are called before events for preprocessing.
+        This is deprecated and will be removed in the future. Use before_request instead"""
+        warn(
+            "Middleware method is deprecated. Use before_request instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not in {EVENT_TYPES}")
 
@@ -79,7 +111,7 @@ class DecoratorAPI:
     def _register_handler(self, handler_type, name, func, kwargs, options=None):
         raise NotImplementedError("_register_handler")
 
-    def register_middleware(self, func, event_type="all"):
+    def register_middleware(self, func, event_type="all", before_or_after="before"):
         raise NotImplementedError("register_middleware")
 
 
@@ -98,29 +130,39 @@ class Register_Handlers(DecoratorAPI):
             "storage": Storage(function_name, backend=backend),
             "http": HTTP(backend=backend),
         }
-        self.middleware_handlers = {}
+        self.middleware_handlers = {
+            "before": {},
+            "after": {},
+        }
         self.current_request = None
 
     def __call__(self, request, context=None):
         """Goblet entrypoint"""
         self.current_request = request
+        self.request_context = context
         event_type = self.get_event_type(request, context)
 
-        # call middleware
-        request = self._call_middleware(request, event_type)
+        # call before request middleware
+        request = self._call_middleware(request, event_type, before_or_after="before")
+        response = None
+
+        if event_type not in EVENT_TYPES:
+            raise ValueError(f"{event_type} not a valid event type")
 
         if event_type == "schedule":
-            return self.handlers["schedule"](request)
+            response = self.handlers["schedule"](request)
         if event_type == "pubsub":
-            return self.handlers["pubsub"](request, context)
+            response = self.handlers["pubsub"](request, context)
         if event_type == "storage":
-            return self.handlers["storage"](request, context)
+            response = self.handlers["storage"](request, context)
         if event_type == "route":
-            return self.handlers["route"](request)
+            response = self.handlers["route"](request)
         if event_type == "http":
-            return self.handlers["http"](request)
+            response = self.handlers["http"](request)
 
-        raise ValueError(f"{event_type} not a valid event type")
+        # call after request middleware
+        response = self._call_middleware(response, event_type, before_or_after="after")
+        return response
 
     def __add__(self, other):
         for handler in self.handlers:
@@ -146,9 +188,9 @@ class Register_Handlers(DecoratorAPI):
             return "route"
         return None
 
-    def _call_middleware(self, event, event_type):
-        middleware = self.middleware_handlers.get("all", [])
-        middleware.extend(self.middleware_handlers.get(event_type, []))
+    def _call_middleware(self, event, event_type, before_or_after="before"):
+        middleware = self.middleware_handlers[before_or_after].get("all", [])
+        middleware.extend(self.middleware_handlers[before_or_after].get(event_type, []))
         for m in middleware:
             event = m(event)
 
@@ -190,10 +232,10 @@ class Register_Handlers(DecoratorAPI):
             return True
         return False
 
-    def register_middleware(self, func, event_type="all"):
-        middleware_list = self.middleware_handlers.get(event_type, [])
+    def register_middleware(self, func, event_type="all", before_or_after="before"):
+        middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
         middleware_list.append(func)
-        self.middleware_handlers[event_type] = middleware_list
+        self.middleware_handlers[before_or_after][event_type] = middleware_list
 
     def _register_http(self, name, func, kwargs):
         self.handlers["http"].register_http(func, kwargs=kwargs)
