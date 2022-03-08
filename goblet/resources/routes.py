@@ -11,7 +11,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 import goblet
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import get_cloudrun_url

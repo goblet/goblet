@@ -10,7 +10,7 @@ from goblet.config import GConfig
 import logging
 
 from goblet.handler import Handler
-from goblet.client import get_default_project, get_default_location, Client
+from goblet.client import get_default_project
 
 
 log = logging.getLogger("goblet.deployer")

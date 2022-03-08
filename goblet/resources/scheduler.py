@@ -2,9 +2,6 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import (
-    DEFAULT_CLIENT_VERSIONS,
-    Client,
-    VersionedClients,
     get_default_project,
     get_default_location,
 )

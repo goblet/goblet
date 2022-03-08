@@ -1,7 +1,7 @@
 from goblet import jsonify, Response, Goblet
 from unittest.mock import Mock
 
-from goblet.client import DEFAULT_CLIENT_VERSIONS
+# from goblet.client import DEFAULT_CLIENT_VERSIONS
 
 
 class TestJsonify:

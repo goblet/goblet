@@ -13,7 +13,6 @@ import subprocess
 from googleapiclient.errors import HttpError
 
 from goblet.client import (
-    Client,
     VersionedClients,
     get_default_project,
     get_default_location,
