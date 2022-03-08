@@ -138,6 +138,7 @@ class TestDecoraters:
 
         assert app(mock_request, {}) == "test after request"
 
+
 # Causes tests to fail
 # class TestGoblet:
 
