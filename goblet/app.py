@@ -1,3 +1,4 @@
+from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
 import logging
 import json
@@ -15,11 +16,21 @@ class Goblet(Register_Handlers):
     """
 
     def __init__(
-        self, function_name="goblet", backend="cloudfunction", local="local", cors=None
+        self,
+        function_name="goblet",
+        backend="cloudfunction",
+        local="local",
+        cors=None,
+        client_versions={},
     ):
         self.function_name = GConfig().function_name or function_name
+        self.client_versions = DEFAULT_CLIENT_VERSIONS
+        self.client_versions.update(client_versions)
         super(Goblet, self).__init__(
-            function_name=self.function_name, backend=backend, cors=cors
+            function_name=self.function_name,
+            backend=backend,
+            cors=cors,
+            client_versions=self.client_versions,
         )
         self.log = logging.getLogger(__name__)
         self.headers = {}

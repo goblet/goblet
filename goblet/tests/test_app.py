@@ -1,6 +1,8 @@
 from goblet import jsonify, Response, Goblet
 from unittest.mock import Mock
 
+from goblet.client import DEFAULT_CLIENT_VERSIONS
+
 
 class TestJsonify:
     headers = {"Content-Type": "application/json"}
@@ -135,3 +137,11 @@ class TestDecoraters:
             return "test"
 
         assert app(mock_request, {}) == "test after request"
+
+
+# class TestGoblet:
+
+#     def test_client_versions(self):
+#         app = Goblet(client_versions={"cloudfunctions":"v2"})
+#         assert app.client_versions["cloudfunctions"] == "v2"
+#         assert app.client_versions["pubsub"] == DEFAULT_CLIENT_VERSIONS["pubsub"]

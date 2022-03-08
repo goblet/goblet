@@ -12,7 +12,12 @@ import subprocess
 
 from googleapiclient.errors import HttpError
 
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import (
+    Client,
+    VersionedClients,
+    get_default_project,
+    get_default_location,
+)
 from goblet.common_cloud_actions import (
     create_cloudfunction,
     destroy_cloudfunction,
@@ -36,17 +41,8 @@ class Deployer:
             self.config = {"name": "goblet"}
         self.name = self.config["name"]
         self.zipf = self.create_zip()
-        self.function_client = self._create_function_client()
         self.func_name = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}"
         self.run_name = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{self.name}"
-
-    def _create_function_client(self):
-        return Client(
-            "cloudfunctions",
-            "v1",
-            calls="projects.locations.functions",
-            parent_schema="projects/{project_id}/locations/{location_id}",
-        )
 
     def package(self):
         self.zip()
@@ -56,23 +52,31 @@ class Deployer:
     ):
         """Deploys http cloudfunction and then calls goblet.deploy() to deploy any handler's required infrastructure"""
         source_url = None
+        versioned_clients = VersionedClients(goblet.client_versions)
         if not skip_function:
             if goblet.backend == "cloudfunction":
                 log.info("zipping function......")
                 self.zip()
                 if (
                     not force
-                    and self.get_function()
-                    and not self._cloudfunction_delta(f".goblet/{self.name}.zip")
+                    and self.get_function(versioned_clients.cloudfunctions)
+                    and not self._cloudfunction_delta(
+                        versioned_clients.cloudfunctions, f".goblet/{self.name}.zip"
+                    )
                 ):
                     log.info("No changes detected......")
                 else:
                     log.info("uploading function zip to gs......")
-                    source_url = self._upload_zip()
+                    source_url = self._upload_zip(versioned_clients.cloudfunctions)
                     if goblet.is_http():
-                        self.create_function(source_url, "goblet_entrypoint", config)
+                        self.create_function(
+                            versioned_clients.cloudfunctions,
+                            source_url,
+                            "goblet_entrypoint",
+                            config,
+                        )
             if goblet.backend == "cloudrun":
-                self.create_cloudrun(config)
+                self.create_cloudrun(versioned_clients.run, config)
         if not only_function:
             goblet.deploy(source_url)
 
@@ -86,26 +90,27 @@ class Deployer:
     def destroy(self, goblet, all=None):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         goblet.destroy()
+        versioned_clients = VersionedClients(goblet.client_versions)
         if goblet.backend == "cloudfunction":
-            destroy_cloudfunction(self.name)
+            destroy_cloudfunction(versioned_clients.cloudfunctions, self.name)
         if goblet.backend == "cloudrun":
-            destroy_cloudrun(self.name)
+            destroy_cloudrun(versioned_clients.run, self.name)
         if all:
             destroy_cloudfunction_artifacts(self.name)
 
         return goblet
 
-    def get_function(self):
+    def get_function(self, client):
         """Returns cloudfunction currently deployed or None"""
         try:
-            return self.function_client.execute(
+            return client.execute(
                 "get", parent_key="name", parent_schema=self.func_name
             )
         except HttpError as e:
             if e.resp.status != 404:
                 raise
 
-    def create_function(self, url, entrypoint, config=None):
+    def create_function(self, client, url, entrypoint, config=None):
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         user_configs = config.cloudfunction or {}
@@ -118,9 +123,9 @@ class Deployer:
             "runtime": "python37",
             **user_configs,
         }
-        create_cloudfunction(req_body, config=config.config)
+        create_cloudfunction(client, req_body, config=config.config)
 
-    def create_cloudrun(self, config=None):
+    def create_cloudrun(self, client, config=None):
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         cloudrun_configs = config.cloudrun or {}
@@ -169,20 +174,16 @@ class Deployer:
 
         # Set IAM Bindings
         if config.bindings:
-            policy_client = Client(
-                "run",
-                "v1",
-                calls="projects.locations.services",
-                parent_schema=self.run_name,
-            )
-
             log.info(f"adding IAM bindings for cloudrun {self.name}")
             policy_bindings = {"policy": {"bindings": config.bindings}}
-            policy_client.execute(
-                "setIamPolicy", parent_key="resource", params={"body": policy_bindings}
+            client.execute(
+                "setIamPolicy",
+                parent_key="resource",
+                parent_schema=self.run_name,
+                params={"body": policy_bindings},
             )
 
-    def _cloudfunction_delta(self, filename):
+    def _cloudfunction_delta(self, client, filename):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
         self.zipf.close()
         with open(filename, "rb") as fh:
@@ -190,7 +191,7 @@ class Deployer:
                 "ascii"
             )
 
-        source_info = self.function_client.execute(
+        source_info = client.execute(
             "generateDownloadUrl", parent_key="name", parent_schema=self.func_name
         )
         resp = request("HEAD", source_info["downloadUrl"])
@@ -198,14 +199,12 @@ class Deployer:
         modified = deployed_checksum != local_checksum
         return modified
 
-    def _upload_zip(self):
+    def _upload_zip(self, client):
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
         self.zipf.close()
         zip_size = os.stat(f".goblet/{self.name}.zip").st_size
         with open(f".goblet/{self.name}.zip", "rb") as f:
-            resp = self.function_client.execute(
-                "generateUploadUrl", params={"body": {}}
-            )
+            resp = client.execute("generateUploadUrl", params={"body": {}})
 
             requests.put(
                 resp["uploadUrl"],

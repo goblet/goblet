@@ -1,5 +1,7 @@
 import logging
 
+from goblet.client import VersionedClients, get_default_location, get_default_project
+
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
@@ -12,6 +14,19 @@ class Handler:
     resource_type = ""
     backend = "cloudfunction"
     can_sync = False
+
+    def __init__(
+        self,
+        name,
+        versioned_clients: VersionedClients = None,
+        resources=None,
+        backend="cloudfunction",
+    ):
+        self.name = name
+        self.backend = backend
+        self.resources = resources or {}
+        self.versioned_clients = versioned_clients or VersionedClients()
+        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
 
     def deploy(self, sourceUrl=None, entrypoint=None):
         if self.resources and self.backend not in self.valid_backends:
