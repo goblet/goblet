@@ -21,11 +21,11 @@ class Goblet(Register_Handlers):
         backend="cloudfunction",
         local="local",
         cors=None,
-        client_versions={},
+        client_versions=None,
     ):
         self.function_name = GConfig().function_name or function_name
         self.client_versions = DEFAULT_CLIENT_VERSIONS
-        self.client_versions.update(client_versions)
+        self.client_versions.update(client_versions or {})
         super(Goblet, self).__init__(
             function_name=self.function_name,
             backend=backend,
