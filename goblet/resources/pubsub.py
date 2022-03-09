@@ -10,7 +10,7 @@ from goblet.config import GConfig
 import logging
 
 from goblet.handler import Handler
-from goblet.client import get_default_project, get_default_location, Client
+from goblet.client import get_default_project
 
 
 log = logging.getLogger("goblet.deployer")
@@ -25,12 +25,6 @@ class PubSub(Handler):
     valid_backends = ["cloudfunction", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
-
-    def __init__(self, name, resources=None, backend="cloudfunction"):
-        self.name = name
-        self.backend = backend
-        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
-        self.resources = resources or {}
 
     def register_topic(self, name, func, kwargs):
         topic = kwargs["topic"]
@@ -66,7 +60,7 @@ class PubSub(Handler):
 
     def _deploy_cloudrun(self, config={}):
         log.info("deploying pubsub subscriptions......")
-        push_url = get_cloudrun_url(self.name)
+        push_url = get_cloudrun_url(self.versioned_clients.run, self.name)
 
         config = GConfig(config=config)
         if config.cloudrun and config.cloudrun.get("service-account"):
@@ -91,7 +85,11 @@ class PubSub(Handler):
                     },
                 },
             }
-            create_pubsub_subscription(sub_name=sub_name, req_body=req_body)
+            create_pubsub_subscription(
+                client=self.versioned_clients.pubsub,
+                sub_name=sub_name,
+                req_body=req_body,
+            )
 
     def _deploy_cloudfunction(self, sourceUrl=None, entrypoint=None):
         log.info("deploying topic functions......")
@@ -110,20 +108,14 @@ class PubSub(Handler):
                 "runtime": config.runtime or "python37",
                 **user_configs,
             }
-            create_cloudfunction(req_body)
+            create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
 
     def _sync(self, dryrun=False):
         if not self.backend == "cloudrun":
             return
-        pubsub_client = Client(
-            "pubsub",
-            "v1",
-            calls="projects.subscriptions",
-            parent_schema="projects/{project_id}",
-        )
-        subscriptions = pubsub_client.execute("list", parent_key="project").get(
-            "subscriptions", []
-        )
+        subscriptions = self.versioned_clients.pubsub.execute(
+            "list", parent_key="project"
+        ).get("subscriptions", [])
         filtered_subscriptions = list(
             filter(
                 lambda sub: f"subscriptions/{self.name}-" in sub["name"], subscriptions
@@ -136,12 +128,18 @@ class PubSub(Handler):
             if not self.resources.get(filtered_name):
                 log.info(f'Detected unused subscription in GCP {filtered_sub["name"]}')
                 if not dryrun:
-                    destroy_pubsub_subscription(f"{self.name}-{filtered_name}")
+                    destroy_pubsub_subscription(
+                        self.versioned_clients.pubsub, f"{self.name}-{filtered_name}"
+                    )
 
     def destroy(self):
         if self.backend == "cloudfunction":
             for topic in self.resources:
-                destroy_cloudfunction(f"{self.name}-topic-{topic}")
+                destroy_cloudfunction(
+                    self.versioned_clients.cloudfunctions, f"{self.name}-topic-{topic}"
+                )
         if self.backend == "cloudrun":
             for topic in self.resources:
-                destroy_pubsub_subscription(f"{self.name}-{topic}")
+                destroy_pubsub_subscription(
+                    self.versioned_clients.pubsub, f"{self.name}-{topic}"
+                )

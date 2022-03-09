@@ -1,3 +1,4 @@
+from goblet.client import VersionedClients
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
@@ -118,17 +119,34 @@ class DecoratorAPI:
 class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
-    def __init__(self, function_name, backend="cloudfunction", cors=None):
+    def __init__(
+        self, function_name, backend="cloudfunction", cors=None, client_versions=None
+    ):
         self.backend = backend
         if backend not in BACKEND_TYPES:
             raise ValueError(f"{backend} not a valid backend")
 
+        versioned_clients = VersionedClients(client_versions or {})
+
         self.handlers = {
-            "route": ApiGateway(function_name, cors=cors, backend=backend),
-            "schedule": Scheduler(function_name, backend=backend),
-            "pubsub": PubSub(function_name, backend=backend),
-            "storage": Storage(function_name, backend=backend),
-            "http": HTTP(backend=backend),
+            "route": ApiGateway(
+                function_name,
+                cors=cors,
+                backend=backend,
+                versioned_clients=versioned_clients,
+            ),
+            "schedule": Scheduler(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "pubsub": PubSub(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "storage": Storage(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "http": HTTP(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
         }
         self.middleware_handlers = {
             "before": {},

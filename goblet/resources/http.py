@@ -7,9 +7,21 @@ class HTTP(Handler):
     resource_type = "http"
     valid_backends = ["cloudfunction", "cloudrun"]
 
-    def __init__(self, resources=None, backend="cloudfunction"):
+    def __init__(
+        self,
+        name,
+        versioned_clients=None,
+        cors=None,
+        resources=None,
+        backend="cloudfunction",
+    ):
+        super(HTTP, self).__init__(
+            name=name,
+            versioned_clients=versioned_clients,
+            resources=resources,
+            backend=backend,
+        )
         self.resources = resources or []
-        self.backend = backend
 
     def register_http(self, func, kwargs):
         self.resources.append({"func": func, "headers": kwargs.get("headers", {})})

@@ -11,7 +11,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 import goblet
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import get_default_project, get_default_location
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import get_cloudrun_url
@@ -30,19 +30,23 @@ class ApiGateway(Handler):
     resource_type = "apigateway"
     valid_backends = ["cloudfunction", "cloudrun"]
 
-    def __init__(self, app_name, resources=None, cors=None, backend="cloudfunction"):
-        self.backend = backend
-        self.name = self.format_name(app_name)
-        self.resources = resources or {}
+    def __init__(
+        self,
+        name,
+        versioned_clients=None,
+        cors=None,
+        resources=None,
+        backend="cloudfunction",
+    ):
+        super(ApiGateway, self).__init__(
+            name=name,
+            versioned_clients=versioned_clients,
+            resources=resources,
+            backend=backend,
+        )
+        self.name = self.format_name(name)
         self.cors = cors or {}
-        self._api_client = None
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
-
-    @property
-    def api_client(self):
-        if not self._api_client:
-            self._api_client = self._create_api_client()
-        return self._api_client
 
     def format_name(self, name):
         # ([a-z0-9-.]+) for api gateway name
@@ -93,50 +97,6 @@ class ApiGateway(Handler):
                 return False
         return True
 
-    def _create_api_client(self):
-        return Client(
-            "apigateway",
-            "v1",
-            calls="projects.locations.apis",
-            parent_schema="projects/{project_id}/locations/global",
-        )
-
-    def _create_config_client(self):
-        return Client(
-            "apigateway",
-            "v1",
-            calls="projects.locations.apis.configs",
-            parent_schema="projects/{project_id}/locations/global/apis/" + self.name,
-        )
-
-    def _patch_config_client(self):
-        return Client(
-            "apigateway",
-            "v1",
-            calls="projects.locations.apis.configs",
-            parent_schema="projects/{project_id}/locations/global/apis/"
-            + self.name
-            + "/configs/"
-            + self.name,
-        )
-
-    def _create_gateway_client(self):
-        return Client(
-            "apigateway",
-            "v1",
-            calls="projects.locations.gateways",
-            parent_schema="projects/{project_id}/locations/{location_id}",
-        )
-
-    def _patch_gateway_client(self):
-        return Client(
-            "apigateway",
-            "v1",
-            calls="projects.locations.gateways",
-            parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
-            + self.name,
-        )
-
     def _deploy(self, sourceUrl=None, entrypoint=None):
         if len(self.resources) == 0:
             return
@@ -146,8 +106,10 @@ class ApiGateway(Handler):
             base_url = get_cloudrun_url(self.name)
         self.generate_openapi_spec(base_url)
         try:
-            resp = self.api_client.execute("create", params={"apiId": self.name})
-            self.api_client.wait_for_operation(resp["name"])
+            resp = self.versioned_clients.apigateway_api.execute(
+                "create", params={"apiId": self.name}
+            )
+            self.versioned_clients.apigateway_api.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("api already deployed")
@@ -171,18 +133,27 @@ class ApiGateway(Handler):
         }
         try:
             config_version_name = self.name
-            self._create_config_client().execute(
-                "create", params={"apiConfigId": self.name, "body": config}
+            self.versioned_clients.apigateway_configs.execute(
+                "create",
+                params={"apiConfigId": self.name, "body": config},
+                parent_schema="projects/{project_id}/locations/global/apis/"
+                + self.name,
             )
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("updating api endpoints")
-                configs = self._create_config_client().execute("list")
+                configs = self.versioned_clients.apigateway_configs.execute(
+                    "list",
+                    parent_schema="projects/{project_id}/locations/global/apis/"
+                    + self.name,
+                )
                 # TODO: use hash
                 version = len(configs["apiConfigs"])
                 config_version_name = f"{self.name}-v{version}"
-                self._create_config_client().execute(
+                self.versioned_clients.apigateway_configs.execute(
                     "create",
+                    parent_schema="projects/{project_id}/locations/global/apis/"
+                    + self.name,
                     params={"apiConfigId": config_version_name, "body": config},
                 )
             else:
@@ -191,23 +162,32 @@ class ApiGateway(Handler):
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
         }
         try:
-            gateway_resp = self._create_gateway_client().execute(
+            gateway_resp = self.versioned_clients.apigateway.execute(
                 "create", params={"gatewayId": self.name, "body": gateway}
             )
         except HttpError as e:
             if e.resp.status == 409:
                 log.info("updating gateway")
-                gateway_resp = self._patch_gateway_client().execute(
+                gateway_resp = self.versioned_clients.apigateway.execute(
                     "patch",
                     parent_key="name",
+                    parent_schema="projects/{project_id}/locations/global/apis/"
+                    + self.name
+                    + "/configs/"
+                    + self.name,
                     params={"updateMask": "apiConfig", "body": gateway},
                 )
             else:
                 raise e
         if gateway_resp:
-            self._create_gateway_client().wait_for_operation(gateway_resp["name"])
+            self.versioned_clients.apigateway.wait_for_operation(gateway_resp["name"])
         log.info("api successfully deployed...")
-        gateway_resp = self._patch_gateway_client().execute("get", parent_key="name")
+        gateway_resp = self.versioned_clients.apigateway.execute(
+            "get",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
+            + self.name,
+        )
         log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
         return
 
@@ -217,14 +197,12 @@ class ApiGateway(Handler):
 
         # destroy api gateway
         try:
-            gateway_client = Client(
-                "apigateway",
-                "v1",
-                calls="projects.locations.gateways",
+            self.versioned_clients.apigateway.execute(
+                "delete",
                 parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
                 + self.name,
+                parent_key="name",
             )
-            gateway_client.execute("delete", parent_key="name")
             log.info("destroying api gateway......")
         except HttpError as e:
             if e.resp.status == 404:
@@ -233,23 +211,26 @@ class ApiGateway(Handler):
                 raise e
         # destroy api config
         try:
-            configs = self._create_config_client().execute("list")
-            api_client = None
+            configs = self.versioned_clients.apigateway_configs.execute(
+                "list",
+                parent_schema="projects/{project_id}/locations/global/apis/"
+                + self.name,
+            )
             resp = {}
             for c in configs.get("apiConfigs", []):
-                api_client = Client(
-                    "apigateway",
-                    "v1",
-                    calls="projects.locations.apis.configs",
+                resp = self.versioned_clients.apigateway_configs.execute(
+                    "delete",
+                    parent_key="name",
                     parent_schema="projects/{project_id}/locations/global/apis/"
                     + self.name
                     + "/configs/"
                     + c["displayName"],
                 )
-                resp = api_client.execute("delete", parent_key="name")
             log.info("api configs destroying....")
-            if api_client:
-                api_client.wait_for_operation(resp["name"])
+            if resp:
+                self.versioned_clients.apigateway_configs.wait_for_operation(
+                    resp["name"]
+                )
                 sleep(10)
         except HttpError as e:
             if e.resp.status == 404:
@@ -259,14 +240,12 @@ class ApiGateway(Handler):
 
         # destroy api
         try:
-            api_client = Client(
-                "apigateway",
-                "v1",
-                calls="projects.locations.apis",
+            self.versioned_clients.apigateway_api.execute(
+                "delete",
+                parent_key="name",
                 parent_schema="projects/{project_id}/locations/global/apis/"
                 + self.name,
             )
-            api_client.execute("delete", parent_key="name")
             log.info("apis successfully destroyed......")
         except HttpError as e:
             if e.resp.status == 404:

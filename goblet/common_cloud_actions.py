@@ -16,24 +16,18 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def create_cloudfunction(req_body, config=None):
+def create_cloudfunction(client, req_body, config=None):
     """Creates a cloudfunction based on req_body"""
     function_name = req_body["name"].split("/")[-1]
-    function_client = Client(
-        "cloudfunctions",
-        "v1",
-        calls="projects.locations.functions",
-        parent_schema="projects/{project_id}/locations/{location_id}",
-    )
     try:
-        resp = function_client.execute(
+        resp = client.execute(
             "create", parent_key="location", params={"body": req_body}
         )
         log.info(f"creating cloudfunction {function_name}")
     except HttpError as e:
         if e.resp.status == 409:
             log.info(f"updating cloudfunction {function_name}")
-            resp = function_client.execute(
+            resp = client.execute(
                 "patch",
                 parent_key="name",
                 parent_schema=req_body["name"],
@@ -41,36 +35,30 @@ def create_cloudfunction(req_body, config=None):
             )
         else:
             raise e
-    function_client.wait_for_operation(resp["name"], calls="operations")
+    client.wait_for_operation(resp["name"], calls="operations")
 
     # Set IAM Bindings
     config = GConfig(config=config)
     if config.bindings:
-        policy_client = Client(
-            "cloudfunctions",
-            "v1",
-            calls="projects.locations.functions",
-            parent_schema=req_body["name"],
-        )
-
         log.info(f"adding IAM bindings for cloudfunction {function_name}")
         policy_bindings = {"policy": {"bindings": config.bindings}}
-        resp = policy_client.execute(
-            "setIamPolicy", parent_key="resource", params={"body": policy_bindings}
+        resp = client.execute(
+            "setIamPolicy",
+            parent_key="resource",
+            parent_schema=req_body["name"],
+            params={"body": policy_bindings},
         )
 
 
-def destroy_cloudfunction(name):
+def destroy_cloudfunction(client, name):
     """Destroys cloudfunction"""
     try:
-        client = Client(
-            "cloudfunctions",
-            "v1",
-            calls="projects.locations.functions",
+        client.execute(
+            "delete",
             parent_schema="projects/{project_id}/locations/{location_id}/functions/"
             + name,
+            parent_key="name",
         )
-        client.execute("delete", parent_key="name")
         log.info(f"deleting google cloudfunction {name}......")
     except HttpError as e:
         if e.resp.status == 404:
@@ -79,17 +67,15 @@ def destroy_cloudfunction(name):
             raise e
 
 
-def destroy_cloudrun(name):
+def destroy_cloudrun(client, name):
     """Destroys cloudrun"""
     try:
-        client = Client(
-            "run",
-            "v1",
-            calls="projects.locations.services",
+        client.execute(
+            "delete",
             parent_schema="projects/{project_id}/locations/{location_id}/services/"
             + name,
+            parent_key="name",
         )
-        client.execute("delete", parent_key="name")
         log.info(f"deleting cloudrun {name}......")
     except HttpError as e:
         if e.resp.status == 404:
@@ -125,17 +111,15 @@ def destroy_cloudfunction_artifacts(name):
         )
 
 
-def get_cloudrun_url(name):
+def get_cloudrun_url(client, name):
     """Get the cloudrun url"""
     try:
-        client = Client(
-            "run",
-            "v1",
-            calls="projects.locations.services",
+        resp = client.execute(
+            "get",
+            parent_key="name",
             parent_schema="projects/{project_id}/locations/{location_id}/services/"
             + name,
         )
-        resp = client.execute("get", parent_key="name")
         return resp["status"]["url"]
     except HttpError as e:
         if e.resp.status == 404:
@@ -144,21 +128,20 @@ def get_cloudrun_url(name):
             raise e
 
 
-def create_pubsub_subscription(sub_name, req_body):
+def create_pubsub_subscription(client, sub_name, req_body):
     """Creates a pubsub subscription from req_body"""
-    pubsub_client = Client(
-        "pubsub",
-        "v1",
-        calls="projects.subscriptions",
-        parent_schema="projects/{project_id}/subscriptions/" + sub_name,
-    )
     try:
-        pubsub_client.execute("create", parent_key="name", params={"body": req_body})
+        client.execute(
+            "create",
+            parent_key="name",
+            parent_schema="projects/{project_id}/subscriptions/" + sub_name,
+            params={"body": req_body},
+        )
         log.info(f"creating pubsub subscription {sub_name}")
     except HttpError as e:
         if e.resp.status == 409:
             log.info(f"updating pubsub subscription {sub_name}")
-            pubsub_client.execute(
+            client.execute(
                 "patch",
                 parent_key="name",
                 parent_schema="projects/{project_id}/subscriptions/" + sub_name,
@@ -168,16 +151,14 @@ def create_pubsub_subscription(sub_name, req_body):
             raise e
 
 
-def destroy_pubsub_subscription(name):
+def destroy_pubsub_subscription(client, name):
     """Destroys pubsub subscription"""
     try:
-        client = Client(
-            "pubsub",
-            "v1",
-            calls="projects.subscriptions",
+        client.execute(
+            "delete",
+            parent_key="subscription",
             parent_schema="projects/{project_id}/subscriptions/" + name,
         )
-        client.execute("delete", parent_key="subscription")
         log.info(f"deleting pubsub subscription {name}......")
     except HttpError as e:
         if e.resp.status == 404:

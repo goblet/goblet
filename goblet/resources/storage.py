@@ -20,11 +20,17 @@ class Storage(Handler):
     resource_type = "storage"
     valid_backends = ["cloudfunction"]
 
-    def __init__(self, name, resources=None, backend="cloudfunction"):
-        self.name = name
-        self.backend = backend
-        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
+    def __init__(
+        self, name, versioned_clients=None, resources=None, backend="cloudfunction"
+    ):
+        super(Storage, self).__init__(
+            name,
+            versioned_clients=versioned_clients,
+            resources=resources,
+            backend=backend,
+        )
         self.resources = resources or []
+        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
 
     def validate_event_type(self, event_type):
         if event_type not in STORAGE_EVENT_TYPES:
@@ -85,12 +91,13 @@ class Storage(Handler):
                 "runtime": config.runtime or "python37",
                 **user_configs,
             }
-            create_cloudfunction(req_body)
+            create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
 
     def destroy(self):
         for bucket in self.resources:
             destroy_cloudfunction(
+                self.versioned_clients.cloudfunctions,
                 f"{self.name}-storage-{bucket['name']}-{bucket['event_type']}".replace(
                     ".", "-"
-                )
+                ),
             )
