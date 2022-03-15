@@ -30,10 +30,14 @@ class PubSub(Handler):
         topic = kwargs["topic"]
         kwargs = kwargs.pop("kwargs")
         attributes = kwargs.get("attributes", {})
+        project = kwargs.get("project")
+        use_trigger = kwargs.get("use_trigger", True)
+        if project:
+            user_trigger=False
         if self.resources.get(topic):
-            self.resources[topic][name] = {"func": func, "attributes": attributes}
+            self.resources[topic][name] = {"func": func, "attributes": attributes, "project": project, "use_trigger": use_trigger}
         else:
-            self.resources[topic] = {name: {"func": func, "attributes": attributes}}
+            self.resources[topic] = {name: {"func": func, "attributes": attributes, "project": project, "use_trigger": use_trigger}}
 
     def __call__(self, event, context):
         topic_name = context.resource.split("/")[-1]
@@ -53,13 +57,17 @@ class PubSub(Handler):
     def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
             return
-        if self.backend == "cloudfunction":
-            self._deploy_cloudfunction(sourceUrl=sourceUrl, entrypoint=entrypoint)
-        if self.backend == "cloudrun":
-            self._deploy_cloudrun(config=config)
+        for topic_name in self.resources:
+            # Check if subscription needs to be created. Currently it is not supported to create a trigger and a subscription
+            skip_trigger = any([True for topic in self.resources[topic_name].values() if not topic.get("use_trigger") ])
+            if self.backend == "cloudrun" or skip_trigger:
+                self._deploy_cloudrun(config=config, topic=topic)
+            if self.backend == "cloudfunction":
+                self._deploy_cloudfunction(sourceUrl=sourceUrl, entrypoint=entrypoint, topic=topic)
 
-    def _deploy_cloudrun(self, config={}):
-        log.info("deploying pubsub subscriptions......")
+    def _deploy_cloudrun(self, topic, config={}):
+        sub_name = f"{self.name}-{topic}"
+        log.info(f"deploying pubsub subscription {sub_name}......")
         push_url = get_cloudrun_url(self.versioned_clients.run, self.name)
 
         config = GConfig(config=config)
@@ -72,43 +80,41 @@ class PubSub(Handler):
                 "Service account not found in cloudrun. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
 
-        for topic in self.resources:
-            sub_name = f"{self.name}-{topic}"
-            req_body = {
-                "name": sub_name,
-                "topic": f"projects/{get_default_project()}/topics/{topic}",
-                "pushConfig": {
-                    "pushEndpoint": push_url,
-                    "oidcToken": {
-                        "serviceAccountEmail": service_account,
-                        "audience": push_url,
-                    },
+        req_body = {
+            "name": sub_name,
+            "topic": f"projects/{topic['project']}/topics/{topic}",
+            "pushConfig": {
+                "pushEndpoint": push_url,
+                "oidcToken": {
+                    "serviceAccountEmail": service_account,
+                    "audience": push_url,
                 },
-            }
-            create_pubsub_subscription(
-                client=self.versioned_clients.pubsub,
-                sub_name=sub_name,
-                req_body=req_body,
-            )
+            },
+        }
+        create_pubsub_subscription(
+            client=self.versioned_clients.pubsub,
+            sub_name=sub_name,
+            req_body=req_body,
+        )
 
-    def _deploy_cloudfunction(self, sourceUrl=None, entrypoint=None):
-        log.info("deploying topic functions......")
+    def _deploy_cloudfunction(self, topic, sourceUrl=None, entrypoint=None):
+        function_name = f"{self.cloudfunction}-topic-{topic}"
+        log.info(f"deploying topic function {function_name}......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
-        for topic in self.resources:
-            req_body = {
-                "name": f"{self.cloudfunction}-topic-{topic}",
-                "description": config.description or "created by goblet",
-                "entryPoint": entrypoint,
-                "sourceUploadUrl": sourceUrl,
-                "eventTrigger": {
-                    "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
-                    "resource": f"projects/{get_default_project()}/topics/{topic}",
-                },
-                "runtime": config.runtime or "python37",
-                **user_configs,
-            }
-            create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
+        req_body = {
+            "name": function_name,
+            "description": config.description or "created by goblet",
+            "entryPoint": entrypoint,
+            "sourceUploadUrl": sourceUrl,
+            "eventTrigger": {
+                "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
+                "resource": f"projects/{get_default_project()}/topics/{topic}",
+            },
+            "runtime": config.runtime or "python37",
+            **user_configs,
+        }
+        create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
 
     def _sync(self, dryrun=False):
         if not self.backend == "cloudrun":
