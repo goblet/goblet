@@ -204,6 +204,65 @@ passed into ``goblet(NAME, local=LOCAL_NAME)``. Make sure that there are no nami
         ]
     }
 
+Secrets
+^^^^^^^
+
+`cloudfunctions` (v1) and `cloudrun` backends support direct integration with `GCP's Secret Manager <https://cloud.google.com/secret-manager>`_.
+You can pass in secrets by specifying a list of environment variable names or volume paths along with the secret key and version for the secret located in Secret Manager.
+For example with the follow configuration for cloudfunctions you would be able to access your api_keys using `os.environ["API_KEY_1"]` which will return the value of 
+the `api_key1` secret in Secret Manager. 
+
+.. code:: json 
+
+    {
+        "cloudfunction": {
+            "secretEnvironmentVariables": [
+                {
+                    "key": "API_KEY_1",
+                    "secret": "api_key1",
+                    "version": "latest"
+                },
+                {
+                    "key": "API_KEY_2",
+                    "secret": "api_key_2",
+                    "version": "latest"
+                }
+            ]
+        }
+    }
+
+cloudfunction also supports secret volumes
+
+.. code:: json 
+
+    {
+        "cloudfunction": {
+            "secretVolumes": [
+                {
+                    "mountPath": "MOUNT_PATH",
+                    "projectId": "PROJECT_ID",
+                    "secret": "api_key_2",
+                    "versions": [
+                        {
+                            "version": "latest",
+                            "path": "latest"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+For the cloudrun backend you would specificy the list of secrets via `set-secrets`. `/secrets/api/key=mysecret:latest` sets a volume and `ENV=othersecret:1`
+sets an environment variable.  
+
+.. code:: json 
+
+    {
+        "cloudrun": {
+            "set-secrets": "/secrets/api/key=mysecret:latest,ENV=othersecret:1"
+        }
+    }
 
 Authentication
 ^^^^^^^^^^^^^^
