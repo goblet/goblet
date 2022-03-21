@@ -16,10 +16,10 @@ class TestPubSub:
 
         pubsub = app.handlers["pubsub"]
         assert len(pubsub.resources) == 1
-        assert pubsub.resources["test"]["dummy_function"] == {
-            "func": dummy_function,
-            "attributes": {},
-        }
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["func"]
+            == dummy_function
+        )
 
     def test_add_topic_attributes(self):
         app = Goblet(function_name="goblet_example")
@@ -28,9 +28,12 @@ class TestPubSub:
 
         pubsub = app.handlers["pubsub"]
         assert len(pubsub.resources) == 1
-        assert pubsub.resources["test"]["dummy_function"] == {
-            "func": dummy_function,
-            "attributes": {"test": True},
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["func"]
+            == dummy_function
+        )
+        assert pubsub.resources["test"]["trigger"]["dummy_function"]["attributes"] == {
+            "test": True
         }
 
     def test_call_topic(self):

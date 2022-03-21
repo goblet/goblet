@@ -3,6 +3,7 @@ from goblet.common_cloud_actions import (
     create_pubsub_subscription,
     destroy_pubsub_subscription,
     get_cloudrun_url,
+    get_cloudfunction_url,
 )
 from goblet.deploy import create_cloudfunction, destroy_cloudfunction
 
@@ -30,14 +31,26 @@ class PubSub(Handler):
         topic = kwargs["topic"]
         kwargs = kwargs.pop("kwargs")
         attributes = kwargs.get("attributes", {})
-        project = kwargs.get("project")
-        use_trigger = kwargs.get("use_trigger", True)
-        if project:
-            user_trigger=False
+        project = kwargs.get("project", get_default_project())
+        deploy_type = "trigger"
+        if (
+            kwargs.get("use_subscription")
+            or project != get_default_project()
+            or self.backend == "cloudrun"
+        ):
+            deploy_type = "subscription"
+
         if self.resources.get(topic):
-            self.resources[topic][name] = {"func": func, "attributes": attributes, "project": project, "use_trigger": use_trigger}
+            self.resources[topic][deploy_type][name] = {
+                "func": func,
+                "attributes": attributes,
+                "project": project,
+            }
         else:
-            self.resources[topic] = {name: {"func": func, "attributes": attributes, "project": project, "use_trigger": use_trigger}}
+            self.resources[topic] = {"trigger": {}, "subscription": {}}
+            self.resources[topic][deploy_type] = {
+                name: {"func": func, "attributes": attributes, "project": project}
+            }
 
     def __call__(self, event, context):
         topic_name = context.resource.split("/")[-1]
@@ -49,7 +62,10 @@ class PubSub(Handler):
             raise ValueError(f"Topic {topic_name} not found")
 
         # check attributes
-        for name, info in topic.items():
+        for _, info in topic["trigger"].items():
+            if info["attributes"].items() <= attributes.items():
+                info["func"](data)
+        for _, info in topic["subscription"].items():
             if info["attributes"].items() <= attributes.items():
                 info["func"](data)
         return
@@ -58,17 +74,26 @@ class PubSub(Handler):
         if not self.resources:
             return
         for topic_name in self.resources:
-            # Check if subscription needs to be created. Currently it is not supported to create a trigger and a subscription
-            skip_trigger = any([True for topic in self.resources[topic_name].values() if not topic.get("use_trigger") ])
-            if self.backend == "cloudrun" or skip_trigger:
-                self._deploy_cloudrun(config=config, topic=topic)
-            if self.backend == "cloudfunction":
-                self._deploy_cloudfunction(sourceUrl=sourceUrl, entrypoint=entrypoint, topic=topic)
+            # Deploy triggers
+            for _, topic_info in self.resources[topic_name]["trigger"].items():
+                self._deploy_trigger(
+                    sourceUrl=sourceUrl, entrypoint=entrypoint, topic_name=topic_name
+                )
+            # Deploy subscriptions
+            for _, topic_info in self.resources[topic_name]["subscription"].items():
+                self._deploy_subscription(
+                    config=config, topic_name=topic_name, topic=topic_info
+                )
 
-    def _deploy_cloudrun(self, topic, config={}):
-        sub_name = f"{self.name}-{topic}"
+    def _deploy_subscription(self, topic_name, topic, config={}):
+        sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
-        push_url = get_cloudrun_url(self.versioned_clients.run, self.name)
+        if self.backend == "cloudrun":
+            push_url = get_cloudrun_url(self.versioned_clients.run, self.name)
+        else:
+            push_url = get_cloudfunction_url(
+                self.versioned_clients.cloudfunctions, self.name
+            )
 
         config = GConfig(config=config)
         if config.cloudrun and config.cloudrun.get("service-account"):
@@ -82,7 +107,7 @@ class PubSub(Handler):
 
         req_body = {
             "name": sub_name,
-            "topic": f"projects/{topic['project']}/topics/{topic}",
+            "topic": f"projects/{topic['project']}/topics/{topic_name}",
             "pushConfig": {
                 "pushEndpoint": push_url,
                 "oidcToken": {
@@ -97,8 +122,8 @@ class PubSub(Handler):
             req_body=req_body,
         )
 
-    def _deploy_cloudfunction(self, topic, sourceUrl=None, entrypoint=None):
-        function_name = f"{self.cloudfunction}-topic-{topic}"
+    def _deploy_trigger(self, topic_name, sourceUrl=None, entrypoint=None):
+        function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
@@ -109,7 +134,7 @@ class PubSub(Handler):
             "sourceUploadUrl": sourceUrl,
             "eventTrigger": {
                 "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
-                "resource": f"projects/{get_default_project()}/topics/{topic}",
+                "resource": f"projects/{get_default_project()}/topics/{topic_name}",
             },
             "runtime": config.runtime or "python37",
             **user_configs,
