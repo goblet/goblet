@@ -242,10 +242,12 @@ class Register_Handlers(DecoratorAPI):
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
         function"""
+        # TODO: move to handlers
         if (
             len(self.handlers["route"].resources) > 0
             or len(self.handlers["schedule"].resources) > 0
             or self.handlers["http"].resources
+            or self.handlers["pubsub"].is_http()
         ):
             return True
         return False

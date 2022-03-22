@@ -1,7 +1,7 @@
 from goblet import Goblet
 from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
-from goblet.test_utils import get_responses, dummy_function
+from goblet.test_utils import get_responses, dummy_function, get_response
 
 from unittest.mock import Mock
 import base64
@@ -18,6 +18,18 @@ class TestPubSub:
         assert len(pubsub.resources) == 1
         assert (
             pubsub.resources["test"]["trigger"]["dummy_function"]["func"]
+            == dummy_function
+        )
+
+    def test_add_topic_with_subscription(self):
+        app = Goblet(function_name="goblet_example")
+
+        app.topic("test", use_subscription="true")(dummy_function)
+
+        pubsub = app.handlers["pubsub"]
+        assert len(pubsub.resources) == 1
+        assert (
+            pubsub.resources["test"]["subscription"]["dummy_function"]["func"]
             == dummy_function
         )
 
@@ -120,6 +132,25 @@ class TestPubSub:
             responses[2]["body"]["metadata"]["request"]["eventTrigger"]["eventType"]
             == "providers/cloud.pubsub/eventTypes/topic.publish"
         )
+
+    def test_deploy_pubsub_cross_project(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cross-project")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet-topic-cross-project")
+        setattr(app, "entrypoint", "app")
+
+        app.topic("test", project="goblet-cross-project")(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(app, force=True)
+
+
+        put_subscription = get_response("pubsub-deploy-cross-project", "put-v1-projects-goblet-subscriptions-goblet-topic-cross-project-test_1.json")
+        responses = get_responses("pubsub-deploy-cross-project")
+        assert "goblet-cross-project" in put_subscription["body"]["topic"]
+        assert len(responses) == 5
 
     def test_destroy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

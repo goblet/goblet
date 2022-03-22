@@ -142,8 +142,6 @@ class PubSub(Handler):
         create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
 
     def _sync(self, dryrun=False):
-        if not self.backend == "cloudrun":
-            return
         subscriptions = self.versioned_clients.pubsub.execute(
             "list", parent_key="project"
         ).get("subscriptions", [])
@@ -162,6 +160,14 @@ class PubSub(Handler):
                     destroy_pubsub_subscription(
                         self.versioned_clients.pubsub, f"{self.name}-{filtered_name}"
                     )
+    def is_http(self):
+        """
+        Http cloudfunction is needed for cloudfunction subscription
+        """
+        for _, topic_info in self.resources.items():
+            if topic_info.get("subscription"):
+                return True
+        return False
 
     def destroy(self):
         if self.backend == "cloudfunction":
