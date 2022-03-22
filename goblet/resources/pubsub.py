@@ -160,6 +160,7 @@ class PubSub(Handler):
                     destroy_pubsub_subscription(
                         self.versioned_clients.pubsub, f"{self.name}-{filtered_name}"
                     )
+
     def is_http(self):
         """
         Http cloudfunction is needed for cloudfunction subscription

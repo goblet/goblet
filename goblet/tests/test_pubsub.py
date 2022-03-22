@@ -146,8 +146,10 @@ class TestPubSub:
 
         Deployer({"name": app.function_name}).deploy(app, force=True)
 
-
-        put_subscription = get_response("pubsub-deploy-cross-project", "put-v1-projects-goblet-subscriptions-goblet-topic-cross-project-test_1.json")
+        put_subscription = get_response(
+            "pubsub-deploy-cross-project",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-cross-project-test_1.json",
+        )
         responses = get_responses("pubsub-deploy-cross-project")
         assert "goblet-cross-project" in put_subscription["body"]["topic"]
         assert len(responses) == 5
