@@ -138,13 +138,16 @@ class TestPubSub:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cross-project")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
         app = Goblet(function_name="goblet-topic-cross-project")
         setattr(app, "entrypoint", "app")
 
         app.topic("test", project="goblet-cross-project")(dummy_function)
 
-        Deployer({"name": app.function_name}).deploy(app, force=True)
+        Deployer({"name": app.function_name}).deploy(
+            app, force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
+        )
 
         put_subscription = get_response(
             "pubsub-deploy-cross-project",
