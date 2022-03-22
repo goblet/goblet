@@ -222,11 +222,11 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
-    def deploy(self, source_url):
+    def deploy(self, source_url, config={}):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(source_url, entrypoint="goblet_entrypoint")
+            v.deploy(source_url, entrypoint="goblet_entrypoint", config=config)
 
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
@@ -242,10 +242,12 @@ class Register_Handlers(DecoratorAPI):
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
         function"""
+        # TODO: move to handlers
         if (
             len(self.handlers["route"].resources) > 0
             or len(self.handlers["schedule"].resources) > 0
             or self.handlers["http"].resources
+            or self.handlers["pubsub"].is_http()
         ):
             return True
         return False

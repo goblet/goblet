@@ -128,6 +128,25 @@ def get_cloudrun_url(client, name):
             raise e
 
 
+def get_cloudfunction_url(client, name):
+    """Get the cloudrun url"""
+    try:
+        resp = client.execute(
+            "get",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/{location_id}/functions/"
+            + name,
+        )
+        target = resp["httpsTrigger"]["url"]
+
+        return target
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"cloudfunction {name} not found")
+        else:
+            raise e
+
+
 def create_pubsub_subscription(client, sub_name, req_body):
     """Creates a pubsub subscription from req_body"""
     try:

@@ -159,6 +159,16 @@ Example usage:
         app.log.info(data)
         return 
 
+    # pubsub topic in a different project
+    @app.topic('test', project="CROSS_PROJECT")
+    def cross_project(data):
+        return 
+
+    # create a pubsub subscription instead of pubsub triggered function
+    @app.topic('test', use_subscription=True)
+    def pubsub_subscription(data):
+        return 
+
 Storage
 ^^^^^^^
 

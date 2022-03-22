@@ -40,7 +40,7 @@ class HTTP(Handler):
             ):
                 return http_endpoint["func"](request)
 
-    def _deploy(self, sourceUrl=None, entrypoint=None):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         return
 
     def destroy(self):
