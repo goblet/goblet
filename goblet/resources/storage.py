@@ -69,7 +69,7 @@ class Storage(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, sourceUrl=None, entrypoint=None):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources or not sourceUrl:
             return
 

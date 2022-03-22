@@ -47,7 +47,7 @@ class Deployer:
         self.zip()
 
     def deploy(
-        self, goblet, skip_function=False, only_function=False, config=None, force=False
+        self, goblet, skip_function=False, only_function=False, config={}, force=False
     ):
         """Deploys http cloudfunction and then calls goblet.deploy() to deploy any handler's required infrastructure"""
         source_url = None
@@ -77,7 +77,7 @@ class Deployer:
             if goblet.backend == "cloudrun":
                 self.create_cloudrun(versioned_clients.run, config)
         if not only_function:
-            goblet.deploy(source_url)
+            goblet.deploy(source_url, config=config)
 
         return goblet
 
@@ -109,7 +109,7 @@ class Deployer:
             if e.resp.status != 404:
                 raise
 
-    def create_function(self, client, url, entrypoint, config=None):
+    def create_function(self, client, url, entrypoint, config={}):
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         user_configs = config.cloudfunction or {}
@@ -124,7 +124,7 @@ class Deployer:
         }
         create_cloudfunction(client, req_body, config=config.config)
 
-    def create_cloudrun(self, client, config=None):
+    def create_cloudrun(self, client, config={}):
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         cloudrun_configs = config.cloudrun or {}

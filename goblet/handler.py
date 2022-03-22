@@ -28,15 +28,15 @@ class Handler:
         self.versioned_clients = versioned_clients or VersionedClients()
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
 
-    def deploy(self, sourceUrl=None, entrypoint=None):
+    def deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if self.resources and self.backend not in self.valid_backends:
             log.info(
                 f"skipping... {self.backend} not supported for {self.resource_type}"
             )
             return
-        self._deploy(sourceUrl, entrypoint)
+        self._deploy(sourceUrl, entrypoint, config=config)
 
-    def _deploy(self, sourceUrl=None, entrypoint=None):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         raise NotImplementedError("deploy")
 
     def destroy(self):

@@ -97,7 +97,7 @@ class ApiGateway(Handler):
                 return False
         return True
 
-    def _deploy(self, sourceUrl=None, entrypoint=None):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if len(self.resources) == 0:
             return
         log.info("deploying api......")

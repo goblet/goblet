@@ -222,11 +222,11 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
-    def deploy(self, source_url):
+    def deploy(self, source_url, config={}):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(source_url, entrypoint="goblet_entrypoint")
+            v.deploy(source_url, entrypoint="goblet_entrypoint", config=config)
 
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
