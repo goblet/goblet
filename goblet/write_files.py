@@ -17,9 +17,10 @@ def create_goblet_dir(name):
         f.write(f"goblet-gcp=={__version__}")
     with open("main.py", "w") as f:
         f.write(
-            f"""from goblet import Goblet, jsonify
+            f"""from goblet import Goblet, jsonify,goblet_entrypoint
 
 app = Goblet(function_name="goblet-{name}")
+goblet_entrypoint(app)
 
 @app.http()
 def main(request):

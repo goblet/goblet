@@ -71,7 +71,7 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 
     except FileNotFoundError as not_found:
         click.echo(
-            f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists"
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
 
 
@@ -101,7 +101,7 @@ def destroy(project, location, stage, all):
 
     except FileNotFoundError as not_found:
         click.echo(
-            f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists"
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
 
 
@@ -132,7 +132,7 @@ def sync(project, location, stage, dryrun):
 
     except FileNotFoundError as not_found:
         click.echo(
-            f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists"
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
 
 
@@ -153,7 +153,7 @@ def openapi(cloudfunction, stage):
 
     except FileNotFoundError as not_found:
         click.echo(
-            f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists"
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
 
 
@@ -199,7 +199,7 @@ def package(stage):
 
     except FileNotFoundError as not_found:
         click.echo(
-            f"Missing {not_found.filename}. Make sure you are in the correct directoty and this file exists"
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
 
 
