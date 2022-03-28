@@ -160,11 +160,16 @@ def create_pubsub_subscription(client, sub_name, req_body):
     except HttpError as e:
         if e.resp.status == 409:
             log.info(f"updating pubsub subscription {sub_name}")
+            # Setup update mask
+            keys = list(req_body.keys())
+            keys.remove("name")
+            keys.remove("topic")
+            updateMask = ",".join(keys)
             client.execute(
                 "patch",
                 parent_key="name",
                 parent_schema="projects/{project_id}/subscriptions/" + sub_name,
-                params={"body": req_body},
+                params={"body": {"subscription": req_body, "updateMask": updateMask}},
             )
         else:
             raise e

@@ -171,13 +171,17 @@ class PubSub(Handler):
         return False
 
     def destroy(self):
-        if self.backend == "cloudfunction":
-            for topic in self.resources:
+        if not self.resources:
+            return
+        for topic_name in self.resources:
+            # Destroy triggers
+            for _, topic_info in self.resources[topic_name]["trigger"].items():
                 destroy_cloudfunction(
-                    self.versioned_clients.cloudfunctions, f"{self.name}-topic-{topic}"
+                    self.versioned_clients.cloudfunctions,
+                    f"{self.name}-topic-{topic_name}",
                 )
-        if self.backend == "cloudrun":
-            for topic in self.resources:
+            # Destroy subscriptions
+            for _, topic_info in self.resources[topic_name]["subscription"].items():
                 destroy_pubsub_subscription(
-                    self.versioned_clients.pubsub, f"{self.name}-{topic}"
+                    self.versioned_clients.pubsub, f"{self.name}-{topic_name}"
                 )
