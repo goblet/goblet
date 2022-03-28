@@ -178,7 +178,7 @@ class PubSub(Handler):
             for _, topic_info in self.resources[topic_name]["trigger"].items():
                 destroy_cloudfunction(
                     self.versioned_clients.cloudfunctions,
-                    f"{self.cloudfunction}-topic-{topic_name}",
+                    f"{self.name}-topic-{topic_name}",
                 )
             # Destroy subscriptions
             for _, topic_info in self.resources[topic_name]["subscription"].items():

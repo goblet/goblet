@@ -163,7 +163,12 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet_topic", resources={"test-topic": {}})
+        pubsub = PubSub(
+            "goblet_topic",
+            resources={
+                "test-topic": {"trigger": {"test-topic": {}}, "subscription": {}}
+            },
+        )
         pubsub.destroy()
 
         responses = get_responses("pubsub-destroy")
@@ -208,7 +213,11 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", resources={"test": {}}, backend="cloudrun")
+        pubsub = PubSub(
+            "goblet",
+            resources={"test": {"trigger": {}, "subscription": {"test": {}}}},
+            backend="cloudrun",
+        )
         pubsub.destroy()
 
         responses = get_responses("pubsub-destroy-cloudrun")
