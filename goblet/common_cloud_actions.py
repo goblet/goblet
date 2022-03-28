@@ -169,7 +169,7 @@ def create_pubsub_subscription(client, sub_name, req_body):
                 "patch",
                 parent_key="name",
                 parent_schema="projects/{project_id}/subscriptions/" + sub_name,
-                params={"body": {"subscription":req_body,"updateMask":updateMask}},
+                params={"body": {"subscription": req_body, "updateMask": updateMask}},
             )
         else:
             raise e

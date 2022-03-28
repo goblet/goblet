@@ -223,7 +223,11 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub("test-cross-project")
-        pubsub.register_topic("test", None, kwargs={"topic": "test", "kwargs": {'project': 'goblet-cross-project'}})
+        pubsub.register_topic(
+            "test",
+            None,
+            kwargs={"topic": "test", "kwargs": {"project": "goblet-cross-project"}},
+        )
 
         new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
         pubsub._deploy(config={"pubsub": {"serviceAccountEmail": new_service_account}})
@@ -231,7 +235,10 @@ class TestPubSub:
         responses = get_responses("pubsub-update-subscription")
 
         assert len(responses) == 3
-        assert responses[1]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"] == new_service_account
+        assert (
+            responses[1]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"]
+            == new_service_account
+        )
         assert responses[2]["body"]["error"]["code"] == 409
 
     def test_sync_pubsub_cloudrun(self, monkeypatch):
