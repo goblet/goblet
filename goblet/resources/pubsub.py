@@ -96,13 +96,13 @@ class PubSub(Handler):
             )
 
         gconfig = GConfig(config=config)
-        if gconfig.cloudrun and gconfig.cloudrun.get("service-account"):
-            service_account = gconfig.cloudrun.get("service-account")
-        elif gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
+        if gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
             service_account = gconfig.pubsub.get("serviceAccountEmail")
+        elif gconfig.cloudrun and gconfig.cloudrun.get("service-account"):
+            service_account = gconfig.cloudrun.get("service-account")
         else:
             raise ValueError(
-                "Service account not found in cloudrun. You can set `serviceAccountEmail` field in config.json under `pubsub`"
+                "Service account not found in cloudrun or in pubsub. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
 
         req_body = {
