@@ -1,0 +1,23 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/functions/test-cross-project",
+    "description": "created by goblet",
+    "httpsTrigger": {
+      "url": "https://us-central1-goblet.cloudfunctions.net/test-cross-project",
+      "securityLevel": "SECURE_OPTIONAL"
+    },
+    "status": "ACTIVE",
+    "entryPoint": "goblet_entrypoint",
+    "timeout": "60s",
+    "availableMemoryMb": 256,
+    "updateTime": "2022-03-28T14:46:28.932Z",
+    "versionId": "2",
+    "sourceUploadUrl": "https://storage.googleapis.com/gcf-upload-us-central1-db550cf8-9d78-456c-96b1-6069320edaa3/8e8b81f3-8135-4442-b884-91e4db37322d.zip",
+    "runtime": "python37",
+    "ingressSettings": "ALLOW_ALL",
+    "buildId": "f20e5be1-ac13-403a-8ceb-b5be983daace",
+    "buildName": "projects/goblet/locations/us-central1/builds/f20e5be1-ac13-403a-8ceb-b5be983daace",
+    "dockerRegistry": "CONTAINER_REGISTRY"
+  }
+}
