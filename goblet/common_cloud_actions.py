@@ -184,3 +184,40 @@ def destroy_pubsub_subscription(client, name):
             log.info(f"pubsub subscription {name} already destroyed")
         else:
             raise e
+
+def create_eventarc_trigger(client, trigger_name, req_body):
+    """Creates a pubsub subscription from req_body"""
+    try:
+        client.execute(
+            "create",
+            parent_key="parent",
+            params={"body": req_body, "triggerId": trigger_name},
+        )
+        log.info(f"creating pubsub subscription {trigger_name}")
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info(f"updating pubsub subscription {trigger_name}")
+            client.execute(
+                "patch",
+                parent_key="trigger.name",
+                parent_schema="projects/{project_id}/locations/{location_id}/triggers/" + trigger_name,
+                params={"body": req_body, "updateMask":},
+            )
+        else:
+            raise e
+
+
+def destroy_eventarc_trigger(client, name):
+    """Destroys pubsub subscription"""
+    try:
+        client.execute(
+            "delete",
+            parent_key="subscription",
+            parent_schema="projects/{project_id}/subscriptions/" + name,
+        )
+        log.info(f"deleting pubsub subscription {name}......")
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"pubsub subscription {name} already destroyed")
+        else:
+            raise e

@@ -234,3 +234,12 @@ class VersionedClients:
             calls="projects.locations.jobs",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
+
+    @property
+    def eventarc(self):
+        return Client(
+            "eventarc",
+            self.client_versions.get("eventarc", "v1"),
+            calls="projects.locations.triggers",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
