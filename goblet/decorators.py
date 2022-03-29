@@ -1,4 +1,5 @@
 from goblet.client import VersionedClients
+from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
@@ -93,6 +94,17 @@ class DecoratorAPI:
             },
         )
 
+    def eventarc(self, topic=None, event_filters=[], **kwargs):
+        """Eventarc trigger"""
+        return self._create_registration_function(
+            handler_type="eventarc",
+            registration_kwargs={
+                "topic": topic,
+                "event_filters": event_filters,
+                "kwargs": kwargs,
+            },
+        )
+
     def http(self, headers={}):
         """Base http trigger"""
         return self._create_registration_function(
@@ -144,6 +156,9 @@ class Register_Handlers(DecoratorAPI):
             "storage": Storage(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
+            "eventarc": EventArc(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
             "http": HTTP(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
@@ -158,6 +173,9 @@ class Register_Handlers(DecoratorAPI):
         """Goblet entrypoint"""
         self.current_request = request
         self.request_context = context
+        log.info(request)
+        log.info(context)
+
         event_type = self.get_event_type(request, context)
 
         # call before request middleware
@@ -273,3 +291,7 @@ class Register_Handlers(DecoratorAPI):
     def _register_storage(self, name, func, kwargs):
         name = kwargs.get("name") or kwargs["bucket"]
         self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)
+
+    def _register_eventarc(self, name, func, kwargs):
+        name = kwargs.get("kwargs", {}).get("name") or name
+        self.handlers["eventarc"].register_trigger(name=name, func=func, kwargs=kwargs)

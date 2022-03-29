@@ -163,7 +163,12 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet_topic", resources={"test-topic": {}})
+        pubsub = PubSub(
+            "goblet_topic",
+            resources={
+                "test-topic": {"trigger": {"test-topic": {}}, "subscription": {}}
+            },
+        )
         pubsub.destroy()
 
         responses = get_responses("pubsub-destroy")
@@ -208,13 +213,42 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", resources={"test": {}}, backend="cloudrun")
+        pubsub = PubSub(
+            "goblet",
+            resources={"test": {"trigger": {}, "subscription": {"test": {}}}},
+            backend="cloudrun",
+        )
         pubsub.destroy()
 
         responses = get_responses("pubsub-destroy-cloudrun")
 
         assert len(responses) == 1
         assert responses[0]["body"] == {}
+
+    def test_update_pubsub_subscription(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-update-subscription")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub("test-cross-project")
+        pubsub.register_topic(
+            "test",
+            None,
+            kwargs={"topic": "test", "kwargs": {"project": "goblet-cross-project"}},
+        )
+
+        new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
+        pubsub._deploy(config={"pubsub": {"serviceAccountEmail": new_service_account}})
+
+        responses = get_responses("pubsub-update-subscription")
+
+        assert len(responses) == 3
+        assert (
+            responses[1]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"]
+            == new_service_account
+        )
+        assert responses[2]["body"]["error"]["code"] == 409
 
     def test_sync_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

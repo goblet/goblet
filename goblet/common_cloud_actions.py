@@ -160,11 +160,16 @@ def create_pubsub_subscription(client, sub_name, req_body):
     except HttpError as e:
         if e.resp.status == 409:
             log.info(f"updating pubsub subscription {sub_name}")
+            # Setup update mask
+            keys = list(req_body.keys())
+            keys.remove("name")
+            keys.remove("topic")
+            updateMask = ",".join(keys)
             client.execute(
                 "patch",
                 parent_key="name",
                 parent_schema="projects/{project_id}/subscriptions/" + sub_name,
-                params={"body": req_body},
+                params={"body": {"subscription": req_body, "updateMask": updateMask}},
             )
         else:
             raise e
@@ -185,39 +190,47 @@ def destroy_pubsub_subscription(client, name):
         else:
             raise e
 
+
 def create_eventarc_trigger(client, trigger_name, req_body):
-    """Creates a pubsub subscription from req_body"""
+    """Creates an eventarc trigger from req_body"""
     try:
+        import pdb; pdb.set_trace()
         client.execute(
             "create",
             parent_key="parent",
-            params={"body": req_body, "triggerId": trigger_name},
+            params={"body": req_body, "triggerId": trigger_name, "validateOnly": False}
         )
-        log.info(f"creating pubsub subscription {trigger_name}")
+        log.info(f"creating eventarc trigger {trigger_name}")
     except HttpError as e:
         if e.resp.status == 409:
-            log.info(f"updating pubsub subscription {trigger_name}")
+            log.info(f"updating eventarc trigger  {trigger_name}")
+            # Setup update mask
+            keys = list(req_body.keys())
+            keys.remove("name")
+            updateMask = ",".join(keys)
             client.execute(
                 "patch",
                 parent_key="trigger.name",
-                parent_schema="projects/{project_id}/locations/{location_id}/triggers/" + trigger_name,
-                params={"body": req_body, "updateMask":},
+                parent_schema="projects/{project_id}/locations/{location_id}/triggers/"
+                + trigger_name,
+                params={"body": req_body, "updateMask": updateMask},
             )
         else:
             raise e
 
 
-def destroy_eventarc_trigger(client, name):
-    """Destroys pubsub subscription"""
+def destroy_eventarc_trigger(client, trigger_name):
+    """Destroys eventarc trigger"""
     try:
         client.execute(
             "delete",
-            parent_key="subscription",
-            parent_schema="projects/{project_id}/subscriptions/" + name,
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/{location_id}/triggers/"
+            + trigger_name,
         )
-        log.info(f"deleting pubsub subscription {name}......")
+        log.info(f"deleting eventarc trigger  {trigger_name}......")
     except HttpError as e:
         if e.resp.status == 404:
-            log.info(f"pubsub subscription {name} already destroyed")
+            log.info(f"eventarc trigger  {trigger_name} already destroyed")
         else:
             raise e
