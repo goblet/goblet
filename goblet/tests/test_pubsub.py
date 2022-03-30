@@ -1,7 +1,12 @@
 from goblet import Goblet
 from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
-from goblet.test_utils import get_responses, dummy_function, get_response
+from goblet.test_utils import (
+    get_responses,
+    dummy_function,
+    get_response,
+    mock_dummy_function,
+)
 
 from unittest.mock import Mock
 import base64
@@ -89,6 +94,24 @@ class TestPubSub:
         # assert dummy function2 is run
         with pytest.raises(Exception):
             app(event3, mock_context)
+
+    def test_call_subscription(self):
+        app = Goblet(function_name="goblet_example")
+
+        mock = Mock()
+        app.topic("test")(mock_dummy_function(mock))
+
+        mock_request = Mock()
+        mock_request.headers = {}
+        event = {"data": base64.b64encode("test".encode())}
+        mock_request.json = {
+            "message": event,
+            "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
+        }
+
+        # assert dummy_function is run
+        app(mock_request, None)
+        assert mock.call_count == 1
 
     def test_context(self):
         app = Goblet(function_name="goblet_example")

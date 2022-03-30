@@ -159,7 +159,6 @@ class Register_Handlers(DecoratorAPI):
         self.current_request = request
         self.request_context = context
         event_type = self.get_event_type(request, context)
-
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
         response = None
@@ -196,6 +195,8 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.json and request.json.get("subscription") and request.json.get("message"):
+            return "pubsub"
         if (
             request.path
             and request.path == "/"
