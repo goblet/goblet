@@ -1,7 +1,6 @@
 from goblet.common_cloud_actions import (
     create_eventarc_trigger,
     destroy_eventarc_trigger,
-    get_cloudrun_url,
 )
 
 from goblet.config import GConfig
@@ -73,7 +72,6 @@ class EventArc(Handler):
     def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
             return
-        cloudrun_url = get_cloudrun_url(self.versioned_clients.run, self.name)
         gconfig = GConfig(config=config)
         if gconfig.eventarc and gconfig.eventarc.get("serviceAccount"):
             service_account = gconfig.eventarc.get("serviceAccount")
@@ -95,7 +93,7 @@ class EventArc(Handler):
                 "serviceAccount": service_account,
                 "destination": {
                     "cloudRun": {
-                        "service": cloudrun_url, "region": get_default_location()
+                        "service": self.name, "region": get_default_location()
                     }
                 },
                 **topic
