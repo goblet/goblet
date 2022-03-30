@@ -195,6 +195,8 @@ class Register_Handlers(DecoratorAPI):
             response = self.handlers["route"](request)
         if event_type == "http":
             response = self.handlers["http"](request)
+        if event_type == "eventarc":
+            response = self.handlers["eventarc"](request)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
@@ -214,6 +216,8 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
+            return "eventarc"
         if (
             request.path
             and request.path == "/"

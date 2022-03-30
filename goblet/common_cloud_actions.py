@@ -191,14 +191,14 @@ def destroy_pubsub_subscription(client, name):
             raise e
 
 
-def create_eventarc_trigger(client, trigger_name, req_body):
+def create_eventarc_trigger(client, trigger_name, region, req_body):
     """Creates an eventarc trigger from req_body"""
     try:
-        import pdb; pdb.set_trace()
         client.execute(
             "create",
             parent_key="parent",
-            params={"body": req_body, "triggerId": trigger_name, "validateOnly": False}
+            parent_schema="projects/{project_id}/locations/" + region,
+            params={"body": req_body, "triggerId": trigger_name, "validateOnly": False},
         )
         log.info(f"creating eventarc trigger {trigger_name}")
     except HttpError as e:
@@ -207,11 +207,14 @@ def create_eventarc_trigger(client, trigger_name, req_body):
             # Setup update mask
             keys = list(req_body.keys())
             keys.remove("name")
+            keys.remove("transport")
             updateMask = ",".join(keys)
             client.execute(
                 "patch",
-                parent_key="trigger.name",
-                parent_schema="projects/{project_id}/locations/{location_id}/triggers/"
+                parent_key="name",
+                parent_schema="projects/{project_id}/locations/"
+                + region
+                + "/triggers/"
                 + trigger_name,
                 params={"body": req_body, "updateMask": updateMask},
             )

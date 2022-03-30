@@ -35,6 +35,7 @@ class EventArc(Handler):
 
     def register_trigger(self, name, func, kwargs):
         event_filters = kwargs.get("event_filters")
+        region = kwargs.get("kwargs", {}).get("region", get_default_location())
         if kwargs.get("topic"):
             event_filters = [
                 {
@@ -46,24 +47,37 @@ class EventArc(Handler):
             {
                 "trigger_name": f"{self.name}-{name}",
                 "event_filters": event_filters,
-                "topic": f"projects/{get_default_project()}/topics/{kwargs['topic']}",
+                "topic": kwargs["topic"],
+                "region": region,
                 "name": name,
                 "func": func,
             }
         )
 
-    def __call__(self, event, context):
-        event_type = context.event_type
+    def __call__(self, request):
+        # Ce-Source: //pubsub.googleapis.com/projects/premise-governance-rd/topics/test
+        # Ce-Type: google.cloud.pubsub.topic.v1.messagePublished
+        headers = request.headers
         # todo
         matched_triggers = [
-            t for t in self.resources if t["event_filters"]["value"] == event_type
+            t
+            for t in self.resources
+            if self.match_event_filters(headers, t["event_filters"])
         ]
-        if not matched_buckets:
-            raise ValueError("No functions found")
-        for b in matched_buckets:
-            b["func"](event)
+        if not matched_triggers:
+            raise ValueError("No triggers found")
+        for t in matched_triggers:
+            t["func"](request)
 
         return
+
+    def match_event_filters(self, headers, event_filters):
+        for filter in event_filters:
+            key = f"Ce-{filter['attribute'].capitalize()}"
+            value = filter["value"]
+            if not headers.get(key) == value:
+                return False
+        return True
 
     def __add__(self, other):
         self.resources.extend(other.resources)
@@ -86,21 +100,31 @@ class EventArc(Handler):
         for trigger in self.resources:
             topic = {}
             if trigger.get("topic"):
-                topic = {"transport": {"pubsub": {"topic": trigger.get("topic")}}}
+                topic = {
+                    "transport": {
+                        "pubsub": {
+                            "topic": f"projects/{get_default_project()}/topics/{trigger.get('topic')}"
+                        }
+                    }
+                }
             req_body = {
-                "name": f"projects/{get_default_project()}/locations/{get_default_location()}/triggers/{trigger['trigger_name']}",
+                "name": f"projects/{get_default_project()}/locations/{trigger['region']}/triggers/{trigger['trigger_name']}",
                 "eventFilters": trigger["event_filters"],
                 "serviceAccount": service_account,
                 "destination": {
-                    "cloudRun": {
-                        "service": self.name, "region": get_default_location()
-                    }
+                    "cloudRun": {"service": self.name, "region": get_default_location()}
                 },
-                **topic
+                **topic,
             }
-
-            create_eventarc_trigger(self.versioned_clients.eventarc, trigger['trigger_name'], req_body)
+            create_eventarc_trigger(
+                self.versioned_clients.eventarc,
+                trigger["trigger_name"],
+                trigger["region"],
+                req_body,
+            )
 
     def destroy(self):
         for trigger in self.resources:
-            destroy_eventarc_trigger(self.versioned_clients.eventarc, trigger["trigger_name"])
+            destroy_eventarc_trigger(
+                self.versioned_clients.eventarc, trigger["trigger_name"]
+            )
