@@ -195,7 +195,11 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
-        if request.json and request.json.get("subscription") and request.json.get("message"):
+        if (
+            request.json
+            and request.json.get("subscription")
+            and request.json.get("message")
+        ):
             return "pubsub"
         if (
             request.path
