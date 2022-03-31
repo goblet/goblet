@@ -53,9 +53,17 @@ class PubSub(Handler):
             }
 
     def __call__(self, event, context):
-        topic_name = context.resource.split("/")[-1]
-        data = base64.b64decode(event["data"]).decode("utf-8")
-        attributes = event.get("attributes") or {}
+        # Trigger
+        if context:
+            topic_name = context.resource.split("/")[-1]
+            data = base64.b64decode(event["data"]).decode("utf-8")
+            attributes = event.get("attributes") or {}
+        # Subscription
+        else:
+            subscription = event.json["subscription"].split("/")[-1]
+            topic_name = subscription.replace(self.name + "-", "")
+            data = base64.b64decode(event.json["message"]["data"]).decode("utf-8")
+            attributes = event.json.get("attributes") or {}
 
         topic = self.resources.get(topic_name)
         if not topic:
@@ -102,7 +110,7 @@ class PubSub(Handler):
             service_account = gconfig.pubsub.get("serviceAccountEmail")
         else:
             raise ValueError(
-                "Service account not found in cloudrun. You can set `serviceAccountEmail` field in config.json under `pubsub`"
+                "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
 
         req_body = {
