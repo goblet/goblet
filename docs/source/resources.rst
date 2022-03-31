@@ -209,10 +209,34 @@ Example usage:
 
 .. code:: python 
 
-    @app.eventarc(topic="custom_events")
-    def custom_events(event):
-        app.log.info(event)
+    # Example eventarc pubsub topic
+    @app.eventarc(topic="test")
+    def pubsub(data):
+        return "pubsub"
 
-    @app.eventarc(event_fiters=[{"type":"attribute", "value":"google.cloud.audit.log.v1.written"}])
-    def written_audit_log(event):
-        app.log.info(event)
+
+    # Example eventarc direct event
+    @app.eventarc(
+        event_filters=[
+            {"attribute": "type", "value": "google.cloud.storage.object.v1.finalized"},
+            {"attribute": "bucket", "value": "BUCKET"},
+        ],
+        region="us-east1",
+    )
+    def bucket(data):
+        app.log.info("bucket_post")
+        return "hello world"
+
+
+    # Example eventarc audit log
+    @app.eventarc(
+        event_filters=[
+            {"attribute": "type", "value": "google.cloud.audit.log.v1.written"},
+            {"attribute": "methodName", "value": "storage.objects.get"},
+            {"attribute": "serviceName", "value": "storage.googleapis.com"},
+        ],
+        region="us-central1",
+    )
+    def bucket_get(data):
+        app.log.info("bucket_get")
+        return "hello world"

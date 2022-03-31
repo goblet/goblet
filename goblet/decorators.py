@@ -11,7 +11,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route"]
+EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route", "eventarc"]
 BACKEND_TYPES = ["cloudfunction", "cloudrun"]
 
 

@@ -207,7 +207,8 @@ def create_eventarc_trigger(client, trigger_name, region, req_body):
             # Setup update mask
             keys = list(req_body.keys())
             keys.remove("name")
-            keys.remove("transport")
+            if "transport" in keys:
+                keys.remove("transport")
             updateMask = ",".join(keys)
             client.execute(
                 "patch",

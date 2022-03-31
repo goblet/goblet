@@ -2,8 +2,8 @@ from goblet.common_cloud_actions import (
     create_eventarc_trigger,
     destroy_eventarc_trigger,
 )
-
 from goblet.config import GConfig
+from goblet.response import Response
 import logging
 
 from goblet.handler import Handler
@@ -21,6 +21,7 @@ class EventArc(Handler):
     resource_type = "eventarc"
     # Cloudfunctions gen 2 is also supported
     valid_backends = ["cloudrun"]
+    can_sync = True
 
     def __init__(
         self, name, versioned_clients=None, resources=None, backend="cloudfunction"
@@ -45,7 +46,7 @@ class EventArc(Handler):
             ]
         self.resources.append(
             {
-                "trigger_name": f"{self.name}-{name}",
+                "trigger_name": f"{self.name}-{name}".replace("_", "-"),
                 "event_filters": event_filters,
                 "topic": kwargs["topic"],
                 "region": region,
@@ -55,29 +56,19 @@ class EventArc(Handler):
         )
 
     def __call__(self, request):
-        # Ce-Source: //pubsub.googleapis.com/projects/premise-governance-rd/topics/test
-        # Ce-Type: google.cloud.pubsub.topic.v1.messagePublished
-        headers = request.headers
-        # todo
-        matched_triggers = [
-            t
-            for t in self.resources
-            if self.match_event_filters(headers, t["event_filters"])
-        ]
-        if not matched_triggers:
-            raise ValueError("No triggers found")
-        for t in matched_triggers:
-            t["func"](request)
-
-        return
-
-    def match_event_filters(self, headers, event_filters):
-        for filter in event_filters:
-            key = f"Ce-{filter['attribute'].capitalize()}"
-            value = filter["value"]
-            if not headers.get(key) == value:
-                return False
-        return True
+        full_path = request.path
+        trigger_name = full_path.split("/")[-1]
+        trigger = None
+        for t in self.resources:
+            if t["trigger_name"] in trigger_name:
+                trigger = t
+                break
+        if not trigger:
+            raise ValueError("No trigger found")
+        response = trigger["func"](request)
+        if not response:
+            response = Response("success")
+        return response
 
     def __add__(self, other):
         self.resources.extend(other.resources)
@@ -112,7 +103,11 @@ class EventArc(Handler):
                 "eventFilters": trigger["event_filters"],
                 "serviceAccount": service_account,
                 "destination": {
-                    "cloudRun": {"service": self.name, "region": get_default_location()}
+                    "cloudRun": {
+                        "service": self.name,
+                        "region": get_default_location(),
+                        "path": f"/x-goblet-eventarc-triggers/{trigger['trigger_name']}",
+                    }
                 },
                 **topic,
             }
@@ -122,6 +117,32 @@ class EventArc(Handler):
                 trigger["region"],
                 req_body,
             )
+
+    def _sync(self, dryrun=False):
+        """Only supports 1 region per sync"""
+        triggers = self.versioned_clients.eventarc.execute(
+            "list", parent_key="parent"
+        ).get("triggers", [])
+        filtered_triggers = list(
+            filter(
+                lambda trigger: f"/triggers/{self.name}-" in trigger["name"], triggers
+            )
+        )
+        for filtered_trigger in filtered_triggers:
+            filtered_name = filtered_trigger["name"].split("/")[-1]
+            found = False
+            for resource_trigger in self.resources:
+                if resource_trigger["trigger_name"] == filtered_name:
+                    found = True
+                    break
+            if not found:
+                log.info(
+                    f'Detected unused subscription in GCP {filtered_trigger["name"]}'
+                )
+                if not dryrun:
+                    destroy_eventarc_trigger(
+                        self.versioned_clients.eventarc, filtered_name
+                    )
 
     def destroy(self):
         for trigger in self.resources:

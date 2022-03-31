@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1648755138257-5db88b8566422-10392f6a-0166f388",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.eventarc.v1.OperationMetadata",
+      "createTime": "2022-03-31T19:32:18.266665975Z",
+      "target": "projects/goblet/locations/us-central1/triggers/test-eventarc-pubsub",
+      "verb": "delete",
+      "requestedCancellation": false,
+      "apiVersion": "v1"
+    },
+    "done": false
+  }
+}
