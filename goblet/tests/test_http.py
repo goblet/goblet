@@ -13,6 +13,7 @@ class TestHttp:
         mock_request = Mock()
         mock_request.path = "/"
         mock_request.headers = {}
+        mock_request.json = {}
 
         app(mock_request, None)
 
@@ -30,14 +31,17 @@ class TestHttp:
         mock_request = Mock()
         mock_request.path = "/"
         mock_request.headers = {"test": 1, "test2": 2}
+        mock_request.json = {}
 
         mock_request2 = Mock()
         mock_request2.path = "/"
         mock_request2.headers = {"test": 1}
+        mock_request2.json = {}
 
         mock_request3 = Mock()
         mock_request3.path = "/"
         mock_request3.headers = {"test": 3}
+        mock_request3.json = {}
 
         app(mock_request, None)
         app(mock_request2, None)
@@ -57,10 +61,12 @@ class TestHttp:
         mock_request = Mock()
         mock_request.path = "/"
         mock_request.headers = {"test": 1, "also_test": 1}
+        mock_request.json = {}
 
         mock_request2 = Mock()
         mock_request2.path = "/"
         mock_request2.headers = {"test": 2}
+        mock_request2.json = {}
 
         app(mock_request, None)
         app(mock_request2, None)

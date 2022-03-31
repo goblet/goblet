@@ -177,7 +177,6 @@ class Register_Handlers(DecoratorAPI):
         log.info(context)
 
         event_type = self.get_event_type(request, context)
-
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
         response = None
@@ -218,6 +217,12 @@ class Register_Handlers(DecoratorAPI):
             return "schedule"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
+        if (
+            request.json
+            and request.json.get("subscription")
+            and request.json.get("message")
+        ):
+            return "pubsub"
         if (
             request.path
             and request.path == "/"

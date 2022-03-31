@@ -110,6 +110,7 @@ class TestDecoraters:
         mock_request.path = "/test"
         mock_request.method = "GET"
         mock_request.headers = {}
+        mock_request.json = {}
 
         @app.before_request()
         def before_request(request):
@@ -129,6 +130,7 @@ class TestDecoraters:
         mock_request.path = "/test"
         mock_request.method = "GET"
         mock_request.headers = {}
+        mock_request.json = {}
 
         @app.after_request()
         def after_request(response):
