@@ -140,10 +140,11 @@ class EventArc(Handler):
                     f'Detected unused subscription in GCP {filtered_trigger["name"]}'
                 )
                 if not dryrun:
+                    region = filtered_trigger["name"].split("/")[3]
                     destroy_eventarc_trigger(
                         self.versioned_clients.eventarc,
                         filtered_name,
-                        filtered_trigger["region"],
+                        region,
                     )
 
     def destroy(self):
