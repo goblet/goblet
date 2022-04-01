@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Backends &mdash; goblet 0.6.3 documentation</title>
+  <title>Backends &mdash; goblet 0.7.0 documentation</title>
   
 
   
@@ -190,6 +190,15 @@
 </div>
 <p>You can pass in configurations to you cloudrun deployment in the <cite>cloudrun</cite> section in your <cite>config.json</cite>. Parameters are
 key, value pairs that will be parsed and passed into the <a class="reference external" href="https://cloud.google.com/sdk/gcloud/reference/run/deploy">gcloud run deploy command</a>. For flags pass in an empty string.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;max-instances&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;set-env-vars&quot;</span><span class="p">:</span> <span class="s2">&quot;ENV1=env1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;no-traffic&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>Deploying to cloudrun requires either a Dockerfile or Procfile in the directory you are looking to deploy your goblet app. If neither
 of those files are found, then goblet will create a default Dockerfile that allows the app to be build, deployed, and run correctly.
 Having a custom Dockerfile if only needed if you would like to customize you container at all.</p>

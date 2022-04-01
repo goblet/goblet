@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.6.3 documentation</title>
+  <title>Topics &mdash; goblet 0.7.0 documentation</title>
   
 
   
@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#iam-bindings">Iam Bindings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#debugging-with-vscode">Debugging with VScode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#secrets">Secrets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response">Response</a></li>
@@ -232,7 +233,7 @@ The argument names for the view function must match the name of the captured arg
 </div>
 <div class="section" id="config">
 <h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
-<p>You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be
+<p>You can provide custom configurations for your cloudfunction or cloudrun goblet deployments by using the config.json file which should be
 located in the .goblet folder. If one doesn’t exist then you should add one.</p>
 <p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <code class="docutils literal notranslate"><span class="pre">cloudfunction</span></code> key. See below for example.</p>
 <p>Example fields include</p>
@@ -254,6 +255,17 @@ located in the .goblet folder. If one doesn’t exist then you should add one.</
 </pre></div>
 </div>
 <p>see the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunction</a> docs for more details on the fields.</p>
+<p>Cloudrun works similarily, but uses the key <cite>cloudrun</cite> instead. Parameters are
+key, value pairs that will be parsed and passed into the <a class="reference external" href="https://cloud.google.com/sdk/gcloud/reference/run/deploy">gcloud run deploy command</a>. For flags pass in an empty string.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;max-instances&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;set-env-vars&quot;</span><span class="p">:</span> <span class="s2">&quot;ENV1=env1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;no-traffic&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>By default goblet includes all python files located in the directory. To include other files use the <code class="docutils literal notranslate"><span class="pre">customFiles</span></code> key
 which takes in a list of python <a class="reference external" href="https://docs.python.org/3/library/glob.html">glob</a> formatted strings.</p>
 <p>Example config.json:</p>
@@ -349,6 +361,60 @@ passed into <code class="docutils literal notranslate"><span class="pre">goblet(
             <span class="p">]</span>
         <span class="p">}</span>
     <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="secrets">
+<h2>Secrets<a class="headerlink" href="#secrets" title="Permalink to this headline">¶</a></h2>
+<p><cite>cloudfunctions</cite> (v1) and <cite>cloudrun</cite> backends support direct integration with <a class="reference external" href="https://cloud.google.com/secret-manager">GCP’s Secret Manager</a>.
+You can pass in secrets by specifying a list of environment variable names or volume paths along with the secret key and version for the secret located in Secret Manager.
+For example with the follow configuration for cloudfunctions you would be able to access your api_keys using <cite>os.environ[“API_KEY_1”]</cite> which will return the value of
+the <cite>api_key1</cite> secret in Secret Manager.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;secretEnvironmentVariables&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;API_KEY_1&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;secret&quot;</span><span class="p">:</span> <span class="s2">&quot;api_key1&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;latest&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;API_KEY_2&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;secret&quot;</span><span class="p">:</span> <span class="s2">&quot;api_key_2&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;latest&quot;</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>cloudfunction also supports secret volumes</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;secretVolumes&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;mountPath&quot;</span><span class="p">:</span> <span class="s2">&quot;MOUNT_PATH&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;projectId&quot;</span><span class="p">:</span> <span class="s2">&quot;PROJECT_ID&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;secret&quot;</span><span class="p">:</span> <span class="s2">&quot;api_key_2&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+                        <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;latest&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For the cloudrun backend you would specificy the list of secrets via <cite>set-secrets</cite>. <cite>/secrets/api/key=mysecret:latest</cite> sets a volume and <cite>ENV=othersecret:1</cite>
+sets an environment variable.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudrun&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;set-secrets&quot;</span><span class="p">:</span> <span class="s2">&quot;/secrets/api/key=mysecret:latest,ENV=othersecret:1&quot;</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>

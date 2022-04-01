@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.6.3 documentation</title>
+  <title>Resources &mdash; goblet 0.7.0 documentation</title>
   
 
   
@@ -97,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pubsub">PubSub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eventarc">Eventarc</a></li>
 </ul>
 </li>
 </ul>
@@ -302,6 +303,16 @@ provide an attribute dictionary which will only trigger the function if the pubs
 <span class="k">def</span> <span class="nf">home2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span>
+
+<span class="c1"># pubsub topic in a different project</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;CROSS_PROJECT&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cross_project</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+
+<span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
 </pre></div>
 </div>
 </div>
@@ -327,6 +338,47 @@ The following events are supported by GCP</p>
 <span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME2&#39;</span><span class="p">,</span> <span class="s1">&#39;finalize&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="eventarc">
+<h2>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this headline">¶</a></h2>
+<p>You can trigger functions from evenarc events using the <cite>&#64;app.eventarc(topic=None, event_filters=[])</cite> decorator. Specifying a topic will create a trigger on a custom pubsub topic. For
+all other events, specify the event attribute  and event value in the <cite>event_filters</cite> list. See <a class="reference external" href="https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud">Creating Triggers</a> for more information
+on possible values.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example eventarc pubsub topic</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+
+<span class="c1"># Example eventarc direct event</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
+    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.storage.object.v1.finalized&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;BUCKET&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">bucket</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_post&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+
+<span class="c1"># Example eventarc audit log</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
+    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.audit.log.v1.written&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;methodName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.objects.get&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;serviceName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.googleapis.com&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">bucket_get</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
 </pre></div>
 </div>
 </div>
