@@ -141,11 +141,15 @@ class EventArc(Handler):
                 )
                 if not dryrun:
                     destroy_eventarc_trigger(
-                        self.versioned_clients.eventarc, filtered_name
+                        self.versioned_clients.eventarc,
+                        filtered_name,
+                        filtered_trigger["region"],
                     )
 
     def destroy(self):
         for trigger in self.resources:
             destroy_eventarc_trigger(
-                self.versioned_clients.eventarc, trigger["trigger_name"]
+                self.versioned_clients.eventarc,
+                trigger["trigger_name"],
+                trigger["region"],
             )

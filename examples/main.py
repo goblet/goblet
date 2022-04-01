@@ -157,7 +157,8 @@ def add_header(response):
 # Example eventarc pubsub topic
 @app.eventarc(topic="test")
 def pubsub(data):
-    return "pubsub"
+    app.log.info("pubsub")
+    return
 
 
 # Example eventarc direct event
@@ -170,7 +171,7 @@ def pubsub(data):
 )
 def bucket(data):
     app.log.info("bucket_post")
-    return "hello world"
+    return
 
 
 # Example eventarc audit log
@@ -184,4 +185,4 @@ def bucket(data):
 )
 def bucket_get(data):
     app.log.info("bucket_get")
-    return "hello world"
+    return

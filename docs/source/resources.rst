@@ -201,9 +201,9 @@ To trigger a function on multiple events or multiple buckets you can specify mul
 Eventarc
 ^^^^^^^^
 
-You can trigger functions from evenarc events using the ``@app.eventarc(topic=None, event_filters=[])`` decorator. Specifying a topic will create a trigger on a pubsub topic. For 
-all other events, specify the event attribute  and event value in the `event_filters` list. 
-For example `[{"type":"attribute", "value":"google.cloud.audit.log.v1.written"}]`
+You can trigger functions from evenarc events using the `@app.eventarc(topic=None, event_filters=[])` decorator. Specifying a topic will create a trigger on a custom pubsub topic. For 
+all other events, specify the event attribute  and event value in the `event_filters` list. See `Creating Triggers <https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud>`__ for more information
+on possible values.
 
 Example usage:
 
@@ -212,7 +212,8 @@ Example usage:
     # Example eventarc pubsub topic
     @app.eventarc(topic="test")
     def pubsub(data):
-        return "pubsub"
+        app.log.info("pubsub")
+        return
 
 
     # Example eventarc direct event
@@ -225,7 +226,7 @@ Example usage:
     )
     def bucket(data):
         app.log.info("bucket_post")
-        return "hello world"
+        return
 
 
     # Example eventarc audit log
@@ -239,4 +240,4 @@ Example usage:
     )
     def bucket_get(data):
         app.log.info("bucket_get")
-        return "hello world"
+        return

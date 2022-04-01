@@ -223,13 +223,15 @@ def create_eventarc_trigger(client, trigger_name, region, req_body):
             raise e
 
 
-def destroy_eventarc_trigger(client, trigger_name):
+def destroy_eventarc_trigger(client, trigger_name, region):
     """Destroys eventarc trigger"""
     try:
         client.execute(
             "delete",
             parent_key="name",
-            parent_schema="projects/{project_id}/locations/{location_id}/triggers/"
+            parent_schema="projects/{project_id}/locations/"
+            + region
+            + "/triggers/"
             + trigger_name,
         )
         log.info(f"deleting eventarc trigger  {trigger_name}......")
