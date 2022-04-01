@@ -1,3 +1,4 @@
+from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
 import logging
 import json
@@ -15,11 +16,21 @@ class Goblet(Register_Handlers):
     """
 
     def __init__(
-        self, function_name="goblet", backend="cloudfunction", local="local", cors=None
+        self,
+        function_name="goblet",
+        backend="cloudfunction",
+        local="local",
+        cors=None,
+        client_versions=None,
     ):
         self.function_name = GConfig().function_name or function_name
+        self.client_versions = DEFAULT_CLIENT_VERSIONS
+        self.client_versions.update(client_versions or {})
         super(Goblet, self).__init__(
-            function_name=self.function_name, backend=backend, cors=cors
+            function_name=self.function_name,
+            backend=backend,
+            cors=cors,
+            client_versions=self.client_versions,
         )
         self.log = logging.getLogger(__name__)
         self.headers = {}
@@ -35,28 +46,6 @@ class Goblet(Register_Handlers):
                 return self(request)
 
             setattr(sys.modules[module_name], local, local_func)
-
-
-class Response(object):
-    """
-    Generic Response class based on Flask Response
-    """
-
-    def __init__(self, body, headers=None, status_code=200):
-        self.body = body
-        if headers is None:
-            headers = {"Content-type": "text/plain"}
-        self.headers = headers
-        self.status_code = status_code
-
-    def __call__(self, environ, start_response):
-        body = self.body
-        if not isinstance(body, (str, bytes)):
-            body = json.dumps(body, separators=(",", ":"))
-        status = self.status_code
-        headers = [(k, v) for k, v in self.headers.items()]
-        start_response(status, headers)
-        return [body]
 
 
 def jsonify(*args, **kwargs):

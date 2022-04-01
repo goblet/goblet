@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 409,
+      "message": "Resource already exists in the project (resource=test-cross-project-test).",
+      "status": "ALREADY_EXISTS"
+    }
+  }
+}

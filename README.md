@@ -185,9 +185,14 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Building Python Serverless Applications on GCP](https://austennovis.medium.com/building-python-serverless-applications-on-gcp-141a806eb7a5)
 
+[Serverless APIs made simple on GCP with Goblet backed by Cloud Functions and Cloud Run](https://engineering.premise.com/serverless-apis-made-simple-on-gcp-with-goblet-backed-by-cloud-functions-and-cloud-run-730db2da04ba)
+
 [Tutorial: Publishing GitHub Findings to Security Command Center](https://engineering.premise.com/tutorial-publishing-github-findings-to-security-command-center-2d1749f530bc)
 
 [Tutorial: Cost Spike Alerting](https://engineering.premise.com/tutorial-cost-spike-alerting-for-google-cloud-platform-gcp-46fd26ae3f6a)
+
+[Tutorial: Setting Up Approval Processes with Slack Apps](https://engineering.premise.com/tutorial-setting-up-approval-processes-with-slack-apps-d325aee31763)
+
 
 ## Examples
 
@@ -208,7 +213,6 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Configuration Options (function names, ...) \
  &#9745; Use checksum for updates \
  &#9745; Cloudrun Backend \
- &#9744; Generate [Openapi](https://github.com/OpenAPITools/openapi-generator)  clients \
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9745; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
  &#9745; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
@@ -216,6 +220,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger \
  &#9744; [Cloud Tasks](https://cloud.google.com/tasks/docs/creating-http-target-tasks) trigger \
  &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger
+ &#9745; [EventArc](https://cloud.google.com/eventarc/docs) trigger
 
 ## Want to Contribute
 

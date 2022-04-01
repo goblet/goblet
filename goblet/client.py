@@ -7,6 +7,14 @@ from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
 
 from google.oauth2 import service_account
 
+DEFAULT_CLIENT_VERSIONS = {
+    "cloudfunctions": "v1",
+    "run": "v1",
+    "pubsub": "v1",
+    "apigateway": "v1",
+    "cloudscheduler": "v1",
+}
+
 
 def get_default_project():
     for k in (
@@ -155,3 +163,83 @@ class Client:
         if _schema and parent:
             _params[parent_key] = _schema
         return getattr(api_chain, api)(**_params).execute()
+
+
+# Clients
+
+
+class VersionedClients:
+    def __init__(self, client_versions=DEFAULT_CLIENT_VERSIONS):
+        self.client_versions = client_versions
+
+    @property
+    def cloudfunctions(self):
+        return Client(
+            "cloudfunctions",
+            self.client_versions.get("cloudfunctions", "v1"),
+            calls="projects.locations.functions",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def run(self):
+        return Client(
+            "run",
+            self.client_versions.get("run", "v1"),
+            calls="projects.locations.services",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def pubsub(self):
+        return Client(
+            "pubsub",
+            self.client_versions.get("pubsub", "v1"),
+            calls="projects.subscriptions",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def apigateway(self):
+        return Client(
+            "apigateway",
+            self.client_versions.get("apigateway", "v1"),
+            calls="projects.locations.gateways",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def apigateway_configs(self):
+        return Client(
+            "apigateway",
+            self.client_versions.get("apigateway", "v1"),
+            calls="projects.locations.apis.configs",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def apigateway_api(self):
+        return Client(
+            "apigateway",
+            self.client_versions.get("apigateway", "v1"),
+            calls="projects.locations.apis",
+            parent_schema="projects/{project_id}/locations/global",
+        )
+
+    @property
+    def cloudscheduler(self):
+        return Client(
+            "cloudscheduler",
+            self.client_versions.get("cloudscheduler", "v1"),
+            calls="projects.locations.jobs",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def eventarc(self):
+        return Client(
+            "eventarc",
+            self.client_versions.get("eventarc", "v1"),
+            calls="projects.locations.triggers",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )

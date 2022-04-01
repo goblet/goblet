@@ -1,7 +1,12 @@
 from goblet import Goblet
 from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
-from goblet.test_utils import get_responses, dummy_function
+from goblet.test_utils import (
+    get_responses,
+    dummy_function,
+    get_response,
+    mock_dummy_function,
+)
 
 from unittest.mock import Mock
 import base64
@@ -16,10 +21,22 @@ class TestPubSub:
 
         pubsub = app.handlers["pubsub"]
         assert len(pubsub.resources) == 1
-        assert pubsub.resources["test"]["dummy_function"] == {
-            "func": dummy_function,
-            "attributes": {},
-        }
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["func"]
+            == dummy_function
+        )
+
+    def test_add_topic_with_subscription(self):
+        app = Goblet(function_name="goblet_example")
+
+        app.topic("test", use_subscription="true")(dummy_function)
+
+        pubsub = app.handlers["pubsub"]
+        assert len(pubsub.resources) == 1
+        assert (
+            pubsub.resources["test"]["subscription"]["dummy_function"]["func"]
+            == dummy_function
+        )
 
     def test_add_topic_attributes(self):
         app = Goblet(function_name="goblet_example")
@@ -28,9 +45,12 @@ class TestPubSub:
 
         pubsub = app.handlers["pubsub"]
         assert len(pubsub.resources) == 1
-        assert pubsub.resources["test"]["dummy_function"] == {
-            "func": dummy_function,
-            "attributes": {"test": True},
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["func"]
+            == dummy_function
+        )
+        assert pubsub.resources["test"]["trigger"]["dummy_function"]["attributes"] == {
+            "test": True
         }
 
     def test_call_topic(self):
@@ -75,6 +95,24 @@ class TestPubSub:
         with pytest.raises(Exception):
             app(event3, mock_context)
 
+    def test_call_subscription(self):
+        app = Goblet(function_name="goblet_example")
+
+        mock = Mock()
+        app.topic("test")(mock_dummy_function(mock))
+
+        mock_request = Mock()
+        mock_request.headers = {}
+        event = {"data": base64.b64encode("test".encode())}
+        mock_request.json = {
+            "message": event,
+            "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
+        }
+
+        # assert dummy_function is run
+        app(mock_request, None)
+        assert mock.call_count == 1
+
     def test_context(self):
         app = Goblet(function_name="goblet_example")
 
@@ -118,13 +156,42 @@ class TestPubSub:
             == "providers/cloud.pubsub/eventTypes/topic.publish"
         )
 
+    def test_deploy_pubsub_cross_project(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cross-project")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        app = Goblet(function_name="goblet-topic-cross-project")
+        setattr(app, "entrypoint", "app")
+
+        app.topic("test", project="goblet-cross-project")(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(
+            app, force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
+        )
+
+        put_subscription = get_response(
+            "pubsub-deploy-cross-project",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-cross-project-test_1.json",
+        )
+        responses = get_responses("pubsub-deploy-cross-project")
+        assert "goblet-cross-project" in put_subscription["body"]["topic"]
+        assert len(responses) == 5
+
     def test_destroy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet_topic", resources={"test-topic": {}})
+        pubsub = PubSub(
+            "goblet_topic",
+            resources={
+                "test-topic": {"trigger": {"test-topic": {}}, "subscription": {}}
+            },
+        )
         pubsub.destroy()
 
         responses = get_responses("pubsub-destroy")
@@ -169,13 +236,42 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", resources={"test": {}}, backend="cloudrun")
+        pubsub = PubSub(
+            "goblet",
+            resources={"test": {"trigger": {}, "subscription": {"test": {}}}},
+            backend="cloudrun",
+        )
         pubsub.destroy()
 
         responses = get_responses("pubsub-destroy-cloudrun")
 
         assert len(responses) == 1
         assert responses[0]["body"] == {}
+
+    def test_update_pubsub_subscription(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-update-subscription")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        pubsub = PubSub("test-cross-project")
+        pubsub.register_topic(
+            "test",
+            None,
+            kwargs={"topic": "test", "kwargs": {"project": "goblet-cross-project"}},
+        )
+
+        new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
+        pubsub._deploy(config={"pubsub": {"serviceAccountEmail": new_service_account}})
+
+        responses = get_responses("pubsub-update-subscription")
+
+        assert len(responses) == 3
+        assert (
+            responses[1]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"]
+            == new_service_account
+        )
+        assert responses[2]["body"]["error"]["code"] == 409
 
     def test_sync_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

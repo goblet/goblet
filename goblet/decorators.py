@@ -1,3 +1,5 @@
+from goblet.client import VersionedClients
+from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
@@ -9,7 +11,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route"]
+EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route", "eventarc"]
 BACKEND_TYPES = ["cloudfunction", "cloudrun"]
 
 
@@ -92,6 +94,17 @@ class DecoratorAPI:
             },
         )
 
+    def eventarc(self, topic=None, event_filters=[], **kwargs):
+        """Eventarc trigger"""
+        return self._create_registration_function(
+            handler_type="eventarc",
+            registration_kwargs={
+                "topic": topic,
+                "event_filters": event_filters,
+                "kwargs": kwargs,
+            },
+        )
+
     def http(self, headers={}):
         """Base http trigger"""
         return self._create_registration_function(
@@ -118,17 +131,37 @@ class DecoratorAPI:
 class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
-    def __init__(self, function_name, backend="cloudfunction", cors=None):
+    def __init__(
+        self, function_name, backend="cloudfunction", cors=None, client_versions=None
+    ):
         self.backend = backend
         if backend not in BACKEND_TYPES:
             raise ValueError(f"{backend} not a valid backend")
 
+        versioned_clients = VersionedClients(client_versions or {})
+
         self.handlers = {
-            "route": ApiGateway(function_name, cors=cors, backend=backend),
-            "schedule": Scheduler(function_name, backend=backend),
-            "pubsub": PubSub(function_name, backend=backend),
-            "storage": Storage(function_name, backend=backend),
-            "http": HTTP(backend=backend),
+            "route": ApiGateway(
+                function_name,
+                cors=cors,
+                backend=backend,
+                versioned_clients=versioned_clients,
+            ),
+            "schedule": Scheduler(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "pubsub": PubSub(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "storage": Storage(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "eventarc": EventArc(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "http": HTTP(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
         }
         self.middleware_handlers = {
             "before": {},
@@ -140,8 +173,10 @@ class Register_Handlers(DecoratorAPI):
         """Goblet entrypoint"""
         self.current_request = request
         self.request_context = context
-        event_type = self.get_event_type(request, context)
+        log.info(request)
+        log.info(context)
 
+        event_type = self.get_event_type(request, context)
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
         response = None
@@ -159,6 +194,8 @@ class Register_Handlers(DecoratorAPI):
             response = self.handlers["route"](request)
         if event_type == "http":
             response = self.handlers["http"](request)
+        if event_type == "eventarc":
+            response = self.handlers["eventarc"](request)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
@@ -178,6 +215,14 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
+            return "eventarc"
+        if (
+            request.json
+            and request.json.get("subscription")
+            and request.json.get("message")
+        ):
+            return "pubsub"
         if (
             request.path
             and request.path == "/"
@@ -204,11 +249,11 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
-    def deploy(self, source_url):
+    def deploy(self, source_url, config={}):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(source_url, entrypoint="goblet_entrypoint")
+            v.deploy(source_url, entrypoint="goblet_entrypoint", config=config)
 
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
@@ -224,10 +269,12 @@ class Register_Handlers(DecoratorAPI):
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
         function"""
+        # TODO: move to handlers
         if (
             len(self.handlers["route"].resources) > 0
             or len(self.handlers["schedule"].resources) > 0
             or self.handlers["http"].resources
+            or self.handlers["pubsub"].is_http()
         ):
             return True
         return False
@@ -253,3 +300,7 @@ class Register_Handlers(DecoratorAPI):
     def _register_storage(self, name, func, kwargs):
         name = kwargs.get("name") or kwargs["bucket"]
         self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)
+
+    def _register_eventarc(self, name, func, kwargs):
+        name = kwargs.get("kwargs", {}).get("name") or name
+        self.handlers["eventarc"].register_trigger(name=name, func=func, kwargs=kwargs)

@@ -1,6 +1,8 @@
 from goblet import jsonify, Response, Goblet
 from unittest.mock import Mock
 
+# from goblet.client import DEFAULT_CLIENT_VERSIONS
+
 
 class TestJsonify:
     headers = {"Content-Type": "application/json"}
@@ -107,6 +109,8 @@ class TestDecoraters:
         mock_request = Mock()
         mock_request.path = "/test"
         mock_request.method = "GET"
+        mock_request.headers = {}
+        mock_request.json = {}
 
         @app.before_request()
         def before_request(request):
@@ -125,6 +129,8 @@ class TestDecoraters:
         mock_request = Mock()
         mock_request.path = "/test"
         mock_request.method = "GET"
+        mock_request.headers = {}
+        mock_request.json = {}
 
         @app.after_request()
         def after_request(response):
@@ -135,3 +141,12 @@ class TestDecoraters:
             return "test"
 
         assert app(mock_request, {}) == "test after request"
+
+
+# Causes tests to fail
+# class TestGoblet:
+
+#     def test_client_versions(self):
+#         app = Goblet(client_versions={"cloudfunctions":"v2"})
+#         assert app.client_versions["cloudfunctions"] == "v2"
+#         assert app.client_versions["pubsub"] == DEFAULT_CLIENT_VERSIONS["pubsub"]

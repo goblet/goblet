@@ -1,3 +1,4 @@
+from goblet.client import VersionedClients
 from goblet.deploy import Deployer
 from goblet.resources.http import HTTP
 from goblet import Goblet
@@ -133,8 +134,8 @@ class TestDeployer:
         )
 
         assert not Deployer(config={"name": "goblet_test_app"})._cloudfunction_delta(
-            f"{DATA_DIR_MAIN}/test_zip.txt.zip"
+            VersionedClients().cloudfunctions, f"{DATA_DIR_MAIN}/test_zip.txt.zip"
         )
         assert Deployer(config={"name": "goblet_test_app"})._cloudfunction_delta(
-            f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip"
+            VersionedClients().cloudfunctions, f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip"
         )

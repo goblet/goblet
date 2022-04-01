@@ -1,0 +1,67 @@
+{
+  "headers": {},
+  "body": {
+    "triggers": [
+      {
+        "name": "projects/goblet/locations/us-central1/triggers/test-eventarc-pubsub",
+        "uid": "2c41df31-6dac-444f-9ddb-0466578a54c3",
+        "createTime": "2022-03-31T17:56:25.011526275Z",
+        "updateTime": "2022-03-31T17:56:28.619979784Z",
+        "eventFilters": [
+          {
+            "attribute": "type",
+            "value": "google.cloud.pubsub.topic.v1.messagePublished"
+          }
+        ],
+        "serviceAccount": "test@goblet.iam.gserviceaccount.com",
+        "destination": {
+          "cloudRun": {
+            "service": "test-eventarc",
+            "path": "/x-goblet-eventarc-triggers/test-eventarc-pubsub",
+            "region": "us-central1"
+          }
+        },
+        "transport": {
+          "pubsub": {
+            "topic": "projects/goblet/topics/test",
+            "subscription": "projects/goblet/subscriptions/eventarc-us-central1-test-eventarc-pubsub-sub-373"
+          }
+        }
+      },
+      {
+        "name": "projects/goblet/locations/us-central1/triggers/test-eventarc-bucket-get",
+        "uid": "25b99369-ee75-47a4-aa20-7fba49553ce9",
+        "createTime": "2022-03-31T17:56:29.748045813Z",
+        "updateTime": "2022-03-31T17:56:36.901939137Z",
+        "eventFilters": [
+          {
+            "attribute": "serviceName",
+            "value": "storage.googleapis.com"
+          },
+          {
+            "attribute": "type",
+            "value": "google.cloud.audit.log.v1.written"
+          },
+          {
+            "attribute": "methodName",
+            "value": "storage.objects.get"
+          }
+        ],
+        "serviceAccount": "test@goblet.iam.gserviceaccount.com",
+        "destination": {
+          "cloudRun": {
+            "service": "test-eventarc",
+            "path": "/x-goblet-eventarc-triggers/test-eventarc-bucket-get",
+            "region": "us-central1"
+          }
+        },
+        "transport": {
+          "pubsub": {
+            "topic": "projects/goblet/topics/eventarc-us-central1-test-eventarc-bucket-get-799",
+            "subscription": "projects/goblet/subscriptions/eventarc-us-central1-test-eventarc-bucket-get-sub-799"
+          }
+        }
+      }
+    ]
+  }
+}

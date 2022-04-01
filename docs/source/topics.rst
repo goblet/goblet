@@ -52,7 +52,7 @@ The argument names for the view function must match the name of the captured arg
 Config
 ^^^^^^
 
-You can provide custom configurations for your cloudfunctions and goblet deployment by using the config.json file which should be 
+You can provide custom configurations for your cloudfunction or cloudrun goblet deployments by using the config.json file which should be 
 located in the .goblet folder. If one doesn't exist then you should add one. 
 
 To provide custom values for the cloudfunction configuration pass in your desired overrides in the ``cloudfunction`` key. See below for example.
@@ -80,6 +80,20 @@ Example config.json:
 see the `cloudfunction`_ docs for more details on the fields.
 
 .. _CLOUDFUNCTION: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
+
+
+Cloudrun works similarily, but uses the key `cloudrun` instead. Parameters are 
+key, value pairs that will be parsed and passed into the `gcloud run deploy command <https://cloud.google.com/sdk/gcloud/reference/run/deploy>`__. For flags pass in an empty string. 
+
+.. code:: json 
+
+    {
+        "cloudrun":{
+            "max-instances": "1",
+            "set-env-vars": "ENV1=env1",
+            "no-traffic": ""
+        }
+    }
 
 By default goblet includes all python files located in the directory. To include other files use the ``customFiles`` key
 which takes in a list of python `glob`_ formatted strings.
@@ -204,6 +218,65 @@ passed into ``goblet(NAME, local=LOCAL_NAME)``. Make sure that there are no nami
         ]
     }
 
+Secrets
+^^^^^^^
+
+`cloudfunctions` (v1) and `cloudrun` backends support direct integration with `GCP's Secret Manager <https://cloud.google.com/secret-manager>`_.
+You can pass in secrets by specifying a list of environment variable names or volume paths along with the secret key and version for the secret located in Secret Manager.
+For example with the follow configuration for cloudfunctions you would be able to access your api_keys using `os.environ["API_KEY_1"]` which will return the value of 
+the `api_key1` secret in Secret Manager. 
+
+.. code:: json 
+
+    {
+        "cloudfunction": {
+            "secretEnvironmentVariables": [
+                {
+                    "key": "API_KEY_1",
+                    "secret": "api_key1",
+                    "version": "latest"
+                },
+                {
+                    "key": "API_KEY_2",
+                    "secret": "api_key_2",
+                    "version": "latest"
+                }
+            ]
+        }
+    }
+
+cloudfunction also supports secret volumes
+
+.. code:: json 
+
+    {
+        "cloudfunction": {
+            "secretVolumes": [
+                {
+                    "mountPath": "MOUNT_PATH",
+                    "projectId": "PROJECT_ID",
+                    "secret": "api_key_2",
+                    "versions": [
+                        {
+                            "version": "latest",
+                            "path": "latest"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+For the cloudrun backend you would specificy the list of secrets via `set-secrets`. `/secrets/api/key=mysecret:latest` sets a volume and `ENV=othersecret:1`
+sets an environment variable.  
+
+.. code:: json 
+
+    {
+        "cloudrun": {
+            "set-secrets": "/secrets/api/key=mysecret:latest,ENV=othersecret:1"
+        }
+    }
 
 Authentication
 ^^^^^^^^^^^^^^

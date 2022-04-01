@@ -1,7 +1,10 @@
 import logging
 
 from goblet.handler import Handler
-from goblet.client import Client, get_default_project, get_default_location
+from goblet.client import (
+    get_default_project,
+    get_default_location,
+)
 from goblet.common_cloud_actions import get_cloudrun_url
 from goblet.config import GConfig
 
@@ -19,27 +22,6 @@ class Scheduler(Handler):
     resource_type = "scheduler"
     valid_backends = ["cloudfunction", "cloudrun"]
     can_sync = True
-
-    def __init__(self, name, resources=None, backend="cloudfunction"):
-        self.name = name
-        self.backend = backend
-        self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
-        self.resources = resources or {}
-        self._api_client = None
-
-    @property
-    def api_client(self):
-        if not self._api_client:
-            self._api_client = self._create_api_client()
-        return self._api_client
-
-    def _create_api_client(self):
-        return Client(
-            "cloudscheduler",
-            "v1",
-            calls="projects.locations.jobs",
-            parent_schema="projects/{project_id}/locations/{location_id}",
-        )
 
     def register_job(self, name, func, kwargs):
         schedule = kwargs["schedule"]
@@ -100,13 +82,7 @@ class Scheduler(Handler):
             return
 
         if self.backend == "cloudfunction":
-            cloudfunction_client = Client(
-                "cloudfunctions",
-                "v1",
-                calls="projects.locations.functions",
-                parent_schema="projects/{project_id}/locations/{location_id}",
-            )
-            resp = cloudfunction_client.execute(
+            resp = self.versioned_clients.cloudfunctions.execute(
                 "get", parent_key="name", parent_schema=self.cloudfunction
             )
             if not resp:
@@ -115,7 +91,7 @@ class Scheduler(Handler):
             service_account = resp["serviceAccountEmail"]
 
         if self.backend == "cloudrun":
-            target = get_cloudrun_url(self.name)
+            target = get_cloudrun_url(self.versioned_clients.run, self.name)
             config = GConfig(config=config)
             if config.cloudrun and config.cloudrun.get("service-account"):
                 service_account = config.cloudrun.get("service-account")
@@ -135,7 +111,7 @@ class Scheduler(Handler):
             self.deploy_job(job_name, job["job_json"])
 
     def _sync(self, dryrun=False):
-        jobs = self.api_client.execute("list").get("jobs", [])
+        jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
         filtered_jobs = list(
             filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
         )
@@ -150,12 +126,14 @@ class Scheduler(Handler):
 
     def deploy_job(self, job_name, job):
         try:
-            self.api_client.execute("create", params={"body": job})
+            self.versioned_clients.cloudscheduler.execute(
+                "create", params={"body": job}
+            )
             log.info(f"created scheduled job: {job_name} for {self.name}")
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"updated scheduled job: {job_name} for {self.name}")
-                self.api_client.execute(
+                self.versioned_clients.cloudscheduler.execute(
                     "patch",
                     parent_key="name",
                     parent_schema=job["name"],
@@ -172,16 +150,14 @@ class Scheduler(Handler):
 
     def _destroy_job(self, job_name):
         try:
-            scheduler_client = Client(
-                "cloudscheduler",
-                "v1",
-                calls="projects.locations.jobs",
+            self.versioned_clients.cloudscheduler.execute(
+                "delete",
+                parent_key="name",
                 parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
                 + self.name
                 + "-"
                 + job_name,
             )
-            scheduler_client.execute("delete", parent_key="name")
             log.info(f"Destroying scheduled job {job_name}......")
         except HttpError as e:
             if e.resp.status == 404:
