@@ -189,3 +189,54 @@ def destroy_pubsub_subscription(client, name):
             log.info(f"pubsub subscription {name} already destroyed")
         else:
             raise e
+
+
+def create_eventarc_trigger(client, trigger_name, region, req_body):
+    """Creates an eventarc trigger from req_body"""
+    try:
+        client.execute(
+            "create",
+            parent_key="parent",
+            parent_schema="projects/{project_id}/locations/" + region,
+            params={"body": req_body, "triggerId": trigger_name, "validateOnly": False},
+        )
+        log.info(f"creating eventarc trigger {trigger_name}")
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info(f"updating eventarc trigger  {trigger_name}")
+            # Setup update mask
+            keys = list(req_body.keys())
+            keys.remove("name")
+            if "transport" in keys:
+                keys.remove("transport")
+            updateMask = ",".join(keys)
+            client.execute(
+                "patch",
+                parent_key="name",
+                parent_schema="projects/{project_id}/locations/"
+                + region
+                + "/triggers/"
+                + trigger_name,
+                params={"body": req_body, "updateMask": updateMask},
+            )
+        else:
+            raise e
+
+
+def destroy_eventarc_trigger(client, trigger_name, region):
+    """Destroys eventarc trigger"""
+    try:
+        client.execute(
+            "delete",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/"
+            + region
+            + "/triggers/"
+            + trigger_name,
+        )
+        log.info(f"deleting eventarc trigger  {trigger_name}......")
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"eventarc trigger  {trigger_name} already destroyed")
+        else:
+            raise e

@@ -90,6 +90,7 @@ class TestRoutes:
         mock_event1 = Mock()
         mock_event1.path = "/test"
         mock_event1.method = "GET"
+        mock_event1.headers = {}
         mock_event1.json = {}
 
         app(mock_event1, None)
@@ -97,6 +98,7 @@ class TestRoutes:
         mock_event2 = Mock()
         mock_event2.path = "/test/param"
         mock_event2.method = "POST"
+        mock_event2.headers = {}
         mock_event2.json = {}
         app(mock_event2, None)
 
@@ -128,6 +130,7 @@ class TestRoutes:
         mock_event1 = Mock()
         mock_event1.path = "/test"
         mock_event1.method = "GET"
+        mock_event1.headers = {}
         mock_event1.json = {}
         resp = app(mock_event1, None)
         assert resp.headers["Access-Control-Allow-Origin"] == "*"
@@ -135,6 +138,7 @@ class TestRoutes:
         mock_event2 = Mock()
         mock_event2.path = "/test2"
         mock_event2.method = "GET"
+        mock_event2.headers = {}
         mock_event2.json = {}
         resp2 = app2(mock_event2, None)
         assert resp2.headers["Access-Control-Allow-Origin"] == "app-level"
@@ -142,6 +146,7 @@ class TestRoutes:
         mock_event_override = Mock()
         mock_event_override.path = "/override"
         mock_event_override.method = "GET"
+        mock_event_override.headers = {}
         mock_event_override.json = {}
         resp2 = app2(mock_event_override, None)
         assert resp2.headers["Access-Control-Allow-Origin"] == "override"
@@ -149,6 +154,7 @@ class TestRoutes:
         mock_event3 = Mock()
         mock_event3.path = "/test3"
         mock_event3.method = "GET"
+        mock_event3.headers = {}
         mock_event3.json = {}
         resp3 = app(mock_event3, None)
         assert resp3[2]["Access-Control-Allow-Origin"] == "localhost"

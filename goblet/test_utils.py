@@ -110,7 +110,7 @@ class HttpRecorder(HttpFiles):
             fopen = bz2.BZ2File
         with fopen(fpath, "wb") as fh:
             recorded = {}
-            recorded["headers"] = dict(response)
+            recorded["headers"] = {}
             if not content:
                 content = "{}"
             recorded["body"] = json.loads(content)

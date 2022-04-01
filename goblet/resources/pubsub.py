@@ -104,9 +104,19 @@ class PubSub(Handler):
             )
 
         gconfig = GConfig(config=config)
-        if gconfig.cloudrun and gconfig.cloudrun.get("service-account"):
+        if gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
+            service_account = gconfig.pubsub.get("serviceAccountEmail")
+        elif (
+            self.backend == "cloudrun"
+            and gconfig.cloudrun
+            and gconfig.cloudrun.get("service-account")
+        ):
             service_account = gconfig.cloudrun.get("service-account")
-        elif gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
+        elif (
+            self.backend == "cloudfunction"
+            and gconfig.cloudfunction
+            and gconfig.pubsub.get("serviceAccountEmail")
+        ):
             service_account = gconfig.pubsub.get("serviceAccountEmail")
         else:
             raise ValueError(

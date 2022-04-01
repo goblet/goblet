@@ -197,3 +197,47 @@ To trigger a function on multiple events or multiple buckets you can specify mul
     @app.storage('BUCKET_NAME2', 'finalize')
     def storage(event):
         app.log.info(event)
+
+Eventarc
+^^^^^^^^
+
+You can trigger functions from evenarc events using the `@app.eventarc(topic=None, event_filters=[])` decorator. Specifying a topic will create a trigger on a custom pubsub topic. For 
+all other events, specify the event attribute  and event value in the `event_filters` list. See `Creating Triggers <https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud>`__ for more information
+on possible values.
+
+Example usage:
+
+.. code:: python 
+
+    # Example eventarc pubsub topic
+    @app.eventarc(topic="test")
+    def pubsub(data):
+        app.log.info("pubsub")
+        return
+
+
+    # Example eventarc direct event
+    @app.eventarc(
+        event_filters=[
+            {"attribute": "type", "value": "google.cloud.storage.object.v1.finalized"},
+            {"attribute": "bucket", "value": "BUCKET"},
+        ],
+        region="us-east1",
+    )
+    def bucket(data):
+        app.log.info("bucket_post")
+        return
+
+
+    # Example eventarc audit log
+    @app.eventarc(
+        event_filters=[
+            {"attribute": "type", "value": "google.cloud.audit.log.v1.written"},
+            {"attribute": "methodName", "value": "storage.objects.get"},
+            {"attribute": "serviceName", "value": "storage.googleapis.com"},
+        ],
+        region="us-central1",
+    )
+    def bucket_get(data):
+        app.log.info("bucket_get")
+        return
