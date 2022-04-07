@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+import pytest
 from goblet import Goblet, Response, jsonify
 from goblet.resources.routes import ApiGateway, CORSConfig
 from goblet.deploy import Deployer
@@ -196,6 +197,21 @@ class TestRoutes:
         assert post_gw["body"]["metadata"]["target"].endswith("goblet-routes")
         assert get_gw["body"]["state"] == "ACTIVE"
         assert get_gw["body"]["displayName"] == "goblet-routes"
+
+    def test_deploy_routes_type_cloudrun(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        gw = ApiGateway(name="test", routes_type="cloudrun", resources=[{}, {}])
+
+        assert gw.deploy() is None
+
+    def test_deploy_routes_type_cloudrun_with_incorrect_backend(self, monkeypatch):
+
+        ApiGateway(name="test", routes_type="cloudrun", resources=[{}, {}])
+        with pytest.raises(Exception):
+            ApiGateway.deploy()
 
     def test_destroy_routes(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

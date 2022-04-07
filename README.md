@@ -47,6 +47,22 @@ $ curl https://api.uc.gateway.dev/home
 
 > `goblet_entrypoint(app)`
 
+## Resources Supported
+
+#### Backends
+* cloudfunction
+* cloudrun
+
+#### Routing
+* api gateway
+* http
+
+#### Triggering
+* pubsub
+* scheduler
+* storage
+* eventarc
+
 ## Installation
 
 To install goblet, open an interactive shell and run:
@@ -122,17 +138,21 @@ This app will deploy an api with endpoint `/home`.
 
 ### Running Locally
 
-Running your functions locally for testing and debugging is easy to do with goblet. First set a local param in the goblet class
+Running your functions locally for testing and debugging is easy to do with goblet.
 
 ```python
 from goblet import Goblet
 
-app = Goblet(function_name="goblet_example", local='test')
+app = Goblet(function_name="goblet_example")
+goblet_entrypoint(app)
 
+@app.route('/home')
+def home():
+    return {"hello": "world"}
 ```
 
-Then run `goblet local test` and replace test with whatever variable you decide to use.
-Now you can hit your functions endpoint at `localhost:8080` with your routes.
+Then run `goblet local`
+Now you can hit your functions endpoint at `localhost:8080` with your routes. For example `localhost:8080/home`
 
 ### Deploying
 

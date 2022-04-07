@@ -132,7 +132,12 @@ class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
     def __init__(
-        self, function_name, backend="cloudfunction", cors=None, client_versions=None
+        self,
+        function_name,
+        backend="cloudfunction",
+        cors=None,
+        client_versions=None,
+        routes_type="apigateway",
     ):
         self.backend = backend
         if backend not in BACKEND_TYPES:
@@ -146,6 +151,7 @@ class Register_Handlers(DecoratorAPI):
                 cors=cors,
                 backend=backend,
                 versioned_clients=versioned_clients,
+                routes_type=routes_type,
             ),
             "schedule": Scheduler(
                 function_name, backend=backend, versioned_clients=versioned_clients
