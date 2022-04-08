@@ -90,6 +90,12 @@ The argument names for the view function must match the name of the captured arg
     def users(first, second):
         return {'first': first, 'second': second}
 
+By default routes are deployed to an api gateway. For cloudrun you have the option to use `route_type=cloudrun` to simply use the cloudrun 
+instance itself. The routes work the same as with an apigateway, but you would access the api via the cloudrun url instead of the api gateway url.
+
+.. code:: python 
+
+    app = Goblet(function_name="cloudrun-routing", routes_type="cloudrun", backend="cloudrun")
 
 Scheduled Jobs
 ^^^^^^^^^^^^^^

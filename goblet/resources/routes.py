@@ -37,6 +37,7 @@ class ApiGateway(Handler):
         cors=None,
         resources=None,
         backend="cloudfunction",
+        routes_type="apigateway",
     ):
         super(ApiGateway, self).__init__(
             name=name,
@@ -47,6 +48,7 @@ class ApiGateway(Handler):
         self.name = self.format_name(name)
         self.cors = cors or {}
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
+        self.routes_type = routes_type
 
     def format_name(self, name):
         # ([a-z0-9-.]+) for api gateway name
@@ -98,7 +100,11 @@ class ApiGateway(Handler):
         return True
 
     def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
-        if len(self.resources) == 0:
+        if self.routes_type != "apigateway" and self.backend == "cloudfunctions":
+            raise ValueError(
+                f"Cloudfunctions backend is not supported for routes_type {self.routes_type}"
+            )
+        if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
         log.info("deploying api......")
         base_url = self.cloudfunction
@@ -192,9 +198,8 @@ class ApiGateway(Handler):
         return
 
     def destroy(self):
-        if len(self.resources) == 0:
+        if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
-
         # destroy api gateway
         try:
             self.versioned_clients.apigateway.execute(
