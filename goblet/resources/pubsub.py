@@ -76,7 +76,7 @@ class PubSub(Handler):
         for _, info in topic["subscription"].items():
             if info["attributes"].items() <= attributes.items():
                 info["func"](data)
-        return
+        return "success"
 
     def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
