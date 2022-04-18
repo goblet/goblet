@@ -239,7 +239,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
  &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger \
  &#9744; [Cloud Tasks](https://cloud.google.com/tasks/docs/creating-http-target-tasks) trigger \
- &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger
+ &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger \
  &#9745; [EventArc](https://cloud.google.com/eventarc/docs) trigger
 
 ## Want to Contribute

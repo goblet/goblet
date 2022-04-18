@@ -77,6 +77,17 @@ Simply run ``goblet local``.
 
 You can hit your functions endpoint at ``localhost:8080`` ar your defined routes.
 
+To test your scheduled jobs locally you will need to pass a `X-Goblet-Type` header with the value `schedule` and a `X-Goblet-Name` header
+with the name of your scheduled function.
+
+For example: 
+
+.. code::
+
+    "X-Goblet-Type": "schedule",
+    "X-Goblet-Name": FUNCTION_NAME
+
+
 Deploying
 **********
 
