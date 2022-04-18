@@ -5,6 +5,8 @@ from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
+from googleapiclient.errors import HttpError
+
 from warnings import warn
 
 import logging
@@ -132,7 +134,12 @@ class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
     def __init__(
-        self, function_name, backend="cloudfunction", cors=None, client_versions=None
+        self,
+        function_name,
+        backend="cloudfunction",
+        cors=None,
+        client_versions=None,
+        routes_type="apigateway",
     ):
         self.backend = backend
         if backend not in BACKEND_TYPES:
@@ -146,6 +153,7 @@ class Register_Handlers(DecoratorAPI):
                 cors=cors,
                 backend=backend,
                 versioned_clients=versioned_clients,
+                routes_type=routes_type,
             ),
             "schedule": Scheduler(
                 function_name, backend=backend, versioned_clients=versioned_clients
@@ -258,7 +266,12 @@ class Register_Handlers(DecoratorAPI):
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
         for _, v in self.handlers.items():
-            v.sync(dryrun)
+            try:
+                v.sync(dryrun)
+            except HttpError as e:
+                if e.resp.status == 403:
+                    continue
+                raise e
 
     def destroy(self):
         """Call each handlers destroy method"""

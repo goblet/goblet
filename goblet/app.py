@@ -22,6 +22,7 @@ class Goblet(Register_Handlers):
         local="local",
         cors=None,
         client_versions=None,
+        routes_type="apigateway",
     ):
         self.function_name = GConfig().function_name or function_name
         self.client_versions = DEFAULT_CLIENT_VERSIONS
@@ -31,6 +32,7 @@ class Goblet(Register_Handlers):
             backend=backend,
             cors=cors,
             client_versions=self.client_versions,
+            routes_type=routes_type,
         )
         self.log = logging.getLogger(__name__)
         self.headers = {}
