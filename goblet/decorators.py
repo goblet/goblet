@@ -5,6 +5,8 @@ from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
+from googleapiclient.errors import HttpError
+
 from warnings import warn
 
 import logging
@@ -264,7 +266,12 @@ class Register_Handlers(DecoratorAPI):
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
         for _, v in self.handlers.items():
-            v.sync(dryrun)
+            try:
+                v.sync(dryrun)
+            except HttpError as e:
+                if e.resp.status == 403:
+                    continue
+                raise e
 
     def destroy(self):
         """Call each handlers destroy method"""
