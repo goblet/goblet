@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.7.0 documentation</title>
+  <title>Resources &mdash; goblet 0.7.1 documentation</title>
   
 
   
@@ -252,6 +252,11 @@ The argument names for the view function must match the name of the captured arg
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span><span class="p">}</span>
 </pre></div>
 </div>
+<p>By default routes are deployed to an api gateway. For cloudrun you have the option to use <cite>route_type=cloudrun</cite> to simply use the cloudrun
+instance itself. The routes work the same as with an apigateway, but you would access the api via the cloudrun url instead of the api gateway url.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudrun-routing&quot;</span><span class="p">,</span> <span class="n">routes_type</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="scheduled-jobs">
 <h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this headline">¶</a></h2>
@@ -276,16 +281,21 @@ scheduled jobs.</p>
 </div>
 <p>Note that several of customizable fields require specific formats which include <cite>body</cite> which is a base64 encoded string. In order
 to use a json field for the body you would need to use the following code</p>
-<p>..code:: python</p>
-<blockquote>
-<div><p>base64.b64encode(json.dumps({“key”:”value”}).encode(‘utf-8’)).decode(‘ascii’)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;value&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>and then in your function you would decode the body using</p>
-<p>..code:: python</p>
-<blockquote>
-<div><p>json.loads(base64.b64decode(raw_payload).decode(‘utf-8’))</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">raw_payload</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
 <p>Another unique field is <cite>attemptDeadline</cite> which requires a duration format such as <cite>3.5s</cite></p>
+<p>To test your scheduled jobs locally you will need to pass a <cite>X-Goblet-Type</cite> header with the value <cite>schedule</cite> and a <cite>X-Goblet-Name</cite> header
+with the name of your scheduled function.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X-Goblet-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;schedule&quot;</span><span class="p">,</span>
+<span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="n">FUNCTION_NAME</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>

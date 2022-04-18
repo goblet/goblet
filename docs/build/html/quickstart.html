@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Quickstart &mdash; goblet 0.7.0 documentation</title>
+  <title>Quickstart &mdash; goblet 0.7.1 documentation</title>
   
 
   
@@ -235,6 +235,13 @@ drwxr-xr-x   .goblet
 <p>Running your functions locally for testing and debugging is easy to do with goblet.</p>
 <p>Simply run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span></code>.</p>
 <p>You can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code> ar your defined routes.</p>
+<p>To test your scheduled jobs locally you will need to pass a <cite>X-Goblet-Type</cite> header with the value <cite>schedule</cite> and a <cite>X-Goblet-Name</cite> header
+with the name of your scheduled function.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X-Goblet-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;schedule&quot;</span><span class="p">,</span>
+<span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="n">FUNCTION_NAME</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="deploying">
 <h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
