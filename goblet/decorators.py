@@ -223,7 +223,8 @@ class Register_Handlers(DecoratorAPI):
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
         if (
-            request.is_json and request.get_json()
+            request.is_json
+            and request.get_json()
             and request.json.get("subscription")
             and request.json.get("message")
         ):
