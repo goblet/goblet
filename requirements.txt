@@ -1,7 +1,7 @@
-apispec==4.3.0
-click==7.1.2
-functions-framework==2.1.0
+apispec==5.1.1
+click==8.0.4
+functions-framework==3.0.0
 google-api-python-client==1.12.5
-marshmallow==3.10.0
-ruamel.yaml==0.16.12
+marshmallow==3.15.0
+ruamel.yaml==0.17.21
 markupsafe==2.0.1
