@@ -12,6 +12,7 @@ from warnings import warn
 import logging
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route", "eventarc"]
 BACKEND_TYPES = ["cloudfunction", "cloudrun"]
@@ -181,14 +182,10 @@ class Register_Handlers(DecoratorAPI):
         """Goblet entrypoint"""
         self.current_request = request
         self.request_context = context
-        log.info(request)
-        log.info(context)
-
         event_type = self.get_event_type(request, context)
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
         response = None
-
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not a valid event type")
 
@@ -226,7 +223,7 @@ class Register_Handlers(DecoratorAPI):
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
         if (
-            request.json
+            request.is_json and request.get_json()
             and request.json.get("subscription")
             and request.json.get("message")
         ):
