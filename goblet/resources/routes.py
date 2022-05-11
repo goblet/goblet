@@ -177,10 +177,7 @@ class ApiGateway(Handler):
                 gateway_resp = self.versioned_clients.apigateway.execute(
                     "patch",
                     parent_key="name",
-                    parent_schema="projects/{project_id}/locations/global/apis/"
-                    + self.name
-                    + "/configs/"
-                    + self.name,
+                    parent_schema="projects/{project_id}/locations/global/gateways/" + self.name,
                     params={"updateMask": "apiConfig", "body": gateway},
                 )
             else:
