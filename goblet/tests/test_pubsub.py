@@ -108,6 +108,7 @@ class TestPubSub:
             "message": event,
             "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
         }
+        mock_request.path = None
 
         # assert dummy_function is run
         app(mock_request, None)
