@@ -223,6 +223,13 @@ class Register_Handlers(DecoratorAPI):
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
         if (
+            request.is_json
+            and request.get_json(silent=True)
+            and request.json.get("subscription")
+            and request.json.get("message")
+        ):
+            return "pubsub"
+        if (
             request.path
             and request.path == "/"
             and not request.headers.get("X-Envoy-Original-Path")
@@ -230,13 +237,6 @@ class Register_Handlers(DecoratorAPI):
             return "http"
         if request.path:
             return "route"
-        if (
-            request.is_json
-            and request.get_json(silent=True)
-            and request.json.get("subscription")
-            and request.json.get("message")
-        ):
-            return "pubsub"
         return None
 
     def _call_middleware(self, event, event_type, before_or_after="before"):
