@@ -272,6 +272,16 @@ class ApiGateway(Handler):
 PRIMITIVE_MAPPINGS = {str: "string", bool: "boolean", int: "integer"}
 
 
+def enum_to_properties(self, field, **kwargs):
+    """
+    Add an OpenAPI extension for marshmallow_enum.EnumField instances
+    """
+    import marshmallow_enum
+    if isinstance(field, marshmallow_enum.EnumField):
+        return {'type': 'string', 'enum': [m.name for m in field.enum]}
+    return {}
+
+
 class OpenApiSpec:
     def __init__(
         self,
@@ -299,13 +309,15 @@ class OpenApiSpec:
         self.spec["schemes"] = ["https"]
         self.spec["produces"] = ["application/json"]
         self.spec["paths"] = {}
+        marshmallow_plugin = MarshmallowPlugin()
         self.component_spec = APISpec(
             title="",
             version="1.0.0",
             openapi_version="2.0",
-            plugins=[MarshmallowPlugin()],
+            plugins=[marshmallow_plugin],
         )
         self.spec["definitions"] = {}
+        marshmallow_plugin.converter.add_attribute_function(enum_to_properties)
 
     def add_component(self, component):
         if component.__name__ in self.component_spec.components.schemas:
