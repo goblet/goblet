@@ -49,6 +49,7 @@ class ApiGateway(Handler):
         self.cors = cors or {}
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         self.routes_type = routes_type
+        self.marshmallow_attribute_function = None
 
     def format_name(self, name):
         # ([a-z0-9-.]+) for api gateway name
@@ -263,6 +264,7 @@ class ApiGateway(Handler):
             cloudfunction,
             security_definitions=config.securityDefinitions,
             security=config.security,
+            marshmallow_attribute_function=self.marshmallow_attribute_function,
         )
         spec.add_apigateway_routes(self.resources)
         with open(f"{get_g_dir()}/{self.name}_openapi_spec.yml", "w") as f:
@@ -270,16 +272,6 @@ class ApiGateway(Handler):
 
 
 PRIMITIVE_MAPPINGS = {str: "string", bool: "boolean", int: "integer"}
-
-
-def enum_to_properties(self, field, **kwargs):
-    """
-    Add an OpenAPI extension for marshmallow_enum.EnumField instances
-    """
-    import marshmallow_enum
-    if isinstance(field, marshmallow_enum.EnumField):
-        return {'type': 'string', 'enum': [m.name for m in field.enum]}
-    return {}
 
 
 class OpenApiSpec:
@@ -290,6 +282,7 @@ class OpenApiSpec:
         version="1.0.0",
         security_definitions=None,
         security=None,
+        marshmallow_attribute_function=None,
     ):
         self.spec = OrderedDict()
         self.app_name = app_name
@@ -316,8 +309,12 @@ class OpenApiSpec:
             openapi_version="2.0",
             plugins=[marshmallow_plugin],
         )
+        if marshmallow_attribute_function:
+            marshmallow_plugin.converter.add_attribute_function(
+                marshmallow_attribute_function
+            )
+
         self.spec["definitions"] = {}
-        marshmallow_plugin.converter.add_attribute_function(enum_to_properties)
 
     def add_component(self, component):
         if component.__name__ in self.component_spec.components.schemas:
