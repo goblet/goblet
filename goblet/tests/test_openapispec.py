@@ -245,7 +245,6 @@ class TestOpenApiSpec:
         response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
-        dummy_schema = spec.spec["definitions"]
         assert response_content == {"$ref": "#/definitions/DummySchema"}
         assert (
             spec.spec["definitions"]["DummySchema"]["properties"]["flt"]["type"]
