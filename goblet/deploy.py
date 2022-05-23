@@ -246,7 +246,7 @@ class Deployer:
         self,
         dir,
         include=["*.py"],
-        exclude=["build", "docs", "examples", "test", "venv"],
+        exclude=["build", "docs", "examples", "test", "tests", "venv"],
     ):
         exclusion_set = set(exclude)
         globbed_files = []
