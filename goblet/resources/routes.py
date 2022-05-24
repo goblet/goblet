@@ -110,7 +110,7 @@ class ApiGateway(Handler):
         log.info("deploying api......")
         base_url = self.cloudfunction
         if self.backend == "cloudrun":
-            base_url = get_cloudrun_url(self.name)
+            base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
         self.generate_openapi_spec(base_url)
         try:
             resp = self.versioned_clients.apigateway_api.execute(
