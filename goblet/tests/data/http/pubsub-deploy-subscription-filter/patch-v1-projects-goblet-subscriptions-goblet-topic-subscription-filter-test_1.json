@@ -1,0 +1,24 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/subscriptions/goblet-topic-subscription-filter-test",
+    "topic": "projects/goblet/topics/test",
+    "pushConfig": {
+      "pushEndpoint": "https://us-central1-premise-governance-rd.cloudfunctions.net/goblet-topic-subscription-filter",
+      "attributes": {
+        "x-goog-version": "v1"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "test-sa-actions@premise-governance-rd.iam.gserviceaccount.com",
+        "audience": "https://us-central1-premise-governance-rd.cloudfunctions.net/goblet-topic-subscription-filter"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "2678400s"
+    },
+    "filter": "attributes.test = \"1\"",
+    "state": "ACTIVE"
+  }
+}

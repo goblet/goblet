@@ -1,0 +1,24 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/functions/goblet-topic-subscription-filter",
+    "description": "created by goblet",
+    "httpsTrigger": {
+      "url": "https://us-central1-goblet.cloudfunctions.net/goblet-topic-subscription-filter",
+      "securityLevel": "SECURE_OPTIONAL"
+    },
+    "status": "ACTIVE",
+    "entryPoint": "goblet_entrypoint",
+    "timeout": "60s",
+    "availableMemoryMb": 256,
+    "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+    "updateTime": "2022-05-25T16:04:52.724Z",
+    "versionId": "1",
+    "sourceUploadUrl": "https://storage.googleapis.com/uploads-915943219735.us-central1.cloudfunctions.appspot.com/20a48a3e-10be-442f-8d01-14120347434f.zip",
+    "runtime": "python37",
+    "ingressSettings": "ALLOW_ALL",
+    "buildId": "0d1472ef-efd7-4558-ae6a-7eabf950a91a",
+    "buildName": "projects/goblet/locations/us-central1/builds/0d1472ef-efd7-4558-ae6a-7eabf950a91a",
+    "dockerRegistry": "CONTAINER_REGISTRY"
+  }
+}

@@ -157,6 +157,8 @@ PubSub
 
 You can trigger endpoints from pubsub using the ``@app.topic(...)`` decorator. All that is required is the topic name. You can optionally 
 provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
+If using cloudrun backend or `use_subscription=true` the attributes will be created as a filter on the subscription itself. You can also pass in 
+a custom `filter` as well. Note that filters are not able to be modified once they are applied to a subscription. 
 
 Example usage:
 
@@ -181,7 +183,12 @@ Example usage:
 
     # create a pubsub subscription instead of pubsub triggered function
     @app.topic('test', use_subscription=True)
-    def pubsub_subscription(data):
+    def pubsub_subscription_use_subscription(data):
+        return 
+
+    # create a pubsub subscription instead of pubsub triggered function and add filter
+    @app.topic('test', use_subscription=True, filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"')
+    def pubsub_subscription_filter(data):
         return 
 
 Storage

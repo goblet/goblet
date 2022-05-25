@@ -65,3 +65,11 @@ def nested_update(d, u):
         else:
             d[k] = v
     return d
+
+def attributes_to_filter(attributes: dict) -> str:
+    """
+    Returns pubsub filter based on attributes
+    """
+    attribute_list = [f"attributes.{attribute} = \"{value}\"" for attribute, value in attributes.items()]
+    pubsub_filter = " OR ".join(attribute_list)
+    return pubsub_filter
