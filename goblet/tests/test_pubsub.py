@@ -52,8 +52,10 @@ class TestPubSub:
         assert pubsub.resources["test"]["trigger"]["dummy_function"]["attributes"] == {
             "test": True
         }
-        assert pubsub.resources["test"]["trigger"]["dummy_function"]["filter"] == 'attributes.test = "True"'
-
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["filter"]
+            == 'attributes.test = "True"'
+        )
 
     def test_add_topic_filter(self):
         app = Goblet(function_name="goblet_example")
@@ -62,7 +64,10 @@ class TestPubSub:
 
         pubsub = app.handlers["pubsub"]
         assert len(pubsub.resources) == 1
-        assert pubsub.resources["test"]["trigger"]["dummy_function"]["filter"] == 'attributes.test = "1"'
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["filter"]
+            == 'attributes.test = "1"'
+        )
 
     def test_call_topic(self):
         app = Goblet(function_name="goblet_example")
@@ -192,7 +197,6 @@ class TestPubSub:
         assert "goblet-cross-project" in put_subscription["body"]["topic"]
         assert len(responses) == 5
 
-
     def test_deploy_pubsub_subscription_with_filter(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
@@ -203,10 +207,15 @@ class TestPubSub:
         app = Goblet(function_name="goblet-topic-subscription-filter")
         setattr(app, "entrypoint", "app")
 
-        app.topic("test", use_subscription=True, filter='attributes.test = "1"')(dummy_function)
+        app.topic("test", use_subscription=True, filter='attributes.test = "1"')(
+            dummy_function
+        )
 
         Deployer({"name": app.function_name}).deploy(
-            app, force=True, skip_function=True, config={"pubsub": {"serviceAccountEmail": service_account}}
+            app,
+            force=True,
+            skip_function=True,
+            config={"pubsub": {"serviceAccountEmail": service_account}},
         )
 
         put_subscription = get_response(
@@ -214,7 +223,7 @@ class TestPubSub:
             "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-filter-test_1.json",
         )
         responses = get_responses("pubsub-deploy-subscription-filter")
-        assert put_subscription["body"]["filter"] == "attributes.test = \"1\""
+        assert put_subscription["body"]["filter"] == 'attributes.test = "1"'
         assert len(responses) == 2
 
     def test_destroy_pubsub(self, monkeypatch):

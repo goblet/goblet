@@ -20,9 +20,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(result, {"k1": "v1", "k2": {"k3": "v2", "k5": "v4"}})
 
     def test_attributes_to_filter(self):
-        attributes = {
-            "attr1": "val1",
-            "attr2": "val2"
-        }
+        attributes = {"attr1": "val1", "attr2": "val2"}
         filter_string = utils.attributes_to_filter(attributes)
-        assert filter_string == "attributes.attr1 = \"val1\" OR attributes.attr2 = \"val2\""
+        assert filter_string == 'attributes.attr1 = "val1" OR attributes.attr2 = "val2"'

@@ -48,12 +48,17 @@ class PubSub(Handler):
                 "func": func,
                 "attributes": attributes,
                 "project": project,
-                "filter": filter
+                "filter": filter,
             }
         else:
             self.resources[topic] = {"trigger": {}, "subscription": {}}
             self.resources[topic][deploy_type] = {
-                name: {"func": func, "attributes": attributes, "project": project, "filter": filter}
+                name: {
+                    "func": func,
+                    "attributes": attributes,
+                    "project": project,
+                    "filter": filter,
+                }
             }
 
     def __call__(self, event, context):
@@ -129,7 +134,7 @@ class PubSub(Handler):
         req_body = {
             "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
-            "filter": topic['filter'] or '',
+            "filter": topic["filter"] or "",
             "pushConfig": {
                 "pushEndpoint": push_url,
                 "oidcToken": {
