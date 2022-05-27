@@ -12,7 +12,7 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project
-
+from goblet.utils import attributes_to_filter
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -31,6 +31,9 @@ class PubSub(Handler):
         topic = kwargs["topic"]
         kwargs = kwargs.pop("kwargs")
         attributes = kwargs.get("attributes", {})
+        filter = kwargs.get("filter")
+        if not filter and attributes:
+            filter = attributes_to_filter(attributes)
         project = kwargs.get("project", get_default_project())
         deploy_type = "trigger"
         if (
@@ -45,11 +48,17 @@ class PubSub(Handler):
                 "func": func,
                 "attributes": attributes,
                 "project": project,
+                "filter": filter,
             }
         else:
             self.resources[topic] = {"trigger": {}, "subscription": {}}
             self.resources[topic][deploy_type] = {
-                name: {"func": func, "attributes": attributes, "project": project}
+                name: {
+                    "func": func,
+                    "attributes": attributes,
+                    "project": project,
+                    "filter": filter,
+                }
             }
 
     def __call__(self, event, context):
@@ -122,10 +131,10 @@ class PubSub(Handler):
             raise ValueError(
                 "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
-
         req_body = {
             "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
+            "filter": topic["filter"] or "",
             "pushConfig": {
                 "pushEndpoint": push_url,
                 "oidcToken": {

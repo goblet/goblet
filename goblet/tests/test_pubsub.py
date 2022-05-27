@@ -52,6 +52,22 @@ class TestPubSub:
         assert pubsub.resources["test"]["trigger"]["dummy_function"]["attributes"] == {
             "test": True
         }
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["filter"]
+            == 'attributes.test = "True"'
+        )
+
+    def test_add_topic_filter(self):
+        app = Goblet(function_name="goblet_example")
+
+        app.topic("test", filter='attributes.test = "1"')(dummy_function)
+
+        pubsub = app.handlers["pubsub"]
+        assert len(pubsub.resources) == 1
+        assert (
+            pubsub.resources["test"]["trigger"]["dummy_function"]["filter"]
+            == 'attributes.test = "1"'
+        )
 
     def test_call_topic(self):
         app = Goblet(function_name="goblet_example")
@@ -180,6 +196,35 @@ class TestPubSub:
         responses = get_responses("pubsub-deploy-cross-project")
         assert "goblet-cross-project" in put_subscription["body"]["topic"]
         assert len(responses) == 5
+
+    def test_deploy_pubsub_subscription_with_filter(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-subscription-filter")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        app = Goblet(function_name="goblet-topic-subscription-filter")
+        setattr(app, "entrypoint", "app")
+
+        app.topic("test", use_subscription=True, filter='attributes.test = "1"')(
+            dummy_function
+        )
+
+        Deployer({"name": app.function_name}).deploy(
+            app,
+            force=True,
+            skip_function=True,
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+
+        put_subscription = get_response(
+            "pubsub-deploy-subscription-filter",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-filter-test_1.json",
+        )
+        responses = get_responses("pubsub-deploy-subscription-filter")
+        assert put_subscription["body"]["filter"] == 'attributes.test = "1"'
+        assert len(responses) == 2
 
     def test_destroy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

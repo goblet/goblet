@@ -166,10 +166,19 @@ def topic(data):
 
 # Pubsub topic with matching message attributes
 @app.topic("test", attributes={"key": "value"})
-def home2(data):
+def pubsub_attributes(data):
     app.log.info(data)
     return
 
+# create a pubsub subscription instead of pubsub triggered function
+@app.topic('test', use_subscription=True)
+def pubsub_subscription_use_subscription(data):
+    return 
+
+# create a pubsub subscription instead of pubsub triggered function and add filter
+@app.topic('test', use_subscription=True, filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"')
+def pubsub_subscription_filter(data):
+    return 
 
 # Example Storage trigger on the create/finalize event
 @app.storage("BUCKET_NAME", "finalize")

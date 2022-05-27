@@ -162,8 +162,10 @@ def create_pubsub_subscription(client, sub_name, req_body):
             log.info(f"updating pubsub subscription {sub_name}")
             # Setup update mask
             keys = list(req_body.keys())
+            # Remove keys that cannot be updated
             keys.remove("name")
             keys.remove("topic")
+            keys.remove("filter")
             updateMask = ",".join(keys)
             client.execute(
                 "patch",
