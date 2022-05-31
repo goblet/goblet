@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.7.2 documentation</title>
+  <title>Resources &mdash; goblet 0.7.3 documentation</title>
   
 
   
@@ -300,7 +300,9 @@ with the name of your scheduled function.</p>
 <div class="section" id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
-provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.</p>
+provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
+If using cloudrun backend or <cite>use_subscription=true</cite> the attributes will be created as a filter on the subscription itself. You can also pass in
+a custom <cite>filter</cite> as well. Note that filters are not able to be modified once they are applied to a subscription.</p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pubsub topic</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
@@ -321,7 +323,12 @@ provide an attribute dictionary which will only trigger the function if the pubs
 
 <span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pubsub_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+
+<span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">return</span>
 </pre></div>
 </div>

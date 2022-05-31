@@ -551,6 +551,45 @@ If you use a custom schema type you should create a schema class that inherits f
         
         return data
 
+    # Custom Marshmallow Fields
+    from marshmallow_enum import EnumField
+    from enum import Enum
+
+    def enum_to_properties(self, field, **kwargs):
+        """
+        Add an OpenAPI extension for marshmallow_enum.EnumField instances
+        """
+        if isinstance(field, EnumField):
+            return {'type': 'string', 'enum': [m.name for m in field.enum]}
+        return {}
+
+    app.handlers["route"].marshmallow_attribute_function = enum_to_properties
+
+    class StopLight(Enum):
+        green = 1
+        yellow = 2
+        red = 3
+
+    class TrafficStop(Schema):
+        light_color = EnumField(StopLight)
+
+
+    @app.route("/traffic")
+    def traffic() -> TrafficStop:
+        return TrafficStop().dump({"light_color":StopLight.green})
+
+    # Returns follow openapi spec
+    # definitions:
+    #   TrafficStop:
+    #     type: object
+    #     properties:
+    #       light_color:
+    #         type: string
+    #         enum:
+    #         - green
+    #         - yellow
+    #         - red
+
 .. _OPENAPI: https://swagger.io/specification/
 .. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
 

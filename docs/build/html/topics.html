@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.7.2 documentation</title>
+  <title>Topics &mdash; goblet 0.7.3 documentation</title>
   
 
   
@@ -634,6 +634,45 @@ You can specify custom param and response types using python typing and pass in 
     <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">data</span>
+
+<span class="c1"># Custom Marshmallow Fields</span>
+<span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="k">def</span> <span class="nf">enum_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add an OpenAPI extension for marshmallow_enum.EnumField instances</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">EnumField</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">enum</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{}</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">marshmallow_attribute_function</span> <span class="o">=</span> <span class="n">enum_to_properties</span>
+
+<span class="k">class</span> <span class="nc">StopLight</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">yellow</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">class</span> <span class="nc">TrafficStop</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="n">light_color</span> <span class="o">=</span> <span class="n">EnumField</span><span class="p">(</span><span class="n">StopLight</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/traffic&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TrafficStop</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">TrafficStop</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;light_color&quot;</span><span class="p">:</span><span class="n">StopLight</span><span class="o">.</span><span class="n">green</span><span class="p">})</span>
+
+<span class="c1"># Returns follow openapi spec</span>
+<span class="c1"># definitions:</span>
+<span class="c1">#   TrafficStop:</span>
+<span class="c1">#     type: object</span>
+<span class="c1">#     properties:</span>
+<span class="c1">#       light_color:</span>
+<span class="c1">#         type: string</span>
+<span class="c1">#         enum:</span>
+<span class="c1">#         - green</span>
+<span class="c1">#         - yellow</span>
+<span class="c1">#         - red</span>
 </pre></div>
 </div>
 </div>

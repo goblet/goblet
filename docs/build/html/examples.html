@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Examples &mdash; goblet 0.7.2 documentation</title>
+  <title>Examples &mdash; goblet 0.7.3 documentation</title>
   
 
   
@@ -359,7 +359,54 @@
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
-<span class="normal">188</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central-1&quot;</span><span class="p">)</span>
@@ -425,6 +472,44 @@
     <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">({</span><span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;lng&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
 
+<span class="c1"># Custom Marshmallow Fields</span>
+<span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="k">def</span> <span class="nf">enum_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add an OpenAPI extension for marshmallow_enum.EnumField instances</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">EnumField</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">enum</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{}</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">marshmallow_attribute_function</span> <span class="o">=</span> <span class="n">enum_to_properties</span>
+
+<span class="k">class</span> <span class="nc">StopLight</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">yellow</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">class</span> <span class="nc">TrafficStop</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="n">light_color</span> <span class="o">=</span> <span class="n">EnumField</span><span class="p">(</span><span class="n">StopLight</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/traffic&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TrafficStop</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">TrafficStop</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;light_color&quot;</span><span class="p">:</span><span class="n">StopLight</span><span class="o">.</span><span class="n">green</span><span class="p">})</span>
+
+<span class="c1"># Returns follow openapi spec</span>
+<span class="c1"># definitions:</span>
+<span class="c1">#   TrafficStop:</span>
+<span class="c1">#     type: object</span>
+<span class="c1">#     properties:</span>
+<span class="c1">#       light_color:</span>
+<span class="c1">#         type: string</span>
+<span class="c1">#         enum:</span>
+<span class="c1">#         - green</span>
+<span class="c1">#         - yellow</span>
+<span class="c1">#         - red</span>
 
 <span class="c1"># Custom Backend</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/custom_backend&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>
@@ -489,10 +574,19 @@
 
 <span class="c1"># Pubsub topic with matching message attributes</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
-<span class="k">def</span> <span class="nf">home2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">pubsub_attributes</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span>
 
+<span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> 
+
+<span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> 
 
 <span class="c1"># Example Storage trigger on the create/finalize event</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s2">&quot;BUCKET_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">)</span>
