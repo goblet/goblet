@@ -64,6 +64,44 @@ def points() -> List[Point]:
     point = Point().load({"lat": 0, "lng": 0})
     return [point]
 
+# Custom Marshmallow Fields
+from marshmallow_enum import EnumField
+from enum import Enum
+
+def enum_to_properties(self, field, **kwargs):
+    """
+    Add an OpenAPI extension for marshmallow_enum.EnumField instances
+    """
+    if isinstance(field, EnumField):
+        return {'type': 'string', 'enum': [m.name for m in field.enum]}
+    return {}
+
+app.handlers["route"].marshmallow_attribute_function = enum_to_properties
+
+class StopLight(Enum):
+    green = 1
+    yellow = 2
+    red = 3
+
+class TrafficStop(Schema):
+    light_color = EnumField(StopLight)
+
+
+@app.route("/traffic")
+def traffic() -> TrafficStop:
+    return TrafficStop().dump({"light_color":StopLight.green})
+
+# Returns follow openapi spec
+# definitions:
+#   TrafficStop:
+#     type: object
+#     properties:
+#       light_color:
+#         type: string
+#         enum:
+#         - green
+#         - yellow
+#         - red
 
 # Custom Backend
 @app.route("/custom_backend", backend="https://www.CLOUDRUN_URL.com/home")
@@ -128,10 +166,19 @@ def topic(data):
 
 # Pubsub topic with matching message attributes
 @app.topic("test", attributes={"key": "value"})
-def home2(data):
+def pubsub_attributes(data):
     app.log.info(data)
     return
 
+# create a pubsub subscription instead of pubsub triggered function
+@app.topic('test', use_subscription=True)
+def pubsub_subscription_use_subscription(data):
+    return 
+
+# create a pubsub subscription instead of pubsub triggered function and add filter
+@app.topic('test', use_subscription=True, filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"')
+def pubsub_subscription_filter(data):
+    return 
 
 # Example Storage trigger on the create/finalize event
 @app.storage("BUCKET_NAME", "finalize")

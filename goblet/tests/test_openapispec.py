@@ -223,3 +223,34 @@ class TestOpenApiSpec:
         spec.add_route(route)
         entry = spec.spec["paths"]["/home"]["get"]
         assert entry["x-google-backend"]["address"] == "CLOUDRUN/URL"
+
+    def test_marshmallow_attribute_function(self):
+        def schema_typed() -> DummySchema:
+            return DummySchema()
+
+        def dummyschema_to_properties(self, field, **kwargs):
+            if isinstance(field, fields.Float):
+                return {"type": "custom"}
+            if isinstance(field, fields.Int):
+                return {"type": "custom"}
+            return {}
+
+        route = RouteEntry(schema_typed, "route", "/home", "GET")
+        spec = OpenApiSpec(
+            "test",
+            "xyz.cloudfunction",
+            marshmallow_attribute_function=dummyschema_to_properties,
+        )
+        spec.add_route(route)
+        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+            "schema"
+        ]
+        assert response_content == {"$ref": "#/definitions/DummySchema"}
+        assert (
+            spec.spec["definitions"]["DummySchema"]["properties"]["flt"]["type"]
+            == "custom"
+        )
+        assert (
+            spec.spec["definitions"]["DummySchema"]["properties"]["id"]["type"]
+            == "custom"
+        )

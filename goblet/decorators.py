@@ -224,7 +224,7 @@ class Register_Handlers(DecoratorAPI):
             return "eventarc"
         if (
             request.is_json
-            and request.get_json()
+            and request.get_json(silent=True)
             and request.json.get("subscription")
             and request.json.get("message")
         ):

@@ -49,6 +49,7 @@ class ApiGateway(Handler):
         self.cors = cors or {}
         self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         self.routes_type = routes_type
+        self.marshmallow_attribute_function = None
 
     def format_name(self, name):
         # ([a-z0-9-.]+) for api gateway name
@@ -109,7 +110,7 @@ class ApiGateway(Handler):
         log.info("deploying api......")
         base_url = self.cloudfunction
         if self.backend == "cloudrun":
-            base_url = get_cloudrun_url(self.name)
+            base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
         self.generate_openapi_spec(base_url)
         try:
             resp = self.versioned_clients.apigateway_api.execute(
@@ -177,9 +178,7 @@ class ApiGateway(Handler):
                 gateway_resp = self.versioned_clients.apigateway.execute(
                     "patch",
                     parent_key="name",
-                    parent_schema="projects/{project_id}/locations/global/apis/"
-                    + self.name
-                    + "/configs/"
+                    parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
                     + self.name,
                     params={"updateMask": "apiConfig", "body": gateway},
                 )
@@ -265,6 +264,7 @@ class ApiGateway(Handler):
             cloudfunction,
             security_definitions=config.securityDefinitions,
             security=config.security,
+            marshmallow_attribute_function=self.marshmallow_attribute_function,
         )
         spec.add_apigateway_routes(self.resources)
         with open(f"{get_g_dir()}/{self.name}_openapi_spec.yml", "w") as f:
@@ -282,6 +282,7 @@ class OpenApiSpec:
         version="1.0.0",
         security_definitions=None,
         security=None,
+        marshmallow_attribute_function=None,
     ):
         self.spec = OrderedDict()
         self.app_name = app_name
@@ -301,12 +302,18 @@ class OpenApiSpec:
         self.spec["schemes"] = ["https"]
         self.spec["produces"] = ["application/json"]
         self.spec["paths"] = {}
+        marshmallow_plugin = MarshmallowPlugin()
         self.component_spec = APISpec(
             title="",
             version="1.0.0",
             openapi_version="2.0",
-            plugins=[MarshmallowPlugin()],
+            plugins=[marshmallow_plugin],
         )
+        if marshmallow_attribute_function:
+            marshmallow_plugin.converter.add_attribute_function(
+                marshmallow_attribute_function
+            )
+
         self.spec["definitions"] = {}
 
     def add_component(self, component):
