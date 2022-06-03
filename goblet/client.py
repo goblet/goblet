@@ -243,3 +243,7 @@ class VersionedClients:
             calls="projects.locations.triggers",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
+
+    @property
+    def gcloud(self):
+        return self.client_versions.get("gcloud", "")
