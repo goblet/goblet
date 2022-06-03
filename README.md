@@ -3,7 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/goblet-gcp?color=blue&style=plastic)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/goblet-gcp?style=plastic)
 ![Tests](https://github.com/anovis/goblet/actions/workflows/main.yml/badge.svg)
-[![codecov](https://codecov.io/gh/anovis/goblet/branch/master/graph/badge.svg?token=g8TL6Sc0P5)](https://codecov.io/gh/anovis/goblet)
+[![codecov](https://codecov.io/gh/anovis/goblet/branch/main/graph/badge.svg?token=g8TL6Sc0P5)](https://codecov.io/gh/anovis/goblet)
 
 Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis backed by [cloudfunctions](https://cloud.google.com/functions). 
 
@@ -216,7 +216,7 @@ INFO:goblet.deployer:deleting storage bucket......
 
 ## Examples
 
-[Goblet Examples](https://github.com/anovis/goblet/blob/master/examples/main.py)
+[Goblet Examples](https://github.com/anovis/goblet/blob/main/examples/main.py)
 
 ## Issues
 
