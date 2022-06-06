@@ -65,7 +65,11 @@ class TestDeployer:
 
         monkeypatch.setattr(subprocess, "check_output", mock)
 
-        app = Goblet(function_name="goblet", backend="cloudrun", client_versions={"gcloud":"alpha"})
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
+            client_versions={"gcloud": "alpha"},
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"] = HTTP(dummy_function)
