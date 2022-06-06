@@ -140,7 +140,7 @@ class Deployer:
                     cloudrun_options.append(f"--{k}")
                     cloudrun_options.append(v_item)
             else:
-                cloudrun_options.append(f"--{k}") 
+                cloudrun_options.append(f"--{k}")
                 if v:
                     cloudrun_options.append(v)
 
