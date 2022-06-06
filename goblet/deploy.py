@@ -146,7 +146,6 @@ class Deployer:
 
         base_command = [
             "gcloud",
-            client.gcloud,
             "run",
             "deploy",
             self.name,
@@ -161,6 +160,8 @@ class Deployer:
             "--port",
             "8080",
         ]
+        if client.gcloud:
+          base_command.insert(1, client.gcloud)  
         base_command.extend(cloudrun_options)
         try:
             if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(

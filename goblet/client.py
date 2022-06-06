@@ -246,4 +246,4 @@ class VersionedClients:
 
     @property
     def gcloud(self):
-        return self.client_versions.get("gcloud", "")
+        return self.client_versions.get("gcloud")

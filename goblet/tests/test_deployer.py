@@ -56,6 +56,39 @@ class TestDeployer:
             ]
         ).issubset(set(mock.call_args[0][0]))
 
+    def test_deploy_cloudrun_alpha(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        mock = Mock()
+
+        monkeypatch.setattr(subprocess, "check_output", mock)
+
+        app = Goblet(function_name="goblet", backend="cloudrun", client_versions={"gcloud":"alpha"})
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(
+            app,
+            only_function=True,
+            force=True,
+            config={"cloudrun": {"no-allow-unauthenticated": "", "max-instances": "2"}},
+        )
+
+        assert set(
+            [
+                "gcloud",
+                "alpha",
+                "run",
+                "deploy",
+                "--no-allow-unauthenticated",
+                "--max-instances",
+                "2",
+            ]
+        ).issubset(set(mock.call_args[0][0]))
+
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
