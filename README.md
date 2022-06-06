@@ -2,8 +2,8 @@
 
 ![PyPI](https://img.shields.io/pypi/v/goblet-gcp?color=blue&style=plastic)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/goblet-gcp?style=plastic)
-![Tests](https://github.com/anovis/goblet/actions/workflows/main.yml/badge.svg)
-[![codecov](https://codecov.io/gh/anovis/goblet/branch/main/graph/badge.svg?token=g8TL6Sc0P5)](https://codecov.io/gh/anovis/goblet)
+![Tests](https://github.com/goblet/goblet/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/goblet/goblet/branch/main/graph/badge.svg?token=g8TL6Sc0P5)](https://codecov.io/gh/goblet/goblet)
 
 Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis backed by [cloudfunctions](https://cloud.google.com/functions). 
 
@@ -43,7 +43,7 @@ $ curl https://api.uc.gateway.dev/home
 {"hello": "world"}
 ```
 
-> Note: Due to breaking changes in Cloudfunctions you will need to wrap your goblet class in a function. See [issue #88](https://github.com/anovis/goblet/issues/88). In the latest goblet version (0.5.0) there is a helper function `goblet_entrypoint` that can be used as well. 
+> Note: Due to breaking changes in Cloudfunctions you will need to wrap your goblet class in a function. See [issue #88](https://github.com/goblet/goblet/issues/88). In the latest goblet version (0.5.0) there is a helper function `goblet_entrypoint` that can be used as well. 
 
 > `goblet_entrypoint(app)`
 
@@ -184,7 +184,7 @@ You've now created your first app using goblet. You can make modifications to yo
 
 At this point, there are several next steps you can take.
 
-Docs - [Goblet Documentation](https://anovis.github.io/goblet/docs/build/html/index.html)
+Docs - [Goblet Documentation](https://goblet.github.io/goblet/docs/build/html/index.html)
 
 If you're done experimenting with Goblet and you'd like to cleanup, you can use the `goblet destroy` command making sure to specify the desired location, and Goblet will delete all the resources it created when running the goblet deploy command.
 
@@ -199,7 +199,7 @@ INFO:goblet.deployer:deleting storage bucket......
 
 ## Docs
 
-[Goblet Documentation](https://anovis.github.io/goblet/docs/build/html/index.html)
+[Goblet Documentation](https://goblet.github.io/goblet/docs/build/html/index.html)
 
 ## Blog Posts
 
@@ -216,11 +216,11 @@ INFO:goblet.deployer:deleting storage bucket......
 
 ## Examples
 
-[Goblet Examples](https://github.com/anovis/goblet/blob/main/examples/main.py)
+[Goblet Examples](https://github.com/goblet/goblet/blob/main/examples/main.py)
 
 ## Issues
 
-Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/anovis/goblet/issues) page.
+Please file any issues, bugs or feature requests as an issue on our [GitHub](https://github.com/goblet/goblet/issues) page.
 
 ## Github Action
 
@@ -244,7 +244,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
 ## Want to Contribute
 
-If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) submit a [pull request](https://github.com/anovis/goblet/pulls).
+If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) submit a [pull request](https://github.com/goblet/goblet/pulls).
 
 ## Want to Support
 

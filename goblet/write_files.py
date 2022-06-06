@@ -52,7 +52,7 @@ autocreated by goblet
 To test endpoints locally run `goblet local`
 To deploy cloudfunctions and other gcp resources defined in `main.py` run `goblet deploy`
 
-To check out goblet documentation go to [docs](https://anovis.github.io/goblet/docs/build/html/index.html)
+To check out goblet documentation go to [docs](https://goblet.github.io/goblet/docs/build/html/index.html)
 """
         )
 
