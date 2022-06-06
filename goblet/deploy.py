@@ -75,7 +75,7 @@ class Deployer:
                             config,
                         )
             if goblet.backend == "cloudrun":
-                self.create_cloudrun(versioned_clients.run, config)
+                self.create_cloudrun(versioned_clients, config)
         if not only_function:
             goblet.deploy(source_url, config=config)
 
@@ -134,9 +134,15 @@ class Deployer:
             cloudrun_configs["no-allow-unauthenticated"] = None
         cloudrun_options = []
         for k, v in cloudrun_configs.items():
-            cloudrun_options.append(f"--{k}")
-            if v:
-                cloudrun_options.append(v)
+            # Handle multiple entries with the same key ex. update-env-vars
+            if v and isinstance(v, list):
+                for v_item in v:
+                    cloudrun_options.append(f"--{k}")
+                    cloudrun_options.append(v_item)
+            else:
+                cloudrun_options.append(f"--{k}")
+                if v:
+                    cloudrun_options.append(v)
 
         base_command = [
             "gcloud",
@@ -154,6 +160,8 @@ class Deployer:
             "--port",
             "8080",
         ]
+        if client.gcloud:
+            base_command.insert(1, client.gcloud)
         base_command.extend(cloudrun_options)
         try:
             if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
@@ -175,7 +183,7 @@ class Deployer:
         if config.bindings:
             log.info(f"adding IAM bindings for cloudrun {self.name}")
             policy_bindings = {"policy": {"bindings": config.bindings}}
-            client.execute(
+            client.run.execute(
                 "setIamPolicy",
                 parent_key="resource",
                 parent_schema=self.run_name,
