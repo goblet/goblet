@@ -32,7 +32,7 @@ Example
             service_account_key: ${{ secrets.GCP_SA_KEY }}
             export_default_credentials: true
             - name: goblet deploy
-            uses: anovis/goblet-github-actions@v2.3
+            uses: goblet/goblet-github-actions@v2.3
             with:
                 project: ${{ env.GCLOUD_PROJECT }}
                 location: us-central1

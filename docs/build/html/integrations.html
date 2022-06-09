@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Integrations &mdash; goblet 0.7.3 documentation</title>
+  <title>Integrations &mdash; goblet 0.7.4 documentation</title>
   
 
   
@@ -201,7 +201,7 @@
         <span class="nt">service_account_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ secrets.GCP_SA_KEY }}</span>
         <span class="nt">export_default_credentials</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
         <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">goblet deploy</span>
-        <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">anovis/goblet-github-actions@v2.3</span>
+        <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">goblet/goblet-github-actions@v2.3</span>
         <span class="nt">with</span><span class="p">:</span>
             <span class="nt">project</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ env.GCLOUD_PROJECT }}</span>
             <span class="nt">location</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">us-central1</span>
