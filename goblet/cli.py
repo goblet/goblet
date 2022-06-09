@@ -22,7 +22,7 @@ def main():
 @main.command()
 def help():
     click.echo(
-        "Use goblet --help. You can also view the full docs for goblet at https://anovis.github.io/goblet/docs/build/html/index.html"
+        "Use goblet --help. You can also view the full docs for goblet at https://goblet.github.io/goblet/docs/build/html/index.html"
     )
 
 

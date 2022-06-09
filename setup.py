@@ -14,7 +14,7 @@ from setuptools import find_packages, setup, Command
 # Package meta-data.
 NAME = 'goblet-gcp'
 DESCRIPTION = 'Google Cloud functions wrapper'
-URL = 'https://github.com/anovis/goblet'
+URL = 'https://github.com/goblet/goblet'
 EMAIL = 'austen.novis@gmail.com'
 AUTHOR = 'Austen'
 REQUIRES_PYTHON = '>=3.7.0'
