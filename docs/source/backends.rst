@@ -36,3 +36,12 @@ Deploying to cloudrun requires either a Dockerfile or Procfile in the directory 
 of those files are found, then goblet will create a default Dockerfile that allows the app to be build, deployed, and run correctly. 
 Having a custom Dockerfile if only needed if you would like to customize you container at all. The default command in the Dockerfile
 is `functions-framework --target=goblet_entrypoint` and the default port is 8080. These can be overriden  in `config.json`
+
+.. code:: json 
+
+    {
+        "cloudrun":{
+            "command": "override command",
+            "port": 5000
+        }
+    }
