@@ -144,6 +144,16 @@ class Deployer:
                 if v:
                     cloudrun_options.append(v)
 
+        # Set default port to 8080
+        if not cloudrun_configs.get("port"):
+            cloudrun_options.append("--port")
+            cloudrun_options.append("8080")
+
+        # Set default command
+        if not cloudrun_configs.get("command"):
+            cloudrun_options.append("--command")
+            cloudrun_options.append("functions-framework,--target=goblet_entrypoint")
+
         base_command = [
             "gcloud",
             "run",
@@ -155,10 +165,6 @@ class Deployer:
             get_default_location(),
             "--source",
             get_dir(),
-            "--command",
-            "functions-framework,--target=goblet_entrypoint",
-            "--port",
-            "8080",
         ]
         if client.gcloud:
             base_command.insert(1, client.gcloud)
