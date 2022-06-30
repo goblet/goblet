@@ -349,7 +349,7 @@ class OpenApiSpec:
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS",
         }
-        method_spec["operationId"] = entry.function_name
+        method_spec["operationId"] = f"{entry.method.lower()}_{entry.function_name}"
 
         params = []
         type_hints = get_type_hints(entry.route_function)
