@@ -62,6 +62,10 @@ class ApiGateway(Handler):
         if not kwargs.get("cors"):
             kwargs["cors"] = self.cors
         path_entries = self.resources.get(path, {})
+        if kwargs["cors"] and "OPTIONS" in methods:
+            raise ValueError(
+                "Route entry cannot have both cors=True and methods=['OPTIONS', ...] configured."
+            )
         for method in methods:
             if path_entries.get(method):
                 raise ValueError(
@@ -73,6 +77,10 @@ class ApiGateway(Handler):
                 )
             entry = RouteEntry(func, name, path, method, **kwargs)
             path_entries[method] = entry
+        # Add OPTIONS if cors set
+        if kwargs["cors"]:
+            entry = RouteEntry(handle_cors_options, name, path, "OPTIONS", **kwargs)
+            path_entries["OPTIONS"] = entry
         self.resources[path] = path_entries
 
     def __call__(self, request, context=None):
@@ -80,11 +88,10 @@ class ApiGateway(Handler):
         path = request.path
         entry = self.resources.get(path, {}).get(method)
         if not entry:
-            # test param paths
+            # search param paths "/{PARAM}"
             for p in self.resources:
                 if "{" in p and self._matched_path(p, path):
                     entry = self.resources.get(p, {}).get(method)
-        # TODO: better handling
         if not entry:
             raise ValueError(f"No route found for {path} with {method}")
         return entry(request)
@@ -349,7 +356,7 @@ class OpenApiSpec:
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS",
         }
-        method_spec["operationId"] = entry.function_name
+        method_spec["operationId"] = f"{entry.method.lower()}_{entry.function_name}"
 
         params = []
         type_hints = get_type_hints(entry.route_function)
@@ -565,3 +572,8 @@ class CORSConfig(object):
                 self.get_access_control_headers() == other.get_access_control_headers()
             )
         return False
+
+
+def handle_cors_options():
+    """Return 200"""
+    return "success"

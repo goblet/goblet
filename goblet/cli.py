@@ -4,8 +4,9 @@ import os
 import logging
 import subprocess
 import json
+import requests
 
-from goblet.utils import get_goblet_app
+from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
 from goblet.deploy import Deployer
 from goblet.client import get_default_project
@@ -139,7 +140,8 @@ def sync(project, location, stage, dryrun):
 @main.command()
 @click.argument("cloudfunction")
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-def openapi(cloudfunction, stage):
+@click.option("-v", "--version", "version", envvar="VERSION", type=click.Choice("3"))
+def openapi(cloudfunction, stage, version):
     """
     You can find the generated openapi spec in /.goblet folder.
 
@@ -150,11 +152,22 @@ def openapi(cloudfunction, stage):
     try:
         app = get_goblet_app(GConfig().main_file or "main.py")
         app.handlers["route"].generate_openapi_spec(cloudfunction)
-
     except FileNotFoundError as not_found:
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+    if version:
+        with open(f"{get_g_dir()}/{app.function_name}_openapi_spec.yml", "r") as f:
+            data = f.read()
+        headers = {
+            "accept": "application/yaml",
+            "Content-Type": "application/yaml",
+        }
+        response = requests.post(
+            "https://converter.swagger.io/api/convert", headers=headers, data=data
+        )
+        with open(f"{get_g_dir()}/{app.function_name}_openapi_spec_3.yml", "w") as f:
+            f.write(response.text)
 
 
 @main.command()

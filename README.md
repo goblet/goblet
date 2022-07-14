@@ -5,7 +5,7 @@
 ![Tests](https://github.com/goblet/goblet/actions/workflows/main.yml/badge.svg)
 [![codecov](https://codecov.io/gh/goblet/goblet/branch/main/graph/badge.svg?token=g8TL6Sc0P5)](https://codecov.io/gh/goblet/goblet)
 
-Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis backed by [cloudfunctions](https://cloud.google.com/functions). 
+Goblet is a framework for writing serverless rest apis in python in google cloud. It allows you to quickly create and deploy python apis backed by [Cloud Functions](https://cloud.google.com/functions) and [Cloud Run](https://cloud.google.com/run)
 
 It provides:
 

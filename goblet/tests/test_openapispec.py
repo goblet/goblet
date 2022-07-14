@@ -25,7 +25,7 @@ class TestOpenApiSpec:
                         "protocol": "h2",
                         "path_translation": "APPEND_PATH_TO_ADDRESS",
                     },
-                    "operationId": "route",
+                    "operationId": "get_route",
                     "responses": {"200": {"description": "A successful response"}},
                 }
             }
