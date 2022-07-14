@@ -6,9 +6,6 @@ import sys
 
 from goblet.decorators import Register_Handlers
 
-logging.basicConfig()
-
-
 class Goblet(Register_Handlers):
     """
     Main class which inherits most of its logic from the Register_Handlers class. Local param is used
@@ -33,8 +30,7 @@ class Goblet(Register_Handlers):
             cors=cors,
             client_versions=self.client_versions,
             routes_type=routes_type,
-        )
-        self.log = logging.getLogger(__name__)
+        )  
         self.headers = {}
         self.g = G()
 
@@ -42,13 +38,18 @@ class Goblet(Register_Handlers):
         module_name = GConfig().main_file or "main"
         module_name = module_name.replace(".py", "")
         if local and sys.modules.get(module_name):
+            logging.basicConfig()
             self.log = logging.getLogger("werkzeug")
 
             def local_func(request):
                 return self(request)
 
             setattr(sys.modules[module_name], local, local_func)
-
+        else: 
+            import google.cloud.logging
+            client = google.cloud.logging.Client()
+            client.setup_logging()
+            self.log = logging.getLogger(__name__)
 
 def jsonify(*args, **kwargs):
     """
