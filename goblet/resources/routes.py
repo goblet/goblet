@@ -63,7 +63,9 @@ class ApiGateway(Handler):
             kwargs["cors"] = self.cors
         path_entries = self.resources.get(path, {})
         if kwargs["cors"] and "OPTIONS" in methods:
-             raise ValueError("Route entry cannot have both cors=True and methods=['OPTIONS', ...] configured.")
+            raise ValueError(
+                "Route entry cannot have both cors=True and methods=['OPTIONS', ...] configured."
+            )
         for method in methods:
             if path_entries.get(method):
                 raise ValueError(
@@ -77,8 +79,8 @@ class ApiGateway(Handler):
             path_entries[method] = entry
         # Add OPTIONS if cors set
         if kwargs["cors"]:
-            entry = RouteEntry(handle_cors_options, name, path, 'OPTIONS', **kwargs)
-            path_entries['OPTIONS'] = entry
+            entry = RouteEntry(handle_cors_options, name, path, "OPTIONS", **kwargs)
+            path_entries["OPTIONS"] = entry
         self.resources[path] = path_entries
 
     def __call__(self, request, context=None):
@@ -570,6 +572,7 @@ class CORSConfig(object):
                 self.get_access_control_headers() == other.get_access_control_headers()
             )
         return False
+
 
 def handle_cors_options():
     """Return 200"""
