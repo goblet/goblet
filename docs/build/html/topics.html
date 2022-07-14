@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.7.4 documentation</title>
+  <title>Topics &mdash; goblet 0.7.5 documentation</title>
   
 
   
@@ -598,7 +598,7 @@ multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and 
 <h2>OpenApi Spec<a class="headerlink" href="#openapi-spec" title="Permalink to this headline">¶</a></h2>
 <p>Goblet generates an <a class="reference external" href="https://swagger.io/specification/">OpenApi</a> spec from your route endpoints in order to create the api gateway. The open api spec is written to the
 <code class="docutils literal notranslate"><span class="pre">.goblet</span></code> folder and can be used for other tools. To generate just the open api spec you can run the command <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">openapi</span> <span class="pre">FUNCTION_NAME</span></code>.
-Note that gcp <a class="reference external" href="https://cloud.google.com/api-gateway/docs/openapi-overview">gateway</a> only supports openapi spec 2.0.</p>
+Note that gcp <a class="reference external" href="https://cloud.google.com/api-gateway/docs/openapi-overview">gateway</a> only supports openapi spec 2.0. You can additionally generate a 3.0.1 version of the spec by running <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">openapi</span> <span class="pre">FUNCTION_NAME</span> <span class="pre">-v</span> <span class="pre">3</span></code>.</p>
 <p>By default the param types will be created in the spec as strings and a base 200 response.
 You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.</p>
 <p>If you use a custom schema type you should create a schema class that inherits from marshmallow Schema.</p>
@@ -776,6 +776,7 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
     <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s1">&#39;localhost is allowed&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Setting cors on an endpoint or the application will automatically add an OPTIONS method to support preflighting requests.</p>
 </div>
 <div class="section" id="multiple-cloudfunctions">
 <h2>Multiple Cloudfunctions<a class="headerlink" href="#multiple-cloudfunctions" title="Permalink to this headline">¶</a></h2>

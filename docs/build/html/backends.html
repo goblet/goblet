@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Backends &mdash; goblet 0.7.4 documentation</title>
+  <title>Backends &mdash; goblet 0.7.5 documentation</title>
   
 
   
@@ -201,7 +201,16 @@ key, value pairs that will be parsed and passed into the <a class="reference ext
 </div>
 <p>Deploying to cloudrun requires either a Dockerfile or Procfile in the directory you are looking to deploy your goblet app. If neither
 of those files are found, then goblet will create a default Dockerfile that allows the app to be build, deployed, and run correctly.
-Having a custom Dockerfile if only needed if you would like to customize you container at all.</p>
+Having a custom Dockerfile if only needed if you would like to customize you container at all. The default command in the Dockerfile
+is <cite>functions-framework –target=goblet_entrypoint</cite> and the default port is 8080. These can be overriden  in <cite>config.json</cite></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;override command&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5000</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 

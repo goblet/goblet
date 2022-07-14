@@ -508,7 +508,7 @@ OpenApi Spec
 
 Goblet generates an `OpenApi`_ spec from your route endpoints in order to create the api gateway. The open api spec is written to the 
 ``.goblet`` folder and can be used for other tools. To generate just the open api spec you can run the command ``goblet openapi FUNCTION_NAME``.
-Note that gcp `gateway`_ only supports openapi spec 2.0. 
+Note that gcp `gateway`_ only supports openapi spec 2.0. You can additionally generate a 3.0.1 version of the spec by running ``goblet openapi FUNCTION_NAME -v 3``. 
 
 
 By default the param types will be created in the spec as strings and a base 200 response. 
@@ -711,6 +711,8 @@ Use the `CORSConfig` class to set customized cors headers from the `goblet.resou
     @app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost'))
     def custom_cors():
         return jsonify('localhost is allowed')
+
+Setting cors on an endpoint or the application will automatically add an OPTIONS method to support preflighting requests. 
 
 Multiple Cloudfunctions
 ^^^^^^^^^^^^^^^^^^^^^^^
