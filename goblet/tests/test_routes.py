@@ -160,6 +160,22 @@ class TestRoutes:
         resp3 = app(mock_event3, None)
         assert resp3[2]["Access-Control-Allow-Origin"] == "localhost"
 
+    def test_cors_options(self):
+        app = Goblet(function_name="goblet_cors")
+
+        @app.route("/test", cors=True)
+        def mock_function():
+            return "200"
+
+        mock_event1 = Mock()
+        mock_event1.path = "/test"
+        mock_event1.method = "OPTIONS"
+        mock_event1.headers = {}
+        mock_event1.json = {}
+        resp = app(mock_event1, None)
+        assert resp.body == "success"
+        assert resp.status_code == 200
+
     def test_deploy_routes(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")

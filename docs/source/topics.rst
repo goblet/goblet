@@ -712,6 +712,8 @@ Use the `CORSConfig` class to set customized cors headers from the `goblet.resou
     def custom_cors():
         return jsonify('localhost is allowed')
 
+Setting cors on an endpoint or the application will automatically add an OPTIONS method to support preflighting requests. 
+
 Multiple Cloudfunctions
 ^^^^^^^^^^^^^^^^^^^^^^^
 
