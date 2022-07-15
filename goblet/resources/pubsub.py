@@ -12,7 +12,7 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project
-from goblet.utils import attributes_to_filter
+from goblet.utils import attributes_to_filter, get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -163,7 +163,7 @@ class PubSub(Handler):
                 "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
                 "resource": f"projects/{get_default_project()}/topics/{topic_name}",
             },
-            "runtime": config.runtime or "python37",
+            "runtime": config.runtime or get_python_runtime(),
             **user_configs,
         }
         create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)

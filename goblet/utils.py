@@ -2,6 +2,7 @@ import os
 import importlib.util
 import collections.abc
 from contextlib import contextmanager
+import sys
 
 
 @contextmanager
@@ -76,3 +77,11 @@ def attributes_to_filter(attributes: dict) -> str:
     ]
     pubsub_filter = " OR ".join(attribute_list)
     return pubsub_filter
+
+
+def get_python_runtime() -> str:
+    """
+    Returns pythons runtime in cloudfunction format ex python37
+    """
+    version_info = sys.version_info
+    return f"python{version_info.major}{version_info.minor}"
