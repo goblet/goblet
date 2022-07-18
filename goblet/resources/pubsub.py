@@ -79,6 +79,7 @@ class PubSub(Handler):
             raise ValueError(f"Topic {topic_name} not found")
 
         # check attributes
+        response = None
         for _, info in topic["trigger"].items():
             if info["attributes"].items() <= attributes.items():
                 response = info["func"](data)
