@@ -81,11 +81,11 @@ class PubSub(Handler):
         # check attributes
         for _, info in topic["trigger"].items():
             if info["attributes"].items() <= attributes.items():
-                info["func"](data)
+                response = info["func"](data)
         for _, info in topic["subscription"].items():
             if info["attributes"].items() <= attributes.items():
-                info["func"](data)
-        return "success"
+                response = info["func"](data)
+        return response or "success"
 
     def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
