@@ -23,7 +23,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     destroy_cloudrun,
 )
-from goblet.utils import get_dir, get_g_dir, checksum
+from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime
 from goblet.write_files import write_dockerfile
 from goblet.config import GConfig
 
@@ -119,7 +119,7 @@ class Deployer:
             "entryPoint": entrypoint,
             "sourceUploadUrl": url,
             "httpsTrigger": {},
-            "runtime": "python37",
+            "runtime": get_python_runtime(),
             **user_configs,
         }
         create_cloudfunction(client, req_body, config=config.config)
