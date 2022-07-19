@@ -147,7 +147,7 @@ class Deployer:
         config = GConfig(config=config)
         cloudrun_configs = config.cloudrun or {}
         if not cloudrun_configs.get("no-allow-unauthenticated") or cloudrun_configs.get(
-                "allow-unauthenticated"
+            "allow-unauthenticated"
         ):
             cloudrun_configs["no-allow-unauthenticated"] = None
         cloudrun_options = []
