@@ -16,12 +16,17 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def create_cloudfunction(client, req_body, config=None):
+def create_cloudfunction(client, req_body, config=None, v2=False):
     """Creates a cloudfunction based on req_body"""
     function_name = req_body["name"].split("/")[-1]
+    params = {"body": req_body}
+    if v2:
+        params["functionId"] = function_name
     try:
         resp = client.execute(
-            "create", parent_key="location", params={"body": req_body}
+            "create",
+            parent_key="location" if client.version == "v1" else "parent",
+            params=params
         )
         log.info(f"creating cloudfunction {function_name}")
     except HttpError as e:
@@ -35,7 +40,8 @@ def create_cloudfunction(client, req_body, config=None):
             )
         else:
             raise e
-    client.wait_for_operation(resp["name"], calls="operations")
+
+    client.wait_for_operation(resp["name"], calls="projects.locations.operations" if v2 else "operations")
 
     # Set IAM Bindings
     config = GConfig(config=config)
