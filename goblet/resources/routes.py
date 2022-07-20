@@ -47,7 +47,6 @@ class ApiGateway(Handler):
         )
         self.name = self.format_name(name)
         self.cors = cors or {}
-        self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         self.routes_type = routes_type
         self.marshmallow_attribute_function = None
 
@@ -115,7 +114,7 @@ class ApiGateway(Handler):
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
         log.info("deploying api......")
-        base_url = self.cloudfunction = get_cloudfunction_url(self.versioned_clients.cloudfunctions, self.name)
+        base_url = get_cloudfunction_url(self.versioned_clients.cloudfunctions, self.name)
         if self.backend == "cloudrun":
             base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
         self.generate_openapi_spec(base_url)

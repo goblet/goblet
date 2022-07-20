@@ -16,11 +16,11 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def create_cloudfunction(client, req_body, config=None, v2=False):
+def create_cloudfunction(client: Client, req_body, config=None):
     """Creates a cloudfunction based on req_body"""
     function_name = req_body["name"].split("/")[-1]
     params = {"body": req_body}
-    if v2:
+    if client.version.startswith("v2"):
         params["functionId"] = function_name
     try:
         resp = client.execute(

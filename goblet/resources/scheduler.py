@@ -87,8 +87,12 @@ class Scheduler(Handler):
             )
             if not resp:
                 raise ValueError(f"Function {self.cloudfunction} not found")
-            target = resp["httpsTrigger"]["url"]
-            service_account = resp["serviceAccountEmail"]
+            try:
+                target = resp["httpsTrigger"]["url"]
+                service_account = resp["serviceAccountEmail"]
+            except KeyError:
+                target = resp["serviceConfig"]["uri"]
+                service_account = resp["serviceConfig"]["serviceAccountEmail"]
 
         if self.backend == "cloudrun":
             target = get_cloudrun_url(self.versioned_clients.run, self.name)

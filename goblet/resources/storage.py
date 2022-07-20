@@ -5,7 +5,7 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project, get_default_location
-from goblet.utils import get_python_runtime
+from goblet.utils import get_python_runtime, get_function_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -70,29 +70,53 @@ class Storage(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
-        if not self.resources or not sourceUrl:
+    def _deploy(self, source=None, entrypoint=None, config={}):
+        client = self.versioned_clients.cloudfunctions
+        if not self.resources or not source:
             return
 
         log.info("deploying storage functions......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
         for bucket in self.resources:
-            req_body = {
-                "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
-                    ".", "-"
-                ),
-                "description": config.description or "created by goblet",
-                "entryPoint": entrypoint,
-                "sourceUploadUrl": sourceUrl,
-                "eventTrigger": {
-                    "eventType": f"google.storage.object.{bucket['event_type']}",
-                    "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
-                },
-                "runtime": config.runtime or get_python_runtime(),
-                **user_configs,
-            }
-            create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
+            if self.versioned_clients.cloudfunctions.version == "v1":
+                req_body = {
+                    "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
+                        ".", "-"
+                    ),
+                    "description": config.description or "created by goblet",
+                    "entryPoint": entrypoint,
+                    "sourceUploadUrl": source["uploadUrl"],
+                    "eventTrigger": {
+                        "eventType": f"google.storage.object.{bucket['event_type']}",
+                        "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
+                    },
+                    "runtime": get_function_runtime(client, config),
+                    **user_configs,
+                }
+            elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
+                req_body = {
+                    "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
+                        ".", "-"
+                    ),
+                    "environment": "GEN_2",
+                    "description": config.description or "created by goblet",
+                    "buildConfig": {
+                        "runtime": get_function_runtime(client, config),
+                        "entryPoint": entrypoint,
+                        "source": {
+                            "storageSource": source["storageSource"]
+                        }
+                    },
+                    "eventTrigger": {
+                        "eventType": f"google.storage.object.{bucket['event_type']}",
+                        "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
+                    },
+                    **user_configs
+                }
+            else:
+                raise
+            create_cloudfunction(client, req_body)
 
     def destroy(self):
         for bucket in self.resources:

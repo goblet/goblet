@@ -4,6 +4,8 @@ import collections.abc
 from contextlib import contextmanager
 import sys
 
+from goblet.config import GConfig
+from goblet.client import Client
 
 @contextmanager
 def add_to_path(p):
@@ -85,3 +87,15 @@ def get_python_runtime() -> str:
     """
     version_info = sys.version_info
     return f"python{version_info.major}{version_info.minor}"
+
+
+def get_function_runtime(client: Client, config={}):
+    """
+    Returns the proper runtime to be used in cloudfunctions
+    """
+    config = GConfig(config)
+    runtime = config.runtime or get_python_runtime()
+    required_runtime = "python37" if client.version == "v1" else "python38"
+    if runtime < required_runtime:
+        return required_runtime
+    return runtime

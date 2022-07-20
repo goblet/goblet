@@ -23,7 +23,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     destroy_cloudrun,
 )
-from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime
+from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime, get_function_runtime
 from goblet.write_files import write_dockerfile
 from goblet.config import GConfig
 
@@ -50,7 +50,7 @@ class Deployer:
         self, goblet, skip_function=False, only_function=False, config={}, force=False
     ):
         """Deploys http cloudfunction and then calls goblet.deploy() to deploy any handler's required infrastructure"""
-        source_url = None
+        source = None
         versioned_clients = VersionedClients(goblet.client_versions)
         if not skip_function:
             if goblet.backend == "cloudfunction":
@@ -77,7 +77,7 @@ class Deployer:
             if goblet.backend == "cloudrun":
                 self.create_cloudrun(versioned_clients, config)
         if not only_function:
-            goblet.deploy(source_url, config=config)
+            goblet.deploy(source, config=config)
 
         return goblet
 
@@ -113,7 +113,6 @@ class Deployer:
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         user_configs = config.cloudfunction or {}
-        query_params = {}
         if client.version == "v1":
             req_body = {
                 "name": self.func_name,
@@ -121,16 +120,16 @@ class Deployer:
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": source["uploadUrl"],
                 "httpsTrigger": {},
-                "runtime": "python37",
+                "runtime": get_function_runtime(client, config),
                 **user_configs,
             }
-        elif client.version in ("v2alpha", "v2beta"):
+        elif client.version.startswith("v2"):
             req_body = {
                 "name": self.func_name,
                 "environment": "GEN_2",
                 "description": config.description or "created by goblet",
                 "buildConfig": {
-                    "runtime": "python38",
+                    "runtime": get_function_runtime(client, config),
                     "entryPoint": entrypoint,
                     "source": {
                         "storageSource": source["storageSource"]
@@ -140,7 +139,7 @@ class Deployer:
             }
         else:
             raise
-        create_cloudfunction(client, req_body, config=config.config, v2=client.version in ("v2alpha", "v2beta"))
+        create_cloudfunction(client, req_body, config=config.config)
 
     def create_cloudrun(self, client, config={}):
         """Creates http cloudfunction"""
@@ -230,7 +229,7 @@ class Deployer:
         modified = deployed_checksum != local_checksum
         return modified
 
-    def _upload_zip(self, client):
+    def _upload_zip(self, client) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
         self.zipf.close()
         zip_size = os.stat(f".goblet/{self.name}.zip").st_size
