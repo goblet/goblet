@@ -143,8 +143,11 @@ def get_cloudfunction_url(client, name):
             parent_schema="projects/{project_id}/locations/{location_id}/functions/"
             + name,
         )
-        target = resp["httpsTrigger"]["url"]
-
+        # handle both cases: first for gcf v1 and second for v2
+        try:
+            target = resp["httpsTrigger"]["url"]
+        except KeyError:
+            target = resp["serviceConfig"]["uri"]
         return target
     except HttpError as e:
         if e.resp.status == 404:
