@@ -12,7 +12,7 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project
-from goblet.utils import attributes_to_filter, get_python_runtime
+from goblet.utils import attributes_to_filter, get_python_runtime, get_function_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -150,23 +150,44 @@ class PubSub(Handler):
             req_body=req_body,
         )
 
-    def _deploy_trigger(self, topic_name, sourceUrl=None, entrypoint=None):
+    def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
         config = GConfig()
         user_configs = config.cloudfunction or {}
-        req_body = {
-            "name": function_name,
-            "description": config.description or "created by goblet",
-            "entryPoint": entrypoint,
-            "sourceUploadUrl": sourceUrl,
-            "eventTrigger": {
-                "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
-                "resource": f"projects/{get_default_project()}/topics/{topic_name}",
-            },
-            "runtime": config.runtime or get_python_runtime(),
-            **user_configs,
-        }
+        if self.versioned_clients.cloudfunctions.version == "v1":
+            req_body = {
+                "name": function_name,
+                "description": config.description or "created by goblet",
+                "entryPoint": entrypoint,
+                "sourceUploadUrl": source["uploadUrl"],
+                "eventTrigger": {
+                    "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
+                    "resource": f"projects/{get_default_project()}/topics/{topic_name}",
+                },
+                "runtime": get_function_runtime(self.versioned_clients.cloudfunctions, config),
+                **user_configs,
+            }
+        elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
+            req_body = {
+                "name": function_name,
+                "environment": "GEN_2",
+                "description": config.description or "created by goblet",
+                "buildConfig": {
+                    "runtime": get_function_runtime(self.versioned_clients.cloudfunctions, config),
+                    "entryPoint": entrypoint,
+                    "source": {
+                        "storageSource": source["storageSource"]
+                    }
+                },
+                "eventTrigger": {
+                    "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
+                    "pubsubTopic": f"projects/{get_default_project()}/topics/{topic_name}",
+                },
+                **user_configs,
+            }
+        else:
+            raise
         create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
 
     def _sync(self, dryrun=False):
