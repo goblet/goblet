@@ -76,7 +76,7 @@ class Deployer:
                         )
             if goblet.backend == "cloudrun":
                 log.info("zipping cloudrun......")
-                log.info("uploading function zip to gs......")
+                log.info("uploading cloudrun source zip to gs......")
                 source = self._upload_zip(versioned_clients.cloudfunctions)
                 self.create_cloudrun(versioned_clients, config, source)
         if not only_function:
