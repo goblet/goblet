@@ -22,8 +22,9 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction,
     destroy_cloudfunction_artifacts,
     destroy_cloudrun,
+    get_function_runtime
 )
-from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime, get_function_runtime
+from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime
 from goblet.write_files import write_dockerfile
 from goblet.config import GConfig
 

@@ -11,6 +11,7 @@ from goblet.client import (
     get_default_location,
     get_credentials,
 )
+from goblet.utils import get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -41,7 +42,10 @@ def create_cloudfunction(client: Client, req_body, config=None):
         else:
             raise e
 
-    client.wait_for_operation(resp["name"], calls="projects.locations.operations" if v2 else "operations")
+    client.wait_for_operation(
+        resp["name"],
+        calls="projects.locations.operations" if client.version.startswith("v2") else "operations"
+    )
 
     # Set IAM Bindings
     config = GConfig(config=config)
@@ -251,3 +255,15 @@ def destroy_eventarc_trigger(client, trigger_name, region):
             log.info(f"eventarc trigger  {trigger_name} already destroyed")
         else:
             raise e
+
+
+def get_function_runtime(client, config=None):
+    """
+    Returns the proper runtime to be used in cloudfunctions
+    """
+    runtime = config.runtime or get_python_runtime()
+    required_runtime = "python37" if client.version == "v1" else "python38"
+    if runtime < required_runtime:
+        return required_runtime
+    return runtime
+

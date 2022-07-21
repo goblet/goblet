@@ -5,7 +5,8 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project, get_default_location
-from goblet.utils import get_python_runtime, get_function_runtime
+from goblet.utils import get_python_runtime
+from goblet.common_cloud_actions import get_function_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)

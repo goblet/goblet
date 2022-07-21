@@ -4,6 +4,7 @@ from goblet.common_cloud_actions import (
     destroy_pubsub_subscription,
     get_cloudrun_url,
     get_cloudfunction_url,
+    get_function_runtime,
 )
 from goblet.deploy import create_cloudfunction, destroy_cloudfunction
 
@@ -12,7 +13,7 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project
-from goblet.utils import attributes_to_filter, get_python_runtime, get_function_runtime
+from goblet.utils import attributes_to_filter, get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
