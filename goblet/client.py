@@ -247,3 +247,12 @@ class VersionedClients:
     @property
     def gcloud(self):
         return self.client_versions.get("gcloud")
+
+    @property
+    def run_uploader(self):
+        return Client(
+            "cloudfunctions",
+            "v2beta",
+            calls="projects.locations.functions",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
