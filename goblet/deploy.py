@@ -75,7 +75,10 @@ class Deployer:
                             config,
                         )
             if goblet.backend == "cloudrun":
-                self.create_cloudrun(versioned_clients, config)
+                log.info("zipping cloudrun......")
+                log.info("uploading function zip to gs......")
+                source = self._upload_zip(versioned_clients.cloudfunctions)
+                self.create_cloudrun(versioned_clients, config, source)
         if not only_function:
             goblet.deploy(source_url, config=config)
 
@@ -124,7 +127,7 @@ class Deployer:
         }
         create_cloudfunction(client, req_body, config=config.config)
 
-    def create_cloudrun(self, client, config={}):
+    def create_cloudrun(self, client, config={}, source=None):
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         cloudrun_configs = config.cloudrun or {}
@@ -231,7 +234,7 @@ class Deployer:
 
         log.info("function code uploaded")
 
-        return resp["uploadUrl"]
+        return resp
 
     def create_zip(self):
         """Creates initial goblet zipfile"""
@@ -241,17 +244,21 @@ class Deployer:
             get_g_dir() + f"/{self.name}.zip", "w", zipfile.ZIP_DEFLATED
         )
 
-    def zip(self):
+    def zip(self, gen="v1"):
         """Zips requirements.txt, python files and any additional files based on config.customFiles"""
-        config = GConfig()
-        self.zip_file("requirements.txt")
-        if config.main_file:
-            self.zip_file(config.main_file, "main.py")
-        include = config.customFiles or []
-        include.append("*.py")
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            self.zip_directory(get_dir() + "/*", include=include)
+        if gen == "v1":
+            config = GConfig()
+            self.zip_file("requirements.txt")
+            if config.main_file:
+                self.zip_file(config.main_file, "main.py")
+            include = config.customFiles or []
+            include.append("*.py")
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.zip_directory(get_dir() + "/*", include=include)
+        else:
+            # TODO need to specify files to zip for cloudrun
+            pass
 
     def zip_file(self, filename, arcname=None):
         self.zipf.write(filename, arcname)
