@@ -55,7 +55,7 @@ class Deployer:
         if not skip_function:
             if goblet.backend == "cloudfunction":
                 log.info("zipping function......")
-                self.zip()
+                self.zip("cloudfunction")
                 if (
                     not force
                     and self.get_function(versioned_clients.cloudfunctions)
@@ -76,6 +76,7 @@ class Deployer:
                         )
             if goblet.backend == "cloudrun":
                 log.info("zipping cloudrun......")
+                self.zip("cloudrun")
                 log.info("uploading cloudrun source zip to gs......")
                 source = self._upload_zip(versioned_clients.run_uploader)
                 self.create_cloudrun(versioned_clients, config, source)
@@ -263,9 +264,9 @@ class Deployer:
             get_g_dir() + f"/{self.name}.zip", "w", zipfile.ZIP_DEFLATED
         )
 
-    def zip(self, gen="v1"):
+    def zip(self, backend="cloudfunction"):
         """Zips requirements.txt, python files and any additional files based on config.customFiles"""
-        if gen == "v1":
+        if backend == "cloudfunction":
             config = GConfig()
             self.zip_file("requirements.txt")
             if config.main_file:
@@ -275,9 +276,11 @@ class Deployer:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 self.zip_directory(get_dir() + "/*", include=include)
-        else:
+        elif backend == "cloudrun":
             # TODO need to specify files to zip for cloudrun
             pass
+        else:
+            raise ValueError(f"backend (given {backend}) must be cloudfunction or cloudrun")
 
     def zip_file(self, filename, arcname=None):
         self.zipf.write(filename, arcname)
