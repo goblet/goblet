@@ -17,12 +17,9 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def create_cloudfunction(client: Client, req_body, config=None):
+def create_cloudfunction(client: Client, params, config={}):
     """Creates a cloudfunction based on req_body"""
-    function_name = req_body["name"].split("/")[-1]
-    params = {"body": req_body}
-    if client.version.startswith("v2"):
-        params["functionId"] = function_name
+    function_name = params["body"]["name"].split("/")[-1]
     try:
         resp = client.execute(
             "create",
@@ -36,26 +33,26 @@ def create_cloudfunction(client: Client, req_body, config=None):
             resp = client.execute(
                 "patch",
                 parent_key="name",
-                parent_schema=req_body["name"],
-                params={"body": req_body},
+                parent_schema=params["body"]["name"],
+                params={"body": params["body"]},
             )
         else:
             raise e
 
     client.wait_for_operation(
         resp["name"],
-        calls="projects.locations.operations" if client.version.startswith("v2") else "operations"
+        calls="operations" if client.version == "v1" else "projects.locations.operations"
     )
 
     # Set IAM Bindings
-    config = GConfig(config=config)
+    config = config or GConfig(config=config)
     if config.bindings:
         log.info(f"adding IAM bindings for cloudfunction {function_name}")
         policy_bindings = {"policy": {"bindings": config.bindings}}
         resp = client.execute(
             "setIamPolicy",
             parent_key="resource",
-            parent_schema=req_body["name"],
+            parent_schema=params["body"]["name"],
             params={"body": policy_bindings},
         )
 

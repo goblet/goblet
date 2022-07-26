@@ -107,9 +107,11 @@ class ApiGateway(Handler):
         return True
 
     def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
-        if self.routes_type != "apigateway" and self.backend == "cloudfunctions":
+        if self.routes_type != "apigateway" \
+                and self.backend.startswith("cloudfunction") \
+                and self.versioned_clients.cloudfunctions == "v1":
             raise ValueError(
-                f"Cloudfunctions backend is not supported for routes_type {self.routes_type}"
+                f"Cloudfunctions v1 backend is not supported for routes_type {self.routes_type}"
             )
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
