@@ -20,7 +20,7 @@ class EventArc(Handler):
 
     resource_type = "eventarc"
     # Cloudfunctions gen 2 is also supported
-    valid_backends = ["cloudrun"]
+    valid_backends = ["cloudrun", "cloudfunction"]
     can_sync = True
 
     def __init__(

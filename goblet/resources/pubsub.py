@@ -124,7 +124,7 @@ class PubSub(Handler):
         ):
             service_account = gconfig.cloudrun.get("service-account")
         elif (
-            self.backend == "cloudfunction"
+            self.backend.startswith("cloudfunction")
             and gconfig.cloudfunction
             and gconfig.pubsub.get("serviceAccountEmail")
         ):

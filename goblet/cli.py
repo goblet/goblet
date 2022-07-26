@@ -62,13 +62,14 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         if config:
             config = json.loads(config)
         app = get_goblet_app(GConfig().main_file or "main.py")
-        Deployer({"name": app.function_name}).deploy(
-            app,
-            skip_function=skip_function,
-            only_function=only_function,
-            config=config,
-            force=force,
-        )
+        # Deployer({"name": app.function_name}).deploy(
+        #     app,
+        #     skip_function=skip_function,
+        #     only_function=only_function,
+        #     config=config,
+        #     force=force,
+        # )
+        app.deploy(skip_function, only_function, config=config, force=False)
 
     except FileNotFoundError as not_found:
         click.echo(
