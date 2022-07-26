@@ -128,10 +128,6 @@ class Deployer:
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         cloudrun_configs = config.cloudrun or {}
-        if not cloudrun_configs.get("no-allow-unauthenticated") or cloudrun_configs.get(
-            "allow-unauthenticated"
-        ):
-            cloudrun_configs["no-allow-unauthenticated"] = None
         cloudrun_options = []
         for k, v in cloudrun_configs.items():
             # Handle multiple entries with the same key ex. update-env-vars
