@@ -1,6 +1,6 @@
 import logging
 
-from goblet.handler import Handler
+from goblet.resources.handler import Handler
 from goblet.client import (
     get_default_project,
     get_default_location,
@@ -20,7 +20,7 @@ class Scheduler(Handler):
     """
 
     resource_type = "scheduler"
-    valid_backends = ["cloudfunction", "cloudrun"]
+    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
 
     def register_job(self, name, func, kwargs):

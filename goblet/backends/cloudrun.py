@@ -1,6 +1,5 @@
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_project, get_default_location
-from goblet.common_cloud_actions import get_function_runtime
 
 
 class CloudRun(Backend):
@@ -16,5 +15,7 @@ class CloudRun(Backend):
         put_headers = {
             "content-type": "application/zip",
         }
-        source = self._gcs_upload(self.client, put_headers, VersionedClients().run_uploader)
+        source = self._gcs_upload(
+            self.client, put_headers, VersionedClients().run_uploader
+        )
         # TODO start cloud build here (source already deployed)

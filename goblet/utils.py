@@ -4,6 +4,7 @@ import collections.abc
 from contextlib import contextmanager
 import sys
 
+
 @contextmanager
 def add_to_path(p):
     import sys
@@ -84,4 +85,3 @@ def get_python_runtime() -> str:
     """
     version_info = sys.version_info
     return f"python{version_info.major}{version_info.minor}"
-

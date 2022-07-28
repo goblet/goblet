@@ -6,7 +6,7 @@ from goblet.config import GConfig
 from goblet.response import Response
 import logging
 
-from goblet.handler import Handler
+from goblet.resources.handler import Handler
 from goblet.client import get_default_project, get_default_location
 
 log = logging.getLogger("goblet.deployer")
@@ -20,7 +20,7 @@ class EventArc(Handler):
 
     resource_type = "eventarc"
     # Cloudfunctions gen 2 is also supported
-    valid_backends = ["cloudrun", "cloudfunction"]
+    valid_backends = ["cloudrun", "cloudfunctionv2"]
     can_sync = True
 
     def __init__(

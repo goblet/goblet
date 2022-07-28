@@ -5,15 +5,17 @@ from goblet.common_cloud_actions import (
     get_cloudrun_url,
     get_cloudfunction_url,
     get_function_runtime,
+    create_cloudfunctionv2,
+    create_cloudfunctionv1,
+    destroy_cloudfunction,
 )
-from goblet.deploy import create_cloudfunction, destroy_cloudfunction
 
 from goblet.config import GConfig
 import logging
 
-from goblet.handler import Handler
+from goblet.resources.handler import Handler
 from goblet.client import get_default_project
-from goblet.utils import attributes_to_filter, get_python_runtime
+from goblet.utils import attributes_to_filter
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -24,7 +26,7 @@ class PubSub(Handler):
     https://cloud.google.com/functions/docs/calling/pubsub
     """
 
-    valid_backends = ["cloudfunction", "cloudrun"]
+    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
 
@@ -166,30 +168,38 @@ class PubSub(Handler):
                     "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
                     "resource": f"projects/{get_default_project()}/topics/{topic_name}",
                 },
-                "runtime": get_function_runtime(self.versioned_clients.cloudfunctions, config),
+                "runtime": get_function_runtime(
+                    self.versioned_clients.cloudfunctions, config
+                ),
                 **user_configs,
             }
+            create_cloudfunctionv1(
+                self.versioned_clients.cloudfunctions, {"body": req_body}
+            )
         elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
-            req_body = {
-                "name": function_name,
-                "environment": "GEN_2",
-                "description": config.description or "created by goblet",
-                "buildConfig": {
-                    "runtime": get_function_runtime(self.versioned_clients.cloudfunctions, config),
-                    "entryPoint": entrypoint,
-                    "source": {
-                        "storageSource": source["storageSource"]
-                    }
+            params = {
+                "body": {
+                    "name": function_name,
+                    "environment": "GEN_2",
+                    "description": config.description or "created by goblet",
+                    "buildConfig": {
+                        "runtime": get_function_runtime(
+                            self.versioned_clients.cloudfunctions, config
+                        ),
+                        "entryPoint": entrypoint,
+                        "source": {"storageSource": source["storageSource"]},
+                    },
+                    "eventTrigger": {
+                        "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
+                        "pubsubTopic": f"projects/{get_default_project()}/topics/{topic_name}",
+                    },
+                    **user_configs,
                 },
-                "eventTrigger": {
-                    "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
-                    "pubsubTopic": f"projects/{get_default_project()}/topics/{topic_name}",
-                },
-                **user_configs,
+                "functionId": function_name.split("/")[-1],
             }
+            create_cloudfunctionv2(self.versioned_clients.cloudfunctions, params)
         else:
             raise
-        create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
 
     def _sync(self, dryrun=False):
         subscriptions = self.versioned_clients.pubsub.execute(

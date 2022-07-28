@@ -12,11 +12,11 @@ from requests import request
 
 from goblet.config import GConfig
 from goblet.utils import get_g_dir, checksum
-from goblet.common_cloud_actions import create_cloudfunction
 
 
 class Backend:
     """Base backend class"""
+
     resource_type = ""
     version = ""
 
@@ -32,7 +32,7 @@ class Backend:
         # specifies which files to be zipped
         self.zip_config = zip_config or {
             "include": ["*.py"],
-            "exclude": ["build", "docs", "examples", "test", "tests", "venv"]
+            "exclude": ["build", "docs", "examples", "test", "tests", "venv"],
         }
 
         self.func_path = func_path
@@ -43,9 +43,7 @@ class Backend:
         """Creates initial goblet zipfile"""
         if not os.path.isdir(get_g_dir()):
             os.mkdir(get_g_dir())
-        return zipfile.ZipFile(
-            self.zip_path, "w", zipfile.ZIP_DEFLATED
-        )
+        return zipfile.ZipFile(self.zip_path, "w", zipfile.ZIP_DEFLATED)
 
     def _delta(self, client):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
@@ -77,20 +75,12 @@ class Backend:
     def _upload_zip(self, client, headers=None) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
         self.zipf.close()
-        zip_size = os.stat(f".goblet/{self.name}.zip").st_size
         with open(f".goblet/{self.name}.zip", "rb") as f:
             resp = client.execute("generateUploadUrl", params={"body": {}})
-            put_headers = {
-                "content-type": "application/zip",
-                "Content-Length": str(zip_size),
-            }
-            if client.version == "v1":
-                put_headers["x-goog-content-length-range"] = "0,104857600"
-
             requests.put(
                 resp["uploadUrl"],
                 data=f,
-                headers=put_headers,
+                headers=headers,
             ).raise_for_status()
 
         self.log.info("function code uploaded")
@@ -127,5 +117,3 @@ class Backend:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
-
-

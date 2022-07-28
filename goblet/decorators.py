@@ -1,7 +1,6 @@
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-from goblet.backends.backend import Backend
 from goblet.client import VersionedClients
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
@@ -298,21 +297,25 @@ class Register_Handlers(DecoratorAPI):
             return True
         return False
 
-    def get_backend_and_check_versions(self, backend: str):
+    def get_backend_and_check_versions(self, backend: str, client_versions: dict):
         try:
             backend_class = SUPPORTED_BACKENDS[backend]
         except KeyError:
             raise KeyError(f"Backend {backend} not in supported backends")
 
-        version_key = "cloudfunctions" if backend.startswith("cloudfunction") else backend
-        specified_version = self.client_versions.get(version_key)
+        version_key = (
+            "cloudfunctions" if backend.startswith("cloudfunction") else backend
+        )
+        specified_version = client_versions.get(version_key)
         if specified_version:
-            if specified_version not in backend_class.supported_verions:
-                raise ValueError(f"{version_key} version {self.client_versions[version_key]} "
-                                 f"not supported. Valid version(s): {', '.join(backend_class.supported_verions)}.")
+            if specified_version not in backend_class.supported_versions:
+                raise ValueError(
+                    f"{version_key} version {self.client_versions[version_key]} "
+                    f"not supported. Valid version(s): {', '.join(backend_class.supported_versions)}."
+                )
         else:
             # if not set, set to last in list of supported versions (most recent)
-            self.client_versions[version_key] = backend_class.supported_verions[-1]
+            self.client_versions[version_key] = backend_class.supported_versions[-1]
 
         return backend_class
 

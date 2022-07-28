@@ -1,11 +1,11 @@
-from goblet.handler import Handler
+from goblet.resources.handler import Handler
 
 
 class HTTP(Handler):
     """Http Trigger"""
 
     resource_type = "http"
-    valid_backends = ["cloudfunction", "cloudrun"]
+    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
 
     def __init__(
         self,

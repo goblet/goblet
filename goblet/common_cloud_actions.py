@@ -17,15 +17,33 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def create_cloudfunction(client: Client, params, config={}):
+def create_cloudfunctionv1(client: Client, params: dict, config=None):
+    create_cloudfunction(
+        client, params, config, parent_key="location", operations_calls="operations"
+    )
+
+
+def create_cloudfunctionv2(client: Client, params: dict, config=None):
+    create_cloudfunction(
+        client,
+        params,
+        config,
+        parent_key="parent",
+        operations_calls="projects.locations.operations",
+    )
+
+
+def create_cloudfunction(
+    client: Client,
+    params: dict,
+    config=None,
+    parent_key="location",
+    operations_calls="operations",
+):
     """Creates a cloudfunction based on req_body"""
     function_name = params["body"]["name"].split("/")[-1]
     try:
-        resp = client.execute(
-            "create",
-            parent_key="location" if client.version == "v1" else "parent",
-            params=params
-        )
+        resp = client.execute("create", parent_key=parent_key, params=params)
         log.info(f"creating cloudfunction {function_name}")
     except HttpError as e:
         if e.resp.status == 409:
@@ -39,10 +57,7 @@ def create_cloudfunction(client: Client, params, config={}):
         else:
             raise e
 
-    client.wait_for_operation(
-        resp["name"],
-        calls="operations" if client.version == "v1" else "projects.locations.operations"
-    )
+    client.wait_for_operation(resp["name"], calls=operations_calls)
 
     # Set IAM Bindings
     config = config or GConfig(config=config)
@@ -261,6 +276,8 @@ def get_function_runtime(client, config=None):
     runtime = config.runtime or get_python_runtime()
     required_runtime = "python37" if client.version == "v1" else "python38"
     if runtime < required_runtime:
-        return required_runtime
+        raise ValueError(
+            f"Your current python runtime is {runtime}. Your backend requires a minimum of {required_runtime}"
+            f". Either upgrade python on your machine or set the 'runtime' field in config.json."
+        )
     return runtime
-

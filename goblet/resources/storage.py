@@ -1,12 +1,15 @@
-from goblet.deploy import create_cloudfunction, destroy_cloudfunction
+from goblet.deploy import destroy_cloudfunction
 
 from goblet.config import GConfig
 import logging
 
-from goblet.handler import Handler
+from goblet.resources.handler import Handler
 from goblet.client import get_default_project, get_default_location
-from goblet.utils import get_python_runtime
-from goblet.common_cloud_actions import get_function_runtime
+from goblet.common_cloud_actions import (
+    get_function_runtime,
+    create_cloudfunctionv2,
+    create_cloudfunctionv1,
+)
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -20,7 +23,7 @@ class Storage(Handler):
     """
 
     resource_type = "storage"
-    valid_backends = ["cloudfunction"]
+    valid_backends = ["cloudfunction", "cloudfunctionv2"]
 
     def __init__(
         self, name, versioned_clients=None, resources=None, backend="cloudfunction"
@@ -80,11 +83,12 @@ class Storage(Handler):
         config = GConfig()
         user_configs = config.cloudfunction or {}
         for bucket in self.resources:
+            function_name = f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
+                ".", "-"
+            )
             if self.versioned_clients.cloudfunctions.version == "v1":
                 req_body = {
-                    "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
-                        ".", "-"
-                    ),
+                    "name": function_name,
                     "description": config.description or "created by goblet",
                     "entryPoint": entrypoint,
                     "sourceUploadUrl": source["uploadUrl"],
@@ -95,29 +99,31 @@ class Storage(Handler):
                     "runtime": get_function_runtime(client, config),
                     **user_configs,
                 }
+                create_cloudfunctionv1(
+                    self.versioned_clients.cloudfunctions, {"body": req_body}
+                )
             elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
-                req_body = {
-                    "name": f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
-                        ".", "-"
-                    ),
-                    "environment": "GEN_2",
-                    "description": config.description or "created by goblet",
-                    "buildConfig": {
-                        "runtime": get_function_runtime(client, config),
-                        "entryPoint": entrypoint,
-                        "source": {
-                            "storageSource": source["storageSource"]
-                        }
+                params = {
+                    "body": {
+                        "name": function_name,
+                        "environment": "GEN_2",
+                        "description": config.description or "created by goblet",
+                        "buildConfig": {
+                            "runtime": get_function_runtime(client, config),
+                            "entryPoint": entrypoint,
+                            "source": {"storageSource": source["storageSource"]},
+                        },
+                        "eventTrigger": {
+                            "eventType": f"google.storage.object.{bucket['event_type']}",
+                            "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
+                        },
+                        **user_configs,
                     },
-                    "eventTrigger": {
-                        "eventType": f"google.storage.object.{bucket['event_type']}",
-                        "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
-                    },
-                    **user_configs
+                    "functionId": function_name.split("/")[-1],
                 }
+                create_cloudfunctionv2(self.versioned_clients.cloudfunctions, params)
             else:
                 raise
-            create_cloudfunction(client, req_body)
 
     def destroy(self):
         for bucket in self.resources:

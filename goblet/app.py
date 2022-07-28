@@ -17,6 +17,7 @@ class Goblet(Register_Handlers):
     Main class which inherits most of its logic from the Register_Handlers class. Local param is used
     to set the entrypoint for running goblet locally
     """
+
     def __init__(
         self,
         function_name="goblet",
@@ -29,7 +30,9 @@ class Goblet(Register_Handlers):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         self.client_versions.update(client_versions or {})
         self.backend = backend
-        self.backend_class = self.get_backend_and_check_versions(backend)
+        self.backend_class = self.get_backend_and_check_versions(
+            backend, client_versions or {}
+        )
         # self.client_versions[self.backend_class.resource_type] = self.backend_class.version
         self.function_name = GConfig().function_name or function_name
 
