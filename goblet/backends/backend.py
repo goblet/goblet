@@ -45,7 +45,7 @@ class Backend:
             os.mkdir(get_g_dir())
         return zipfile.ZipFile(self.zip_path, "w", zipfile.ZIP_DEFLATED)
 
-    def _delta(self, client):
+    def delta(self, client):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
         self.zipf.close()
         with open(self.zip_path, "rb") as fh:
@@ -65,8 +65,8 @@ class Backend:
         self.log.info("zipping source code")
         self.zipf = self._create_zip()
         # zip with default include and exclude
-        self._zip()
-        if not force and self.get() and not self._delta(client):
+        self.zip()
+        if not force and self.get() and not self.delta(client):
             self.log.info("No changes detected....")
             return None
         self.log.info("uploading source zip to gs......")
@@ -97,7 +97,7 @@ class Backend:
             if e.resp.status != 404:
                 raise
 
-    def _zip(self):
+    def zip(self):
         """Zips requirements.txt, python files and any additional files based on config.customFiles"""
         self._zip_file("requirements.txt")
         if self.config.main_file:

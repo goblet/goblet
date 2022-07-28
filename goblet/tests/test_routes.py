@@ -2,7 +2,6 @@ from unittest.mock import Mock
 import pytest
 from goblet import Goblet, Response, jsonify
 from goblet.resources.routes import ApiGateway, CORSConfig
-from goblet.deploy import Deployer
 from goblet.test_utils import (
     get_responses,
     get_response,
@@ -187,7 +186,7 @@ class TestRoutes:
 
         app.route("/")(dummy_function)
 
-        Deployer().deploy(app, force=True)
+        app.deploy(force=True)
 
         post_api = get_response(
             "routes-deploy", "post-v1-projects-goblet-locations-global-apis_1.json"

@@ -1,5 +1,4 @@
 from goblet import Goblet
-from goblet.deploy import Deployer
 from goblet.resources.storage import Storage
 from goblet.test_utils import get_responses, dummy_function, mock_dummy_function
 
@@ -49,7 +48,7 @@ class TestStorage:
 
         app.storage("test", "finalize")(dummy_function)
 
-        Deployer().deploy(app, force=True)
+        app.deploy(force=True)
 
         responses = get_responses("storage-deploy")
 

@@ -1,4 +1,9 @@
-from goblet.client import DEFAULT_CLIENT_VERSIONS
+from goblet.client import DEFAULT_CLIENT_VERSIONS, VersionedClients
+from goblet.common_cloud_actions import (
+    destroy_cloudfunction,
+    destroy_cloudfunction_artifacts,
+    destroy_cloudrun,
+)
 from goblet.config import GConfig
 import logging
 import json
@@ -65,6 +70,22 @@ class Goblet(Register_Handlers):
             source = self.backend_class(self).deploy(force)
         if not only_function:
             self.deploy_handlers(source, config=config)
+
+    def destroy(self, all=None):
+        """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
+        for k, v in self.handlers.items():
+            log.info(f"destroying {k}")
+            v.destroy()
+        versioned_clients = VersionedClients(self.client_versions)
+        if self.backend.startswith("cloudfunction"):
+            destroy_cloudfunction(versioned_clients.cloudfunctions, self.function_name)
+        if self.backend == "cloudrun":
+            destroy_cloudrun(versioned_clients.run, self.function_name)
+        if all:
+            destroy_cloudfunction_artifacts(self.function_name)
+
+    def package(self):
+        self.backend_class(self).zip()
 
 
 def jsonify(*args, **kwargs):

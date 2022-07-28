@@ -1,16 +1,7 @@
-import base64
-import hashlib
-import logging
-import os
-
-import requests
-from requests import request
-
-from googleapiclient.errors import HttpError
-
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_location, get_default_project
-from goblet.common_cloud_actions import get_function_runtime, create_cloudfunction
+from goblet.common_cloud_actions import get_function_runtime, create_cloudfunctionv1
+from goblet.config import GConfig
 
 
 class CloudFunctionV1(Backend):
@@ -22,7 +13,11 @@ class CloudFunctionV1(Backend):
         self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{app.function_name}"
         super().__init__(app, self.client, self.func_path, config=config)
 
-    def deploy(self, force=False):
+    def deploy(self, force=False, config=None):
+        if config:
+            config = GConfig(config=config)
+        else:
+            config = self.config
         put_headers = {
             "content-type": "application/zip",
             "x-goog-content-length-range": "0,104857600",
@@ -30,7 +25,7 @@ class CloudFunctionV1(Backend):
         source = self._gcs_upload(self.client, put_headers, force=force)
         if self.app.is_http():
             client, params = self._get_upload_params(source)
-            create_cloudfunction(client, params, config=self.config)
+            create_cloudfunctionv1(client, params, config=config)
 
     def _get_upload_params(self, source):
         user_configs = self.config.cloudfunction or {}
@@ -46,10 +41,3 @@ class CloudFunctionV1(Backend):
             }
         }
         return self.client, params
-
-
-
-
-
-
-

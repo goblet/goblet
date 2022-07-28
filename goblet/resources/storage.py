@@ -1,5 +1,3 @@
-from goblet.deploy import destroy_cloudfunction
-
 from goblet.config import GConfig
 import logging
 
@@ -9,6 +7,7 @@ from goblet.common_cloud_actions import (
     get_function_runtime,
     create_cloudfunctionv2,
     create_cloudfunctionv1,
+    destroy_cloudfunction,
 )
 
 log = logging.getLogger("goblet.deployer")

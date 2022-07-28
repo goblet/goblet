@@ -1,5 +1,4 @@
 from goblet import Goblet, Response
-from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import (
     get_responses,
@@ -180,7 +179,7 @@ class TestPubSub:
 
         app.topic("test-topic")(dummy_function)
 
-        Deployer().deploy(app, force=True)
+        app.deploy(force=True)
 
         responses = get_responses("pubsub-deploy")
 
@@ -209,8 +208,8 @@ class TestPubSub:
 
         app.topic("test", project="goblet-cross-project")(dummy_function)
 
-        Deployer({"name": app.function_name}).deploy(
-            app, force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
+        app.deploy(
+            force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
         )
 
         put_subscription = get_response(
@@ -235,8 +234,7 @@ class TestPubSub:
             dummy_function
         )
 
-        Deployer({"name": app.function_name}).deploy(
-            app,
+        app.deploy(
             force=True,
             skip_function=True,
             config={"pubsub": {"serviceAccountEmail": service_account}},
