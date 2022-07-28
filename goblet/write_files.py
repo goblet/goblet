@@ -70,8 +70,5 @@ COPY . .
 
 # Install dependencies.
 RUN pip install -r requirements.txt
-
-# Run the web service on container startup.
-CMD exec functions-framework --target=goblet_entrypoint
 """
         )
