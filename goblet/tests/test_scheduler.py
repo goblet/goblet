@@ -124,7 +124,9 @@ class TestScheduler:
         goblet_name = "goblet_example"
         scheduler = Scheduler(goblet_name)
         scheduler.register_job(
-            "test-job", None, kwargs={"schedule": "* * * * *", "kwargs": {}}
+            "test-job",
+            None,
+            kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
         )
         scheduler.deploy()
 
@@ -149,7 +151,9 @@ class TestScheduler:
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
         scheduler.register_job(
-            "test-job", None, kwargs={"schedule": "* * * * *", "kwargs": {}}
+            "test-job",
+            None,
+            kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
         )
         scheduler._deploy(config={"scheduler": {"serviceAccount": service_account}})
 
@@ -225,7 +229,9 @@ class TestScheduler:
         goblet_name = "goblet_example"
         scheduler = Scheduler(goblet_name)
         scheduler.register_job(
-            "test-job", None, kwargs={"schedule": "* * * * *", "kwargs": {}}
+            "test-job",
+            None,
+            kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
         )
         scheduler.destroy()
 
@@ -243,7 +249,9 @@ class TestScheduler:
         goblet_name = "goblet"
         scheduler = Scheduler(goblet_name)
         scheduler.register_job(
-            "scheduled_job", None, kwargs={"schedule": "* * * * *", "kwargs": {}}
+            "scheduled_job",
+            None,
+            kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
         )
         scheduler.sync(dryrun=True)
         scheduler.sync(dryrun=False)
