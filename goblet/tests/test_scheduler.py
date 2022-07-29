@@ -178,18 +178,25 @@ class TestScheduler:
         goblet_name = "goblet-test-schedule"
         scheduler = Scheduler(goblet_name)
         scheduler.register_job(
-            "test-job", None, kwargs={"schedule": "* * 1 * *", "kwargs": {}}
+            "test-job",
+            None,
+            kwargs={"schedule": "* * 1 * *", "timezone": "UTC", "kwargs": {}},
         )
         scheduler.register_job(
             "test-job",
             None,
-            kwargs={"schedule": "* * 2 * *", "kwargs": {"httpMethod": "POST"}},
+            kwargs={
+                "schedule": "* * 2 * *",
+                "timezone": "UTC",
+                "kwargs": {"httpMethod": "POST"},
+            },
         )
         scheduler.register_job(
             "test-job",
             None,
             kwargs={
                 "schedule": "* * 3 * *",
+                "timezone": "UTC",
                 "kwargs": {"headers": {"X-HEADER": "header"}},
             },
         )
