@@ -76,7 +76,11 @@ class DecoratorAPI:
         """Scheduler job Http trigger"""
         return self._create_registration_function(
             handler_type="schedule",
-            registration_kwargs={"schedule": schedule, "timezone": timezone, "kwargs": kwargs},
+            registration_kwargs={
+                "schedule": schedule,
+                "timezone": timezone,
+                "kwargs": kwargs,
+            },
         )
 
     def topic(self, topic, **kwargs):
