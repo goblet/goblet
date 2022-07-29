@@ -15,6 +15,6 @@
     "-content-encoding": "gzip"
   },
   "body": {
-    "uploadUrl": "https://storage.googleapis.com/gcf-upload-us-central1-db550cf8-9d78-456c-96b1-6069320edaa3/0610430e-6ebc-48fa-9c85-27390e385ebf.zip?GoogleAccessId=service-871545765989@gcf-admin-robot.iam.gserviceaccount.com&Expires=1618435530&Signature=xxlmup8E1tFFJdIuHlfdbuP1tcMddtHdPvZh7oNihSxroS7RpJrK1uUODlj%2FWvM4LS1FK7CXfGYglFc4e5mcrNbGkrCMGkMv1GwVQQzemyftV2g%2B%2F71Xge2cc8OD9dlnRDEFMRshJr%2FwdWkr3d0yJ2hmiRpkjBK0q%2FSwhKJvoqZBxNz%2Fvp34nLQ31DW1MOalZ0NeDMm%2F%2BDKCuLJgSZvwi6hoGHa3mfUOGRFvwKD5A2ghJnBgyOE3siQ%2BkVVExURUZ425xMTGEGwVarKI9ul1rLq%2Fof9OtlPLWh5pmu9w4YT3AborBHZnLxDxUb3iwUXI%2Bu3Er%2BXiGy3d1jJ3FuNIxQ%3D%3D"
+    "uploadUrl": "https://storage.googleapis.com/mock"
   }
 }

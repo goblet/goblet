@@ -106,7 +106,7 @@ class ApiGateway(Handler):
                 return False
         return True
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None, config={}):
         if (
             self.routes_type != "apigateway"
             and self.backend.startswith("cloudfunction")

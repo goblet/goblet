@@ -91,14 +91,14 @@ class PubSub(Handler):
                 response = info["func"](data)
         return response or "success"
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None, config={}):
         if not self.resources:
             return
         for topic_name in self.resources:
             # Deploy triggers
             for _, topic_info in self.resources[topic_name]["trigger"].items():
                 self._deploy_trigger(
-                    sourceUrl=sourceUrl, entrypoint=entrypoint, topic_name=topic_name
+                    source=source, entrypoint=entrypoint, topic_name=topic_name
                 )
             # Deploy subscriptions
             for _, topic_info in self.resources[topic_name]["subscription"].items():

@@ -27,6 +27,8 @@ class CloudFunctionV1(Backend):
             client, params = self._get_upload_params(source)
             create_cloudfunctionv1(client, params, config=config)
 
+        return source
+
     def _get_upload_params(self, source):
         user_configs = self.config.cloudfunction or {}
         params = {

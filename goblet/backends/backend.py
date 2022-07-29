@@ -25,8 +25,8 @@ class Backend:
         self.name = app.function_name
         self.log = logging.getLogger("goblet.backend")
         self.log.setLevel(logging.INFO)
-        self.zipf = None
         self.zip_path = get_g_dir() + f"/{self.name}.zip"
+        self.zipf = self._create_zip()
         self.config = GConfig(config=config)
 
         # specifies which files to be zipped
@@ -45,10 +45,12 @@ class Backend:
             os.mkdir(get_g_dir())
         return zipfile.ZipFile(self.zip_path, "w", zipfile.ZIP_DEFLATED)
 
-    def delta(self, client):
+    def delta(self, client, zip_path=None):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
+        if zip_path is None:
+            zip_path = self.zip_path
         self.zipf.close()
-        with open(self.zip_path, "rb") as fh:
+        with open(zip_path, "rb") as fh:
             local_checksum = base64.b64encode(checksum(fh, hashlib.md5())).decode(
                 "ascii"
             )
@@ -63,8 +65,6 @@ class Backend:
 
     def _gcs_upload(self, client, headers, upload_client=None, force=False):
         self.log.info("zipping source code")
-        self.zipf = self._create_zip()
-        # zip with default include and exclude
         self.zip()
         if not force and self.get() and not self.delta(client):
             self.log.info("No changes detected....")
@@ -77,11 +77,15 @@ class Backend:
         self.zipf.close()
         with open(f".goblet/{self.name}.zip", "rb") as f:
             resp = client.execute("generateUploadUrl", params={"body": {}})
-            requests.put(
-                resp["uploadUrl"],
-                data=f,
-                headers=headers,
-            ).raise_for_status()
+            try:
+                requests.put(
+                    resp["uploadUrl"],
+                    data=f,
+                    headers=headers,
+                ).raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                if not os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
+                    raise e
 
         self.log.info("function code uploaded")
 

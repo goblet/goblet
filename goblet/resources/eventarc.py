@@ -74,7 +74,7 @@ class EventArc(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None, config={}):
         if not self.resources:
             return
         gconfig = GConfig(config=config)

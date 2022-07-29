@@ -111,7 +111,7 @@ class TestDeployer:
         monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_test_app")
 
         app.destroy()
 
@@ -165,7 +165,7 @@ class TestDeployer:
             headers={"x-goog-hash": "crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=="},
         )
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_test_app")
 
         app_backend = app.backend_class(app)
 

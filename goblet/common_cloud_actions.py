@@ -152,6 +152,8 @@ def get_cloudrun_url(client, name):
 
 def get_cloudfunction_url(client, name):
     """Get the cloudrun url"""
+    if client.version == "v1":
+        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{name}"
     try:
         resp = client.execute(
             "get",

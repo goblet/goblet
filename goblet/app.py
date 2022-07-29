@@ -67,7 +67,7 @@ class Goblet(Register_Handlers):
         source = None
         if not skip_function:
             log.info(f"preparing to deploy with backend {self.backend_class.__name__}")
-            source = self.backend_class(self).deploy(force)
+            source = self.backend_class(self).deploy(force=force, config=config)
         if not only_function:
             self.deploy_handlers(source, config=config)
 
