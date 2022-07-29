@@ -26,7 +26,7 @@ class Scheduler(Handler):
     def register_job(self, name, func, kwargs):
         schedule = kwargs["schedule"]
         kwargs = kwargs.pop("kwargs")
-        timezone = kwargs.get("timezone", "UTC")
+        timezone = kwargs["timezone"]
         description = kwargs.get("description", "Created by goblet")
         headers = kwargs.get("headers", {})
         httpMethod = kwargs.get("httpMethod", "GET")
