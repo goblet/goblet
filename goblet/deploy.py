@@ -27,7 +27,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudrun,
     deploy_cloudrun
 )
-from goblet.utils import get_dir, get_g_dir, checksum
+from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime
 from goblet.write_files import write_dockerfile
 from goblet.config import GConfig
 
@@ -136,7 +136,7 @@ class Deployer:
             "entryPoint": entrypoint,
             "sourceUploadUrl": url,
             "httpsTrigger": {},
-            "runtime": "python37",
+            "runtime": get_python_runtime(),
             **user_configs,
         }
         create_cloudfunction(client, req_body, config=config.config)
@@ -162,6 +162,16 @@ class Deployer:
 
         create_cloudbuild(client, req_body)
 
+        # Set IAM Bindings
+        if config.bindings:
+            log.info(f"adding IAM bindings for cloudrun {self.name}")
+            policy_bindings = {"policy": {"bindings": config.bindings}}
+            client.run.execute(
+                "setIamPolicy",
+                parent_key="resource",
+                parent_schema=self.run_name,
+                params={"body": policy_bindings},
+            )
 
     def _cloudfunction_delta(self, client, filename):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""

@@ -1,14 +1,16 @@
-
 # https://hub.docker.com/_/python
-FROM python:3.7-slim
+FROM python:3.10-slim
 
-# Copy local code to the container image.
+# setup environment
 ENV APP_HOME /app
 WORKDIR $APP_HOME
-COPY . .
 
 # Install dependencies.
+COPY requirements.txt .
 RUN pip install -r requirements.txt
+
+# Copy local code to the container image.
+COPY . .
 
 # Run the web service on container startup.
 CMD exec functions-framework --target=goblet_entrypoint

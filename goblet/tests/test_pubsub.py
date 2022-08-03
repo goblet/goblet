@@ -1,4 +1,4 @@
-from goblet import Goblet
+from goblet import Goblet, Response
 from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import (
@@ -84,6 +84,30 @@ class TestPubSub:
 
         # assert dummy_function is run
         app(event, mock_context)
+
+    def test_call_responses(self):
+        app = Goblet(function_name="goblet_example")
+
+        @app.topic("test")
+        def dummy_function(data):
+            return Response("500", status_code=500)
+
+        @app.topic("test2")
+        def dummy_function2(data):
+            "no return"
+
+        mock_context = Mock()
+        mock_context.resource = "projects/GOOGLE_PROJECT/topics/test"
+        mock_context.event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
+
+        event = {"data": base64.b64encode("test".encode())}
+
+        mock_context2 = Mock()
+        mock_context2.resource = "projects/GOOGLE_PROJECT/topics/test2"
+        mock_context2.event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
+
+        assert app(event, mock_context).status_code == 500
+        assert app(event, mock_context2) == "success"
 
     def test_call_topic_attributes(self):
         app = Goblet(function_name="goblet_example")

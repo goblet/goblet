@@ -574,6 +574,6 @@ class CORSConfig(object):
         return False
 
 
-def handle_cors_options():
+def handle_cors_options(**kwargs):
     """Return 200"""
     return "success"

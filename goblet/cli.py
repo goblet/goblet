@@ -262,3 +262,7 @@ def create(stage):
     click.echo(
         f"stage {stage} created in config.json with function name {function_name}"
     )
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter
