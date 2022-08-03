@@ -24,14 +24,17 @@ class TestDeployer:
         responses = get_responses("deployer-function-deploy")
         assert len(responses) == 3
 
-    def test_deploy_cloudrun(self, monkeypatch):
+    def test_deploy_cloudrun(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-
-        mock = Mock()
-
-        monkeypatch.setattr(subprocess, "check_output", mock)
+    
+        requests_mock.register_uri(
+            "HEAD",
+            "https://storage.googleapis.com/mock",
+            headers={"x-goog-hash": "crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=="},
+        )
 
         app = Goblet(function_name="goblet", backend="cloudrun")
         setattr(app, "entrypoint", "app")
@@ -42,19 +45,11 @@ class TestDeployer:
             app,
             only_function=True,
             force=True,
-            config={"cloudrun": {"no-allow-unauthenticated": "", "max-instances": "2"}},
+            config={"cloudrun_revision" : {"serviceAccount" : "test-746@goblet.iam.gserviceaccount.com"}},
         )
 
-        assert set(
-            [
-                "gcloud",
-                "run",
-                "deploy",
-                "--no-allow-unauthenticated",
-                "--max-instances",
-                "2",
-            ]
-        ).issubset(set(mock.call_args[0][0]))
+        responses = get_responses("deployer-cloudrun-deploy")
+        assert len(responses) == 9
 
     def test_deploy_cloudrun_alpha(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

@@ -145,22 +145,20 @@ class Deployer:
         """Creates http cloudbuild"""
         config = GConfig(config=config)
         user_configs = config.cloudrun or {}
+        registry = user_configs.get("artifact_registry") or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
 
         req_body = {
             "source": {"storageSource" : {"object": source["object"], "bucket": source["bucket"]}},
             "steps": [ {
             "name": "gcr.io/cloud-builders/docker",
-            "args": ["build", "-t", f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}", "."]
+            "args": ["build", "-t", registry, "."]
             }
             ],
             "images": [
-                [f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"]
+                [registry]
             ]
         }
 
-        if user_configs.get("artifact_registry"):
-            req_body["steps"][0]["args"][2] = user_configs["artifact_registry"]
-            req_body["images"][0] = user_configs["artifact_registry"]
 
         create_cloudbuild(client, req_body)
 
