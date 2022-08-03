@@ -5,6 +5,7 @@ import logging
 
 from goblet.handler import Handler
 from goblet.client import get_default_project, get_default_location
+from goblet.utils import get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -88,7 +89,7 @@ class Storage(Handler):
                     "eventType": f"google.storage.object.{bucket['event_type']}",
                     "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
                 },
-                "runtime": config.runtime or "python37",
+                "runtime": config.runtime or get_python_runtime(),
                 **user_configs,
             }
             create_cloudfunction(self.versioned_clients.cloudfunctions, req_body)
