@@ -227,6 +227,13 @@ class Deployer:
         elif backend == "cloudrun":
             config = GConfig()
             self.zip_file("requirements.txt")
+            if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
+                get_dir() + "/Procfile"
+            ):
+                log.info(
+                    "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
+                )
+                write_dockerfile()
             self.zip_file("Dockerfile")
             if config.main_file:
                 self.zip_file(config.main_file, "main.py")
