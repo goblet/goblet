@@ -29,7 +29,7 @@ class TestDeployer:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-    
+
         requests_mock.register_uri(
             "HEAD",
             "https://storage.googleapis.com/mock",
@@ -45,7 +45,11 @@ class TestDeployer:
             app,
             only_function=True,
             force=True,
-            config={"cloudrun_revision" : {"serviceAccount" : "test-746@goblet.iam.gserviceaccount.com"}},
+            config={
+                "cloudrun_revision": {
+                    "serviceAccount": "test-746@goblet.iam.gserviceaccount.com"
+                }
+            },
         )
 
         responses = get_responses("deployer-cloudrun-deploy")

@@ -34,6 +34,7 @@ def get_default_project():
 
     return None
 
+
 def get_default_project_number():
     client = Client("cloudresourcemanager", "v1", calls="projects")
     resp = client.execute(
@@ -188,7 +189,7 @@ class VersionedClients:
             calls="projects.locations.functions",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
-    
+
     @property
     def cloudbuild(self):
         return Client(
@@ -197,7 +198,6 @@ class VersionedClients:
             calls="projects.builds",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
-
 
     # @property
     # def run(self):

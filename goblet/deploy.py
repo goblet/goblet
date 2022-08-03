@@ -1,14 +1,12 @@
 from pathlib import Path
 import zipfile
 import os
-import sys
 import requests
 import logging
 import hashlib
 from requests import request
 import base64
 import warnings
-import subprocess
 import math
 
 from googleapiclient.errors import HttpError
@@ -17,7 +15,7 @@ from goblet.client import (
     VersionedClients,
     get_default_project,
     get_default_location,
-    get_default_project_number
+    get_default_project_number,
 )
 from goblet.common_cloud_actions import (
     create_cloudfunction,
@@ -25,7 +23,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction,
     destroy_cloudfunction_artifacts,
     destroy_cloudrun,
-    deploy_cloudrun
+    deploy_cloudrun,
 )
 from goblet.utils import get_dir, get_g_dir, checksum
 from goblet.write_files import write_dockerfile
@@ -82,16 +80,15 @@ class Deployer:
                 log.info("zipping cloudrun......")
                 self.zip("cloudrun")
                 log.info("uploading cloudrun source zip to gs......")
-                source = self._upload_zip(versioned_clients.run_uploader)["storageSource"]
+                source = self._upload_zip(versioned_clients.run_uploader)[
+                    "storageSource"
+                ]
 
                 self.create_build(
-                    versioned_clients.cloudbuild,
-                    source,
-                    self.name,
-                    config
+                    versioned_clients.cloudbuild, source, self.name, config
                 )
                 serviceRevision = RevisionSpec(config, versioned_clients, self.name)
-                serviceRevision.deployRevision() 
+                serviceRevision.deployRevision()
 
         if not only_function:
             goblet.deploy(source_url, config=config)
@@ -145,23 +142,28 @@ class Deployer:
         """Creates http cloudbuild"""
         config = GConfig(config=config)
         user_configs = config.cloudrun or {}
-        registry = user_configs.get("artifact_registry") or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
+        registry = (
+            user_configs.get("artifact_registry")
+            or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
+        )
 
         req_body = {
-            "source": {"storageSource" : {"object": source["object"], "bucket": source["bucket"]}},
-            "steps": [ {
-            "name": "gcr.io/cloud-builders/docker",
-            "args": ["build", "-t", registry, "."]
-            }
+            "source": {
+                "storageSource": {
+                    "object": source["object"],
+                    "bucket": source["bucket"],
+                }
+            },
+            "steps": [
+                {
+                    "name": "gcr.io/cloud-builders/docker",
+                    "args": ["build", "-t", registry, "."],
+                }
             ],
-            "images": [
-                [registry]
-            ]
+            "images": [[registry]],
         }
 
-
         create_cloudbuild(client, req_body)
-
 
     def _cloudfunction_delta(self, client, filename):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
@@ -241,7 +243,9 @@ class Deployer:
                 warnings.simplefilter("ignore")
                 self.zip_directory(get_dir() + "/*", include=include)
         else:
-            raise ValueError(f"backend (given {backend}) must be cloudfunction or cloudrun")
+            raise ValueError(
+                f"backend (given {backend}) must be cloudfunction or cloudrun"
+            )
 
     def zip_file(self, filename, arcname=None):
         self.zipf.write(filename, arcname)
@@ -262,12 +266,7 @@ class Deployer:
 
 
 class RevisionSpec:
-    def __init__(
-        self,
-        config = {},
-        versioned_clients = None,
-        name = "goblet"
-    ):
+    def __init__(self, config={}, versioned_clients=None, name="goblet"):
         self.versioned_clients = versioned_clients
         config = GConfig(config=config)
         self.cloudrun_configs = config.cloudrun or {}
@@ -275,27 +274,28 @@ class RevisionSpec:
         self.req_body = {}
         self.latestArtifact = ""
         self.name = name
-    
+
     # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
     def getArtifact(self):
         defaultProject = get_default_project()
         buildClient = self.versioned_clients.cloudbuild
         resp = buildClient.execute(
-            "list",
-            parent_key="projectId",
-            parent_schema=defaultProject,
-            params={}
+            "list", parent_key="projectId", parent_schema=defaultProject, params={}
         )
         latestBuildId = resp["builds"][0]["id"]
         resp = buildClient.execute(
             "get",
             parent_key="projectId",
             parent_schema=defaultProject,
-            params={"id": latestBuildId}
+            params={"id": latestBuildId},
         )
-        self.latestArtifact = resp["results"]["images"][0]["name"] + "@" + resp["results"]["images"][0]["digest"]
-        
-    # splits traffic proportionaly from already deployed traffic 
+        self.latestArtifact = (
+            resp["results"]["images"][0]["name"]
+            + "@"
+            + resp["results"]["images"][0]["digest"]
+        )
+
+    # splits traffic proportionaly from already deployed traffic
     def modifyTraffic(self):
         client = self.versioned_clients.run
         region = get_default_location()
@@ -307,11 +307,11 @@ class RevisionSpec:
             "get",
             parent_key="name",
             parent_schema=f"projects/{get_default_project_number()}/locations/{region}/services/{self.name}",
-            params={}
+            params={},
         )
 
         # proportion of total traffic specified
-        trafficQuotient = (100-trafficSpec) / 100
+        trafficQuotient = (100 - trafficSpec) / 100
         # using the max for additional modifications
         maxTrafficVal = 0
         maxTrafficLoc = 0
@@ -326,28 +326,28 @@ class RevisionSpec:
 
                 newTraffic = {
                     "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
-                    "revision": resp["latestReadyRevision"].rpartition('/')[-1],
-                    "percent": newPercent
+                    "revision": resp["latestReadyRevision"].rpartition("/")[-1],
+                    "percent": newPercent,
                 }
 
             else:
                 newTraffic = {
                     "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
                     "revision": traffics["revision"],
-                    "percent": newPercent
+                    "percent": newPercent,
                 }
-            
-            trafficList.append(newTraffic)           
+
+            trafficList.append(newTraffic)
             if traffics["percent"] > maxTrafficVal:
                 maxTrafficLoc = len(trafficList) - 1
                 maxTraffic = newTraffic
             trafficSum += newPercent
-        
+
         latestRevisionTraffic = {
             "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
-            "percent": trafficSpec
+            "percent": trafficSpec,
         }
-        trafficList.append(latestRevisionTraffic) 
+        trafficList.append(latestRevisionTraffic)
 
         if trafficSpec > maxTrafficVal:
             maxTrafficLoc = len(trafficList) - 1
@@ -367,28 +367,23 @@ class RevisionSpec:
         self.getArtifact()
         self.req_body = {
             "template": {
-                "containers": [
-                    {
-                    "image": self.latestArtifact
-                    }
-                ],
-                **self.cloudrun_revision
+                "containers": [{"image": self.latestArtifact}],
+                **self.cloudrun_revision,
             }
-
         }
 
-        #check for traffic config
+        # check for traffic config
         if self.cloudrun_configs.get("traffic"):
             # check all services for the name of the service
             resp = client.execute(
                 "list",
                 parent_key="parent",
                 parent_schema=f"projects/98058317567/locations/{region}",
-                params={}
+                params={},
             )
 
             for service in resp["services"]:
-                if service["name"].rpartition('/')[-1] == self.name:               
+                if service["name"].rpartition("/")[-1] == self.name:
                     self.modifyTraffic()
 
-        deploy_cloudrun(client, self.req_body, self.name)            
+        deploy_cloudrun(client, self.req_body, self.name)
