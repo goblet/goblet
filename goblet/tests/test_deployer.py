@@ -3,8 +3,6 @@ from goblet.deploy import Deployer
 from goblet.resources.http import HTTP
 from goblet import Goblet
 from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN
-import subprocess
-from unittest.mock import Mock
 
 
 class TestDeployer:
