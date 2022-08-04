@@ -13,7 +13,10 @@ from goblet.common_cloud_actions import (
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
-STORAGE_EVENT_TYPES = ["finalize", "delete", "archive", "metadataUpdate"]
+STORAGE_EVENT_TYPES = {
+    "v1": ["finalize", "delete", "archive", "metadataUpdate"],
+    "v2": ["finalized", "deleted", "archived", "metadataUpdated"],
+}
 
 
 class Storage(Handler):
@@ -37,8 +40,12 @@ class Storage(Handler):
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
 
     def validate_event_type(self, event_type):
-        if event_type not in STORAGE_EVENT_TYPES:
-            raise ValueError(f"{event_type} not in {STORAGE_EVENT_TYPES}")
+        gcf_version = self.versioned_clients.cloudfunctions.version[:2]
+        if event_type not in STORAGE_EVENT_TYPES[gcf_version]:
+            raise ValueError(
+                f"{event_type} not in {STORAGE_EVENT_TYPES[gcf_version]}. See https://cloud.google.com/functions/docs"
+                f"/calling/storage for more information. "
+            )
 
     def register_bucket(self, name, func, kwargs):
         bucket_name = kwargs["bucket"]
@@ -113,8 +120,13 @@ class Storage(Handler):
                             "source": {"storageSource": source["storageSource"]},
                         },
                         "eventTrigger": {
-                            "eventType": f"google.storage.object.{bucket['event_type']}",
-                            "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
+                            "eventType": f"google.cloud.storage.object.v1.{bucket['event_type']}",
+                            "eventFilters": [
+                                {
+                                    "attribute": "bucket",
+                                    "value": bucket["bucket"],
+                                }
+                            ],
                         },
                         **user_configs,
                     },

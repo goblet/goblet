@@ -8,7 +8,7 @@ class CloudFunctionV2(Backend):
     """Class for cloudfunctions second generation"""
 
     resource_type = "cloudfunctionv2"
-    supported_versions = ["v2alpha", "v2beta"]
+    supported_versions = ["v2alpha", "v2beta", "v2"]
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions
@@ -25,18 +25,21 @@ class CloudFunctionV2(Backend):
         }
         source = self._gcs_upload(self.client, put_headers, force=force)
         if self.app.is_http():
-            client, params = self._get_upload_params(source)
+            client, params = self._get_upload_params(source, config=config)
             create_cloudfunctionv2(client, params, config=config)
 
-    def _get_upload_params(self, source):
-        user_configs = self.config.cloudfunction or {}
+        return source
+
+    def _get_upload_params(self, source, config=None):
+        config = config or self.config
+        user_configs = config.cloudfunction or {}
         params = {
             "body": {
                 "name": self.func_path,
                 "environment": "GEN_2",
                 "description": self.config.description or "created by goblet",
                 "buildConfig": {
-                    "runtime": get_function_runtime(self.client, self.config),
+                    "runtime": get_function_runtime(self.client, config),
                     "entryPoint": "goblet_entrypoint",
                     "source": {"storageSource": source["storageSource"]},
                 },

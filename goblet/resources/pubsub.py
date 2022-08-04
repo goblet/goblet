@@ -67,7 +67,10 @@ class PubSub(Handler):
     def __call__(self, event, context):
         # Trigger
         if context:
-            topic_name = context.resource.split("/")[-1]
+            try:
+                topic_name = context.resource.split("/")[-1]
+            except AttributeError:
+                topic_name = context.resource["name"].split("/")[-1]
             data = base64.b64decode(event["data"]).decode("utf-8")
             attributes = event.get("attributes") or {}
         # Subscription
@@ -190,7 +193,7 @@ class PubSub(Handler):
                         "source": {"storageSource": source["storageSource"]},
                     },
                     "eventTrigger": {
-                        "eventType": "providers/cloud.pubsub/eventTypes/topic.publish",
+                        "eventType": "google.cloud.pubsub.topic.v1.messagePublished",
                         "pubsubTopic": f"projects/{get_default_project()}/topics/{topic_name}",
                     },
                     **user_configs,
