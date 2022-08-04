@@ -199,15 +199,6 @@ class VersionedClients:
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
 
-    # @property
-    # def run(self):
-    #     return Client(
-    #         "run",
-    #         self.client_versions.get("run", "v1"),
-    #         calls="projects.locations.services",
-    #         parent_schema="projects/{project_id}/locations/{location_id}",
-    #     )
-
     @property
     def run(self):
         return Client(

@@ -176,11 +176,13 @@ class TestRoutes:
         assert resp.body == "success"
         assert resp.status_code == 200
 
-    def test_deploy_routes(self, monkeypatch):
+    def test_deploy_routes(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "routes-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet_routes")
         setattr(app, "entrypoint", "app")
