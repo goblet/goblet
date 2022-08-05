@@ -358,3 +358,32 @@ class TestPubSub:
         assert len(responses) == 3
         assert responses[1] == responses[2]
         assert responses[0]["body"] == {}
+
+    def test_deploy_pubsub_subscription_with_config(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-subscription-config")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        app = Goblet(function_name="goblet-topic-subscription-config")
+        setattr(app, "entrypoint", "app")
+
+        app.topic(
+            "test", use_subscription=True, config={"enableExactlyOnceDelivery": True}
+        )(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(
+            app,
+            force=True,
+            skip_function=True,
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+
+        put_subscription = get_response(
+            "pubsub-deploy-subscription-config",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-config-test_1.json",
+        )
+        responses = get_responses("pubsub-deploy-subscription-config")
+        assert put_subscription["body"]["enableExactlyOnceDelivery"] == True
+        assert len(responses) == 2
