@@ -31,6 +31,7 @@ class PubSub(Handler):
         topic = kwargs["topic"]
         kwargs = kwargs.pop("kwargs")
         attributes = kwargs.get("attributes", {})
+        config = kwargs.get("config", {})
         filter = kwargs.get("filter")
         if not filter and attributes:
             filter = attributes_to_filter(attributes)
@@ -58,6 +59,7 @@ class PubSub(Handler):
                     "attributes": attributes,
                     "project": project,
                     "filter": filter,
+                    "config": config,
                 }
             }
 
@@ -136,13 +138,16 @@ class PubSub(Handler):
             "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
             "filter": topic["filter"] or "",
-            "pushConfig": {
+            "pushConfig": {}
+            if topic["config"].get("enableExactlyOnceDelivery", None)
+            else {
                 "pushEndpoint": push_url,
                 "oidcToken": {
                     "serviceAccountEmail": service_account,
                     "audience": push_url,
                 },
             },
+            **topic["config"],
         }
         create_pubsub_subscription(
             client=self.versioned_clients.pubsub,

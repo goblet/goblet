@@ -184,7 +184,7 @@ You've now created your first app using goblet. You can make modifications to yo
 
 At this point, there are several next steps you can take.
 
-Docs - [Goblet Documentation](https://goblet.github.io/goblet/docs/build/html/index.html)
+Docs - [Goblet Documentation](https://goblet.github.io/goblet/build/html/index.html)
 
 If you're done experimenting with Goblet and you'd like to cleanup, you can use the `goblet destroy` command making sure to specify the desired location, and Goblet will delete all the resources it created when running the goblet deploy command.
 
