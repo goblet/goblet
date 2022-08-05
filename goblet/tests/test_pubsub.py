@@ -385,5 +385,5 @@ class TestPubSub:
             "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-config-test_1.json",
         )
         responses = get_responses("pubsub-deploy-subscription-config")
-        assert put_subscription["body"]["enableExactlyOnceDelivery"] == True
+        assert put_subscription["body"]["enableExactlyOnceDelivery"]
         assert len(responses) == 2
