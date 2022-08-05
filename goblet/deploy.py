@@ -141,11 +141,19 @@ class Deployer:
     def create_build(self, client, source=None, name="goblet", config={}):
         """Creates http cloudbuild"""
         config = GConfig(config=config)
-        user_configs = config.cloudrun or {}
+        build_configs = config.cloudbuild or {}
         registry = (
-            user_configs.get("artifact_registry")
+            build_configs.get("artifact_registry")
             or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
         )
+        build_configs.pop("artifact_registry", None)
+
+        if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):
+            build_options = build_configs.get("options", {})
+            if not build_options.get("logging"):
+                build_options["logging"] = "CLOUD_LOGGING_ONLY"
+                build_configs["options"] = build_options
+                log.info("service account given but no logging bucket so defaulting to cloud logging only")
 
         req_body = {
             "source": {
@@ -160,7 +168,8 @@ class Deployer:
                     "args": ["build", "-t", registry, "."],
                 }
             ],
-            "images": [[registry]],
+            "images": [registry],
+            **build_configs
         }
 
         create_cloudbuild(client, req_body)
@@ -305,21 +314,21 @@ class RevisionSpec:
             + "@"
             + resp["results"]["images"][0]["digest"]
         )
-
-    # splits traffic proportionaly from already deployed traffic
-    def modifyTraffic(self):
+    
+    def getServiceConfig(self):
         client = self.versioned_clients.run
-        region = get_default_location()
-        trafficSpec = self.cloudrun_configs.get("traffic")
-        trafficList = []
-
-        # get initial service config
-        resp = client.execute(
+        serviceConfig = client.execute(
             "get",
             parent_key="name",
-            parent_schema=f"projects/{get_default_project_number()}/locations/{region}/services/{self.name}",
+            parent_schema=f"projects/{get_default_project_number()}/locations/{get_default_location()}/services/{self.name}",
             params={},
         )
+        return serviceConfig
+
+    # splits traffic proportionaly from already deployed traffic
+    def modifyTraffic(self, serviceConfig={}):
+        trafficSpec = self.cloudrun_configs.get("traffic")
+        trafficList = []
 
         # proportion of total traffic specified
         trafficQuotient = (100 - trafficSpec) / 100
@@ -330,14 +339,14 @@ class RevisionSpec:
         # keep track of the total traffic
         trafficSum = 0
 
-        for traffics in resp["trafficStatuses"]:
+        for traffics in serviceConfig["trafficStatuses"]:
             newPercent = math.ceil(traffics["percent"] * trafficQuotient)
 
             if traffics["type"] == "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST":
 
                 newTraffic = {
                     "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
-                    "revision": resp["latestReadyRevision"].rpartition("/")[-1],
+                    "revision": serviceConfig["latestReadyRevision"].rpartition("/")[-1],
                     "percent": newPercent,
                 }
 
@@ -395,6 +404,7 @@ class RevisionSpec:
 
             for service in resp["services"]:
                 if service["name"].rpartition("/")[-1] == self.name:
-                    self.modifyTraffic()
+                    serviceConfig = self.getServiceConfig()
+                    self.modifyTraffic(serviceConfig)
 
         deploy_cloudrun(client, self.req_body, self.name)

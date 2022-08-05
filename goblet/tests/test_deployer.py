@@ -2,7 +2,7 @@ from goblet.client import VersionedClients
 from goblet.deploy import Deployer
 from goblet.resources.http import HTTP
 from goblet import Goblet
-from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN
+from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN, get_response
 
 
 class TestDeployer:
@@ -136,3 +136,35 @@ class TestDeployer:
         assert Deployer(config={"name": "goblet_test_app"})._cloudfunction_delta(
             VersionedClients().cloudfunctions, f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip"
         )
+    
+    def test_cloudrun_custom_artifact(self, monkeypatch, requests_mock):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-artifact")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")     
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+
+        app = Goblet(function_name="goblet", backend="cloudrun")
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(
+            app,
+            only_function=True,
+            force=True,
+            config={
+                "cloudrun_revision": {
+                    "serviceAccount": "test@goblet.iam.gserviceaccount.com"
+                },
+                "cloudbuild": {
+                    "artifact_registry": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet",
+                    "serviceAccount": "projects/goblet/serviceAccounts/test@goblet.iam.gserviceaccount.com"
+                }
+            },
+            
+        )
+
+        response = get_response("deployer-cloudrun-artifact", "post-v1-projects-goblet-builds_1.json")
+        assert "newgoblet" in response["body"]["metadata"]["build"]["artifacts"]["images"][0]

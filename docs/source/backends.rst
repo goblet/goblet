@@ -23,14 +23,12 @@ You can pass in configurations to your cloudrun deployment in the `cloudrun` sec
 
 Supported configurations include:
 
-- artifact_registry: sets which artifact registry Cloud Build pushes to 
 - traffic: assigns a custom amount of traffic to the latest revision and decreases previous revisions' traffic proportionally. If the service is brand new, the traffic will always default to 100%.
 
 .. code:: json 
 
     {
         "cloudrun":{
-            "artifact_registry": "location-docker.pkg.dev/gcp_project/artifact/image",
             "traffic": 25
         }
     }
@@ -45,6 +43,19 @@ For `revision configurations <https://cloud.google.com/run/docs/reference/rest/v
 
     {
         "cloudrun_revision":{
+            "serviceAccount": "service-account@project.iam.gserviceaccount.com"
+        }
+    }
+
+For `Cloud Build configurations <https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds>`__, pass values into `cloudbuild`
+
+In order to set a custom artifact registry, use the "artifact_registry" configuration. If you would like to use an artifact registry from a different project, a service account with storage permissions in the current project's bucket and read + write in the other project's artifact registry will be necessary.
+
+.. code:: json 
+
+    {
+        "cloudbuild":{
+            "artifact_registry": "location-docker.pkg.dev/gcp_project/artifact/image"
             "serviceAccount": "service-account@project.iam.gserviceaccount.com"
         }
     }
