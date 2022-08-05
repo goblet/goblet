@@ -139,7 +139,7 @@ class PubSub(Handler):
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
             "filter": topic["filter"] or "",
             "pushConfig": {}
-            if topic["config"]["enableExactlyOnceDelivery"]
+            if topic["config"].get("enableExactlyOnceDelivery", None)
             else {
                 "pushEndpoint": push_url,
                 "oidcToken": {
