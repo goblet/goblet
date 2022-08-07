@@ -1,7 +1,7 @@
 {
   "headers": {},
   "body": {
-    "uploadUrl": "https://storage.googleapis.com/gcf-v2-uploads-111111111-us-central1/1356b383-a858-40e9-89f8-a529a285a58c.zip?GoogleAccessId=service-111111111@gcf-admin-robot.iam.gserviceaccount.com&Expires=1659721531&Signature=SRL8x6%2BYsjyPf%2BCEEb3o2vvicdT6EZeN165kaYznEfm5MC74Avzz%2FR9%2BrxwzbQmKUgKbh69BXOsiuPHg%2FHXHTI1VxUGXB6CTvZyszxiNH6XyOqu1xdFzF2ted85cq99soKB27z8oTjUBvDf4IpsdSMwIx9pi5tltq6LOu60epD%2FldnThpFs7CVTaFvZ5ShcKAYsCNL6%2Bf9yOGb0j8lNSsjnei%2FiI3ytn9bJ4c6701UTNQPMlQ3fK0f%2FvmLGJDZ%2FH4%2BGmT%2B5H112uK8qjiqIaXKWRFxPHNn68witeRDFiZVGr6UWIEHV3%2FQ8iS2TXP2VdiKUOxcqSFkvLurOmi5R69g%3D%3D",
+    "uploadUrl": "https://storage.googleapis.com/mock",
     "storageSource": {
       "bucket": "gcf-v2-uploads-111111111-us-central1",
       "object": "1356b383-a858-40e9-89f8-a529a285a58c.zip"

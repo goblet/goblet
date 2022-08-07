@@ -153,7 +153,9 @@ class Deployer:
             if not build_options.get("logging"):
                 build_options["logging"] = "CLOUD_LOGGING_ONLY"
                 build_configs["options"] = build_options
-                log.info("service account given but no logging bucket so defaulting to cloud logging only")
+                log.info(
+                    "service account given but no logging bucket so defaulting to cloud logging only"
+                )
 
         req_body = {
             "source": {
@@ -169,7 +171,7 @@ class Deployer:
                 }
             ],
             "images": [registry],
-            **build_configs
+            **build_configs,
         }
 
         create_cloudbuild(client, req_body)
@@ -314,7 +316,7 @@ class RevisionSpec:
             + "@"
             + resp["results"]["images"][0]["digest"]
         )
-    
+
     def getServiceConfig(self):
         client = self.versioned_clients.run
         serviceConfig = client.execute(
@@ -346,7 +348,9 @@ class RevisionSpec:
 
                 newTraffic = {
                     "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
-                    "revision": serviceConfig["latestReadyRevision"].rpartition("/")[-1],
+                    "revision": serviceConfig["latestReadyRevision"].rpartition("/")[
+                        -1
+                    ],
                     "percent": newPercent,
                 }
 
