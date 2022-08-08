@@ -1,14 +1,13 @@
 from pathlib import Path
 import zipfile
 import os
-import sys
 import requests
 import logging
 import hashlib
 from requests import request
 import base64
 import warnings
-import subprocess
+import math
 
 from googleapiclient.errors import HttpError
 
@@ -16,12 +15,15 @@ from goblet.client import (
     VersionedClients,
     get_default_project,
     get_default_location,
+    get_default_project_number,
 )
 from goblet.common_cloud_actions import (
     create_cloudfunction,
+    create_cloudbuild,
     destroy_cloudfunction,
     destroy_cloudfunction_artifacts,
     destroy_cloudrun,
+    deploy_cloudrun,
 )
 from goblet.utils import get_dir, get_g_dir, checksum, get_python_runtime
 from goblet.write_files import write_dockerfile
@@ -55,7 +57,7 @@ class Deployer:
         if not skip_function:
             if goblet.backend == "cloudfunction":
                 log.info("zipping function......")
-                self.zip()
+                self.zip("cloudfunction")
                 if (
                     not force
                     and self.get_function(versioned_clients.cloudfunctions)
@@ -75,7 +77,19 @@ class Deployer:
                             config,
                         )
             if goblet.backend == "cloudrun":
-                self.create_cloudrun(versioned_clients, config)
+                log.info("zipping cloudrun......")
+                self.zip("cloudrun")
+                log.info("uploading cloudrun source zip to gs......")
+                source = self._upload_zip(versioned_clients.run_uploader)[
+                    "storageSource"
+                ]
+
+                self.create_build(
+                    versioned_clients.cloudbuild, source, self.name, config
+                )
+                serviceRevision = RevisionSpec(config, versioned_clients, self.name)
+                serviceRevision.deployRevision()
+
         if not only_function:
             goblet.deploy(source_url, config=config)
 
@@ -124,62 +138,43 @@ class Deployer:
         }
         create_cloudfunction(client, req_body, config=config.config)
 
-    def create_cloudrun(self, client, config={}):
-        """Creates http cloudfunction"""
+    def create_build(self, client, source=None, name="goblet", config={}):
+        """Creates http cloudbuild"""
         config = GConfig(config=config)
-        cloudrun_configs = config.cloudrun or {}
-        cloudrun_options = []
-        for k, v in cloudrun_configs.items():
-            # Handle multiple entries with the same key ex. update-env-vars
-            if v and isinstance(v, list):
-                for v_item in v:
-                    cloudrun_options.append(f"--{k}")
-                    cloudrun_options.append(v_item)
-            else:
-                cloudrun_options.append(f"--{k}")
-                if v:
-                    cloudrun_options.append(v)
+        build_configs = config.cloudbuild or {}
+        registry = (
+            build_configs.get("artifact_registry")
+            or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
+        )
+        build_configs.pop("artifact_registry", None)
 
-        # Set default port to 8080
-        if not cloudrun_configs.get("port"):
-            cloudrun_options.append("--port")
-            cloudrun_options.append("8080")
-
-        # Set default command
-        if not cloudrun_configs.get("command"):
-            cloudrun_options.append("--command")
-            cloudrun_options.append("functions-framework,--target=goblet_entrypoint")
-
-        base_command = [
-            "gcloud",
-            "run",
-            "deploy",
-            self.name,
-            "--project",
-            get_default_project(),
-            "--region",
-            get_default_location(),
-            "--source",
-            get_dir(),
-        ]
-        if client.gcloud:
-            base_command.insert(1, client.gcloud)
-        base_command.extend(cloudrun_options)
-        try:
-            if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
-                get_dir() + "/Procfile"
-            ):
+        if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):
+            build_options = build_configs.get("options", {})
+            if not build_options.get("logging"):
+                build_options["logging"] = "CLOUD_LOGGING_ONLY"
+                build_configs["options"] = build_options
                 log.info(
-                    "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
+                    "service account given but no logging bucket so defaulting to cloud logging only"
                 )
-                write_dockerfile()
-            subprocess.check_output(base_command, env=os.environ)
-        except subprocess.CalledProcessError:
-            log.error(
-                "Error during cloudrun deployment while running the following command"
-            )
-            log.error((" ").join(base_command))
-            sys.exit(1)
+
+        req_body = {
+            "source": {
+                "storageSource": {
+                    "object": source["object"],
+                    "bucket": source["bucket"],
+                }
+            },
+            "steps": [
+                {
+                    "name": "gcr.io/cloud-builders/docker",
+                    "args": ["build", "-t", registry, "."],
+                }
+            ],
+            "images": [registry],
+            **build_configs,
+        }
+
+        create_cloudbuild(client, req_body)
 
         # Set IAM Bindings
         if config.bindings:
@@ -208,26 +203,28 @@ class Deployer:
         modified = deployed_checksum != local_checksum
         return modified
 
-    def _upload_zip(self, client):
+    def _upload_zip(self, client) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
         self.zipf.close()
         zip_size = os.stat(f".goblet/{self.name}.zip").st_size
         with open(f".goblet/{self.name}.zip", "rb") as f:
             resp = client.execute("generateUploadUrl", params={"body": {}})
+            put_headers = {
+                "content-type": "application/zip",
+                "Content-Length": str(zip_size),
+            }
+            if client.version == "v1":
+                put_headers["x-goog-content-length-range"] = "0,104857600"
 
             requests.put(
                 resp["uploadUrl"],
                 data=f,
-                headers={
-                    "content-type": "application/zip",
-                    "Content-Length": str(zip_size),
-                    "x-goog-content-length-range": "0,104857600",
-                },
-            )
+                headers=put_headers,
+            ).raise_for_status()
 
         log.info("function code uploaded")
 
-        return resp["uploadUrl"]
+        return resp
 
     def create_zip(self):
         """Creates initial goblet zipfile"""
@@ -237,17 +234,40 @@ class Deployer:
             get_g_dir() + f"/{self.name}.zip", "w", zipfile.ZIP_DEFLATED
         )
 
-    def zip(self):
+    def zip(self, backend="cloudfunction"):
         """Zips requirements.txt, python files and any additional files based on config.customFiles"""
-        config = GConfig()
-        self.zip_file("requirements.txt")
-        if config.main_file:
-            self.zip_file(config.main_file, "main.py")
-        include = config.customFiles or []
-        include.append("*.py")
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            self.zip_directory(get_dir() + "/*", include=include)
+        if backend == "cloudfunction":
+            config = GConfig()
+            self.zip_file("requirements.txt")
+            if config.main_file:
+                self.zip_file(config.main_file, "main.py")
+            include = config.customFiles or []
+            include.append("*.py")
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.zip_directory(get_dir() + "/*", include=include)
+        elif backend == "cloudrun":
+            config = GConfig()
+            self.zip_file("requirements.txt")
+            if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
+                get_dir() + "/Procfile"
+            ):
+                log.info(
+                    "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
+                )
+                write_dockerfile()
+            self.zip_file("Dockerfile")
+            if config.main_file:
+                self.zip_file(config.main_file, "main.py")
+            include = config.customFiles or []
+            include.append("*.py")
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.zip_directory(get_dir() + "/*", include=include)
+        else:
+            raise ValueError(
+                f"backend (given {backend}) must be cloudfunction or cloudrun"
+            )
 
     def zip_file(self, filename, arcname=None):
         self.zipf.write(filename, arcname)
@@ -265,3 +285,130 @@ class Deployer:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
+
+
+class RevisionSpec:
+    def __init__(self, config={}, versioned_clients=None, name="goblet"):
+        self.versioned_clients = versioned_clients
+        config = GConfig(config=config)
+        self.cloudrun_configs = config.cloudrun or {}
+        self.cloudrun_revision = config.cloudrun_revision or {}
+        self.req_body = {}
+        self.latestArtifact = ""
+        self.name = name
+
+    # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
+    def getArtifact(self):
+        defaultProject = get_default_project()
+        buildClient = self.versioned_clients.cloudbuild
+        resp = buildClient.execute(
+            "list", parent_key="projectId", parent_schema=defaultProject, params={}
+        )
+        latestBuildId = resp["builds"][0]["id"]
+        resp = buildClient.execute(
+            "get",
+            parent_key="projectId",
+            parent_schema=defaultProject,
+            params={"id": latestBuildId},
+        )
+        self.latestArtifact = (
+            resp["results"]["images"][0]["name"]
+            + "@"
+            + resp["results"]["images"][0]["digest"]
+        )
+
+    def getServiceConfig(self):
+        client = self.versioned_clients.run
+        serviceConfig = client.execute(
+            "get",
+            parent_key="name",
+            parent_schema=f"projects/{get_default_project_number()}/locations/{get_default_location()}/services/{self.name}",
+            params={},
+        )
+        return serviceConfig
+
+    # splits traffic proportionaly from already deployed traffic
+    def modifyTraffic(self, serviceConfig={}):
+        trafficSpec = self.cloudrun_configs.get("traffic")
+        trafficList = []
+
+        # proportion of total traffic specified
+        trafficQuotient = (100 - trafficSpec) / 100
+        # using the max for additional modifications
+        maxTrafficVal = 0
+        maxTrafficLoc = 0
+        maxTraffic = {}
+        # keep track of the total traffic
+        trafficSum = 0
+
+        for traffics in serviceConfig["trafficStatuses"]:
+            newPercent = math.ceil(traffics["percent"] * trafficQuotient)
+
+            if traffics["type"] == "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST":
+
+                newTraffic = {
+                    "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
+                    "revision": serviceConfig["latestReadyRevision"].rpartition("/")[
+                        -1
+                    ],
+                    "percent": newPercent,
+                }
+
+            else:
+                newTraffic = {
+                    "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
+                    "revision": traffics["revision"],
+                    "percent": newPercent,
+                }
+
+            trafficList.append(newTraffic)
+            if traffics["percent"] > maxTrafficVal:
+                maxTrafficLoc = len(trafficList) - 1
+                maxTraffic = newTraffic
+            trafficSum += newPercent
+
+        latestRevisionTraffic = {
+            "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
+            "percent": trafficSpec,
+        }
+        trafficList.append(latestRevisionTraffic)
+
+        if trafficSpec > maxTrafficVal:
+            maxTrafficLoc = len(trafficList) - 1
+            maxTraffic = latestRevisionTraffic
+            trafficSum += trafficSpec
+
+        if trafficSum > 100:
+            sub_from_max = trafficSum - 100
+            maxTraffic["percent"] -= sub_from_max
+            trafficList[maxTrafficLoc] = maxTraffic
+
+        self.req_body["traffic"] = trafficList
+
+    def deployRevision(self):
+        client = self.versioned_clients.run
+        region = get_default_location()
+        self.getArtifact()
+        self.req_body = {
+            "template": {
+                "containers": [{"image": self.latestArtifact}],
+                **self.cloudrun_revision,
+            }
+        }
+
+        # check for traffic config
+        if self.cloudrun_configs.get("traffic"):
+            # check all services for the name of the service
+            resp = client.execute(
+                "list",
+                parent_key="parent",
+                parent_schema=f"projects/98058317567/locations/{region}",
+                params={},
+            )
+
+            for service in resp["services"]:
+                if service["name"].rpartition("/")[-1] == self.name:
+                    serviceConfig = self.getServiceConfig()
+                    self.modifyTraffic(serviceConfig)
+
+        deploy_cloudrun(client, self.req_body, self.name)

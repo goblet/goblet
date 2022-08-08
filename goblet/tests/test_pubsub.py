@@ -169,11 +169,13 @@ class TestPubSub:
         # assert dummy_function is run
         app(event, mock_context)
 
-    def test_deploy_pubsub(self, monkeypatch):
+    def test_deploy_pubsub(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet_topic")
         setattr(app, "entrypoint", "app")
@@ -197,12 +199,14 @@ class TestPubSub:
             == "providers/cloud.pubsub/eventTypes/topic.publish"
         )
 
-    def test_deploy_pubsub_cross_project(self, monkeypatch):
+    def test_deploy_pubsub_cross_project(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cross-project")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet-topic-cross-project")
         setattr(app, "entrypoint", "app")

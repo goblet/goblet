@@ -10,6 +10,7 @@ from goblet.client import (
     get_default_project,
     get_default_location,
     get_credentials,
+    get_default_project_number,
 )
 
 log = logging.getLogger("goblet.deployer")
@@ -109,6 +110,55 @@ def destroy_cloudfunction_artifacts(name):
             f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}",
             method="DELETE",
         )
+
+
+def create_cloudbuild(client, req_body):
+    """Creates a cloudbuild based on req_body"""
+    defaultProject = get_default_project()
+    defaultLocation = "global"
+    try:
+        resp = client.execute(
+            "create",
+            parent_key="projectId",
+            parent_schema=defaultProject,
+            params={
+                "body": req_body,
+                "parent": f"projects/{defaultProject}/locations/{defaultLocation}",
+            },
+        )
+        log.info("creating cloudbuild")
+    except HttpError as e:
+        raise e
+    client.wait_for_operation(resp["name"], calls="operations")
+
+
+def deploy_cloudrun(client, req_body, name):
+    """Deploys cloud build to cloudrun"""
+    try:
+        resp = client.execute(
+            "create",
+            parent_key="parent",
+            parent_schema="projects/"
+            + get_default_project_number()
+            + "/locations/{location_id}",
+            params={"body": req_body, "serviceId": name},
+        )
+        log.info("creating cloudrun")
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info("updating cloudrun")
+            resp = client.execute(
+                "patch",
+                parent_key="name",
+                parent_schema="projects/"
+                + get_default_project_number()
+                + "/locations/{location_id}/services/"
+                + name,
+                params={"body": req_body},
+            )
+        else:
+            raise e
+        client.wait_for_operation(resp["name"], calls="projects.locations.operations")
 
 
 def get_cloudrun_url(client, name):

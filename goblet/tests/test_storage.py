@@ -38,11 +38,13 @@ class TestStorage:
         app(event, mock_context)
         assert mock.call_count == 1
 
-    def test_deploy_storage(self, monkeypatch):
+    def test_deploy_storage(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "storage-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet_storage")
         setattr(app, "entrypoint", "app")
