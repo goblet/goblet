@@ -74,7 +74,7 @@ class PubSub(Handler):
             subscription = event.json["subscription"].split("/")[-1]
             topic_name = subscription.replace(self.name + "-", "")
             data = base64.b64decode(event.json["message"]["data"]).decode("utf-8")
-            attributes = event.json.get("attributes") or {}
+            attributes = event.json["message"].get("attributes") or {}
 
         topic = self.resources.get(topic_name)
         if not topic:

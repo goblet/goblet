@@ -127,6 +127,8 @@ class Deployer:
         """Creates http cloudfunction"""
         config = GConfig(config=config)
         user_configs = config.cloudfunction or {}
+        if isinstance(url, dict):
+            url = url["uploadUrl"]
         req_body = {
             "name": self.func_name,
             "description": config.description or "created by goblet",
