@@ -154,6 +154,32 @@ class TestPubSub:
         app(mock_request, None)
         assert mock.call_count == 1
 
+    def test_call_subscription_attributes(self):
+        app = Goblet(function_name="goblet_example")
+
+        mock = Mock()
+        app.topic("test", attributes={"t": 1})(mock_dummy_function(mock))
+
+        mock_request = Mock()
+        mock_request.headers = {}
+        event = {"data": base64.b64encode("test".encode()), "attributes": {"t": 1}}
+        mock_request.json = {
+            "message": event,
+            "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
+        }
+        mock_request.path = None
+
+        app(mock_request, None)
+
+        event2 = {"data": base64.b64encode("test".encode()), "attributes": {"t": 2}}
+        mock_request.json = {
+            "message": event2,
+            "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
+        }
+        app(mock_request, None)
+
+        assert mock.call_count == 1
+
     def test_context(self):
         app = Goblet(function_name="goblet_example")
 
