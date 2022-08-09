@@ -153,6 +153,32 @@ class TestPubSub:
         app(mock_request, None)
         assert mock.call_count == 1
 
+    def test_call_subscription_attributes(self):
+        app = Goblet(function_name="goblet_example")
+
+        mock = Mock()
+        app.topic("test", attributes={"t": 1})(mock_dummy_function(mock))
+
+        mock_request = Mock()
+        mock_request.headers = {}
+        event = {"data": base64.b64encode("test".encode()), "attributes": {"t": 1}}
+        mock_request.json = {
+            "message": event,
+            "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
+        }
+        mock_request.path = None
+
+        app(mock_request, None)
+
+        event2 = {"data": base64.b64encode("test".encode()), "attributes": {"t": 2}}
+        mock_request.json = {
+            "message": event2,
+            "subscription": "projects/PROJECT/subscriptions/goblet_example-test",
+        }
+        app(mock_request, None)
+
+        assert mock.call_count == 1
+
     def test_context(self):
         app = Goblet(function_name="goblet_example")
 
@@ -168,11 +194,13 @@ class TestPubSub:
         # assert dummy_function is run
         app(event, mock_context)
 
-    def test_deploy_pubsub(self, monkeypatch):
+    def test_deploy_pubsub(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet_topic")
         setattr(app, "entrypoint", "app")
@@ -196,12 +224,14 @@ class TestPubSub:
             == "providers/cloud.pubsub/eventTypes/topic.publish"
         )
 
-    def test_deploy_pubsub_cross_project(self, monkeypatch):
+    def test_deploy_pubsub_cross_project(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cross-project")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet-topic-cross-project")
         setattr(app, "entrypoint", "app")
@@ -356,3 +386,32 @@ class TestPubSub:
         assert len(responses) == 3
         assert responses[1] == responses[2]
         assert responses[0]["body"] == {}
+
+    def test_deploy_pubsub_subscription_with_config(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-subscription-config")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        app = Goblet(function_name="goblet-topic-subscription-config")
+        setattr(app, "entrypoint", "app")
+
+        app.topic(
+            "test", use_subscription=True, config={"enableExactlyOnceDelivery": True}
+        )(dummy_function)
+
+        Deployer({"name": app.function_name}).deploy(
+            app,
+            force=True,
+            skip_function=True,
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+
+        put_subscription = get_response(
+            "pubsub-deploy-subscription-config",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-config-test_1.json",
+        )
+        responses = get_responses("pubsub-deploy-subscription-config")
+        assert put_subscription["body"]["enableExactlyOnceDelivery"]
+        assert len(responses) == 2

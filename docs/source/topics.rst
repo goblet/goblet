@@ -82,17 +82,27 @@ see the `cloudfunction`_ docs for more details on the fields.
 .. _CLOUDFUNCTION: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction
 
 
-Cloudrun works similarily, but uses the key `cloudrun` instead. Parameters are 
-key, value pairs that will be parsed and passed into the `gcloud run deploy command <https://cloud.google.com/sdk/gcloud/reference/run/deploy>`__. For flags pass in an empty string. 
+Cloudrun works similarily, but uses the key ``cloudrun`` instead. 
+
+Currently supported fields include:
+
+- traffic
+
+For `Cloudrun revisions <https://cloud.google.com/run/docs/reference/rest/v2/projects.locations.services#RevisionTemplate>`__, use the ``cloudrun_revision`` key
+For `Cloud Build configurations <https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds>`__, use the ``cloudbuild`` key
 
 .. code:: json 
 
     {
         "cloudrun":{
-            "max-instances": "1",
-            "set-env-vars": "ENV1=env1",
-            "no-traffic": ""
+            "traffic": 25
+        },
+        "cloudrun_revision": {
+            "serviceAccount": "service-account@project.iam.gserviceaccount.com"
         }
+        "cloudbuild": {
+            "artifact_registry": "location-docker.pkg.dev/gcp_project/artifact/image",
+            "serviceAccount": "service-account@project.iam.gserviceaccount.com"
     }
 
 By default goblet includes all python files located in the directory. To include other files use the ``customFiles`` key

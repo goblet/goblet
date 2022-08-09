@@ -1,0 +1,111 @@
+{
+  "headers": {},
+  "body": {
+    "id": "fab433ca-7805-4ea2-a2b7-768b5a70440b",
+    "status": "SUCCESS",
+    "source": {
+      "storageSource": {
+        "bucket": "gcf-v2-uploads-111111111-us-central1",
+        "object": "1356b383-a858-40e9-89f8-a529a285a58c.zip"
+      }
+    },
+    "createTime": "2022-08-05T17:15:32.986010574Z",
+    "startTime": "2022-08-05T17:15:33.807350579Z",
+    "finishTime": "2022-08-05T17:16:13.801556Z",
+    "results": {
+      "images": [
+        {
+          "name": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet",
+          "digest": "sha256:a523e252ea30c750d78ce27d3428543a0b7ae2cfa51bc0dbb39227b5ad5affa6",
+          "pushTiming": {
+            "startTime": "2022-08-05T17:16:04.919429555Z",
+            "endTime": "2022-08-05T17:16:13.508148113Z"
+          }
+        },
+        {
+          "name": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet:latest",
+          "digest": "sha256:a523e252ea30c750d78ce27d3428543a0b7ae2cfa51bc0dbb39227b5ad5affa6",
+          "pushTiming": {
+            "startTime": "2022-08-05T17:16:04.919429555Z",
+            "endTime": "2022-08-05T17:16:13.508148113Z"
+          }
+        }
+      ],
+      "buildStepImages": [
+        "sha256:7ca975fa638e811685b18d59739c2dd4f046ec8d3874ea9b0bff2d1074254856"
+      ],
+      "buildStepOutputs": [
+        ""
+      ]
+    },
+    "steps": [
+      {
+        "name": "gcr.io/cloud-builders/docker",
+        "args": [
+          "build",
+          "-t",
+          "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet",
+          "."
+        ],
+        "timing": {
+          "startTime": "2022-08-05T17:15:40.969480752Z",
+          "endTime": "2022-08-05T17:16:04.876813595Z"
+        },
+        "status": "SUCCESS",
+        "pullTiming": {
+          "startTime": "2022-08-05T17:15:40.969480752Z",
+          "endTime": "2022-08-05T17:15:40.977105982Z"
+        }
+      }
+    ],
+    "timeout": "600s",
+    "images": [
+      "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet"
+    ],
+    "projectId": "goblet",
+    "sourceProvenance": {
+      "resolvedStorageSource": {
+        "bucket": "gcf-v2-uploads-111111111-us-central1",
+        "object": "1356b383-a858-40e9-89f8-a529a285a58c.zip",
+        "generation": "1659719732149340"
+      },
+      "fileHashes": {
+        "gs://gcf-v2-uploads-111111111-us-central1/1356b383-a858-40e9-89f8-a529a285a58c.zip#1659719732149340": {
+          "fileHash": [
+            {
+              "type": "MD5",
+              "value": "53m510fEeHWQwg5AfGFrlA=="
+            }
+          ]
+        }
+      }
+    },
+    "options": {
+      "logging": "CLOUD_LOGGING_ONLY",
+      "pool": {}
+    },
+    "logUrl": "https://console.cloud.google.com/cloud-build/builds/fab433ca-7805-4ea2-a2b7-768b5a70440b?project=111111111",
+    "timing": {
+      "BUILD": {
+        "startTime": "2022-08-05T17:15:40.288291166Z",
+        "endTime": "2022-08-05T17:16:04.919357245Z"
+      },
+      "PUSH": {
+        "startTime": "2022-08-05T17:16:04.919428910Z",
+        "endTime": "2022-08-05T17:16:13.508192854Z"
+      },
+      "FETCHSOURCE": {
+        "startTime": "2022-08-05T17:15:34.187865547Z",
+        "endTime": "2022-08-05T17:15:40.288204625Z"
+      }
+    },
+    "artifacts": {
+      "images": [
+        "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet"
+      ]
+    },
+    "queueTtl": "3600s",
+    "serviceAccount": "projects/goblet/serviceAccounts/test-746@goblet.iam.gserviceaccount.com",
+    "name": "projects/goblet/locations/global/builds/fab433ca-7805-4ea2-a2b7-768b5a70440b"
+  }
+}
