@@ -87,7 +87,7 @@ class Backend:
                 if not os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
                     raise e
 
-        self.log.info("function code uploaded")
+        self.log.info("source code uploaded")
 
         return resp
 

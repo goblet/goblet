@@ -4,7 +4,9 @@ import sys
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_project, get_default_location
+from goblet.common_cloud_actions import create_cloudbuild
 from goblet.config import GConfig
+from goblet.deploy import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
 
@@ -15,85 +17,93 @@ class CloudRun(Backend):
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).run
-        self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{app.function_name}"
-        self.zip_config = None  # TODO
-        super().__init__(app, self.client, self.func_path, config=config)
+        self.run_name = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{app.function_name}"
+        super().__init__(app, self.client, self.run_name, config=config)
 
     def deploy(self, force=False, config=None):
+        versioned_clients = VersionedClients(self.app.client_versions)
         if config:
-            config = GConfig(config=config)
-        else:
-            config = self.config
-        # put_headers = {
-        #     "content-type": "application/zip",
-        # }
-        # source = self._gcs_upload(self.client, put_headers, force=force)
-        # TODO start cloud build here (source already deployed, replace code below)
-        cloudrun_configs = config.cloudrun or {}
-        if not cloudrun_configs.get("no-allow-unauthenticated") or cloudrun_configs.get(
-            "allow-unauthenticated"
-        ):
-            cloudrun_configs["no-allow-unauthenticated"] = None
-        cloudrun_options = []
-        for k, v in cloudrun_configs.items():
-            # Handle multiple entries with the same key ex. update-env-vars
-            if v and isinstance(v, list):
-                for v_item in v:
-                    cloudrun_options.append(f"--{k}")
-                    cloudrun_options.append(v_item)
-            else:
-                cloudrun_options.append(f"--{k}")
-                if v:
-                    cloudrun_options.append(v)
+            self.config = GConfig(config=config)
+        put_headers = {
+            "content-type": "application/zip",
+        }
 
-        # Set default port to 8080
-        if not cloudrun_configs.get("port"):
-            cloudrun_options.append("--port")
-            cloudrun_options.append("8080")
-
-        # Set default command
-        if not cloudrun_configs.get("command"):
-            cloudrun_options.append("--command")
-            cloudrun_options.append("functions-framework,--target=goblet_entrypoint")
-
-        base_command = [
-            "gcloud",
-            "run",
-            "deploy",
-            self.name,
-            "--project",
-            get_default_project(),
-            "--region",
-            get_default_location(),
-            "--source",
-            get_dir(),
-        ]
-        if self.app.client_versions.get("gcloud"):
-            base_command.insert(1, self.app.client_versions.get("gcloud"))
-        base_command.extend(cloudrun_options)
-        try:
-            if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
+        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
                 get_dir() + "/Procfile"
-            ):
-                self.log.info(
-                    "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
-                )
-                write_dockerfile()
-            subprocess.check_output(base_command, env=os.environ)
-        except subprocess.CalledProcessError:
-            self.log.error(
-                "Error during cloudrun deployment while running the following command"
+        ):
+            self.log.info(
+                "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
-            self.log.error((" ").join(base_command))
-            sys.exit(1)
+            write_dockerfile()
+        self._zip_file("Dockerfile")
+
+        source = self._gcs_upload(
+            self.client,
+            put_headers,
+            upload_client=versioned_clients.run_uploader,
+            force=force
+        )
+
+        self.create_build(
+            versioned_clients.cloudbuild, source, self.name, config
+        )
+        serviceRevision = RevisionSpec(config, versioned_clients, self.name)
+        serviceRevision.deployRevision()
 
         # Set IAM Bindings
-        if config.bindings:
+        if self.config.bindings:
             self.log.info(f"adding IAM bindings for cloudrun {self.name}")
-            policy_bindings = {"policy": {"bindings": config.bindings}}
+            policy_bindings = {"policy": {"bindings": self.config.bindings}}
             self.client.execute(
                 "setIamPolicy",
                 parent_key="resource",
-                parent_schema=self.func_path,
+                parent_schema=self.run_name,
+                params={"body": policy_bindings},
+            )
+
+    def create_build(self, client, source=None, name="goblet", config={}):
+        """Creates http cloudbuild"""
+        if config:
+            self.config = GConfig(config=config)
+        build_configs = self.config.cloudbuild or {}
+        registry = (
+            build_configs.get("artifact_registry")
+            or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
+        )
+        build_configs.pop("artifact_registry", None)
+
+        if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):
+            build_options = build_configs.get("options", {})
+            if not build_options.get("logging"):
+                build_options["logging"] = "CLOUD_LOGGING_ONLY"
+                build_configs["options"] = build_options
+                self.log.info(
+                    "service account given but no logging bucket so defaulting to cloud logging only"
+                )
+
+        req_body = {
+            "source": {
+                "storageSource": source["storageSource"]
+            },
+            "steps": [
+                {
+                    "name": "gcr.io/cloud-builders/docker",
+                    "args": ["build", "-t", registry, "."],
+                }
+            ],
+            "images": [registry],
+            **build_configs,
+        }
+
+        create_cloudbuild(client, req_body)
+
+        # Set IAM Bindings
+        if self.config.bindings:
+            self.log.info(f"adding IAM bindings for cloudrun {self.name}")
+            policy_bindings = {"policy": {"bindings": self.config.bindings}}
+            client.run.execute(
+                "setIamPolicy",
+                parent_key="resource",
+                parent_schema=self.run_name,
                 params={"body": policy_bindings},
             )
