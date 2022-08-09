@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
@@ -201,13 +203,17 @@ class Register_Handlers(DecoratorAPI):
         if event_type == "pubsub":
             response = self.handlers["pubsub"](request, context)
         if event_type == "storage":
-            response = self.handlers["storage"](request, context)
+            # Storage trigger can be made with @eventarc decorator
+            try:
+                response = self.handlers["storage"](request, context)
+            except ValueError:
+                event_type = "eventarc"
         if event_type == "route":
             response = self.handlers["route"](request)
         if event_type == "http":
             response = self.handlers["http"](request)
         if event_type == "eventarc":
-            response = self.handlers["eventarc"](request)
+            response = self.handlers["eventarc"](request, context)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")

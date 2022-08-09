@@ -22,7 +22,7 @@ class EventArc(Handler):
 
     resource_type = "eventarc"
     # Cloudfunctions gen 2 is also supported
-    valid_backends = ["cloudrun", "cloudfunctionv2"]
+    valid_backends = ["cloudrun"]
     can_sync = True
 
     def __init__(
@@ -62,9 +62,20 @@ class EventArc(Handler):
         assert isinstance(event_filters, list)
         if "type" not in (event["attribute"] for event in event_filters):
             raise ValueError("Key 'type' (required) not found in event_filters")
+        event_type = None
+        if self.backend == "cloudfunctionv2":
+            # pop event_type from filters
+            event_type = next(
+                event
+                for event in event_filters
+                if event["attribute"] == "type"
+            )
+            event_filters.remove(event_type)
+
         self.resources.append(
             {
                 "trigger_name": f"{self.name}-{name}".replace("_", "-"),
+                "event_type": event_type["value"],
                 "event_filters": event_filters,
                 "topic": kwargs["topic"],
                 "region": region,
@@ -73,14 +84,40 @@ class EventArc(Handler):
             }
         )
 
-    def __call__(self, request):
-        full_path = request.path
-        trigger_name = full_path.split("/")[-1]
+    @staticmethod
+    def _check_filters(data, filters):
+        for f in filters:
+            if f.get("operator"):
+                # TODO
+                continue
+            log.info(data)
+            log.info(f)
+            if data[f["attribute"]] != data[f["value"]]:
+                return False
+        return True
+
+    def __call__(self, request, context=None):
         trigger = None
-        for t in self.resources:
-            if t["trigger_name"] in trigger_name:
-                trigger = t
-                break
+        if self.backend == "cloudfunctionv2":
+            for t in self.resources:
+                if not self._check_filters(request, t["event_filters"]):
+                    continue
+                if t["event_type"] == context["event_type"]:
+                    trigger = t
+                    break
+                # handle difference in naming for cloud storage triggers
+                elif t["event_type"].startswith("google.cloud.storage.object.v1."):
+                    if t["event_type"].split(".")[-1] == context["event_type"] + "d":
+                        trigger = t
+                        break
+        else:
+            full_path = request.path
+            trigger_name = full_path.split("/")[-1]
+
+            for t in self.resources:
+                if t["trigger_name"] in trigger_name:
+                    trigger = t
+                    break
         if not trigger:
             raise ValueError("No trigger found")
         response = trigger["func"](request)
@@ -104,18 +141,22 @@ class EventArc(Handler):
         client = self.versioned_clients.cloudfunctions
         gconfig = GConfig(config=config)
         user_configs = gconfig.cloudfunction or {}
-        try:
-            user_configs["serviceConfig"] = gconfig.eventarc["serviceConfig"]
-        except KeyError:
-            if not user_configs.get("serviceConfig"):
-                raise ValueError(
-                    "serviceConfig for cloudfunction or eventarc not specified in config.json. Please add a service "
-                    "account in the form 'serviceConfig': {'serviceAccountEmail': SERVICE_ACCOUNT_EMAIL} "
-                )
+        service_account = None
+        if gconfig.eventarc and gconfig.eventarc.get("serviceAccount"):
+            service_account = gconfig.eventarc.get("serviceAccount")
+        else:
+            log.info(
+                "Service account not found for cloudfunctions or eventarc. You can set `serviceAccount` "
+                "field in config.json under `eventarc`"
+            )
         for trigger in self.resources:
             # separate eventType from the rest of the event filters
-            event_type = trigger["event_filters"]["type"]
-            filters = {k: v for k, v in trigger["event_filters"].items() if k != "type"}
+            trigger_spec = {
+                "eventType": trigger["event_type"],
+                "eventFilters": trigger["event_filters"],
+            }
+            if service_account:
+                trigger_spec["serviceAccountEmail"] = service_account
             params = {
                 "body": {
                     "name": self.cloudfunction,
@@ -126,7 +167,7 @@ class EventArc(Handler):
                         "entryPoint": entrypoint or "goblet_entrypoint",
                         "source": {"storageSource": source["storageSource"]},
                     },
-                    "eventTrigger": {"eventType": event_type, "eventFilters": filters},
+                    "eventTrigger": trigger_spec,
                     **user_configs,
                 },
                 "functionId": self.cloudfunction.split("/")[-1],
