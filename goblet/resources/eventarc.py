@@ -1,8 +1,6 @@
 from goblet.common_cloud_actions import (
     create_eventarc_trigger,
     destroy_eventarc_trigger,
-    get_function_runtime,
-    create_cloudfunctionv2,
 )
 from goblet.config import GConfig
 from goblet.response import Response
@@ -40,42 +38,15 @@ class EventArc(Handler):
         event_filters = kwargs.get("event_filters")
         region = kwargs.get("kwargs", {}).get("region", get_default_location())
         if kwargs.get("topic"):
-            if self.backend == "cloudrun":
-                event_filters = [
-                    {
-                        "attribute": "type",
-                        "value": "google.cloud.pubsub.topic.v1.messagePublished",
-                    },
-                ]
-        if not event_filters:
-            raise ValueError("Missing event_filters argument")
-
-        # allow event_filters to optionally be specified as a dict (less verbose)
-        if isinstance(event_filters, dict):
             event_filters = [
                 {
-                    "attribute": k,
-                    "value": v,
+                    "attribute": "type",
+                    "value": "google.cloud.pubsub.topic.v1.messagePublished",
                 }
-                for k, v in event_filters.items()
             ]
-        assert isinstance(event_filters, list)
-        if "type" not in (event["attribute"] for event in event_filters):
-            raise ValueError("Key 'type' (required) not found in event_filters")
-        event_type = None
-        if self.backend == "cloudfunctionv2":
-            # pop event_type from filters
-            event_type = next(
-                event
-                for event in event_filters
-                if event["attribute"] == "type"
-            )
-            event_filters.remove(event_type)
-
         self.resources.append(
             {
                 "trigger_name": f"{self.name}-{name}".replace("_", "-"),
-                "event_type": event_type["value"],
                 "event_filters": event_filters,
                 "topic": kwargs["topic"],
                 "region": region,
@@ -84,40 +55,14 @@ class EventArc(Handler):
             }
         )
 
-    @staticmethod
-    def _check_filters(data, filters):
-        for f in filters:
-            if f.get("operator"):
-                # TODO
-                continue
-            log.info(data)
-            log.info(f)
-            if data[f["attribute"]] != data[f["value"]]:
-                return False
-        return True
-
-    def __call__(self, request, context=None):
+    def __call__(self, request):
+        full_path = request.path
+        trigger_name = full_path.split("/")[-1]
         trigger = None
-        if self.backend == "cloudfunctionv2":
-            for t in self.resources:
-                if not self._check_filters(request, t["event_filters"]):
-                    continue
-                if t["event_type"] == context["event_type"]:
-                    trigger = t
-                    break
-                # handle difference in naming for cloud storage triggers
-                elif t["event_type"].startswith("google.cloud.storage.object.v1."):
-                    if t["event_type"].split(".")[-1] == context["event_type"] + "d":
-                        trigger = t
-                        break
-        else:
-            full_path = request.path
-            trigger_name = full_path.split("/")[-1]
-
-            for t in self.resources:
-                if t["trigger_name"] in trigger_name:
-                    trigger = t
-                    break
+        for t in self.resources:
+            if t["trigger_name"] in trigger_name:
+                trigger = t
+                break
         if not trigger:
             raise ValueError("No trigger found")
         response = trigger["func"](request)
@@ -129,52 +74,9 @@ class EventArc(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
         if not self.resources:
             return
-        if self.backend == "cloudrun":
-            self._deploy_eventarc_cloudrun(source, entrypoint, config)
-        elif self.backend == "cloudfunctionv2":
-            self._deploy_eventarc_cloudfunctionv2(source, entrypoint, config)
-
-    def _deploy_eventarc_cloudfunctionv2(self, source=None, entrypoint=None, config={}):
-        client = self.versioned_clients.cloudfunctions
-        gconfig = GConfig(config=config)
-        user_configs = gconfig.cloudfunction or {}
-        service_account = None
-        if gconfig.eventarc and gconfig.eventarc.get("serviceAccount"):
-            service_account = gconfig.eventarc.get("serviceAccount")
-        else:
-            log.info(
-                "Service account not found for cloudfunctions or eventarc. You can set `serviceAccount` "
-                "field in config.json under `eventarc`"
-            )
-        for trigger in self.resources:
-            # separate eventType from the rest of the event filters
-            trigger_spec = {
-                "eventType": trigger["event_type"],
-                "eventFilters": trigger["event_filters"],
-            }
-            if service_account:
-                trigger_spec["serviceAccountEmail"] = service_account
-            params = {
-                "body": {
-                    "name": self.cloudfunction,
-                    "environment": "GEN_2",
-                    "description": gconfig.description or "created by goblet",
-                    "buildConfig": {
-                        "runtime": get_function_runtime(client, gconfig),
-                        "entryPoint": entrypoint or "goblet_entrypoint",
-                        "source": {"storageSource": source["storageSource"]},
-                    },
-                    "eventTrigger": trigger_spec,
-                    **user_configs,
-                },
-                "functionId": self.cloudfunction.split("/")[-1],
-            }
-            create_cloudfunctionv2(client, params, config=config)
-
-    def _deploy_eventarc_cloudrun(self, source=None, entrypoint=None, config={}):
         gconfig = GConfig(config=config)
         if gconfig.eventarc and gconfig.eventarc.get("serviceAccount"):
             service_account = gconfig.eventarc.get("serviceAccount")
