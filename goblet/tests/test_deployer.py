@@ -172,8 +172,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP(dummy_function)
 
-        Deployer({"name": app.function_name}).deploy(
-            app,
+        app.deploy(
             only_function=True,
             force=True,
             config={

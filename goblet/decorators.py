@@ -217,7 +217,7 @@ class Register_Handlers(DecoratorAPI):
         if event_type == "http":
             response = self.handlers["http"](request)
         if event_type == "eventarc":
-            response = self.handlers["eventarc"](request, context)
+            response = self.handlers["eventarc"](request)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")

@@ -401,8 +401,7 @@ class TestPubSub:
             "test", use_subscription=True, config={"enableExactlyOnceDelivery": True}
         )(dummy_function)
 
-        Deployer({"name": app.function_name}).deploy(
-            app,
+        app.deploy(
             force=True,
             skip_function=True,
             config={"pubsub": {"serviceAccountEmail": service_account}},
