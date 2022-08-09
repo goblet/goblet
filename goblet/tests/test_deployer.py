@@ -1,7 +1,6 @@
-import goblet
+from goblet import Goblet
 from goblet.client import VersionedClients
 from goblet.resources.http import HTTP
-from goblet import Goblet
 from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN, get_response
 
 
@@ -32,7 +31,6 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-
         app = Goblet(function_name="goblet-test-http-v2", backend="cloudfunctionv2")
         setattr(app, "entrypoint", "app")
 
@@ -43,7 +41,6 @@ class TestDeployer:
 
         responses = get_responses("deployer-function-deploy-v2")
         assert len(responses) == 3
-
 
     def test_deploy_cloudrun(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

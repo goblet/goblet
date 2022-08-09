@@ -1,12 +1,10 @@
 import os
-import subprocess
-import sys
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_project, get_default_location
 from goblet.common_cloud_actions import create_cloudbuild
 from goblet.config import GConfig
-from goblet.deploy import RevisionSpec
+from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
 
@@ -29,7 +27,7 @@ class CloudRun(Backend):
         }
 
         if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
-                get_dir() + "/Procfile"
+            get_dir() + "/Procfile"
         ):
             self.log.info(
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
@@ -41,12 +39,10 @@ class CloudRun(Backend):
             self.client,
             put_headers,
             upload_client=versioned_clients.run_uploader,
-            force=force
+            force=force,
         )
 
-        self.create_build(
-            versioned_clients.cloudbuild, source, self.name, config
-        )
+        self.create_build(versioned_clients.cloudbuild, source, self.name, config)
         serviceRevision = RevisionSpec(config, versioned_clients, self.name)
         serviceRevision.deployRevision()
 
@@ -82,9 +78,7 @@ class CloudRun(Backend):
                 )
 
         req_body = {
-            "source": {
-                "storageSource": source["storageSource"]
-            },
+            "source": {"storageSource": source["storageSource"]},
             "steps": [
                 {
                     "name": "gcr.io/cloud-builders/docker",

@@ -1,3 +1,8 @@
+import base64
+from unittest.mock import Mock
+
+import pytest
+
 from goblet import Goblet, Response
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import (
@@ -6,10 +11,6 @@ from goblet.test_utils import (
     get_response,
     mock_dummy_function,
 )
-
-from unittest.mock import Mock
-import base64
-import pytest
 
 
 class TestPubSub:
