@@ -1,6 +1,7 @@
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_location, get_default_project
-from goblet.common_cloud_actions import get_function_runtime, create_cloudfunctionv1
+from goblet.common_cloud_actions import get_function_runtime, create_cloudfunctionv1, destroy_cloudfunction_artifacts, \
+    destroy_cloudfunction
 from goblet.config import GConfig
 
 
@@ -28,6 +29,11 @@ class CloudFunctionV1(Backend):
             create_cloudfunctionv1(client, params, config=config)
 
         return source
+
+    def destroy(self, all=False):
+        destroy_cloudfunction(self.client, self.name)
+        if all:
+            destroy_cloudfunction_artifacts(self.name)
 
     def _get_upload_params(self, source):
         user_configs = self.config.cloudfunction or {}

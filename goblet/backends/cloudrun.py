@@ -2,7 +2,7 @@ import os
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_project, get_default_location
-from goblet.common_cloud_actions import create_cloudbuild
+from goblet.common_cloud_actions import create_cloudbuild, destroy_cloudrun, destroy_cloudfunction_artifacts
 from goblet.config import GConfig
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
@@ -56,6 +56,11 @@ class CloudRun(Backend):
                 parent_schema=self.run_name,
                 params={"body": policy_bindings},
             )
+
+    def destroy(self, all=False):
+        destroy_cloudrun(self.client, self.name)
+        if all:
+            destroy_cloudfunction_artifacts(self.name)
 
     def create_build(self, client, source=None, name="goblet", config={}):
         """Creates http cloudbuild"""

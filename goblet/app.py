@@ -71,18 +71,12 @@ class Goblet(Register_Handlers):
         if not only_function:
             self.deploy_handlers(source, config=config)
 
-    def destroy(self, all=None):
+    def destroy(self, all=False):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         for k, v in self.handlers.items():
             log.info(f"destroying {k}")
             v.destroy()
-        versioned_clients = VersionedClients(self.client_versions)
-        if self.backend.startswith("cloudfunction"):
-            destroy_cloudfunction(versioned_clients.cloudfunctions, self.function_name)
-        if self.backend == "cloudrun":
-            destroy_cloudrun(versioned_clients.run, self.function_name)
-        if all:
-            destroy_cloudfunction_artifacts(self.function_name)
+        self.backend_class(self).destroy(all=all)
 
     def package(self):
         self.backend_class(self).zip()
