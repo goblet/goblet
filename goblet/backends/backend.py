@@ -92,7 +92,7 @@ class Backend:
         return resp
 
     def get(self):
-        """Returns cloudfunction currently deployed or None"""
+        """Returns backend currently deployed or None"""
         try:
             return self.client.execute(
                 "get", parent_key="name", parent_schema=self.func_path
