@@ -66,7 +66,7 @@ class Backend:
     def _gcs_upload(self, client, headers, upload_client=None, force=False):
         self.log.info("zipping source code")
         self.zip()
-        if not force and self.get() and not self.delta(client):
+        if not force and self.get() and self.resource_type.startswith("cloudfunction") and self.delta(client):
             self.log.info("No changes detected....")
             return None
         self.log.info("uploading source zip to gs......")
