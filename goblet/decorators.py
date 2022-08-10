@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route", "eventarc"]
-BACKEND_TYPES = ["cloudfunction", "cloudrun"]  # get rid of this
+BACKEND_TYPES = ["cloudfunction", "cloudrun"]
 
 SUPPORTED_BACKENDS = {
     "cloudfunction": CloudFunctionV1,
