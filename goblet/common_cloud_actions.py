@@ -185,7 +185,9 @@ def deploy_cloudrun(client, req_body, name):
             raise e
         # oerations not supported by v1
         if client.version == "v2":
-            client.wait_for_operation(resp["name"], calls="projects.locations.operations")
+            client.wait_for_operation(
+                resp["name"], calls="projects.locations.operations"
+            )
 
 
 def get_cloudrun_url(client, name):

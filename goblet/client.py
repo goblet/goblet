@@ -202,7 +202,9 @@ class VersionedClients:
     @property
     def run(self):
         version = self.client_versions.get("run", "v2")
-        calls = "projects.locations.services" if version == "v2" else "namespaces.services"
+        calls = (
+            "projects.locations.services" if version == "v2" else "namespaces.services"
+        )
         return Client(
             "run",
             version,
