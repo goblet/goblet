@@ -67,7 +67,7 @@ class Storage(Handler):
         matched_buckets = [
             b
             for b in self.resources
-            if b["bucket"] == bucket_name and b["event_type"] == event_type
+            if b["bucket"] == bucket_name and b["event_type"][:6] == event_type[:6]
         ]
         if not matched_buckets:
             raise ValueError("No functions found")
