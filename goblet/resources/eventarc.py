@@ -19,7 +19,9 @@ class EventArc(Handler):
     """
 
     resource_type = "eventarc"
-    # Cloudfunctions gen 2 is also supported
+    # Cloudfunctions gen 2 is also supported (see https://cloud.google.com/functions/docs/calling/eventarc)
+    # However, the implementation is complicated because it is difficult to route the responses to the correct trigger
+    # Partial implementation can be found here: https://github.com/samdevo/goblet/blob/eventarc-changes/goblet/resources/eventarc.py
     valid_backends = ["cloudrun"]
     can_sync = True
 
