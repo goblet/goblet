@@ -8,6 +8,8 @@ import pytest
 
 class TestStorage:
     def test_add_bucket(self, monkeypatch):
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
         app = Goblet(function_name="goblet_example")
 
         app.storage("test", "finalize")(dummy_function)
@@ -25,6 +27,8 @@ class TestStorage:
             app.storage("test", "wrong")(dummy_function)
 
     def test_call_storage(self, monkeypatch):
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
         app = Goblet(function_name="goblet_example")
         mock = Mock()
 
