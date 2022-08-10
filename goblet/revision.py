@@ -116,6 +116,7 @@ class RevisionSpec:
     def deployRevision(self):
         client = self.versioned_clients.run
         region = get_default_location()
+        project = get_default_project()
         self.getArtifact()
         self.req_body = {
             "template": {
@@ -130,7 +131,7 @@ class RevisionSpec:
             resp = client.execute(
                 "list",
                 parent_key="parent",
-                parent_schema=f"projects/98058317567/locations/{region}",
+                parent_schema=f"projects/{project}/locations/{region}",
                 params={},
             )
 
