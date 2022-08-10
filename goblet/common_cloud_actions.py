@@ -327,7 +327,7 @@ def get_function_runtime(client, config=None):
     """
     runtime = config.runtime or get_python_runtime()
     required_runtime = "python37" if client.version == "v1" else "python38"
-    if runtime < required_runtime:
+    if int(runtime.split("python")[-1]) < int(required_runtime.split("python")[-1]) :
         raise ValueError(
             f"Your current python runtime is {runtime}. Your backend requires a minimum of {required_runtime}"
             f". Either upgrade python on your machine or set the 'runtime' field in config.json."
