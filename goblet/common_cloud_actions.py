@@ -192,7 +192,12 @@ def get_cloudrun_url(client, name):
             parent_schema="projects/{project_id}/locations/{location_id}/services/"
             + name,
         )
-        return resp["status"]["url"]
+        # Handle both cases: cloudrun v1 and v2
+        try:
+            target = resp["status"]["url"]
+        except KeyError:
+            target = resp["status"]["uri"]
+        return target
     except HttpError as e:
         if e.resp.status == 404:
             log.info(f"cloudrun {name} not found")
