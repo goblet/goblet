@@ -15,7 +15,7 @@ from goblet.write_files import write_dockerfile
 
 class CloudRun(Backend):
     resource_type = "cloudrun"
-    supported_versions = ["v1"]  # do we support v2?
+    supported_versions = ["v1", "v2"]
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).run
