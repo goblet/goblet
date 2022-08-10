@@ -157,9 +157,7 @@ def create_cloudbuild(client, req_body):
 def deploy_cloudrun(client, req_body, name):
     """Deploys cloud build to cloudrun"""
     try:
-        params = {"body": req_body}
-        if client.version == "v2":
-            params["serviceId"] = name
+        params = {"body": req_body, "serviceId": name}
         resp = client.execute(
             "create",
             parent_key="parent",
@@ -184,10 +182,9 @@ def deploy_cloudrun(client, req_body, name):
         else:
             raise e
         # oerations not supported by v1
-        if client.version == "v2":
-            client.wait_for_operation(
-                resp["name"], calls="projects.locations.operations"
-            )
+        client.wait_for_operation(
+            resp["name"], calls="projects.locations.operations"
+        )
 
 
 def get_cloudrun_url(client, name):
