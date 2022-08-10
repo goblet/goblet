@@ -1,7 +1,11 @@
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_location, get_default_project
-from goblet.common_cloud_actions import get_function_runtime, create_cloudfunctionv1, destroy_cloudfunction_artifacts, \
-    destroy_cloudfunction
+from goblet.common_cloud_actions import (
+    get_function_runtime,
+    create_cloudfunctionv1,
+    destroy_cloudfunction_artifacts,
+    destroy_cloudfunction,
+)
 from goblet.config import GConfig
 
 

@@ -2,7 +2,11 @@ import os
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_project, get_default_location
-from goblet.common_cloud_actions import create_cloudbuild, destroy_cloudrun, destroy_cloudfunction_artifacts
+from goblet.common_cloud_actions import (
+    create_cloudbuild,
+    destroy_cloudrun,
+    destroy_cloudfunction_artifacts,
+)
 from goblet.config import GConfig
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
