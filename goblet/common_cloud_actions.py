@@ -196,7 +196,7 @@ def get_cloudrun_url(client, name):
         try:
             target = resp["status"]["url"]
         except KeyError:
-            target = resp["status"]["uri"]
+            target = resp["uri"]
         return target
     except HttpError as e:
         if e.resp.status == 404:
