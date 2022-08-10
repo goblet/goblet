@@ -34,7 +34,6 @@ class TestDeployer:
         app = Goblet(function_name="goblet-test-http-v2", backend="cloudfunctionv2")
         setattr(app, "entrypoint", "app")
 
-        # app.handlers["http"] = HTTP("http_function")
         app.handlers["http"].register_http(dummy_function, {})
 
         app.deploy(only_function=True, force=True, config={"runtime": "python38"})
