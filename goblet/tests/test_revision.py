@@ -1,4 +1,4 @@
-from goblet.deploy import RevisionSpec
+from goblet.revision import RevisionSpec
 import unittest
 
 

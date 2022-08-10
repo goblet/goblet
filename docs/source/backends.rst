@@ -5,7 +5,32 @@ Backends
 Cloudfunction
 ^^^^^^^^^^^^^
 
-The default backend. 
+
+
+Goblet's default backend is first-generation cloud functions. However, Goblet supports both first- and second-generation cloud functions.
+
+* For first-generation:
+
+.. code:: python
+
+    app = Goblet()
+    or
+    app = Goblet(backend="cloudfunction")
+
+* For second-generation:
+
+.. code:: python
+
+    app = Goblet(backend="cloudfunctionv2")
+
+* You can use config.json to further customize the function you wish to create. Goblet uses the `CloudFunction resource <https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#resource:-cloudfunction>`_
+  for first-gen cloudfunctions and the `Function resource <https://cloud.google.com/functions/docs/reference/rest/v2/projects.locations.functions#resource:-function>`_ for cloudfunctionv2. You may add any additional fields in config.json under "cloudfunction"
+
+* For cloudfunctions v1, python version must be at least python3.7, and for cloudfunctionv2, python version must be at least python3.8.
+  To specify a python version for your cloudfunction, you can set the runtime field in config.json as such:
+    {"cloudfunction": {"runtime": "python38"}}
+
+* Goblet does not currently support eventarc triggers for cloudfunctions
 
 Cloudrun
 ^^^^^^^^

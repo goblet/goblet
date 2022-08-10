@@ -1,5 +1,9 @@
+import base64
+from unittest.mock import Mock
+
+import pytest
+
 from goblet import Goblet, Response
-from goblet.deploy import Deployer
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import (
     get_responses,
@@ -7,10 +11,6 @@ from goblet.test_utils import (
     get_response,
     mock_dummy_function,
 )
-
-from unittest.mock import Mock
-import base64
-import pytest
 
 
 class TestPubSub:
@@ -208,7 +208,7 @@ class TestPubSub:
 
         app.topic("test-topic")(dummy_function)
 
-        Deployer().deploy(app, force=True)
+        app.deploy(force=True)
 
         responses = get_responses("pubsub-deploy")
 
@@ -239,8 +239,8 @@ class TestPubSub:
 
         app.topic("test", project="goblet-cross-project")(dummy_function)
 
-        Deployer({"name": app.function_name}).deploy(
-            app, force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
+        app.deploy(
+            force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
         )
 
         put_subscription = get_response(
@@ -265,8 +265,7 @@ class TestPubSub:
             dummy_function
         )
 
-        Deployer({"name": app.function_name}).deploy(
-            app,
+        app.deploy(
             force=True,
             skip_function=True,
             config={"pubsub": {"serviceAccountEmail": service_account}},
@@ -403,8 +402,7 @@ class TestPubSub:
             "test", use_subscription=True, config={"enableExactlyOnceDelivery": True}
         )(dummy_function)
 
-        Deployer({"name": app.function_name}).deploy(
-            app,
+        app.deploy(
             force=True,
             skip_function=True,
             config={"pubsub": {"serviceAccountEmail": service_account}},

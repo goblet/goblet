@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "uploadUrl": "https://storage.googleapis.com/mock",
+    "storageSource": {
+      "bucket": "gcf-v2-uploads-goblet-us-central1",
+      "object": "29a05ba7-fdd5-4324-b6f2-0fb054bee42b.zip"
+    }
+  }
+}

@@ -10,11 +10,11 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 import goblet
 
-from goblet.handler import Handler
-from goblet.client import get_default_project, get_default_location
+from goblet.resources.handler import Handler
+from goblet.client import get_default_project
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
-from goblet.common_cloud_actions import get_cloudrun_url
+from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
 
 from googleapiclient.errors import HttpError
 
@@ -28,7 +28,7 @@ class ApiGateway(Handler):
     """
 
     resource_type = "apigateway"
-    valid_backends = ["cloudfunction", "cloudrun"]
+    valid_backends = ["cloudfunction", "cloudrun", "cloudfunctionv2"]
 
     def __init__(
         self,
@@ -47,7 +47,6 @@ class ApiGateway(Handler):
         )
         self.name = self.format_name(name)
         self.cors = cors or {}
-        self.cloudfunction = f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
         self.routes_type = routes_type
         self.marshmallow_attribute_function = None
 
@@ -107,15 +106,21 @@ class ApiGateway(Handler):
                 return False
         return True
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
-        if self.routes_type != "apigateway" and self.backend == "cloudfunctions":
+    def _deploy(self, source=None, entrypoint=None, config={}):
+        if (
+            self.routes_type != "apigateway"
+            and self.backend.startswith("cloudfunction")
+            and self.versioned_clients.cloudfunctions == "v1"
+        ):
             raise ValueError(
-                f"Cloudfunctions backend is not supported for routes_type {self.routes_type}"
+                f"Cloudfunctions v1 backend is not supported for routes_type {self.routes_type}"
             )
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
         log.info("deploying api......")
-        base_url = self.cloudfunction
+        base_url = get_cloudfunction_url(
+            self.versioned_clients.cloudfunctions, self.name
+        )
         if self.backend == "cloudrun":
             base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
         self.generate_openapi_spec(base_url)
