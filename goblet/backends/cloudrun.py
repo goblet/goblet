@@ -1,6 +1,10 @@
 import os
+from urllib.parse import quote_plus
+
+import google_auth_httplib2
 
 from goblet.backends.backend import Backend
+from goblet.client import Client, get_credentials
 from goblet.client import VersionedClients, get_default_project, get_default_location
 from goblet.common_cloud_actions import (
     create_cloudbuild,
@@ -39,12 +43,15 @@ class CloudRun(Backend):
             write_dockerfile()
         self._zip_file("Dockerfile")
 
-        source = self._gcs_upload(
+        source, changes = self._gcs_upload(
             self.client,
             put_headers,
             upload_client=versioned_clients.run_uploader,
             force=force,
         )
+
+        if not changes:
+            return None
 
         self.create_build(versioned_clients.cloudbuild, source, self.name, config)
         serviceRevision = RevisionSpec(config, versioned_clients, self.name)
@@ -60,6 +67,8 @@ class CloudRun(Backend):
                 parent_schema=self.run_name,
                 params={"body": policy_bindings},
             )
+
+        return source
 
     def destroy(self, all=False):
         destroy_cloudrun(self.client, self.name)
@@ -110,3 +119,21 @@ class CloudRun(Backend):
                 parent_schema=self.run_name,
                 params={"body": policy_bindings},
             )
+
+    def _checksum(self):
+        versioned_clients = VersionedClients(self.app.client_versions)
+        resp = versioned_clients.cloudbuild.execute(
+            "list",
+            parent_key="projectId",
+            parent_schema=get_default_project(),
+            params={},
+        )
+        latest_build_source = resp["builds"][0]["source"]
+        bucket = latest_build_source["storageSource"]["bucket"]
+        obj = latest_build_source["storageSource"]["object"]
+        client = Client("cloudresourcemanager", "v1", calls="projects")
+        http = client.http or google_auth_httplib2.AuthorizedHttp(get_credentials())
+        resp = http.request(
+            f"https://storage.googleapis.com/storage/v1/b/{bucket}/o/{quote_plus(obj)}?alt=media",
+        )
+        return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]

@@ -1,3 +1,6 @@
+from requests import request
+
+
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_location, get_default_project
 from goblet.common_cloud_actions import (
@@ -27,7 +30,10 @@ class CloudFunctionV1(Backend):
             "content-type": "application/zip",
             "x-goog-content-length-range": "0,104857600",
         }
-        source = self._gcs_upload(self.client, put_headers, force=force)
+        source, changes = self._gcs_upload(self.client, put_headers, force=force)
+        if not changes:
+            return None
+
         if self.app.is_http():
             client, params = self._get_upload_params(source)
             create_cloudfunctionv1(client, params, config=config)
@@ -53,3 +59,10 @@ class CloudFunctionV1(Backend):
             }
         }
         return self.client, params
+
+    def _checksum(self):
+        source_info = self.client.execute(
+            "generateDownloadUrl", parent_key="name", parent_schema=self.func_path
+        )
+        resp = request("HEAD", source_info["downloadUrl"])
+        return resp.headers["x-goog-hash"].split(",")[-1].split("=", 1)[-1]

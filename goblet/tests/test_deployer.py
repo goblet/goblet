@@ -1,5 +1,4 @@
 from goblet import Goblet
-from goblet.client import VersionedClients
 from goblet.resources.http import HTTP
 from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN, get_response
 
@@ -148,12 +147,8 @@ class TestDeployer:
 
         app_backend = app.backend_class(app)
 
-        assert not app_backend.delta(
-            VersionedClients().cloudfunctions, f"{DATA_DIR_MAIN}/test_zip.txt.zip"
-        )
-        assert app_backend.delta(
-            VersionedClients().cloudfunctions, f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip"
-        )
+        assert not app_backend.delta(f"{DATA_DIR_MAIN}/test_zip.txt.zip")
+        assert app_backend.delta(f"{DATA_DIR_MAIN}/fail_test_zip.txt.zip")
 
     def test_cloudrun_custom_artifact(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

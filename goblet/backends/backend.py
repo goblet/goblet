@@ -1,14 +1,13 @@
 import base64
 import hashlib
-from pathlib import Path
-import zipfile
-import os
 import logging
+import os
 import warnings
+import zipfile
+from pathlib import Path
 
 import requests
 from googleapiclient.errors import HttpError
-from requests import request
 
 from goblet.config import GConfig
 from goblet.utils import get_g_dir, checksum
@@ -45,7 +44,7 @@ class Backend:
             os.mkdir(get_g_dir())
         return zipfile.ZipFile(self.zip_path, "w", zipfile.ZIP_DEFLATED)
 
-    def delta(self, client, zip_path=None):
+    def delta(self, zip_path=None):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
         if zip_path is None:
             zip_path = self.zip_path
@@ -55,22 +54,21 @@ class Backend:
                 "ascii"
             )
 
-        source_info = client.execute(
-            "generateDownloadUrl", parent_key="name", parent_schema=self.func_path
-        )
-        resp = request("HEAD", source_info["downloadUrl"])
-        deployed_checksum = resp.headers["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+        deployed_checksum = self._checksum()
         modified = deployed_checksum != local_checksum
         return modified
+
+    def _checksum(self):
+        raise NotImplementedError("_checksum")
 
     def _gcs_upload(self, client, headers, upload_client=None, force=False):
         self.log.info("zipping source code")
         self.zip()
-        if not force and self.get() and not self.delta(client):
+        if not force and self.get() and not self.delta():
             self.log.info("No changes detected....")
-            return None
+            return None, False
         self.log.info("uploading source zip to gs......")
-        return self._upload_zip(upload_client or client, headers)
+        return self._upload_zip(upload_client or client, headers), True
 
     def _upload_zip(self, client, headers=None) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
