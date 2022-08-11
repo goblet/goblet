@@ -45,7 +45,8 @@ class Backend:
             os.mkdir(get_g_dir())
         return zipfile.ZipFile(self.zip_path, "w", zipfile.ZIP_DEFLATED)
 
-    def delta(self, zip_path=None):
+
+    def delta(self, client, zip_path=None):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
         if zip_path is None:
             zip_path = self.zip_path
@@ -70,6 +71,7 @@ class Backend:
             return None, False
         self.log.info("uploading source zip to gs......")
         return self._upload_zip(upload_client or client, headers), True
+        
 
     def _upload_zip(self, client, headers=None) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
@@ -90,12 +92,11 @@ class Backend:
 
         return resp
 
-    def get(self, client=None):
-        if not client:
-            client = self.client
+
+    def get(self):
         """Returns backend currently deployed or None"""
         try:
-            return client.execute(
+            return self.client.execute(
                 "get", parent_key="name", parent_schema=self.func_path
             )
         except HttpError as e:

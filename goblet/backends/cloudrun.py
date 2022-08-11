@@ -53,7 +53,6 @@ class CloudRun(Backend):
         if not changes:
             return None
 
-
         self.create_build(versioned_clients.cloudbuild, source, self.name, config)
         serviceRevision = RevisionSpec(config, versioned_clients, self.name)
         serviceRevision.deployRevision()
@@ -69,7 +68,9 @@ class CloudRun(Backend):
                 params={"body": policy_bindings},
             )
 
+
         return source
+
 
     def destroy(self, all=False):
         destroy_cloudrun(self.client, self.name)
