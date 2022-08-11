@@ -2,9 +2,9 @@ import os
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
-from requests import request
-from goblet.client import Client, get_credentials
+
 from goblet.backends.backend import Backend
+from goblet.client import Client, get_credentials
 from goblet.client import VersionedClients, get_default_project, get_default_location
 from goblet.common_cloud_actions import (
     create_cloudbuild,
@@ -68,9 +68,7 @@ class CloudRun(Backend):
                 params={"body": policy_bindings},
             )
 
-
         return source
-
 
     def destroy(self, all=False):
         destroy_cloudrun(self.client, self.name)
@@ -125,7 +123,10 @@ class CloudRun(Backend):
     def _checksum(self):
         versioned_clients = VersionedClients(self.app.client_versions)
         resp = versioned_clients.cloudbuild.execute(
-            "list", parent_key="projectId", parent_schema=get_default_project(), params={}
+            "list",
+            parent_key="projectId",
+            parent_schema=get_default_project(),
+            params={},
         )
         latest_build_source = resp["builds"][0]["source"]
         bucket = latest_build_source["storageSource"]["bucket"]

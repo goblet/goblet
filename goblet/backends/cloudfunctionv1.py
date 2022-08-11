@@ -66,4 +66,3 @@ class CloudFunctionV1(Backend):
         )
         resp = request("HEAD", source_info["downloadUrl"])
         return resp.headers["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
-

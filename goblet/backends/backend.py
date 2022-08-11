@@ -1,14 +1,13 @@
 import base64
 import hashlib
-from pathlib import Path
-import zipfile
-import os
 import logging
+import os
 import warnings
+import zipfile
+from pathlib import Path
 
 import requests
 from googleapiclient.errors import HttpError
-from requests import request
 
 from goblet.config import GConfig
 from goblet.utils import get_g_dir, checksum
@@ -45,8 +44,7 @@ class Backend:
             os.mkdir(get_g_dir())
         return zipfile.ZipFile(self.zip_path, "w", zipfile.ZIP_DEFLATED)
 
-
-    def delta(self, client, zip_path=None):
+    def delta(self, zip_path=None):
         """Compares md5 hash between local zipfile and cloudfunction already deployed"""
         if zip_path is None:
             zip_path = self.zip_path
@@ -71,7 +69,6 @@ class Backend:
             return None, False
         self.log.info("uploading source zip to gs......")
         return self._upload_zip(upload_client or client, headers), True
-        
 
     def _upload_zip(self, client, headers=None) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
@@ -91,7 +88,6 @@ class Backend:
         self.log.info("source code uploaded")
 
         return resp
-
 
     def get(self):
         """Returns backend currently deployed or None"""
