@@ -7,6 +7,8 @@ import re
 from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from googleapiclient.errors import HttpError
+
 import goblet
 
 from goblet.resources.handler import Handler
@@ -16,10 +18,10 @@ from goblet.config import GConfig
 from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
 
 import ruamel.yaml
+
 # ignore aliases when dumping
 ruamel.yaml.representer.RoundTripRepresenter.ignore_aliases = lambda x, y: True
 
-from googleapiclient.errors import HttpError
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
