@@ -89,6 +89,7 @@ Currently supported fields include:
 - traffic
 
 For `Cloudrun revisions <https://cloud.google.com/run/docs/reference/rest/v2/projects.locations.services#RevisionTemplate>`__, use the ``cloudrun_revision`` key
+For `Container configurations <https://cloud.google.com/run/docs/reference/rest/v2/Container>`__, use the ``cloudrun_container`` key
 For `Cloud Build configurations <https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds>`__, use the ``cloudbuild`` key
 
 .. code:: json 
@@ -103,6 +104,24 @@ For `Cloud Build configurations <https://cloud.google.com/build/docs/api/referen
         "cloudbuild": {
             "artifact_registry": "location-docker.pkg.dev/gcp_project/artifact/image",
             "serviceAccount": "service-account@project.iam.gserviceaccount.com"
+        }
+        "cloudrun_container": {
+            "env": [
+                {
+                    "name": "env-variable-name",
+                    "value": "env-variable-value"
+                },
+                {
+                    "name": "env-variable-name",
+                    "valueSource": {
+                        "secretKeyRef" : {
+                            "secret": "secret-name",
+                            "version": "secret-version"
+                        }
+                    }
+                }
+            ]
+        }
     }
 
 By default goblet includes all python files located in the directory. To include other files use the ``customFiles`` key

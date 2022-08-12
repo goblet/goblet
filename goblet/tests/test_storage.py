@@ -1,5 +1,4 @@
 from goblet import Goblet
-from goblet.deploy import Deployer
 from goblet.resources.storage import Storage
 from goblet.test_utils import get_responses, dummy_function, mock_dummy_function
 
@@ -9,6 +8,8 @@ import pytest
 
 class TestStorage:
     def test_add_bucket(self, monkeypatch):
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
         app = Goblet(function_name="goblet_example")
 
         app.storage("test", "finalize")(dummy_function)
@@ -26,6 +27,8 @@ class TestStorage:
             app.storage("test", "wrong")(dummy_function)
 
     def test_call_storage(self, monkeypatch):
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
         app = Goblet(function_name="goblet_example")
         mock = Mock()
 
@@ -51,7 +54,7 @@ class TestStorage:
 
         app.storage("test", "finalize")(dummy_function)
 
-        Deployer().deploy(app, force=True)
+        app.deploy(force=True)
 
         responses = get_responses("storage-deploy")
 

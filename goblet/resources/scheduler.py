@@ -1,6 +1,6 @@
 import logging
 
-from goblet.handler import Handler
+from goblet.resources.handler import Handler
 from goblet.client import (
     get_default_project,
     get_default_location,
@@ -20,7 +20,7 @@ class Scheduler(Handler):
     """
 
     resource_type = "scheduler"
-    valid_backends = ["cloudfunction", "cloudrun"]
+    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
 
     def register_job(self, name, func, kwargs):
@@ -77,7 +77,7 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None, config={}):
         if not self.resources:
             return
 
@@ -87,8 +87,12 @@ class Scheduler(Handler):
             )
             if not resp:
                 raise ValueError(f"Function {self.cloudfunction} not found")
-            target = resp["httpsTrigger"]["url"]
-            service_account = resp["serviceAccountEmail"]
+            try:
+                target = resp["httpsTrigger"]["url"]
+                service_account = resp["serviceAccountEmail"]
+            except KeyError:
+                target = resp["serviceConfig"]["uri"]
+                service_account = resp["serviceConfig"]["serviceAccountEmail"]
 
         if self.backend == "cloudrun":
             target = get_cloudrun_url(self.versioned_clients.run, self.name)

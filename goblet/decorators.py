@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from goblet.backends.cloudfunctionv1 import CloudFunctionV1
+from goblet.backends.cloudfunctionv2 import CloudFunctionV2
+from goblet.backends.cloudrun import CloudRun
 from goblet.client import VersionedClients
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
@@ -15,7 +20,12 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route", "eventarc"]
-BACKEND_TYPES = ["cloudfunction", "cloudrun"]
+
+SUPPORTED_BACKENDS = {
+    "cloudfunction": CloudFunctionV1,
+    "cloudfunctionv2": CloudFunctionV2,
+    "cloudrun": CloudRun,
+}
 
 
 class DecoratorAPI:
@@ -146,9 +156,7 @@ class Register_Handlers(DecoratorAPI):
         client_versions=None,
         routes_type="apigateway",
     ):
-        self.backend = backend
-        if backend not in BACKEND_TYPES:
-            raise ValueError(f"{backend} not a valid backend")
+        self.client_versions = client_versions
 
         versioned_clients = VersionedClients(client_versions or {})
 
@@ -198,7 +206,11 @@ class Register_Handlers(DecoratorAPI):
         if event_type == "pubsub":
             response = self.handlers["pubsub"](request, context)
         if event_type == "storage":
-            response = self.handlers["storage"](request, context)
+            # Storage trigger can be made with @eventarc decorator
+            try:
+                response = self.handlers["storage"](request, context)
+            except ValueError:
+                event_type = "eventarc"
         if event_type == "route":
             response = self.handlers["route"](request)
         if event_type == "http":
@@ -259,11 +271,11 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
-    def deploy(self, source_url, config={}):
+    def deploy_handlers(self, source, config={}):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(source_url, entrypoint="goblet_entrypoint", config=config)
+            v.deploy(source, entrypoint="goblet_entrypoint", config=config)
 
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
@@ -293,6 +305,28 @@ class Register_Handlers(DecoratorAPI):
         ):
             return True
         return False
+
+    def get_backend_and_check_versions(self, backend: str, client_versions: dict):
+        try:
+            backend_class = SUPPORTED_BACKENDS[backend]
+        except KeyError:
+            raise KeyError(f"Backend {backend} not in supported backends")
+
+        version_key = (
+            "cloudfunctions" if backend.startswith("cloudfunction") else backend
+        )
+        specified_version = client_versions.get(version_key)
+        if specified_version:
+            if specified_version not in backend_class.supported_versions:
+                raise ValueError(
+                    f"{version_key} version {self.client_versions[version_key]} "
+                    f"not supported. Valid version(s): {', '.join(backend_class.supported_versions)}."
+                )
+        else:
+            # if not set, set to last in list of supported versions (most recent)
+            self.client_versions[version_key] = backend_class.supported_versions[-1]
+
+        return backend_class
 
     def register_middleware(self, func, event_type="all", before_or_after="before"):
         middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
