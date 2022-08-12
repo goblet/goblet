@@ -1,13 +1,14 @@
 from collections import OrderedDict
 from time import sleep
 from marshmallow.schema import Schema
-from ruamel import yaml
 import base64
 import logging
 import re
 from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from googleapiclient.errors import HttpError
+
 import goblet
 
 from goblet.resources.handler import Handler
@@ -16,7 +17,11 @@ from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
 
-from googleapiclient.errors import HttpError
+import ruamel.yaml
+
+# ignore aliases when dumping
+ruamel.yaml.representer.RoundTripRepresenter.ignore_aliases = lambda x, y: True
+
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -432,6 +437,7 @@ class OpenApiSpec:
             return {"schema": {**param_type}}
 
     def write(self, file):
+        yaml = ruamel.yaml
         yaml.Representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
         yaml.YAML().dump(dict(self.spec), file)
 
