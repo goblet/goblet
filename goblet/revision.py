@@ -21,6 +21,7 @@ class RevisionSpec:
         config = GConfig(config=config)
         self.cloudrun_configs = config.cloudrun or {}
         self.cloudrun_revision = config.cloudrun_revision or {}
+        self.cloudrun_container = config.cloudrun_container or {}
         self.req_body = {}
         self.latestArtifact = ""
         self.name = name
@@ -116,14 +117,15 @@ class RevisionSpec:
     def deployRevision(self):
         client = self.versioned_clients.run
         region = get_default_location()
-        project = get_default_project()
+        project = get_default_project_number()
         self.getArtifact()
         self.req_body = {
             "template": {
-                "containers": [{"image": self.latestArtifact}],
                 **self.cloudrun_revision,
             }
         }
+        self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
+        self.req_body["template"]["containers"][0]["image"] = self.latestArtifact
 
         # check for traffic config
         if self.cloudrun_configs.get("traffic"):

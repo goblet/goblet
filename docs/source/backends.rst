@@ -72,6 +72,32 @@ For `revision configurations <https://cloud.google.com/run/docs/reference/rest/v
         }
     }
 
+
+For `Container configurations <https://cloud.google.com/run/docs/reference/rest/v2/Container>`__, pass values into `cloudrun_container`
+
+Pass in environment variables here. Secrets will also be passed in as environment variables.
+
+.. code:: json 
+
+    "cloudrun_container": {
+        "env": [
+            {
+                "name": "env-variable-name",
+                "value": "env-variable-value"
+            },
+            {
+                "name": "env-variable-name",
+                "valueSource": {
+                    "secretKeyRef" : {
+                        "secret": "secret-name",
+                        "version": "secret-version"
+                    }
+                }
+            }
+        ]
+    }
+
+
 For `Cloud Build configurations <https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds>`__, pass values into `cloudbuild`
 
 In order to set a custom artifact registry, use the "artifact_registry" configuration. If you would like to use an artifact registry from a different project, a service account with storage permissions in the current project's bucket and read + write in the other project's artifact registry will be necessary.

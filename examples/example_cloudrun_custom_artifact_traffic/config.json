@@ -8,5 +8,22 @@
     "cloudbuild": {
         "artifact_registry": "us-central1-docker.pkg.dev/CROSS_PROJECT/cloud-run-source-deploy/SOURCE_NAME",
         "serviceAccount": "projects/PROJECT/serviceAccounts/test@PROJECT.iam.gserviceaccount.com"
+    },
+    "cloudrun_container": {
+        "env": [
+            {
+                "name": "env-variable-name",
+                "value": "env-variable-value"
+            },
+            {
+                "name": "env-variable-name",
+                "valueSource": {
+                    "secretKeyRef" : {
+                        "secret": "secret-name",
+                        "version": "secret-version"
+                    }
+                }
+            }
+        ]
     }
 }
