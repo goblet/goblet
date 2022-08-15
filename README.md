@@ -51,6 +51,7 @@ $ curl https://api.uc.gateway.dev/home
 
 #### Backends
 * cloudfunction
+* cloudfunction V2
 * cloudrun
 
 #### Routing
