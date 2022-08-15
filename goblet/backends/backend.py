@@ -38,6 +38,12 @@ class Backend:
 
         self.client = client
 
+    def deploy(self, force=False, config=None):
+        raise NotImplementedError("destroy")
+
+    def destroy(self, all=False):
+        raise NotImplementedError("destroy")
+
     def _create_zip(self):
         """Creates initial goblet zipfile"""
         if not os.path.isdir(get_g_dir()):

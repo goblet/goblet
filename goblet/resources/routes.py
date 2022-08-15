@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from time import sleep
 from marshmallow.schema import Schema
 import base64
 import logging
@@ -123,9 +122,10 @@ class ApiGateway(Handler):
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
         log.info("deploying api......")
-        base_url = get_cloudfunction_url(
-            self.versioned_clients.cloudfunctions, self.name
-        )
+        if self.backend.startswith("cloudfunction"):
+            base_url = get_cloudfunction_url(
+                self.versioned_clients.cloudfunctions, self.name
+            )
         if self.backend == "cloudrun":
             base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
         self.generate_openapi_spec(base_url)
@@ -218,13 +218,14 @@ class ApiGateway(Handler):
             return
         # destroy api gateway
         try:
-            self.versioned_clients.apigateway.execute(
+            resp = self.versioned_clients.apigateway.execute(
                 "delete",
                 parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
                 + self.name,
                 parent_key="name",
             )
             log.info("destroying api gateway......")
+            self.versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("api gateway already destroyed")
@@ -238,6 +239,7 @@ class ApiGateway(Handler):
                 + self.name,
             )
             resp = {}
+            log.info("api configs destroying....")
             for c in configs.get("apiConfigs", []):
                 resp = self.versioned_clients.apigateway_configs.execute(
                     "delete",
@@ -247,12 +249,10 @@ class ApiGateway(Handler):
                     + "/configs/"
                     + c["displayName"],
                 )
-            log.info("api configs destroying....")
-            if resp:
-                self.versioned_clients.apigateway_configs.wait_for_operation(
-                    resp["name"]
-                )
-                sleep(10)
+                if resp:
+                    self.versioned_clients.apigateway_configs.wait_for_operation(
+                        resp["name"]
+                    )
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("api configs already destroyed")
@@ -261,12 +261,13 @@ class ApiGateway(Handler):
 
         # destroy api
         try:
-            self.versioned_clients.apigateway_api.execute(
+            resp = self.versioned_clients.apigateway_api.execute(
                 "delete",
                 parent_key="name",
                 parent_schema="projects/{project_id}/locations/global/apis/"
                 + self.name,
             )
+            self.versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
             log.info("apis successfully destroyed......")
         except HttpError as e:
             if e.resp.status == 404:
