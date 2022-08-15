@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from time import sleep
 from marshmallow.schema import Schema
 import base64
 import logging
