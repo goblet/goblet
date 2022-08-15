@@ -8,7 +8,6 @@ import requests
 
 from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
-from goblet.deploy import Deployer
 from goblet.client import get_default_project
 from goblet.__version__ import __version__
 
@@ -62,13 +61,14 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         if config:
             config = json.loads(config)
         app = get_goblet_app(GConfig().main_file or "main.py")
-        Deployer({"name": app.function_name}).deploy(
-            app,
-            skip_function=skip_function,
-            only_function=only_function,
-            config=config,
-            force=force,
-        )
+        # Deployer({"name": app.function_name}).deploy(
+        #     app,
+        #     skip_function=skip_function,
+        #     only_function=only_function,
+        #     config=config,
+        #     force=force,
+        # )
+        app.deploy(skip_function, only_function, config=config, force=False)
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -98,7 +98,7 @@ def destroy(project, location, stage, all):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        Deployer({"name": app.function_name}).destroy(app, all)
+        app.destroy(all)
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -129,7 +129,7 @@ def sync(project, location, stage, dryrun):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        Deployer({"name": app.function_name}).sync(app, dryrun)
+        app.sync(dryrun)
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -208,7 +208,7 @@ def package(stage):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        Deployer({"name": app.function_name}).package()
+        app.package()
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -262,3 +262,7 @@ def create(stage):
     click.echo(
         f"stage {stage} created in config.json with function name {function_name}"
     )
+
+
+if __name__ == "__main__":
+    main()  # pylint: disable=no-value-for-parameter

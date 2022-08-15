@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/subscriptions/goblet-topic-subscription-config-test",
+    "topic": "projects/goblet/topics/test",
+    "pushConfig": {},
+    "ackDeadlineSeconds": 60,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "2678400s"
+    },
+    "enableExactlyOnceDelivery": true,
+    "state": "ACTIVE"
+  }
+}

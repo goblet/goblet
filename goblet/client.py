@@ -9,7 +9,8 @@ from google.oauth2 import service_account
 
 DEFAULT_CLIENT_VERSIONS = {
     "cloudfunctions": "v1",
-    "run": "v1",
+    "cloudbuild": "v1",
+    "run": "v2",
     "pubsub": "v1",
     "apigateway": "v1",
     "cloudscheduler": "v1",
@@ -32,6 +33,14 @@ def get_default_project():
             return None
 
     return None
+
+
+def get_default_project_number():
+    client = Client("cloudresourcemanager", "v1", calls="projects")
+    resp = client.execute(
+        "get", parent_key="projectId", parent_schema=get_default_project()
+    )
+    return resp["projectNumber"]
 
 
 def get_default_location():
@@ -182,10 +191,19 @@ class VersionedClients:
         )
 
     @property
+    def cloudbuild(self):
+        return Client(
+            "cloudbuild",
+            self.client_versions.get("cloudbuild", "v1"),
+            calls="projects.builds",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
     def run(self):
         return Client(
             "run",
-            self.client_versions.get("run", "v1"),
+            self.client_versions.get("run", "v2"),
             calls="projects.locations.services",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
@@ -247,3 +265,12 @@ class VersionedClients:
     @property
     def gcloud(self):
         return self.client_versions.get("gcloud")
+
+    @property
+    def run_uploader(self):
+        return Client(
+            "cloudfunctions",
+            "v2beta",
+            calls="projects.locations.functions",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )

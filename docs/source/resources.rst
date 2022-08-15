@@ -160,6 +160,10 @@ provide an attribute dictionary which will only trigger the function if the pubs
 If using cloudrun backend or `use_subscription=true` the attributes will be created as a filter on the subscription itself. You can also pass in 
 a custom `filter` as well. Note that filters are not able to be modified once they are applied to a subscription. 
 
+In addition to filters you can also add configuration values that will be passed directly to the subscription. 
+By setting `config={"enableExactlyOnceDelivery": True}` you can enable exactly delivery to ensure messages are not redelivered once acknowledged.
+For additional information on configuration values available see `PubSub Subscription Fields <https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body>`
+
 Example usage:
 
 .. code:: python 

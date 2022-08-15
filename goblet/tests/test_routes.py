@@ -2,7 +2,6 @@ from unittest.mock import Mock
 import pytest
 from goblet import Goblet, Response, jsonify
 from goblet.resources.routes import ApiGateway, CORSConfig
-from goblet.deploy import Deployer
 from goblet.test_utils import (
     get_responses,
     get_response,
@@ -176,18 +175,20 @@ class TestRoutes:
         assert resp.body == "success"
         assert resp.status_code == 200
 
-    def test_deploy_routes(self, monkeypatch):
+    def test_deploy_routes(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "routes-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet_routes")
         setattr(app, "entrypoint", "app")
 
         app.route("/")(dummy_function)
 
-        Deployer().deploy(app, force=True)
+        app.deploy(force=True)
 
         post_api = get_response(
             "routes-deploy", "post-v1-projects-goblet-locations-global-apis_1.json"
