@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.7.5 documentation</title>
+  <title>Topics &mdash; goblet 0.8.0 documentation</title>
   
 
   
@@ -255,13 +255,41 @@ located in the .goblet folder. If one doesn’t exist then you should add one.</
 </pre></div>
 </div>
 <p>see the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunction</a> docs for more details on the fields.</p>
-<p>Cloudrun works similarily, but uses the key <cite>cloudrun</cite> instead. Parameters are
-key, value pairs that will be parsed and passed into the <a class="reference external" href="https://cloud.google.com/sdk/gcloud/reference/run/deploy">gcloud run deploy command</a>. For flags pass in an empty string.</p>
+<p>Cloudrun works similarily, but uses the key <code class="docutils literal notranslate"><span class="pre">cloudrun</span></code> instead.</p>
+<p>Currently supported fields include:</p>
+<ul class="simple">
+<li><p>traffic</p></li>
+</ul>
+<p>For <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/projects.locations.services#RevisionTemplate">Cloudrun revisions</a>, use the <code class="docutils literal notranslate"><span class="pre">cloudrun_revision</span></code> key
+For <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/Container">Container configurations</a>, use the <code class="docutils literal notranslate"><span class="pre">cloudrun_container</span></code> key
+For <a class="reference external" href="https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds">Cloud Build configurations</a>, use the <code class="docutils literal notranslate"><span class="pre">cloudbuild</span></code> key</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
-        <span class="nt">&quot;max-instances&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;set-env-vars&quot;</span><span class="p">:</span> <span class="s2">&quot;ENV1=env1&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;no-traffic&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+        <span class="nt">&quot;traffic&quot;</span><span class="p">:</span> <span class="mi">25</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;cloudrun_revision&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
+    <span class="p">}</span>
+    <span class="nt">&quot;cloudbuild&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;artifact_registry&quot;</span><span class="p">:</span> <span class="s2">&quot;location-docker.pkg.dev/gcp_project/artifact/image&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
+    <span class="p">}</span>
+    <span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;env&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;env-variable-value&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;valueSource&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;secretKeyRef&quot;</span> <span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&quot;secret&quot;</span><span class="p">:</span> <span class="s2">&quot;secret-name&quot;</span><span class="p">,</span>
+                        <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;secret-version&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>

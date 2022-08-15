@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Backends &mdash; goblet 0.7.5 documentation</title>
+  <title>Backends &mdash; goblet 0.8.0 documentation</title>
   
 
   
@@ -179,34 +179,93 @@
 <h1>Backends<a class="headerlink" href="#backends" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="cloudfunction">
 <h2>Cloudfunction<a class="headerlink" href="#cloudfunction" title="Permalink to this headline">¶</a></h2>
-<p>The default backend.</p>
+<p>Goblet’s default backend is first-generation cloud functions. However, Goblet supports both first- and second-generation cloud functions.</p>
+<ul class="simple">
+<li><p>For first-generation:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
+<span class="ow">or</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudfunction&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>For second-generation:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudfunctionv2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul>
+<li><p>You can use config.json to further customize the function you wish to create. Goblet uses the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#resource:-cloudfunction">CloudFunction resource</a>
+for first-gen cloudfunctions and the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v2/projects.locations.functions#resource:-function">Function resource</a> for cloudfunctionv2. You may add any additional fields in config.json under “cloudfunction”</p></li>
+<li><p>For cloudfunctions v1, python version must be at least python3.7, and for cloudfunctionv2, python version must be at least python3.8.
+To specify a python version for your cloudfunction, you can set the runtime field in config.json as such:</p>
+<blockquote>
+<div><p>{“cloudfunction”: {“runtime”: “python38”}}</p>
+</div></blockquote>
+</li>
+<li><p>Goblet does not currently support eventarc triggers for cloudfunctions</p></li>
+</ul>
 </div>
 <div class="section" id="cloudrun">
 <h2>Cloudrun<a class="headerlink" href="#cloudrun" title="Permalink to this headline">¶</a></h2>
-<p>You can deploy your function to cloudrun updating the backend paramter to main Goblet class.</p>
+<p>You can deploy your function to cloudrun updating the backend parameter to main Goblet class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The function name for cloudrun must use only lowercase alphanumeric characters and dashes, cannot begin or end with a dash, and cannot be longer than 63 characters</p>
 </div>
-<p>You can pass in configurations to you cloudrun deployment in the <cite>cloudrun</cite> section in your <cite>config.json</cite>. Parameters are
-key, value pairs that will be parsed and passed into the <a class="reference external" href="https://cloud.google.com/sdk/gcloud/reference/run/deploy">gcloud run deploy command</a>. For flags pass in an empty string.</p>
+<p>You can pass in configurations to your cloudrun deployment in the <cite>cloudrun</cite> section in your <cite>config.json</cite>.</p>
+<p>Supported configurations include:</p>
+<ul class="simple">
+<li><p>traffic: assigns a custom amount of traffic to the latest revision and decreases previous revisions’ traffic proportionally. If the service is brand new, the traffic will always default to 100%.</p></li>
+</ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
-        <span class="nt">&quot;max-instances&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;set-env-vars&quot;</span><span class="p">:</span> <span class="s2">&quot;ENV1=env1&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;no-traffic&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+        <span class="nt">&quot;traffic&quot;</span><span class="p">:</span> <span class="mi">25</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Deploying to cloudrun requires either a Dockerfile or Procfile in the directory you are looking to deploy your goblet app. If neither
 of those files are found, then goblet will create a default Dockerfile that allows the app to be build, deployed, and run correctly.
-Having a custom Dockerfile if only needed if you would like to customize you container at all. The default command in the Dockerfile
-is <cite>functions-framework –target=goblet_entrypoint</cite> and the default port is 8080. These can be overriden  in <cite>config.json</cite></p>
+Having a custom Dockerfile if only needed if you would like to customize you container at all.</p>
+<p>For <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/projects.locations.services#RevisionTemplate">revision configurations</a>, pass values into <cite>cloudrun_revision</cite> section in your <cite>config.json</cite>. If you’re using a service account, this is where to put it.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
-        <span class="nt">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;override command&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5000</span>
+    <span class="nt">&quot;cloudrun_revision&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/Container">Container configurations</a>, pass values into <cite>cloudrun_container</cite></p>
+<p>Pass in environment variables here. Secrets will also be passed in as environment variables.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;env&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;env-variable-value&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;valueSource&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;secretKeyRef&quot;</span> <span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;secret&quot;</span><span class="p">:</span> <span class="s2">&quot;secret-name&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;secret-version&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For <a class="reference external" href="https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds">Cloud Build configurations</a>, pass values into <cite>cloudbuild</cite></p>
+<p>In order to set a custom artifact registry, use the “artifact_registry” configuration. If you would like to use an artifact registry from a different project, a service account with storage permissions in the current project’s bucket and read + write in the other project’s artifact registry will be necessary.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudbuild&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;artifact_registry&quot;</span><span class="p">:</span> <span class="nt">&quot;location-docker.pkg.dev/gcp_project/artifact/image&quot;</span>
+        <span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
