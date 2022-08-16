@@ -151,7 +151,16 @@ def create_cloudbuild(client, req_body):
         log.info("creating cloudbuild")
     except HttpError as e:
         raise e
-    client.wait_for_operation(resp["name"], calls="operations")
+    cloudbuild_config = GConfig().cloudbuild or {}
+    timeout_seconds = cloudbuild_config.get("timeout", "600s")
+    if "s" not in timeout_seconds:
+        log.info(
+            "Not a valid timeout. Needs to be a duration that ends is 's'. Defaulting to 600s"
+        )
+        timeout = 600
+    else:
+        timeout = int(timeout_seconds.split("s")[0])
+    client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
 
 
 def deploy_cloudrun(client, req_body, name):
