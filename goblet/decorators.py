@@ -1,15 +1,18 @@
 from __future__ import annotations
+import os 
 
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-from goblet.client import VersionedClients
+from goblet.client import VersionedClients, get_default_location, get_default_project
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
 from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
+from goblet.resources.jobs import Jobs
+
 from googleapiclient.errors import HttpError
 
 from warnings import warn
@@ -129,6 +132,24 @@ class DecoratorAPI:
             registration_kwargs={"headers": headers},
         )
 
+    def job(self, name, task_id=1, schedule=None, timezone="UTC"):
+        """Cloudrun Job"""
+        if schedule and task_id !=1:
+            raise ValueError("Schedule can only be added to task_id with value 1")
+        if schedule:
+            self._create_registration_function(
+            handler_type="schedule",
+            registration_kwargs={
+                "schedule": schedule,
+                "timezone": timezone,
+                "uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project}/jobs/{name}:run"
+            },
+        )
+        return self._create_registration_function(
+            handler_type="job",
+            registration_kwargs={"name": name, "task_id":task_id},
+        )
+
     def _create_registration_function(self, handler_type, registration_kwargs=None):
         def _register_handler(user_handler):
             handler_name = user_handler.__name__
@@ -183,6 +204,9 @@ class Register_Handlers(DecoratorAPI):
             "http": HTTP(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
+            "jobs": Jobs(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
         }
         self.middleware_handlers = {
             "before": {},
@@ -200,7 +224,8 @@ class Register_Handlers(DecoratorAPI):
         response = None
         if event_type not in EVENT_TYPES:
             raise ValueError(f"{event_type} not a valid event type")
-
+        if event_type == "job":
+            response = self.handlers["jobs"](request, context)
         if event_type == "schedule":
             response = self.handlers["schedule"](request)
         if event_type == "pubsub":
@@ -232,6 +257,8 @@ class Register_Handlers(DecoratorAPI):
 
     def get_event_type(self, request, context=None):
         """Parse event type from the event request and context"""
+        if os.environ.get("CLOUD_RUN_TASK_INDEX"):
+            return "job"
         if context and context.event_type:
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
@@ -353,3 +380,7 @@ class Register_Handlers(DecoratorAPI):
     def _register_eventarc(self, name, func, kwargs):
         name = kwargs.get("kwargs", {}).get("name") or name
         self.handlers["eventarc"].register_trigger(name=name, func=func, kwargs=kwargs)
+
+    def _register_job(self, name, func, kwargs):
+        name = kwargs.get("kwargs", {}).get("name") or name
+        self.handlers["jobs"].register_job(name=name, func=func, kwargs=kwargs)

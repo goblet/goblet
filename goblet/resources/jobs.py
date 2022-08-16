@@ -14,70 +14,35 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-class Scheduler(Handler):
-    """Cloud Scheduler job which calls http endpoint
-    https://cloud.google.com/scheduler/docs
+class Jobs(Handler):
+    """Cloudrun job
+    https://cloud.google.com/run/docs/create-jobs
     """
 
-    resource_type = "scheduler"
-    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
+    resource_type = "job"
+    valid_backends = ["cloudrun"]
     can_sync = True
 
     def register_job(self, name, func, kwargs):
-        schedule = kwargs["schedule"]
-        timezone = kwargs["timezone"]
-        kwargs = kwargs.pop("kwargs")
-        description = kwargs.get("description", "Created by goblet")
-        headers = kwargs.get("headers", {})
-        httpMethod = kwargs.get("httpMethod", "GET")
-        retry_config = kwargs.get("retryConfig")
-        body = kwargs.get("body")
-        uri = kwargs.get("uri")
-        attempt_deadline = kwargs.get("attemptDeadline")
-
-        job_num = 1
-        if self.resources.get(name):
-            # increment job_num if there is already a scheduled job for this func
-            job_num = self.resources[name]["job_num"] + 1
-            self.resources[name]["job_num"] = job_num
-            name = f"{name}-{job_num}"
+        task_id = kwargs["task_id"]
         self.resources[name] = {
-            "job_num": job_num,
+            "task_id": task_id,
             "job_json": {
                 "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
-                "schedule": schedule,
-                "timeZone": timezone,
-                "description": description,
-                "retry_config": retry_config,
-                "attemptDeadline": attempt_deadline,
-                "httpTarget": {
-                    # "uri": ADDED AT runtime,
-                    "headers": {
-                        "X-Goblet-Type": "schedule",
-                        "X-Goblet-Name": name,
-                        **headers,
-                    },
-                    "body": body,
-                    "httpMethod": httpMethod,
-                    "oidcToken": {
-                        # "serviceAccountEmail": ADDED AT runtime
-                    },
-                },
             },
-            "uri": uri,
             "func": func,
         }
 
-    def __call__(self, request, context=None):
-        headers = request.headers
-        func_name = headers.get("X-Goblet-Name")
-        if not func_name:
-            raise ValueError("No X-Goblet-Name header found")
+    def __call__(self, name, task_id):
+        if not self.resources.get(name):
+            raise ValueError(f"Job {name} not found")
 
-        job = self.resources[func_name]
-        if not job:
-            raise ValueError(f"Function {func_name} not found")
-        return job["func"]()
+        if not self.resources[name][task_id]:
+            raise ValueError(f"Job {name} not found for CLOUD_RUN_TASK_INDEX: {task_id}")
+
+        job = self.resources[name][task_id]
+
+        return job["func"](task_id)
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         if not self.resources:
@@ -97,8 +62,7 @@ class Scheduler(Handler):
                 service_account = resp["serviceConfig"]["serviceAccountEmail"]
 
         if self.backend == "cloudrun":
-            # dont get target in scheduler is needed only for jobs
-            cloudrun_target = None
+            target = get_cloudrun_url(self.versioned_clients.run, self.name)
             config = GConfig(config=config)
             if config.cloudrun and config.cloudrun.get("service-account"):
                 service_account = config.cloudrun.get("service-account")
@@ -110,13 +74,6 @@ class Scheduler(Handler):
                 )
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
-            if job["uri"]:
-                target = job["uri"]
-            else:
-                # only run once
-                if not cloudrun_target:
-                    cloudrun_target = get_cloudrun_url(self.versioned_clients.run, self.name)
-                target = cloudrun_target
             job["job_json"]["httpTarget"]["uri"] = target
             job["job_json"]["httpTarget"]["oidcToken"][
                 "serviceAccountEmail"

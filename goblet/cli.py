@@ -61,13 +61,6 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         if config:
             config = json.loads(config)
         app = get_goblet_app(GConfig().main_file or "main.py")
-        # Deployer({"name": app.function_name}).deploy(
-        #     app,
-        #     skip_function=skip_function,
-        #     only_function=only_function,
-        #     config=config,
-        #     force=force,
-        # )
         app.deploy(skip_function, only_function, config=config, force=False)
 
     except FileNotFoundError as not_found:
@@ -262,6 +255,32 @@ def create(stage):
     click.echo(
         f"stage {stage} created in config.json with function name {function_name}"
     )
+
+@main.group()
+def job():
+    """run cloudrun jobs"""
+    pass
+
+@job.command(name="run")
+@click.argument(
+    "name",
+)
+@click.argument(
+    "task_id", envvar='CLOUD_RUN_TASK_INDEX', default=1
+)
+def run_job(name, task_id):
+    """
+    Run a Cloudrun Job in local environment. 
+    """
+    os.environ["CLOUD_RUN_TASK_INDEX"] = task_id
+    try:
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        app(name, task_id)
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
 
 
 if __name__ == "__main__":
