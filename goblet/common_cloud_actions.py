@@ -151,9 +151,11 @@ def create_cloudbuild(client, req_body):
         log.info("creating cloudbuild")
     except HttpError as e:
         raise e
-    timeout_seconds = GConfig().cloudbuild.get("timeout","600s")
+    timeout_seconds = GConfig().cloudbuild.get("timeout", "600s")
     if "s" not in timeout_seconds:
-        log.info("Not a valid timeout. Needs to be a duration that ends is 's'. Defaulting to 600s")
+        log.info(
+            "Not a valid timeout. Needs to be a duration that ends is 's'. Defaulting to 600s"
+        )
         timeout = 600
     else:
         timeout = int(timeout_seconds.split("s")[0])

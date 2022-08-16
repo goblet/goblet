@@ -7,6 +7,11 @@ from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
 
 from google.oauth2 import service_account
 
+import logging
+
+log = logging.getLogger("goblet.client")
+log.setLevel(logging.INFO)
+
 DEFAULT_CLIENT_VERSIONS = {
     "cloudfunctions": "v1",
     "cloudbuild": "v1",
@@ -142,6 +147,8 @@ class Client:
             done = resp.get("done")
             time.sleep(sleep_duration)
             count += sleep_duration
+        if count > timeout:
+            log.info("Timeout exceeded in wait_for_operation")
 
     def execute(
         self,
