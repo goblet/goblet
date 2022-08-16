@@ -30,10 +30,15 @@ class Backend:
 
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
+        include = ["*.py"]
+        exclude = ["build", "docs", "examples", "test", "tests", "venv"]
 
+        include.extend(custom_files.get("include", []))
+        exclude.extend(custom_files.get("exclude", []))
+        
         self.zip_config = {
-            "include": ["*.py"].extend(custom_files.get("include", [])),
-            "exclude": ["build", "docs", "examples", "test", "tests", "venv"].extend(custom_files.get("include", [])),
+            "include": include,
+            "exclude": exclude
         }
 
         self.func_path = func_path
