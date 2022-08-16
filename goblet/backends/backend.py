@@ -19,7 +19,7 @@ class Backend:
     resource_type = ""
     version = ""
 
-    def __init__(self, app, client, func_path, config={}, zip_config=None):
+    def __init__(self, app, client, func_path, config={}):
         self.app = app
         self.name = app.function_name
         self.log = logging.getLogger("goblet.backend")
@@ -29,9 +29,11 @@ class Backend:
         self.config = GConfig(config=config)
 
         # specifies which files to be zipped
-        self.zip_config = zip_config or {
-            "include": ["*.py"],
-            "exclude": ["build", "docs", "examples", "test", "tests", "venv"],
+        custom_files = self.config.custom_files or {}
+
+        self.zip_config = {
+            "include": ["*.py"].extend(custom_files.get("include", [])),
+            "exclude": ["build", "docs", "examples", "test", "tests", "venv"].extend(custom_files.get("include", [])),
         }
 
         self.func_path = func_path
@@ -106,7 +108,7 @@ class Backend:
                 raise
 
     def zip(self):
-        """Zips requirements.txt, python files and any additional files based on config.customFiles"""
+        """Zips requirements.txt, python files and any additional files based on config.custom_files"""
         self._zip_file("requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
