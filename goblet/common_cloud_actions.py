@@ -151,7 +151,7 @@ def create_cloudbuild(client, req_body):
         log.info("creating cloudbuild")
     except HttpError as e:
         raise e
-    cloudbuild_config =  GConfig().cloudbuild or {}
+    cloudbuild_config = GConfig().cloudbuild or {}
     timeout_seconds = cloudbuild_config.get("timeout", "600s")
     if "s" not in timeout_seconds:
         log.info(
