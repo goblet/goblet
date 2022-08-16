@@ -36,10 +36,7 @@ class Backend:
         include.extend(custom_files.get("include", []))
         exclude.extend(custom_files.get("exclude", []))
 
-        self.zip_config = {
-            "include": include,
-            "exclude": exclude
-        }
+        self.zip_config = {"include": include, "exclude": exclude}
 
         self.func_path = func_path
 
