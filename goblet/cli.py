@@ -256,26 +256,26 @@ def create(stage):
         f"stage {stage} created in config.json with function name {function_name}"
     )
 
+
 @main.group()
 def job():
     """run cloudrun jobs"""
     pass
 
+
 @job.command(name="run")
 @click.argument(
     "name",
 )
-@click.argument(
-    "task_id", envvar='CLOUD_RUN_TASK_INDEX', default=1
-)
+@click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="1")
 def run_job(name, task_id):
     """
-    Run a Cloudrun Job in local environment. 
+    Run a Cloudrun Job in local environment.
     """
     os.environ["CLOUD_RUN_TASK_INDEX"] = task_id
     try:
         app = get_goblet_app(GConfig().main_file or "main.py")
-        app(name, task_id)
+        app(name, int(task_id))
 
     except FileNotFoundError as not_found:
         click.echo(

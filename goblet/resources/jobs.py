@@ -5,7 +5,7 @@ from goblet.client import (
     get_default_project,
     get_default_location,
 )
-from goblet.common_cloud_actions import get_cloudrun_url
+from goblet.common_cloud_actions import getCloudbuildArtifact
 from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError
@@ -25,20 +25,25 @@ class Jobs(Handler):
 
     def register_job(self, name, func, kwargs):
         task_id = kwargs["task_id"]
-        self.resources[name] = {
-            "task_id": task_id,
-            "job_json": {
-                "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
-            },
-            "func": func,
-        }
+        job_name = f"{self.name}-{name}"
+        if self.resources.get(job_name):
+            self.resources[job_name][task_id] = {"func": func}
+        else:
+            self.resources[job_name] = {
+                task_id: {"func": func},
+                # "job_json": {
+                #     "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
+                # },
+            }
 
     def __call__(self, name, task_id):
         if not self.resources.get(name):
             raise ValueError(f"Job {name} not found")
 
-        if not self.resources[name][task_id]:
-            raise ValueError(f"Job {name} not found for CLOUD_RUN_TASK_INDEX: {task_id}")
+        if not self.resources[name].get(task_id):
+            raise ValueError(
+                f"Job {name} not found for CLOUD_RUN_TASK_INDEX: {task_id}"
+            )
 
         job = self.resources[name][task_id]
 
@@ -48,66 +53,63 @@ class Jobs(Handler):
         if not self.resources:
             return
 
-        if self.backend == "cloudfunction":
-            resp = self.versioned_clients.cloudfunctions.execute(
-                "get", parent_key="name", parent_schema=self.cloudfunction
-            )
-            if not resp:
-                raise ValueError(f"Function {self.cloudfunction} not found")
-            try:
-                target = resp["httpsTrigger"]["url"]
-                service_account = resp["serviceAccountEmail"]
-            except KeyError:
-                target = resp["serviceConfig"]["uri"]
-                service_account = resp["serviceConfig"]["serviceAccountEmail"]
+        config = GConfig(config=config)
+        artifact = getCloudbuildArtifact(self.versioned_clients.cloudbuild)
 
-        if self.backend == "cloudrun":
-            target = get_cloudrun_url(self.versioned_clients.run, self.name)
-            config = GConfig(config=config)
-            if config.cloudrun and config.cloudrun.get("service-account"):
-                service_account = config.cloudrun.get("service-account")
-            elif config.scheduler and config.scheduler.get("serviceAccount"):
-                service_account = config.scheduler.get("serviceAccount")
-            else:
-                raise ValueError(
-                    "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
-                )
-        log.info("deploying scheduled jobs......")
+        log.info("deploying cloudrun jobs......")
         for job_name, job in self.resources.items():
-            job["job_json"]["httpTarget"]["uri"] = target
-            job["job_json"]["httpTarget"]["oidcToken"][
-                "serviceAccountEmail"
-            ] = service_account
+ 
+            container = {**(config.job_container or {})}
+            container["image"] = artifact
+            container["command"] = [
+                "goblet",
+                "job",
+                "run",
+                job_name,
+            ]
 
-            self.deploy_job(job_name, job["job_json"])
+            job_spec = {
+                "spec": {
+                    "template": {
+                        "spec": {
+                            "taskCount": len(job.keys()),
+                            "template": {
+                                "spec": {
+                                    "containers": [container],
+                                    **(config.job_spec or {}),
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+
+            self.deploy_job(job_name, job_spec)
 
     def _sync(self, dryrun=False):
-        jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
+        jobs = self.versioned_clients.run_job.execute("list").get("items", [])
         filtered_jobs = list(
-            filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
+            filter(lambda job: f"jobs/{self.name}-" in job["metadata"]["name"], jobs)
         )
         for filtered_job in filtered_jobs:
-            split_name = filtered_job["name"].split("/")[-1].split("-")
-            filtered_name = split_name[1]
+            filtered_name = filtered_job["metadata"]["name"]
             if not self.resources.get(filtered_name):
-                log.info(f'Detected unused job in GCP {filtered_job["name"]}')
+                log.info(f"Detected unused job in GCP {filtered_name}")
                 if not dryrun:
-                    # TODO: Handle deleting multiple jobs with same name
                     self._destroy_job(filtered_name)
 
     def deploy_job(self, job_name, job):
         try:
-            self.versioned_clients.cloudscheduler.execute(
-                "create", params={"body": job}
-            )
-            log.info(f"created scheduled job: {job_name} for {self.name}")
+            import pdb; pdb.set_trace()
+            self.versioned_clients.run_job.execute("create", params={"body": job})
+            log.info(f"created job: {job_name}")
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"updated scheduled job: {job_name} for {self.name}")
-                self.versioned_clients.cloudscheduler.execute(
-                    "patch",
+                log.info(f"updated job: {job_name}")
+                self.versioned_clients.run_job.execute(
+                    "replaceJob",
                     parent_key="name",
-                    parent_schema=job["name"],
+                    parent_schema="namespaces/{project_id}/jobs/" + job_name,
                     params={"body": job},
                 )
             else:
@@ -121,13 +123,10 @@ class Jobs(Handler):
 
     def _destroy_job(self, job_name):
         try:
-            self.versioned_clients.cloudscheduler.execute(
+            self.versioned_clients.run_job.execute(
                 "delete",
                 parent_key="name",
-                parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
-                + self.name
-                + "-"
-                + job_name,
+                parent_schema="namespaces/{project_id}/jobs/" + job_name,
             )
             log.info(f"Destroying scheduled job {job_name}......")
         except HttpError as e:

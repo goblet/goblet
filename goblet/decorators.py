@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os 
+import os
 
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
@@ -22,7 +22,16 @@ import logging
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
-EVENT_TYPES = ["all", "http", "schedule", "pubsub", "storage", "route", "eventarc"]
+EVENT_TYPES = [
+    "all",
+    "http",
+    "schedule",
+    "pubsub",
+    "storage",
+    "route",
+    "eventarc",
+    "job",
+]
 
 SUPPORTED_BACKENDS = {
     "cloudfunction": CloudFunctionV1,
@@ -134,20 +143,20 @@ class DecoratorAPI:
 
     def job(self, name, task_id=1, schedule=None, timezone="UTC"):
         """Cloudrun Job"""
-        if schedule and task_id !=1:
+        if schedule and task_id != 1:
             raise ValueError("Schedule can only be added to task_id with value 1")
         if schedule:
             self._create_registration_function(
-            handler_type="schedule",
-            registration_kwargs={
-                "schedule": schedule,
-                "timezone": timezone,
-                "uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project}/jobs/{name}:run"
-            },
-        )
+                handler_type="schedule",
+                registration_kwargs={
+                    "schedule": schedule,
+                    "timezone": timezone,
+                    "uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project}/jobs/{name}:run",
+                },
+            )
         return self._create_registration_function(
             handler_type="job",
-            registration_kwargs={"name": name, "task_id":task_id},
+            registration_kwargs={"name": name, "task_id": task_id},
         )
 
     def _create_registration_function(self, handler_type, registration_kwargs=None):
@@ -382,5 +391,6 @@ class Register_Handlers(DecoratorAPI):
         self.handlers["eventarc"].register_trigger(name=name, func=func, kwargs=kwargs)
 
     def _register_job(self, name, func, kwargs):
-        name = kwargs.get("kwargs", {}).get("name") or name
-        self.handlers["jobs"].register_job(name=name, func=func, kwargs=kwargs)
+        self.handlers["jobs"].register_job(
+            name=kwargs["name"], func=func, kwargs=kwargs
+        )

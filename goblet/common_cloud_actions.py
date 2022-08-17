@@ -163,6 +163,27 @@ def create_cloudbuild(client, req_body):
     client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
 
 
+# calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
+def getCloudbuildArtifact(client):
+    defaultProject = get_default_project()
+    resp = client.execute(
+        "list", parent_key="projectId", parent_schema=defaultProject, params={}
+    )
+    latestBuildId = resp["builds"][0]["id"]
+    resp = client.execute(
+        "get",
+        parent_key="projectId",
+        parent_schema=defaultProject,
+        params={"id": latestBuildId},
+    )
+    latestArtifact = (
+        resp["results"]["images"][0]["name"]
+        + "@"
+        + resp["results"]["images"][0]["digest"]
+    )
+    return latestArtifact
+
+
 def deploy_cloudrun(client, req_body, name):
     """Deploys cloud build to cloudrun"""
     try:

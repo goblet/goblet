@@ -115,7 +115,9 @@ class Scheduler(Handler):
             else:
                 # only run once
                 if not cloudrun_target:
-                    cloudrun_target = get_cloudrun_url(self.versioned_clients.run, self.name)
+                    cloudrun_target = get_cloudrun_url(
+                        self.versioned_clients.run, self.name
+                    )
                 target = cloudrun_target
             job["job_json"]["httpTarget"]["uri"] = target
             job["job_json"]["httpTarget"]["oidcToken"][

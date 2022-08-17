@@ -216,6 +216,16 @@ class VersionedClients:
         )
 
     @property
+    def run_job(self):
+        """Only v1 is supported currently"""
+        return Client(
+            "run",
+            "v1",
+            calls="namespaces.jobs",
+            parent_schema="namespaces/{project_id}",
+        )
+
+    @property
     def pubsub(self):
         return Client(
             "pubsub",
