@@ -58,7 +58,7 @@ class Jobs(Handler):
 
         log.info("deploying cloudrun jobs......")
         for job_name, job in self.resources.items():
- 
+
             container = {**(config.job_container or {})}
             container["image"] = artifact
             container["command"] = [
@@ -69,6 +69,12 @@ class Jobs(Handler):
             ]
 
             job_spec = {
+                "apiVersion": "run.googleapis.com/v1",
+                "kind": "Job",
+                "metadata": {
+                    "name": job_name,
+                    "annotations": {"run.googleapis.com/launch-stage": "BETA"},
+                },
                 "spec": {
                     "template": {
                         "spec": {
@@ -81,7 +87,7 @@ class Jobs(Handler):
                             },
                         }
                     }
-                }
+                },
             }
 
             self.deploy_job(job_name, job_spec)
@@ -100,7 +106,6 @@ class Jobs(Handler):
 
     def deploy_job(self, job_name, job):
         try:
-            import pdb; pdb.set_trace()
             self.versioned_clients.run_job.execute("create", params={"body": job})
             log.info(f"created job: {job_name}")
         except HttpError as e:
