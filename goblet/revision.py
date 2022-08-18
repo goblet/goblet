@@ -22,7 +22,10 @@ class RevisionSpec:
         self.cloudrun_configs = config.cloudrun or {}
         self.cloudrun_revision = config.cloudrun_revision or {}
         self.cloudrun_container = config.cloudrun_container or {}
-        self.cloudrun_container["command"] = self.cloudrun_container.get("command") or ["functions-framework", "--target=goblet_entrypoint"]
+        self.cloudrun_container["command"] = self.cloudrun_container.get("command") or [
+            "functions-framework",
+            "--target=goblet_entrypoint",
+        ]
         self.req_body = {}
         self.latestArtifact = ""
         self.name = name
