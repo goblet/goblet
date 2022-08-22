@@ -273,3 +273,16 @@ class TestApiGateway:
             == 300
         )
         assert gw.get_timeout(GConfig()) == 15
+
+        gw = ApiGateway("test", backend="cloudfunction")
+        assert (
+            gw.get_timeout(
+                GConfig(
+                    {
+                        "cloudfunction": {"timeout": 300},
+                        "api_gateway": {"deadline": 200},
+                    }
+                )
+            )
+            == 200
+        )
