@@ -361,11 +361,13 @@ class OpenApiSpec:
         return param_type
 
     def add_route(self, entry):
+        gateway_config = GConfig().api_gateway or {}
         method_spec = OrderedDict()
         method_spec["x-google-backend"] = {
             "address": entry.backend or self.cloudfunction,
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS",
+            "deadline":  gateway_config.get("deadline",15) 
         }
         method_spec["operationId"] = f"{entry.method.lower()}_{entry.function_name}"
 
