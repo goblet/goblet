@@ -367,7 +367,7 @@ class OpenApiSpec:
             "address": entry.backend or self.cloudfunction,
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS",
-            "deadline":  gateway_config.get("deadline",15) 
+            "deadline": gateway_config.get("deadline", 15),
         }
         method_spec["operationId"] = f"{entry.method.lower()}_{entry.function_name}"
 
