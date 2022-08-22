@@ -200,7 +200,7 @@ INFO:goblet.deployer:deleting storage bucket......
 
 ## Docs
 
-[Goblet Documentation](https://goblet.github.io/goblet/docs/build/html/index.html)
+[Goblet Documentation](goblet.github.io/goblet)
 
 ## Blog Posts
 
