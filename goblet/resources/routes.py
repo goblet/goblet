@@ -277,16 +277,34 @@ class ApiGateway(Handler):
 
     def generate_openapi_spec(self, cloudfunction):
         config = GConfig()
+        deadline = self.get_timeout(config)
         spec = OpenApiSpec(
             self.name,
             cloudfunction,
             security_definitions=config.securityDefinitions,
             security=config.security,
             marshmallow_attribute_function=self.marshmallow_attribute_function,
+            deadline=deadline,
         )
         spec.add_apigateway_routes(self.resources)
         with open(f"{get_g_dir()}/{self.name}_openapi_spec.yml", "w") as f:
             spec.write(f)
+
+    def get_timeout(self, config):
+        # get api gateway timeout
+        deadline = (config.api_gateway or {}).get("deadline")
+        if self.backend == "cloudfunction" and not deadline:
+            deadline = (config.cloudfunction or {}).get("timeout")
+        if self.backend == "cloudfunctionv2" and not deadline:
+            deadline = (
+                (config.cloudfunction or {})
+                .get("serviceConfig", {})
+                .get("timeoutSeconds")
+            )
+        if self.backend == "cloudrun" and not deadline:
+            deadline = (config.cloudrun_revision or {}).get("timeout")
+        # default deadline to 15 seconds, which is gcp api gateway default
+        return deadline or 15
 
 
 PRIMITIVE_MAPPINGS = {str: "string", bool: "boolean", int: "integer"}
@@ -301,11 +319,13 @@ class OpenApiSpec:
         security_definitions=None,
         security=None,
         marshmallow_attribute_function=None,
+        deadline=15,
     ):
         self.spec = OrderedDict()
         self.app_name = app_name
         self.cloudfunction = cloudfunction
         self.version = version
+        self.deadline = deadline
         self.spec["swagger"] = "2.0"
         self.spec["info"] = {
             "title": self.app_name,
@@ -361,13 +381,12 @@ class OpenApiSpec:
         return param_type
 
     def add_route(self, entry):
-        gateway_config = GConfig().api_gateway or {}
         method_spec = OrderedDict()
         method_spec["x-google-backend"] = {
             "address": entry.backend or self.cloudfunction,
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS",
-            "deadline": gateway_config.get("deadline", 15),
+            "deadline": self.deadline,
         }
         method_spec["operationId"] = f"{entry.method.lower()}_{entry.function_name}"
 

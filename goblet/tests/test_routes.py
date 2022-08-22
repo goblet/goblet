@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 import pytest
 from goblet import Goblet, Response, jsonify
+from goblet.config import GConfig
 from goblet.resources.routes import ApiGateway, CORSConfig
 from goblet.test_utils import (
     get_responses,
@@ -254,3 +255,21 @@ class TestApiGateway:
         gw = ApiGateway("test")
         assert gw._matched_path("/home/{home_id}", "/home/5")
         assert not gw._matched_path("/home/{home_id}", "/home/5/fail")
+
+    def test_deadline(self):
+        gw = ApiGateway("test", backend="cloudrun")
+        assert gw.get_timeout(GConfig({"cloudrun_revision": {"timeout": 300}})) == 300
+        assert gw.get_timeout(GConfig()) == 15
+
+        gw = ApiGateway("test", backend="cloudfunction")
+        assert gw.get_timeout(GConfig({"cloudfunction": {"timeout": 300}})) == 300
+        assert gw.get_timeout(GConfig()) == 15
+
+        gw = ApiGateway("test", backend="cloudfunctionv2")
+        assert (
+            gw.get_timeout(
+                GConfig({"cloudfunction": {"serviceConfig": {"timeoutSeconds": 300}}})
+            )
+            == 300
+        )
+        assert gw.get_timeout(GConfig()) == 15

@@ -23,6 +23,7 @@ class TestOpenApiSpec:
                     "x-google-backend": {
                         "address": "xyz.cloudfunction",
                         "protocol": "h2",
+                        "deadline": 15,
                         "path_translation": "APPEND_PATH_TO_ADDRESS",
                     },
                     "operationId": "get_route",
