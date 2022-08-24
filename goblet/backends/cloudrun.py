@@ -136,4 +136,7 @@ class CloudRun(Backend):
         resp = http.request(
             f"https://storage.googleapis.com/storage/v1/b/{bucket}/o/{quote_plus(obj)}?alt=media",
         )
-        return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+        try:
+            return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+        except KeyError:
+            return 0
