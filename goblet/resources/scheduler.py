@@ -34,6 +34,7 @@ class Scheduler(Handler):
         body = kwargs.get("body")
         uri = kwargs.get("uri")
         attempt_deadline = kwargs.get("attemptDeadline")
+        authMethod = kwargs.get("authMethod", "oidcToken")
 
         job_num = 1
         if self.resources.get(name):
@@ -59,11 +60,12 @@ class Scheduler(Handler):
                     },
                     "body": body,
                     "httpMethod": httpMethod,
-                    "oidcToken": {
+                    authMethod: {
                         # "serviceAccountEmail": ADDED AT runtime
                     },
                 },
             },
+            "authMethod": authMethod,
             "uri": uri,
             "func": func,
         }
@@ -104,6 +106,8 @@ class Scheduler(Handler):
                 service_account = config.cloudrun.get("service-account")
             elif config.scheduler and config.scheduler.get("serviceAccount"):
                 service_account = config.scheduler.get("serviceAccount")
+            elif config.job and config.job.get("serviceAccount"):
+                service_account = config.job.get("serviceAccount")
             else:
                 raise ValueError(
                     "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
@@ -120,7 +124,7 @@ class Scheduler(Handler):
                     )
                 target = cloudrun_target
             job["job_json"]["httpTarget"]["uri"] = target
-            job["job_json"]["httpTarget"]["oidcToken"][
+            job["job_json"]["httpTarget"][job["authMethod"]][
                 "serviceAccountEmail"
             ] = service_account
 

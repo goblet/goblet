@@ -141,22 +141,24 @@ class DecoratorAPI:
             registration_kwargs={"headers": headers},
         )
 
-    def job(self, name, task_id=1, schedule=None, timezone="UTC"):
+    def job(self, name, task_id=0, schedule=None, timezone="UTC", **kwargs):
         """Cloudrun Job"""
-        if schedule and task_id != 1:
-            raise ValueError("Schedule can only be added to task_id with value 1")
+        if schedule and task_id != 0:
+            raise ValueError("Schedule can only be added to task_id with value 0")
+        if kwargs and task_id != 0:
+            raise ValueError("Arguments can only be added to task_id with value 0")
         if schedule:
-            self._create_registration_function(
-                handler_type="schedule",
-                registration_kwargs={
+            self._register_handler("schedule", f"schedule-job-{name}", None, kwargs={
                     "schedule": schedule,
                     "timezone": timezone,
-                    "uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project}/jobs/{name}:run",
-                },
-            )
+                    "kwargs": {"uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project()}/jobs/{self.function_name}-{name}:run",
+                    "httpMethod":"POST",
+                    "authMethod": "oauthToken",
+                    **kwargs
+                }})
         return self._create_registration_function(
             handler_type="job",
-            registration_kwargs={"name": name, "task_id": task_id},
+            registration_kwargs={"name": name, "task_id": task_id, "kwargs":kwargs},
         )
 
     def _create_registration_function(self, handler_type, registration_kwargs=None):

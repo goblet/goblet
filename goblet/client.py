@@ -1,6 +1,7 @@
 import os
 import time
 import google.auth
+import google.auth.transport.requests
 import google_auth_httplib2
 from google.api_core.client_options import ClientOptions
 from googleapiclient.discovery import build

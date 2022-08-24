@@ -31,9 +31,7 @@ class Jobs(Handler):
         else:
             self.resources[job_name] = {
                 task_id: {"func": func},
-                # "job_json": {
-                #     "name": f"projects/{get_default_project()}/locations/{get_default_location()}/jobs/{self.name}-{name}",
-                # },
+                "execution_spec": kwargs.get("kwargs", {})
             }
 
     def __call__(self, name, task_id):
@@ -78,14 +76,15 @@ class Jobs(Handler):
                 "spec": {
                     "template": {
                         "spec": {
-                            "taskCount": len(job.keys()),
+                            "taskCount": len(job.keys()) - 1,
                             "template": {
                                 "spec": {
                                     "containers": [container],
                                     **(config.job_spec or {}),
                                 }
                             },
-                        }
+                        },
+                        **job["execution_spec"]
                     }
                 },
             }
@@ -95,7 +94,7 @@ class Jobs(Handler):
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.run_job.execute("list").get("items", [])
         filtered_jobs = list(
-            filter(lambda job: f"jobs/{self.name}-" in job["metadata"]["name"], jobs)
+            filter(lambda job: self.name in job["metadata"]["name"], jobs)
         )
         for filtered_job in filtered_jobs:
             filtered_name = filtered_job["metadata"]["name"]
@@ -133,9 +132,9 @@ class Jobs(Handler):
                 parent_key="name",
                 parent_schema="namespaces/{project_id}/jobs/" + job_name,
             )
-            log.info(f"Destroying scheduled job {job_name}......")
+            log.info(f"Destroying job {job_name}......")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info("Scheduled jobs already destroyed")
+                log.info("Jobs already destroyed")
             else:
                 raise e

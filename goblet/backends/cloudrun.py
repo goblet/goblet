@@ -116,8 +116,13 @@ class CloudRun(Backend):
         """Skip cloudrun deployment if only jobs"""
         skip = True
         for name, handler in self.app.handlers.items():
-            if handler.resources and name != "jobs":
+            if handler.resources and name != "jobs" and name != "schedule":
                 skip = False
+            # scheduled jobs
+            if handler.resources and name == "schedule":
+                for schedule_name in handler.resources.keys():
+                    if not schedule_name.startswith("schedule-job-"):
+                        skip = False
         return skip
 
     def _checksum(self):
