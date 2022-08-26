@@ -279,6 +279,8 @@ You can schedule executions by passing in a cron `schedule` to the first task.
 
 Each job task function takes in the task id. 
 
+To test a job locally you can run `goblet job run APP_NAME-JOB_NAME TASK_ID`
+
 Example usage:
 
 .. code:: python 
