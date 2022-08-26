@@ -269,7 +269,7 @@ Example usage:
         return
 
 Jobs
-^^^^^^^
+^^^^
 
 You can create and trigger cloudrun jobs using the `@app.job(...)` decorator. If you would like to trigger multiple tasks in one job execution 
 you can specify multiple decorators with a different `task_id`. Any custom job configurations should be added to the `task_id=0`. Options can be found at 
