@@ -1,10 +1,6 @@
 import logging
 
 from goblet.resources.handler import Handler
-from goblet.client import (
-    get_default_project,
-    get_default_location,
-)
 from goblet.common_cloud_actions import getCloudbuildArtifact
 from goblet.config import GConfig
 
@@ -31,7 +27,7 @@ class Jobs(Handler):
         else:
             self.resources[job_name] = {
                 task_id: {"func": func},
-                "execution_spec": kwargs.get("kwargs", {})
+                "execution_spec": kwargs.get("kwargs", {}),
             }
 
     def __call__(self, name, task_id):
@@ -84,7 +80,7 @@ class Jobs(Handler):
                                 }
                             },
                         },
-                        **job["execution_spec"]
+                        **job["execution_spec"],
                     }
                 },
             }

@@ -162,7 +162,7 @@ a custom `filter` as well. Note that filters are not able to be modified once th
 
 In addition to filters you can also add configuration values that will be passed directly to the subscription. 
 By setting `config={"enableExactlyOnceDelivery": True}` you can enable exactly delivery to ensure messages are not redelivered once acknowledged.
-For additional information on configuration values available see `PubSub Subscription Fields <https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body>`
+For additional information on configuration values available see `PubSub Subscription Fields <https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body>`__
 
 Example usage:
 
@@ -267,3 +267,33 @@ Example usage:
     def bucket_get(data):
         app.log.info("bucket_get")
         return
+
+Jobs
+^^^^^^^
+
+You can create and trigger cloudrun jobs using the `@app.job(...)` decorator. If you would like to trigger multiple tasks in one job execution 
+you can specify multiple decorators with a different `task_id`. Any custom job configurations should be added to the `task_id=0`. Options can be found at 
+`Cloudrun Jobs  <https://cloud.google.com/static/run/docs/reference/rest/v1/namespaces.jobs#ExecutionTemplateSpec>`__
+
+You can schedule executions by passing in a cron `schedule` to the first task.
+
+Each job task function takes in the task id. 
+
+Example usage:
+
+.. code:: python 
+
+    @app.job("job1", schedule="* * * * *")
+    def job1_task1(id):
+        app.log.info(f"job...{id}")
+        return "200"
+
+    @app.job("job1", task_id=1)
+    def job1_task2(id):
+        app.log.info(f"different task for job...{id}")
+        return "200"
+    
+    @app.job("job2")
+    def job2(id):
+        app.log.info(f"another job...{id}")
+        return "200"

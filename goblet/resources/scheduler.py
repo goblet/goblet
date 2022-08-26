@@ -85,7 +85,7 @@ class Scheduler(Handler):
         if not self.resources:
             return
 
-        if self.backend == "cloudfunction":
+        if self.backend.startswith("cloudfunction"):
             resp = self.versioned_clients.cloudfunctions.execute(
                 "get", parent_key="name", parent_schema=self.cloudfunction
             )
@@ -116,6 +116,8 @@ class Scheduler(Handler):
         for job_name, job in self.resources.items():
             if job["uri"]:
                 target = job["uri"]
+            elif self.backend.startswith("cloudfunction"):
+                target = target
             else:
                 # only run once
                 if not cloudrun_target:

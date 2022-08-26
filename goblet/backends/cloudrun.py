@@ -56,7 +56,7 @@ class CloudRun(Backend):
         self.create_build(versioned_clients.cloudbuild, source, self.name, config)
 
         if not self.skip_run_deployment():
-            self.log.info(f"Skipping cloudrun deployment since it is not needed...")
+            self.log.info("Skipping cloudrun deployment since it is not needed...")
             serviceRevision = RevisionSpec(config, versioned_clients, self.name)
             serviceRevision.deployRevision()
 

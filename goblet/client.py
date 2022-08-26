@@ -7,8 +7,6 @@ from google.api_core.client_options import ClientOptions
 from googleapiclient.discovery import build
 from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
 
-from google.oauth2 import service_account
-
 import logging
 
 log = logging.getLogger("goblet.client")
@@ -70,10 +68,7 @@ def get_default_location():
 def get_credentials():
     """get user credentials and save them for future use"""
     DEFAULT_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
-    if os.environ.get("GOBLET_HTTP_TEST") == "RECORD":
-        return service_account.Credentials.from_service_account_file(
-            os.environ["GOBLET_TEST_SERVICE_ACCOUNT"], scopes=DEFAULT_SCOPES
-        )
+
     if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
         return google.auth.credentials.AnonymousCredentials()
 

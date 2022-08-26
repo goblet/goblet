@@ -2,7 +2,6 @@ import logging
 import math
 
 from goblet.client import (
-    get_default_project,
     get_default_location,
     get_default_project_number,
 )
