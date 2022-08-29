@@ -163,6 +163,13 @@ def create_cloudbuild(client, req_body):
     client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
 
 
+class MissingArtifact(Exception):
+    """Raised when missing Cloudrun Artifact."""
+
+    def __init__(self, missing):
+        self.missing = missing
+
+
 # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
 def getCloudbuildArtifact(client):
     defaultProject = get_default_project()
@@ -176,11 +183,14 @@ def getCloudbuildArtifact(client):
         parent_schema=defaultProject,
         params={"id": latestBuildId},
     )
-    latestArtifact = (
-        resp["results"]["images"][0]["name"]
-        + "@"
-        + resp["results"]["images"][0]["digest"]
-    )
+    try:
+        latestArtifact = (
+            resp["results"]["images"][0]["name"]
+            + "@"
+            + resp["results"]["images"][0]["digest"]
+        )
+    except KeyError:
+        raise MissingArtifact("Missing artifact. Cloud Build may have failed.")
     return latestArtifact
 
 
