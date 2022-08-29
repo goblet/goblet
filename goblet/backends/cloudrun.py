@@ -54,11 +54,14 @@ class CloudRun(Backend):
             return None
 
         self.create_build(versioned_clients.cloudbuild, source, self.name, config)
-        serviceRevision = RevisionSpec(config, versioned_clients, self.name)
-        serviceRevision.deployRevision()
+
+        if not self.skip_run_deployment():
+            self.log.info("Skipping cloudrun deployment since it is not needed...")
+            serviceRevision = RevisionSpec(config, versioned_clients, self.name)
+            serviceRevision.deployRevision()
 
         # Set IAM Bindings
-        if self.config.bindings:
+        if not self.skip_run_deployment() and self.config.bindings:
             self.log.info(f"adding IAM bindings for cloudrun {self.name}")
             policy_bindings = {"policy": {"bindings": self.config.bindings}}
             self.client.execute(
@@ -109,16 +112,18 @@ class CloudRun(Backend):
 
         create_cloudbuild(client, req_body)
 
-        # Set IAM Bindings
-        if self.config.bindings:
-            self.log.info(f"adding IAM bindings for cloudrun {self.name}")
-            policy_bindings = {"policy": {"bindings": self.config.bindings}}
-            client.run.execute(
-                "setIamPolicy",
-                parent_key="resource",
-                parent_schema=self.run_name,
-                params={"body": policy_bindings},
-            )
+    def skip_run_deployment(self):
+        """Skip cloudrun deployment if only jobs"""
+        skip = True
+        for name, handler in self.app.handlers.items():
+            if handler.resources and name != "jobs" and name != "schedule":
+                skip = False
+            # scheduled jobs
+            if handler.resources and name == "schedule":
+                for schedule_name in handler.resources.keys():
+                    if not schedule_name.startswith("schedule-job-"):
+                        skip = False
+        return skip
 
     def _checksum(self):
         versioned_clients = VersionedClients(self.app.client_versions)
@@ -136,4 +141,7 @@ class CloudRun(Backend):
         resp = http.request(
             f"https://storage.googleapis.com/storage/v1/b/{bucket}/o/{quote_plus(obj)}?alt=media",
         )
-        return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+        try:
+            return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+        except KeyError:
+            return 0

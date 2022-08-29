@@ -124,7 +124,7 @@ For `Cloud Build configurations <https://cloud.google.com/build/docs/api/referen
         }
     }
 
-By default goblet includes all python files located in the directory. To include other files use the ``customFiles`` key
+By default goblet includes all python files located in the directory. To include other files use the ``custom_files`` key
 which takes in a list of python `glob`_ formatted strings.
 
 Example config.json: 
@@ -132,7 +132,10 @@ Example config.json:
 .. code:: json
 
     {
-        "customFiles": ["*.yaml"]
+        "custom_files": {
+            "include": ["*.yaml"],
+            "exclude": ["*.secret"]
+        }
     }   
 
 .. _GLOB: https://docs.python.org/3/library/glob.html

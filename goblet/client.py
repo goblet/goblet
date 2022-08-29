@@ -1,11 +1,16 @@
 import os
 import time
 import google.auth
+import google.auth.transport.requests
 import google_auth_httplib2
+from google.api_core.client_options import ClientOptions
 from googleapiclient.discovery import build
 from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
 
-from google.oauth2 import service_account
+import logging
+
+log = logging.getLogger("goblet.client")
+log.setLevel(logging.INFO)
 
 DEFAULT_CLIENT_VERSIONS = {
     "cloudfunctions": "v1",
@@ -62,21 +67,26 @@ def get_default_location():
 
 def get_credentials():
     """get user credentials and save them for future use"""
-    if os.environ.get("GOBLET_HTTP_TEST") == "RECORD":
-        scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-        return service_account.Credentials.from_service_account_file(
-            os.environ["GOBLET_TEST_SERVICE_ACCOUNT"], scopes=scopes
-        )
+    DEFAULT_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+
     if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
         return google.auth.credentials.AnonymousCredentials()
 
-    credentials, _ = google.auth.default()
+    credentials, _ = google.auth.default(scopes=DEFAULT_SCOPES)
+    auth_req = google.auth.transport.requests.Request()
+    credentials.refresh(auth_req)
     return credentials
 
 
 class Client:
     def __init__(
-        self, resource, version="v1", credentials=None, calls=None, parent_schema=None
+        self,
+        resource,
+        version="v1",
+        credentials=None,
+        calls=None,
+        parent_schema=None,
+        regional=False,
     ):
         self.project_id = get_default_project()
         self.location_id = get_default_location()
@@ -94,13 +104,17 @@ class Client:
             )
         else:
             self.credentials = self._credentials
-
+        client_options = None
+        if regional:
+            endpoint = f"https://{self.location_id}-{self.resource}.googleapis.com"
+            client_options = ClientOptions(api_endpoint=endpoint)
         self.client = build(
             resource,
             version,
             credentials=self.credentials,
             cache_discovery=False,
             http=self.http,
+            client_options=client_options,
         )
 
         self.parent = None
@@ -142,6 +156,8 @@ class Client:
             done = resp.get("done")
             time.sleep(sleep_duration)
             count += sleep_duration
+        if count > timeout:
+            log.info("Timeout exceeded in wait_for_operation")
 
     def execute(
         self,
@@ -206,6 +222,17 @@ class VersionedClients:
             self.client_versions.get("run", "v2"),
             calls="projects.locations.services",
             parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def run_job(self):
+        """Only v1 is supported currently"""
+        return Client(
+            "run",
+            "v1",
+            calls="namespaces.jobs",
+            parent_schema="namespaces/{project_id}",
+            regional=True,
         )
 
     @property

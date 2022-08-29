@@ -151,7 +151,47 @@ def create_cloudbuild(client, req_body):
         log.info("creating cloudbuild")
     except HttpError as e:
         raise e
-    client.wait_for_operation(resp["name"], calls="operations")
+    cloudbuild_config = GConfig().cloudbuild or {}
+    timeout_seconds = cloudbuild_config.get("timeout", "600s")
+    if "s" not in timeout_seconds:
+        log.info(
+            "Not a valid timeout. Needs to be a duration that ends is 's'. Defaulting to 600s"
+        )
+        timeout = 600
+    else:
+        timeout = int(timeout_seconds.split("s")[0])
+    client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
+
+
+class MissingArtifact(Exception):
+    """Raised when missing Cloudrun Artifact."""
+
+    def __init__(self, missing):
+        self.missing = missing
+
+
+# calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
+def getCloudbuildArtifact(client):
+    defaultProject = get_default_project()
+    resp = client.execute(
+        "list", parent_key="projectId", parent_schema=defaultProject, params={}
+    )
+    latestBuildId = resp["builds"][0]["id"]
+    resp = client.execute(
+        "get",
+        parent_key="projectId",
+        parent_schema=defaultProject,
+        params={"id": latestBuildId},
+    )
+    try:
+        latestArtifact = (
+            resp["results"]["images"][0]["name"]
+            + "@"
+            + resp["results"]["images"][0]["digest"]
+        )
+    except KeyError:
+        raise MissingArtifact("Missing artifact. Cloud Build may have failed.")
+    return latestArtifact
 
 
 def deploy_cloudrun(client, req_body, name):

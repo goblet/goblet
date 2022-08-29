@@ -51,6 +51,7 @@ $ curl https://api.uc.gateway.dev/home
 
 #### Backends
 * cloudfunction
+* cloudfunction V2
 * cloudrun
 
 #### Routing
@@ -62,6 +63,7 @@ $ curl https://api.uc.gateway.dev/home
 * scheduler
 * storage
 * eventarc
+* cloudrun jobs
 
 ## Installation
 
@@ -199,7 +201,7 @@ INFO:goblet.deployer:deleting storage bucket......
 
 ## Docs
 
-[Goblet Documentation](https://goblet.github.io/goblet/docs/build/html/index.html)
+[Goblet Documentation](goblet.github.io/goblet)
 
 ## Blog Posts
 
@@ -212,6 +214,8 @@ INFO:goblet.deployer:deleting storage bucket......
 [Tutorial: Cost Spike Alerting](https://engineering.premise.com/tutorial-cost-spike-alerting-for-google-cloud-platform-gcp-46fd26ae3f6a)
 
 [Tutorial: Setting Up Approval Processes with Slack Apps](https://engineering.premise.com/tutorial-setting-up-approval-processes-with-slack-apps-d325aee31763)
+
+[Tutorial: API Deployments with Traffic Revisions and Centralized Artifact Registries in Google Cloud Run](https://engineering.premise.com/traffic-revisions-and-artifact-registries-in-google-cloud-run-made-easy-with-goblet-1a3fa86de25c)
 
 
 ## Examples
@@ -236,6 +240,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [Scheduler](https://cloud.google.com/scheduler) trigger \
  &#9745; [Pub Sub](https://cloud.google.com/pubsub/docs/overview) trigger \
  &#9745; [Cloud Storage](https://cloud.google.com/functions/docs/calling/storage) trigger \
+ &#9745; [Cloudrun Jobs](https://cloud.google.com/run/docs/quickstarts/jobs/create-execute) trigger \
  &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
  &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger \
  &#9744; [Cloud Tasks](https://cloud.google.com/tasks/docs/creating-http-target-tasks) trigger \
