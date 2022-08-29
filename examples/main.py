@@ -233,3 +233,15 @@ def bucket(data):
 def bucket_get(data):
     app.log.info("bucket_get")
     return
+
+# Example Cloudrun Job with schedule
+@app.job("job1", schedule="* * * * *")
+def job1_task1(id):
+    app.log.info(f"job...{id}")
+    return "200"
+
+# Example Cloudrun Job with additional task
+@app.job("job1", task_id=1)
+def job1_task2(id):
+    app.log.info(f"different task for job...{id}")
+    return "200"

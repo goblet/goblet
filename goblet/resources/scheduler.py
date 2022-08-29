@@ -32,7 +32,9 @@ class Scheduler(Handler):
         httpMethod = kwargs.get("httpMethod", "GET")
         retry_config = kwargs.get("retryConfig")
         body = kwargs.get("body")
+        uri = kwargs.get("uri")
         attempt_deadline = kwargs.get("attemptDeadline")
+        authMethod = kwargs.get("authMethod", "oidcToken")
 
         job_num = 1
         if self.resources.get(name):
@@ -58,11 +60,13 @@ class Scheduler(Handler):
                     },
                     "body": body,
                     "httpMethod": httpMethod,
-                    "oidcToken": {
+                    authMethod: {
                         # "serviceAccountEmail": ADDED AT runtime
                     },
                 },
             },
+            "authMethod": authMethod,
+            "uri": uri,
             "func": func,
         }
 
@@ -81,7 +85,7 @@ class Scheduler(Handler):
         if not self.resources:
             return
 
-        if self.backend == "cloudfunction":
+        if self.backend.startswith("cloudfunction"):
             resp = self.versioned_clients.cloudfunctions.execute(
                 "get", parent_key="name", parent_schema=self.cloudfunction
             )
@@ -95,20 +99,34 @@ class Scheduler(Handler):
                 service_account = resp["serviceConfig"]["serviceAccountEmail"]
 
         if self.backend == "cloudrun":
-            target = get_cloudrun_url(self.versioned_clients.run, self.name)
+            # dont get target in scheduler is needed only for jobs
+            cloudrun_target = None
             config = GConfig(config=config)
             if config.cloudrun and config.cloudrun.get("service-account"):
                 service_account = config.cloudrun.get("service-account")
             elif config.scheduler and config.scheduler.get("serviceAccount"):
                 service_account = config.scheduler.get("serviceAccount")
+            elif config.job and config.job.get("serviceAccount"):
+                service_account = config.job.get("serviceAccount")
             else:
                 raise ValueError(
                     "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
                 )
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
+            if job["uri"]:
+                target = job["uri"]
+            elif self.backend.startswith("cloudfunction"):
+                target = target
+            else:
+                # only run once
+                if not cloudrun_target:
+                    cloudrun_target = get_cloudrun_url(
+                        self.versioned_clients.run, self.name
+                    )
+                target = cloudrun_target
             job["job_json"]["httpTarget"]["uri"] = target
-            job["job_json"]["httpTarget"]["oidcToken"][
+            job["job_json"]["httpTarget"][job["authMethod"]][
                 "serviceAccountEmail"
             ] = service_account
 

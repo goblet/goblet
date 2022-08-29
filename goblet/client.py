@@ -1,11 +1,11 @@
 import os
 import time
 import google.auth
+import google.auth.transport.requests
 import google_auth_httplib2
+from google.api_core.client_options import ClientOptions
 from googleapiclient.discovery import build
 from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
-
-from google.oauth2 import service_account
 
 import logging
 
@@ -68,10 +68,7 @@ def get_default_location():
 def get_credentials():
     """get user credentials and save them for future use"""
     DEFAULT_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
-    if os.environ.get("GOBLET_HTTP_TEST") == "RECORD":
-        return service_account.Credentials.from_service_account_file(
-            os.environ["GOBLET_TEST_SERVICE_ACCOUNT"], scopes=DEFAULT_SCOPES
-        )
+
     if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
         return google.auth.credentials.AnonymousCredentials()
 
@@ -83,7 +80,13 @@ def get_credentials():
 
 class Client:
     def __init__(
-        self, resource, version="v1", credentials=None, calls=None, parent_schema=None
+        self,
+        resource,
+        version="v1",
+        credentials=None,
+        calls=None,
+        parent_schema=None,
+        regional=False,
     ):
         self.project_id = get_default_project()
         self.location_id = get_default_location()
@@ -101,13 +104,17 @@ class Client:
             )
         else:
             self.credentials = self._credentials
-
+        client_options = None
+        if regional:
+            endpoint = f"https://{self.location_id}-{self.resource}.googleapis.com"
+            client_options = ClientOptions(api_endpoint=endpoint)
         self.client = build(
             resource,
             version,
             credentials=self.credentials,
             cache_discovery=False,
             http=self.http,
+            client_options=client_options,
         )
 
         self.parent = None
@@ -215,6 +222,17 @@ class VersionedClients:
             self.client_versions.get("run", "v2"),
             calls="projects.locations.services",
             parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def run_job(self):
+        """Only v1 is supported currently"""
+        return Client(
+            "run",
+            "v1",
+            calls="namespaces.jobs",
+            parent_schema="namespaces/{project_id}",
+            regional=True,
         )
 
     @property

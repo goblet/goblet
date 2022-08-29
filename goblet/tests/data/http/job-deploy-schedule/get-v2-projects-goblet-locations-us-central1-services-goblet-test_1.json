@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 404,
+      "message": "Resource 'goblet-test' of kind 'SERVICE' in region 'us-central1' in project 'goblet' does not exist.",
+      "status": "NOT_FOUND"
+    }
+  }
+}

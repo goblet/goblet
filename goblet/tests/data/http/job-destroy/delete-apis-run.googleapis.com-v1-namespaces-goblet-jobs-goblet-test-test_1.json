@@ -1,0 +1,12 @@
+{
+  "headers": {},
+  "body": {
+    "status": "Success",
+    "details": {
+      "name": "goblet-test-test",
+      "group": "v1",
+      "kind": "job",
+      "uid": "dd70cebe-f994-4b33-b362-6b4801cbe958"
+    }
+  }
+}

@@ -2,13 +2,10 @@ import logging
 import math
 
 from goblet.client import (
-    get_default_project,
     get_default_location,
     get_default_project_number,
 )
-from goblet.common_cloud_actions import (
-    deploy_cloudrun,
-)
+from goblet.common_cloud_actions import deploy_cloudrun, getCloudbuildArtifact
 from goblet.config import GConfig
 
 log = logging.getLogger("goblet.deployer")
@@ -29,26 +26,6 @@ class RevisionSpec:
         self.req_body = {}
         self.latestArtifact = ""
         self.name = name
-
-    # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
-    def getArtifact(self):
-        defaultProject = get_default_project()
-        buildClient = self.versioned_clients.cloudbuild
-        resp = buildClient.execute(
-            "list", parent_key="projectId", parent_schema=defaultProject, params={}
-        )
-        latestBuildId = resp["builds"][0]["id"]
-        resp = buildClient.execute(
-            "get",
-            parent_key="projectId",
-            parent_schema=defaultProject,
-            params={"id": latestBuildId},
-        )
-        self.latestArtifact = (
-            resp["results"]["images"][0]["name"]
-            + "@"
-            + resp["results"]["images"][0]["digest"]
-        )
 
     def getServiceConfig(self):
         client = self.versioned_clients.run
@@ -122,7 +99,7 @@ class RevisionSpec:
         client = self.versioned_clients.run
         region = get_default_location()
         project = get_default_project_number()
-        self.getArtifact()
+        self.latestArtifact = getCloudbuildArtifact(self.versioned_clients.cloudbuild)
         self.req_body = {
             "template": {
                 **self.cloudrun_revision,
