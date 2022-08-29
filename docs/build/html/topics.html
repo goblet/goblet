@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.8.0 documentation</title>
+  <title>Topics &mdash; goblet 0.8.2 documentation</title>
   
 
   
@@ -294,11 +294,14 @@ For <a class="reference external" href="https://cloud.google.com/build/docs/api/
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>By default goblet includes all python files located in the directory. To include other files use the <code class="docutils literal notranslate"><span class="pre">customFiles</span></code> key
+<p>By default goblet includes all python files located in the directory. To include other files use the <code class="docutils literal notranslate"><span class="pre">custom_files</span></code> key
 which takes in a list of python <a class="reference external" href="https://docs.python.org/3/library/glob.html">glob</a> formatted strings.</p>
 <p>Example config.json:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;customFiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.yaml&quot;</span><span class="p">]</span>
+    <span class="nt">&quot;custom_files&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;include&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.yaml&quot;</span><span class="p">],</span>
+        <span class="nt">&quot;exclude&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.secret&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>

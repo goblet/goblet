@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.8.0 documentation</title>
+  <title>Resources &mdash; goblet 0.8.2 documentation</title>
   
 
   
@@ -98,6 +98,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#pubsub">PubSub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#eventarc">Eventarc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jobs">Jobs</a></li>
 </ul>
 </li>
 </ul>
@@ -305,7 +306,7 @@ If using cloudrun backend or <cite>use_subscription=true</cite> the attributes w
 a custom <cite>filter</cite> as well. Note that filters are not able to be modified once they are applied to a subscription.</p>
 <p>In addition to filters you can also add configuration values that will be passed directly to the subscription.
 By setting <cite>config={“enableExactlyOnceDelivery”: True}</cite> you can enable exactly delivery to ensure messages are not redelivered once acknowledged.
-For additional information on configuration values available see <cite>PubSub Subscription Fields &lt;https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body&gt;</cite></p>
+For additional information on configuration values available see <a class="reference external" href="https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body">PubSub Subscription Fields</a></p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pubsub topic</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
@@ -399,6 +400,32 @@ on possible values.</p>
 <span class="k">def</span> <span class="nf">bucket_get</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
     <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="jobs">
+<h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this headline">¶</a></h2>
+<p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
+you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations should be added to the <cite>task_id=0</cite>. Options can be found at
+<a class="reference external" href="https://cloud.google.com/static/run/docs/reference/rest/v1/namespaces.jobs#ExecutionTemplateSpec">Cloudrun Jobs</a></p>
+<p>You can schedule executions by passing in a cron <cite>schedule</cite> to the first task.</p>
+<p>Each job task function takes in the task id.</p>
+<p>To test a job locally you can run <cite>goblet job run APP_NAME-JOB_NAME TASK_ID</cite></p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job1_task1</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job1_task2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;different task for job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job2&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;another job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
 </pre></div>
 </div>
 </div>

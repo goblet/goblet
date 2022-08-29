@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Examples &mdash; goblet 0.8.0 documentation</title>
+  <title>Examples &mdash; goblet 0.8.2 documentation</title>
   
 
   
@@ -406,7 +406,19 @@
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central-1&quot;</span><span class="p">)</span>
@@ -641,6 +653,18 @@
 <span class="k">def</span> <span class="nf">bucket_get</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
     <span class="k">return</span>
+
+<span class="c1"># Example Cloudrun Job with schedule</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job1_task1</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+
+<span class="c1"># Example Cloudrun Job with additional task</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job1_task2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;different task for job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
 </pre></div>
 </td></tr></table></div>
 </div>

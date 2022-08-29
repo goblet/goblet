@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Backends &mdash; goblet 0.8.0 documentation</title>
+  <title>Backends &mdash; goblet 0.8.2 documentation</title>
   
 
   
@@ -194,15 +194,14 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudfunctionv2&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul>
+<ul class="simple">
 <li><p>You can use config.json to further customize the function you wish to create. Goblet uses the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#resource:-cloudfunction">CloudFunction resource</a>
 for first-gen cloudfunctions and the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v2/projects.locations.functions#resource:-function">Function resource</a> for cloudfunctionv2. You may add any additional fields in config.json under “cloudfunction”</p></li>
 <li><p>For cloudfunctions v1, python version must be at least python3.7, and for cloudfunctionv2, python version must be at least python3.8.
-To specify a python version for your cloudfunction, you can set the runtime field in config.json as such:</p>
-<blockquote>
-<div><p>{“cloudfunction”: {“runtime”: “python38”}}</p>
-</div></blockquote>
-</li>
+To specify a python version for your cloudfunction, you can set the runtime field in config.json as such:</p></li>
+</ul>
+<p>{“cloudfunction”: {“runtime”: “python38”}}</p>
+<ul class="simple">
 <li><p>Goblet does not currently support eventarc triggers for cloudfunctions</p></li>
 </ul>
 </div>
