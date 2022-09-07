@@ -111,7 +111,10 @@ class Backend:
 
     def zip(self):
         """Zips requirements.txt, python files and any additional files based on config.custom_files"""
-        self._zip_file("requirements.txt")
+        if self.config.requirements_file:
+            self._zip_file(self.config.requirements_file, "requirements.txt")
+        else:
+            self._zip_file("requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
         with warnings.catch_warnings():
