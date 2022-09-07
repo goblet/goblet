@@ -6,7 +6,7 @@ from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
 from goblet.decorators import Register_Handlers
 
-# logging.basicConfig()
+logging.basicConfig()
 
 log = logging.getLogger("goblet.app")
 log.setLevel(logging.INFO)
