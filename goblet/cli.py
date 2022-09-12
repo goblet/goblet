@@ -274,7 +274,7 @@ def job():
 @click.argument(
     "name",
 )
-@click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="1")
+@click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="0")
 def run_job(name, task_id):
     """
     Run a Cloudrun Job in local environment.
