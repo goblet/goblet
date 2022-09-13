@@ -1,6 +1,7 @@
 from typing import List
 from marshmallow import Schema, fields
 from goblet.resources.routes import OpenApiSpec, RouteEntry
+from pydantic import BaseModel
 
 
 def dummy():
@@ -10,6 +11,15 @@ def dummy():
 class DummySchema(Schema):
     id = fields.Int()
     flt = fields.Float()
+
+
+class NestedModel(BaseModel):
+    text: str
+
+
+class PydanticModel(BaseModel):
+    id: int
+    nested: NestedModel
 
 
 class TestOpenApiSpec:
@@ -255,3 +265,24 @@ class TestOpenApiSpec:
             spec.spec["definitions"]["DummySchema"]["properties"]["id"]["type"]
             == "custom"
         )
+
+    # <------------------------------- Pydantic plugin tests ------------------------------->
+
+    def test_pydantic_reponse(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(
+            schema_typed,
+            "route",
+            "/home",
+            "GET",
+            responses={"400": {"description": "400"}},
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+            "schema"
+        ]
+        assert response_content == {"$ref": "#/definitions/DummySchema"}
+        print(response_content)

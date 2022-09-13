@@ -12,6 +12,7 @@ import goblet
 
 from goblet.resources.handler import Handler
 from goblet.client import get_default_project
+from goblet.resources.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
@@ -341,11 +342,12 @@ class OpenApiSpec:
         self.spec["produces"] = ["application/json"]
         self.spec["paths"] = {}
         marshmallow_plugin = MarshmallowPlugin()
+        pydantic_plugin = PydanticPlugin()
         self.component_spec = APISpec(
             title="",
             version="1.0.0",
             openapi_version="2.0",
-            plugins=[marshmallow_plugin],
+            plugins=[marshmallow_plugin, pydantic_plugin],
         )
         if marshmallow_attribute_function:
             marshmallow_plugin.converter.add_attribute_function(
