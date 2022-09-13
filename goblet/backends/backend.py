@@ -125,7 +125,7 @@ class Backend:
     def _zip_file(self, filename, arcname=None):
         """skip files if not required and do not exist"""
         if not os.path.exists(filename) and filename not in self.required_files:
-            return 
+            return
         self.zipf.write(filename, arcname)
 
     def _zip_directory(self):
