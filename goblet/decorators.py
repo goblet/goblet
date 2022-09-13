@@ -207,9 +207,6 @@ class Register_Handlers(DecoratorAPI):
                 versioned_clients=versioned_clients,
                 routes_type=routes_type,
             ),
-            "schedule": Scheduler(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
             "pubsub": PubSub(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
@@ -225,6 +222,9 @@ class Register_Handlers(DecoratorAPI):
             "jobs": Jobs(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
+            "schedule": Scheduler(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            )
         }
         self.middleware_handlers = {
             "before": {},
