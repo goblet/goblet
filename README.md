@@ -10,8 +10,8 @@ Goblet is a framework for writing serverless rest apis in python in google cloud
 It provides:
 
 * A command line tool for creating, deploying, and managing your api
-* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, and other GCP services.
-* Local environment for your api endpoints
+* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, Cloudrun Jobs, and other GCP services.
+* Local environment for testing and running your api endpoints
 * Dynamically generated openapispec
 * Support for multiple stages
 
@@ -107,8 +107,6 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 ### Credentials
 
 Before you can deploy an application, be sure you have credentials configured. You should run `gcloud auth application-default login` and sign in to the desired project.
-
-When setting the defaut location note that api-gateway is only available in `asia-east1`, `europe-west1`, `us-east-1` and `us-central1`.
 
 ### Creating Your Project
 
@@ -217,6 +215,7 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Tutorial: API Deployments with Traffic Revisions and Centralized Artifact Registries in Google Cloud Run](https://engineering.premise.com/traffic-revisions-and-artifact-registries-in-google-cloud-run-made-easy-with-goblet-1a3fa86de25c)
 
+[Tutorial: Deploying Cloud Run Jobs](https://engineering.premise.com/tutorial-deploying-cloud-run-jobs-9435466b26f5)
 
 ## Examples
 
@@ -245,7 +244,9 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger \
  &#9744; [Cloud Tasks](https://cloud.google.com/tasks/docs/creating-http-target-tasks) trigger \
  &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger \
- &#9745; [EventArc](https://cloud.google.com/eventarc/docs) trigger
+ &#9745; [EventArc](https://cloud.google.com/eventarc/docs) trigger \
+ &#9744; [Redis](https://cloud.google.com/memorystore) infrastructure \
+ &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot)
 
 ## Want to Contribute
 

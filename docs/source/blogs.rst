@@ -8,3 +8,4 @@ Blogs
 * `Tutorial: Cost Spike Alerting <https://engineering.premise.com/tutorial-cost-spike-alerting-for-google-cloud-platform-gcp-46fd26ae3f6a>`__
 * `Tutorial: Setting Up Approval Processes with Slack Apps <https://engineering.premise.com/tutorial-setting-up-approval-processes-with-slack-apps-d325aee31763>`__
 * `Tutorial: API Deployments with Traffic Revisions and Centralized Artifact Registries in Google Cloud Run <https://engineering.premise.com/traffic-revisions-and-artifact-registries-in-google-cloud-run-made-easy-with-goblet-1a3fa86de25c>`__
+* `Tutorial: Deploying Cloud Run Jobs <https://engineering.premise.com/tutorial-deploying-cloud-run-jobs-9435466b26f5>`__
