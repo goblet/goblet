@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.8.2 documentation</title>
+  <title>Topics &mdash; goblet 0.8.3 documentation</title>
   
 
   
@@ -813,9 +813,10 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
 <h2>Multiple Cloudfunctions<a class="headerlink" href="#multiple-cloudfunctions" title="Permalink to this headline">¶</a></h2>
 <p>Using the field <cite>main_file</cite> in <cite>config.json</cite> allows you to set any file as the entrypoint <cite>main.py</cite> file, which is required by cloudfunctions.
 This allows for multiple functions to be deploying using similar code bases.</p>
+<p>Similarly, you can also define <cite>requirements_file</cite> to override the <cite>requirements.txt</cite>, in case your functions have different dependencies.</p>
 <p>For example with the following files which each contain a function and share code in <cite>shared.py</cite></p>
-<p><cite>func1.py</cite>
-<cite>func2.py</cite></p>
+<p><cite>func1.py</cite></p>
+<p><cite>func2.py</cite></p>
 <p>Could have the goblet <cite>.config</cite></p>
 <p>To test each function locally you can simply run <cite>goblet local -s func1</cite> and to deploy <cite>goblet local -s func1 -p Project -l Region</cite></p>
 <p>Note: This may cause some imports to break if something is importing directly from the func1.py or func2.py since they will be renamed to <cite>main.py</cite>

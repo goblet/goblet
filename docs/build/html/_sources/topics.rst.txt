@@ -752,24 +752,28 @@ Multiple Cloudfunctions
 Using the field `main_file` in `config.json` allows you to set any file as the entrypoint `main.py` file, which is required by cloudfunctions. 
 This allows for multiple functions to be deploying using similar code bases.
 
+Similarly, you can also define `requirements_file` to override the `requirements.txt`, in case your functions have different dependencies. 
+
 For example with the following files which each contain a function and share code in `shared.py`
 
 `func1.py`
+
 `func2.py`
 
 Could have the goblet `.config`
 
-.. code: json 
+.. code:: json 
     {
         "stages": {
             "func1": {
                 "function_name": "func1",
-                "main_file" : "func1"
-
+                "main_file" : "func1",
+                "requirements_file": "func1_requirements.txt"
             },
             "func2": {
                 "function_name": "func2",
-                "main_file" : "func2"
+                "main_file" : "func2",
+                "requirements_file": "func2_requirements.txt"
         }
     }
 
