@@ -5,6 +5,7 @@ import logging
 import subprocess
 import json
 import requests
+import sys
 
 from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
@@ -67,6 +68,7 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @main.command()
@@ -97,6 +99,7 @@ def destroy(project, location, stage, all):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @main.command()
@@ -128,6 +131,7 @@ def sync(project, location, stage, dryrun):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @main.command()
@@ -149,6 +153,8 @@ def openapi(cloudfunction, stage, version):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
+
     if version:
         with open(f"{get_g_dir()}/{app.function_name}_openapi_spec.yml", "r") as f:
             data = f.read()
@@ -207,6 +213,7 @@ def package(stage):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @click.argument(
@@ -267,7 +274,7 @@ def job():
 @click.argument(
     "name",
 )
-@click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="1")
+@click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="0")
 def run_job(name, task_id):
     """
     Run a Cloudrun Job in local environment.
@@ -281,6 +288,7 @@ def run_job(name, task_id):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 if __name__ == "__main__":

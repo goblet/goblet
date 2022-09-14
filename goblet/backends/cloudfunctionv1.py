@@ -15,6 +15,7 @@ from goblet.config import GConfig
 class CloudFunctionV1(Backend):
     resource_type = "cloudfunction"
     supported_versions = ["v1"]
+    required_files = ["requirements.txt", "main.py"]
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions

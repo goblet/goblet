@@ -1,0 +1,18 @@
+{
+    "function_name":"FUNCTION_NAME",
+    "job_container": {
+        "env": [
+            {
+                "name": "ENV",
+                "value": "VALUE"
+            }
+        ]
+    },
+    "job_spec":{
+        "serviceAccountName": "SA@PROJECT.iam.gserviceaccount.com",
+        "timeoutSeconds":"600s"
+    },
+    "scheduler":{
+        "serviceAccount": "SA_SCHEDULER@PROJECT.iam.gserviceaccount.com"
+    }
+}

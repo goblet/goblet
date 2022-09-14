@@ -18,6 +18,7 @@ class Backend:
 
     resource_type = ""
     version = ""
+    required_files = ["main.py"]
 
     def __init__(self, app, client, func_path, config={}):
         self.app = app
@@ -110,8 +111,11 @@ class Backend:
                 raise
 
     def zip(self):
-        """Zips requirements.txt, python files and any additional files based on config.custom_files"""
-        self._zip_file("requirements.txt")
+        """Zips python files and any additional files based on config.custom_files"""
+        if self.config.requirements_file:
+            self._zip_file(self.config.requirements_file, "requirements.txt")
+        else:
+            self._zip_file("requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
         with warnings.catch_warnings():
@@ -119,6 +123,9 @@ class Backend:
             self._zip_directory()
 
     def _zip_file(self, filename, arcname=None):
+        """skip files if not required and do not exist"""
+        if not os.path.exists(filename) and filename not in self.required_files:
+            return
         self.zipf.write(filename, arcname)
 
     def _zip_directory(self):
