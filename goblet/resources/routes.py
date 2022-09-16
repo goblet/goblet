@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from marshmallow.schema import Schema
+from pydantic import BaseModel
 import base64
 import logging
 import re
@@ -21,7 +22,6 @@ import ruamel.yaml
 
 # ignore aliases when dumping
 ruamel.yaml.representer.RoundTripRepresenter.ignore_aliases = lambda x, y: True
-
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -356,10 +356,10 @@ class OpenApiSpec:
 
         self.spec["definitions"] = {}
 
-    def add_component(self, component):
+    def add_component(self, component, **kwargs):
         if component.__name__ in self.component_spec.components.schemas:
             return
-        self.component_spec.components.schema(component.__name__, schema=component)
+        self.component_spec.components.schema(component.__name__, **kwargs)
         self.spec["definitions"] = self.component_spec.to_dict()["definitions"]
 
     def add_apigateway_routes(self, apigateway):
@@ -373,7 +373,10 @@ class OpenApiSpec:
         if type_info in PRIMITIVE_MAPPINGS.keys():
             param_type = {"type": PRIMITIVE_MAPPINGS[type_info]}
         elif issubclass(type_info, Schema) and not only_primititves:
-            self.add_component(type_info)
+            self.add_component(type_info, schema=type_info)
+            param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
+        elif issubclass(type_info, BaseModel) and not only_primititves:
+            self.add_component(type_info, model=type_info)
             param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
         else:
             raise ValueError(
@@ -463,6 +466,9 @@ class OpenApiSpec:
             param_type = self.get_param_type(type_info)
             return {"schema": {"type": "array", "items": {**param_type}}}
         if issubclass(return_type, Schema):
+            param_type = self.get_param_type(return_type)
+            return {"schema": {**param_type}}
+        if issubclass(return_type, BaseModel):
             param_type = self.get_param_type(return_type)
             return {"schema": {**param_type}}
 

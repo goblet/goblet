@@ -272,16 +272,9 @@ class TestOpenApiSpec:
         def schema_typed() -> PydanticModel:
             return PydanticModel()
 
-        route = RouteEntry(
-            schema_typed,
-            "route",
-            "/home",
-            "GET",
-            responses={"400": {"description": "400"}},
-        )
+        route = RouteEntry(schema_typed, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        import pdb; pdb.set_trace()
         response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
