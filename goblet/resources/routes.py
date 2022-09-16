@@ -405,14 +405,13 @@ class OpenApiSpec:
             params.append(param_entry)
 
         if entry.request_body:
-            if isinstance(entry.request_body, dict):
-                params.append(
-                    {
-                        "in": "body",
-                        "name": "requestBody",
-                        "schema": entry.request_body["schema"],
-                    }
-                )
+            params.append(
+                {
+                    "in": "body",
+                    "name": "requestBody",
+                    **self._extract_content(entry.request_body),
+                }
+            )
 
         if entry.form_data:
             params.append({"in": "formData", "name": "file", "type": "file"})
@@ -427,7 +426,7 @@ class OpenApiSpec:
         return_type = type_hints.get("return")
         content = {}
         if return_type:
-            content = self._extract_return_content(return_type)
+            content = self._extract_content(return_type)
 
         if entry.responses:
             method_spec["responses"] = entry.responses
@@ -454,7 +453,7 @@ class OpenApiSpec:
                 entry.method.lower(): dict(method_spec)
             }
 
-    def _extract_return_content(self, return_type):
+    def _extract_content(self, return_type):
         """
         Return openapi spec response content for the given return type
         """

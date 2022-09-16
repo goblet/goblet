@@ -279,4 +279,38 @@ class TestOpenApiSpec:
             "schema"
         ]
         assert response_content == {"$ref": "#/definitions/PydanticModel"}
-        print(response_content)
+
+    def test_request_body(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(
+            schema_typed, "route", "/home", "GET", request_body=PydanticModel
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        assert request_content == {
+            "in": "body",
+            "name": "requestBody",
+            "schema": {"$ref": "#/definitions/PydanticModel"},
+        }
+
+    def test_request_body_list(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(
+            schema_typed, "route", "/home", "GET", request_body=List[PydanticModel]
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        assert request_content == {
+            "in": "body",
+            "name": "requestBody",
+            "schema": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/PydanticModel"},
+            },
+        }
