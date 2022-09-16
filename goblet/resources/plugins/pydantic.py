@@ -23,48 +23,11 @@ class PydanticPlugin(BasePlugin):
         if model is None:
             return None
 
-        schema = model.schema(ref_template="#/components/schemas/{model}")
+        schema = model.schema(ref_template="#/definitions/{model}")
 
-        # if "definitions" in schema:
-        #     for (k, v) in schema["definitions"].items():
-        #         self.spec.components.schema(k, v)
-        #     del schema["definitions"]
+        if "definitions" in schema:
+            for (k, v) in schema["definitions"].items():
+                self.spec.components.schema(k, v)
+            del schema["definitions"]
 
         return schema
-
-    def response_helper(self, response: dict, **kwargs: Any):
-        self.resolve_schema(response)
-        if "headers" in response:
-            for header in response["headers"].values():
-                self.resolve_schema(header)
-        return response
-
-    def resolve_schema(self, data):
-        if not isinstance(data, dict):
-            return
-
-        if "schema" in data:
-            data["schema"] = self.resolve_schema_dict(data["schema"])
-
-    def resolve_schema_dict(self, schema):
-        if isinstance(schema, dict):
-            if schema.get("type") == "array" and "items" in schema:
-                schema["items"] = self.resolve_schema_dict(schema["items"])
-            if schema.get("type") == "object" and "properties" in schema:
-                schema["properties"] = {
-                    k: self.resolve_schema_dict(v)
-                    for k, v in schema["properties"].items()
-                }
-            for keyword in ("oneOf", "anyOf", "allOf"):
-                if keyword in schema:
-                    schema[keyword] = [
-                        self.resolve_schema_dict(s) for s in schema[keyword]
-                    ]
-            if "not" in schema:
-                schema["not"] = self.resolve_schema_dict(schema["not"])
-            return schema
-
-        return self.get_model_schema(schema)
-
-    def get_model_schema(self, model):
-        return model.schema(ref_template="#/components/schemas/{model}")
