@@ -281,8 +281,9 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
+        import pdb; pdb.set_trace()
         response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
-        assert response_content == {"$ref": "#/definitions/DummySchema"}
+        assert response_content == {"$ref": "#/definitions/PydanticModel"}
         print(response_content)
