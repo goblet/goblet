@@ -225,6 +225,11 @@ To test a scheduled job locally you will need to include two headers in your req
 
     curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
 
+The goblet app will run on port 8080 by default. You can specify a custom port with the ``-p`` flag. 
+
+.. code:: sh 
+
+    goblet local -p 6000
 
 Debugging with VScode
 ^^^^^^^^^^^^^^^^^^^^^
@@ -763,6 +768,7 @@ For example with the following files which each contain a function and share cod
 Could have the goblet `.config`
 
 .. code:: json 
+    
     {
         "stages": {
             "func1": {

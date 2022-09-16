@@ -172,7 +172,8 @@ def openapi(cloudfunction, stage, version):
 @main.command()
 @click.argument("local_arg", default="local")
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-def local(local_arg, stage):
+@click.option("-p", "--port", "port", envvar="PORT", default=8080)
+def local(local_arg, stage, port):
     """
     Requires the local argument to be set in the Goblet class. The default is local.
 
@@ -191,6 +192,7 @@ def local(local_arg, stage):
                 f"--target={local_arg}",
                 "--debug",
                 f"--source={source}",
+                f"--port={port}",
             ]
         )
     except subprocess.CalledProcessError:
