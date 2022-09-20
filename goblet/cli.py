@@ -59,20 +59,22 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
-        
+
         # import config from string
         imported_config = {}
         if config:
             imported_config = json.loads(config)
-        
+
         # get goblet config
         goblet_config = GConfig(imported_config)
 
         # set deploy env vars
         if goblet_config.deploy:
-            for key,value in goblet_config.deploy.get("environmentVariables",[]).items():
+            for key, value in goblet_config.deploy.get(
+                "environmentVariables", []
+            ).items():
                 os.environ[key] = value
-                
+
         app = get_goblet_app(goblet_config.main_file or "main.py")
         app.deploy(skip_function, only_function, config=goblet_config, force=False)
 
@@ -104,7 +106,18 @@ def destroy(project, location, stage, all):
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
-        app = get_goblet_app(GConfig().main_file or "main.py")
+
+        # get goblet config
+        goblet_config = GConfig()
+
+        # set deploy env vars
+        if goblet_config.deploy:
+            for key, value in goblet_config.deploy.get(
+                "environmentVariables", []
+            ).items():
+                os.environ[key] = value
+
+        app = get_goblet_app(goblet_config.main_file or "main.py")
         app.destroy(all)
 
     except FileNotFoundError as not_found:
