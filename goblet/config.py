@@ -56,6 +56,6 @@ class GConfig:
     def validate(self):
         if self.stage and self.stage not in self.config.get("stages"):
             raise ValueError(f"stage {self.stage} not found in config")
-        for stage in self.config.get("stages", {}):
-            if "function_name" not in self.config["stages"][stage]:
-                raise ValueError(f"function_name key missing for stage {stage}")
+        # for stage in self.config.get("stages", {}):
+        #     if "function_name" not in self.config["stages"][stage]:
+        #         raise ValueError(f"function_name key missing for stage {stage}")
