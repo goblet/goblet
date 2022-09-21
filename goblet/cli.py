@@ -76,7 +76,9 @@ def deploy(project, location, stage, skip_function, only_function, config, force
                 os.environ[key] = value
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
-        app.deploy(skip_function, only_function, config=goblet_config, force=False)
+        app.deploy(
+            skip_function, only_function, config=goblet_config.config, force=False
+        )
 
     except FileNotFoundError as not_found:
         click.echo(
