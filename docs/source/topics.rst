@@ -141,6 +141,31 @@ Example config.json:
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
 
+You can also set environent variables for your goblet deployment by using the `deploy` key with the `environmentVariables` object. This is
+useful if you want to set stage specific variables during your depoyment. 
+
+.. code:: json
+
+    {
+        "stages":{
+            "dev": {
+                "deploy": {
+                    "environmentVariables": {
+                        "PUBSUB_TOPIC": "DEV_TOPIC"
+                    }
+                }
+            }
+        }
+    }
+
+then your goblet code could be like 
+
+.. code:: python 
+
+    @app.topic(os.environ["PUBSUB_TOPIC"])
+    def handle_topic(data):
+        return 
+
 You can customize the configs for an Api Gateway using the `apiConfig` key in `config.json`. Allowed fields can be found 
 `here <https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig>`_ and include 
 
