@@ -77,7 +77,7 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
         app.deploy(
-            skip_function, only_function, config=goblet_config.config, force=False
+            skip_function, only_function, config=goblet_config.config, force=force
         )
 
     except FileNotFoundError as not_found:
