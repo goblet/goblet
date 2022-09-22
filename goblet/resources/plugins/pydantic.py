@@ -2,6 +2,7 @@ from typing import Any, Optional
 
 from apispec import BasePlugin, APISpec
 from pydantic import BaseModel
+import copy
 
 
 class PydanticPlugin(BasePlugin):
@@ -23,8 +24,8 @@ class PydanticPlugin(BasePlugin):
         if model is None:
             return None
 
-        schema = model.schema(ref_template="#/definitions/{model}")
-
+        org_schema = model.schema(ref_template="#/definitions/{model}")
+        schema = copy.deepcopy(org_schema)
         if "definitions" in schema:
             for (k, v) in schema["definitions"].items():
                 self.spec.components.schema(k, v)
