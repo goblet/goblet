@@ -1,3 +1,4 @@
+from urllib import request
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
 import logging
 
@@ -102,6 +103,23 @@ def traffic() -> TrafficStop:
 #         - green
 #         - yellow
 #         - red
+
+# Pydantic Typing
+from pydantic import BaseModel
+
+class NestedModel(BaseModel):
+    text: str
+
+
+class PydanticModel(BaseModel):
+    id: int
+    nested: NestedModel
+
+# Request Body Typing
+@app.route("/pydantic", request_body=PydanticModel)
+def traffic() -> PydanticModel:
+    return jsonify(PydanticModel().dict)
+
 
 # Custom Backend
 @app.route("/custom_backend", backend="https://www.CLOUDRUN_URL.com/home")

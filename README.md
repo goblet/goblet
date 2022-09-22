@@ -65,6 +65,11 @@ $ curl https://api.uc.gateway.dev/home
 * eventarc
 * cloudrun jobs
 
+## Data Typing Frameworks Supported
+
+* pydantic
+* marshmallow
+
 ## Installation
 
 To install goblet, open an interactive shell and run:
