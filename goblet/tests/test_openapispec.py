@@ -273,11 +273,18 @@ class TestOpenApiSpec:
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        pydantic_definitions = spec.spec["definitions"]
         assert request_content == {
             "in": "body",
             "name": "requestBody",
             "schema": {"$ref": "#/definitions/PydanticModel"},
         }
+        assert "PydanticModel" in pydantic_definitions.keys()
+        assert "NestedModel" in pydantic_definitions.keys()
+        assert (
+            "id" in pydantic_definitions["PydanticModel"]["properties"]
+            and "nested" in pydantic_definitions["PydanticModel"]["properties"]
+        )
 
     def test_request_body_list(self):
         def schema_typed() -> PydanticModel:
