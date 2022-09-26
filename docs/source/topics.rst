@@ -576,12 +576,13 @@ Note that gcp `gateway`_ only supports openapi spec 2.0. You can additionally ge
 By default the param types will be created in the spec as strings and a base 200 response. 
 You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.
 
-If you use a custom schema type you should create a schema class that inherits from marshmallow Schema. 
+If you use a custom schema type you should create a schema class that inherits from marshmallow Schema or pydantic BaseClass. 
 
 .. code:: python 
 
     from typing import List
     from marshmallow import Schema, fields
+    from pydantic import BaseModel
 
     # Typed Path Param
     @app.route('/home/{name}/{id}', methods=["GET"])
@@ -598,13 +599,18 @@ If you use a custom schema type you should create a schema class that inherits f
         point = Point().load({"lat":0, "lng":0})
         return [point]
 
-    # custom responses and request_types
-    # Request body must be schema defition valid with openapi spec 2
-    @app.route('/custom', request_body={'schema': {"type": "array", "items": {'type': 'string'}}}, responses={'400': {'description': '400'}})
-    def custom():
-        request = app.current_request
-        assert request.data ["string1", "string2"]
-        return
+    # Pydantic Models
+    class NestedModel(BaseModel):
+        text: str
+
+    class PydanticModel(BaseModel):
+        id: int
+        nested: NestedModel
+
+    # Request Body Typing
+    @app.route("/pydantic", request_body=PydanticModel)
+    def traffic() -> PydanticModel:
+        return jsonify(PydanticModel().dict)
 
     # Defining Query Params
     @app.route("/custom",query_params=[{'name': 'test', 'type': 'string', 'required': True},{'name': 'test2', 'type': 'string', 'required': True}]

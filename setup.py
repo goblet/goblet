@@ -27,6 +27,7 @@ REQUIRED = [
     "google-api-python-client",
     "functions-framework",
     "marshmallow",
+    "pydantic",
     "ruamel.yaml",
 ]
 
