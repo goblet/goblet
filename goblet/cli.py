@@ -59,10 +59,26 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
+
+        # import config from string
+        imported_config = {}
         if config:
-            config = json.loads(config)
-        app = get_goblet_app(GConfig().main_file or "main.py")
-        app.deploy(skip_function, only_function, config=config, force=False)
+            imported_config = json.loads(config)
+
+        # get goblet config
+        goblet_config = GConfig(imported_config)
+
+        # set deploy env vars
+        if goblet_config.deploy:
+            for key, value in goblet_config.deploy.get(
+                "environmentVariables", []
+            ).items():
+                os.environ[key] = value
+
+        app = get_goblet_app(goblet_config.main_file or "main.py")
+        app.deploy(
+            skip_function, only_function, config=goblet_config.config, force=force
+        )
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -92,7 +108,18 @@ def destroy(project, location, stage, all):
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
-        app = get_goblet_app(GConfig().main_file or "main.py")
+
+        # get goblet config
+        goblet_config = GConfig()
+
+        # set deploy env vars
+        if goblet_config.deploy:
+            for key, value in goblet_config.deploy.get(
+                "environmentVariables", []
+            ).items():
+                os.environ[key] = value
+
+        app = get_goblet_app(goblet_config.main_file or "main.py")
         app.destroy(all)
 
     except FileNotFoundError as not_found:
@@ -172,7 +199,8 @@ def openapi(cloudfunction, stage, version):
 @main.command()
 @click.argument("local_arg", default="local")
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-def local(local_arg, stage):
+@click.option("-p", "--port", "port", envvar="PORT", default=8080)
+def local(local_arg, stage, port):
     """
     Requires the local argument to be set in the Goblet class. The default is local.
 
@@ -191,6 +219,7 @@ def local(local_arg, stage):
                 f"--target={local_arg}",
                 "--debug",
                 f"--source={source}",
+                f"--port={port}",
             ]
         )
     except subprocess.CalledProcessError:

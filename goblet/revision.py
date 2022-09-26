@@ -103,7 +103,8 @@ class RevisionSpec:
         self.req_body = {
             "template": {
                 **self.cloudrun_revision,
-            }
+            },
+            **self.cloudrun_configs,
         }
         self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
         self.req_body["template"]["containers"][0]["image"] = self.latestArtifact

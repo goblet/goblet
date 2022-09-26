@@ -1,6 +1,7 @@
 from typing import List
 from marshmallow import Schema, fields
 from goblet.resources.routes import OpenApiSpec, RouteEntry
+from pydantic import BaseModel
 
 
 def dummy():
@@ -10,6 +11,15 @@ def dummy():
 class DummySchema(Schema):
     id = fields.Int()
     flt = fields.Float()
+
+
+class NestedModel(BaseModel):
+    text: str
+
+
+class PydanticModel(BaseModel):
+    id: int
+    nested: NestedModel
 
 
 class TestOpenApiSpec:
@@ -164,23 +174,6 @@ class TestOpenApiSpec:
         response = spec.spec["paths"]["/home"]["get"]["responses"]
         assert response["400"] == {"description": "400"}
 
-    def test_request_body(self):
-        route = RouteEntry(
-            dummy,
-            "route",
-            "/home",
-            "GET",
-            request_body={"schema": {"type": "array", "items": {"type": "string"}}},
-        )
-        spec = OpenApiSpec("test", "xyz.cloudfunction")
-        spec.add_route(route)
-        params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
-        assert params == {
-            "in": "body",
-            "name": "requestBody",
-            "schema": {"type": "array", "items": {"type": "string"}},
-        }
-
     def test_form_data(self):
         route = RouteEntry(dummy, "route", "/home", "GET", form_data=True)
         spec = OpenApiSpec("test", "xyz.cloudfunction")
@@ -255,3 +248,59 @@ class TestOpenApiSpec:
             spec.spec["definitions"]["DummySchema"]["properties"]["id"]["type"]
             == "custom"
         )
+
+    # <------------------------------- Pydantic plugin tests ------------------------------->
+
+    def test_pydantic_reponse(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(schema_typed, "route", "/home", "GET")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+            "schema"
+        ]
+        assert response_content == {"$ref": "#/definitions/PydanticModel"}
+
+    def test_request_body(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(
+            schema_typed, "route", "/home", "GET", request_body=PydanticModel
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        pydantic_definitions = spec.spec["definitions"]
+        assert request_content == {
+            "in": "body",
+            "name": "requestBody",
+            "schema": {"$ref": "#/definitions/PydanticModel"},
+        }
+        assert "PydanticModel" in pydantic_definitions.keys()
+        assert "NestedModel" in pydantic_definitions.keys()
+        assert (
+            "id" in pydantic_definitions["PydanticModel"]["properties"]
+            and "nested" in pydantic_definitions["PydanticModel"]["properties"]
+        )
+
+    def test_request_body_list(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(
+            schema_typed, "route", "/home", "GET", request_body=List[PydanticModel]
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        assert request_content == {
+            "in": "body",
+            "name": "requestBody",
+            "schema": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/PydanticModel"},
+            },
+        }
