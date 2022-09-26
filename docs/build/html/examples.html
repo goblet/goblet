@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Examples &mdash; goblet 0.8.3 documentation</title>
+  <title>Examples &mdash; goblet 0.8.4 documentation</title>
   
 
   
@@ -418,7 +418,26 @@
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central-1&quot;</span><span class="p">)</span>
@@ -522,6 +541,23 @@
 <span class="c1">#         - green</span>
 <span class="c1">#         - yellow</span>
 <span class="c1">#         - red</span>
+
+<span class="c1"># Pydantic Typing</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span> <span class="nc">NestedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">PydanticModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">nested</span><span class="p">:</span> <span class="n">NestedModel</span>
+
+<span class="c1"># Request Body Typing</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/pydantic&quot;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="n">PydanticModel</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PydanticModel</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">PydanticModel</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span>
+
 
 <span class="c1"># Custom Backend</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/custom_backend&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>

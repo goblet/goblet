@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.8.3 documentation</title>
+  <title>Topics &mdash; goblet 0.8.4 documentation</title>
   
 
   
@@ -91,6 +91,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Topics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#private-python-libraries">Private Python Libraries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#iam-bindings">Iam Bindings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#debugging-with-vscode">Debugging with VScode</a></li>
@@ -305,6 +306,27 @@ which takes in a list of python <a class="reference external" href="https://docs
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>You can also set environent variables for your goblet deployment by using the <cite>deploy</cite> key with the <cite>environmentVariables</cite> object. This is
+useful if you want to set stage specific variables during your depoyment.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;stages&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;dev&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;deploy&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&quot;PUBSUB_TOPIC&quot;</span><span class="p">:</span> <span class="s2">&quot;DEV_TOPIC&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>then your goblet code could be like</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PUBSUB_TOPIC&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">handle_topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
 <p>You can customize the configs for an Api Gateway using the <cite>apiConfig</cite> key in <cite>config.json</cite>. Allowed fields can be found
 <a class="reference external" href="https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig">here</a> and include</p>
 <ul class="simple">
@@ -317,6 +339,21 @@ which takes in a list of python <a class="reference external" href="https://docs
         <span class="nt">&quot;gatewayServiceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;projects/-/serviceAccounts/ServiceAccount@PROJECT&quot;</span><span class="p">,</span>
         <span class="nt">&quot;labels&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="nt">&quot;label1&quot;</span> <span class="p">:</span> <span class="s2">&quot;value1&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="private-python-libraries">
+<h2>Private Python Libraries<a class="headerlink" href="#private-python-libraries" title="Permalink to this headline">¶</a></h2>
+<p>You can install private libraries in your cloudfunctions by passing in a <cite>GIT_TOKEN</cite> to your <cite>buildEnvironmentVariables</cite>.
+For example in your <cite>requirementx.txt</cite> you would include <cite>git+https://${GIT_TOKEN}&#64;github.com/mygithubuser/myrepo</cite> and your <cite>config.json</cite>
+would look as follows</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;buildEnvironmentVariables&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;GIT_TOKEN&quot;</span><span class="p">:</span><span class="s2">&quot;YOURGITHUBTOKEN&quot;</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -371,6 +408,10 @@ You can hit your functions endpoint at <code class="docutils literal notranslate
 <p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
 <code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+</pre></div>
+</div>
+<p>The goblet app will run on port 8080 by default. You can specify a custom port with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet <span class="nb">local</span> -p <span class="m">6000</span>
 </pre></div>
 </div>
 </div>
@@ -632,9 +673,10 @@ multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and 
 Note that gcp <a class="reference external" href="https://cloud.google.com/api-gateway/docs/openapi-overview">gateway</a> only supports openapi spec 2.0. You can additionally generate a 3.0.1 version of the spec by running <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">openapi</span> <span class="pre">FUNCTION_NAME</span> <span class="pre">-v</span> <span class="pre">3</span></code>.</p>
 <p>By default the param types will be created in the spec as strings and a base 200 response.
 You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.</p>
-<p>If you use a custom schema type you should create a schema class that inherits from marshmallow Schema.</p>
+<p>If you use a custom schema type you should create a schema class that inherits from marshmallow Schema or pydantic BaseClass.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
 <span class="c1"># Typed Path Param</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home/</span><span class="si">{name}</span><span class="s1">/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
@@ -651,13 +693,18 @@ You can specify custom param and response types using python typing and pass in 
     <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">({</span><span class="s2">&quot;lat&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;lng&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
 
-<span class="c1"># custom responses and request_types</span>
-<span class="c1"># Request body must be schema defition valid with openapi spec 2</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}}},</span> <span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;400&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;400&#39;</span><span class="p">}})</span>
-<span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
-    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
-    <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span> <span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">]</span>
-    <span class="k">return</span>
+<span class="c1"># Pydantic Models</span>
+<span class="k">class</span> <span class="nc">NestedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">class</span> <span class="nc">PydanticModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">nested</span><span class="p">:</span> <span class="n">NestedModel</span>
+
+<span class="c1"># Request Body Typing</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/pydantic&quot;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="n">PydanticModel</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PydanticModel</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">PydanticModel</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span>
 
 <span class="c1"># Defining Query Params</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/custom&quot;</span><span class="p">,</span><span class="n">query_params</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;test2&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}]</span>
@@ -818,6 +865,21 @@ This allows for multiple functions to be deploying using similar code bases.</p>
 <p><cite>func1.py</cite></p>
 <p><cite>func2.py</cite></p>
 <p>Could have the goblet <cite>.config</cite></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;stages&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;func1&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;function_name&quot;</span><span class="p">:</span> <span class="s2">&quot;func1&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;main_file&quot;</span> <span class="p">:</span> <span class="s2">&quot;func1&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;requirements_file&quot;</span><span class="p">:</span> <span class="s2">&quot;func1_requirements.txt&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;func2&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;function_name&quot;</span><span class="p">:</span> <span class="s2">&quot;func2&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;main_file&quot;</span> <span class="p">:</span> <span class="s2">&quot;func2&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;requirements_file&quot;</span><span class="p">:</span> <span class="s2">&quot;func2_requirements.txt&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>To test each function locally you can simply run <cite>goblet local -s func1</cite> and to deploy <cite>goblet local -s func1 -p Project -l Region</cite></p>
 <p>Note: This may cause some imports to break if something is importing directly from the func1.py or func2.py since they will be renamed to <cite>main.py</cite>
 in the packaged zipfile.</p>
