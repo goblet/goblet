@@ -184,6 +184,23 @@ You can customize the configs for an Api Gateway using the `apiConfig` key in `c
         }
     }  
 
+Private Python Libraries
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can install private libraries in your cloudfunctions by passing in a `GIT_TOKEN` to your `buildEnvironmentVariables`.
+For example in your `requirementx.txt` you would include `git+https://${GIT_TOKEN}@github.com/mygithubuser/myrepo` and your `config.json` 
+would look as follows 
+
+.. code:: json
+
+    {
+        "cloudfunction": {
+            "buildEnvironmentVariables": {
+                "GIT_TOKEN":"YOURGITHUBTOKEN"
+            }
+        }
+    } 
+
 Iam Bindings
 ^^^^^^^^^^^^
 
