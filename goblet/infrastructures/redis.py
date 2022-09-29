@@ -1,0 +1,78 @@
+from goblet.client import VersionedClients
+from goblet.config import GConfig
+from goblet.infrastructures.infrastructure import Infrastructure
+from googleapiclient.errors import HttpError
+import logging
+
+log = logging.getLogger("goblet.deployer")
+log.setLevel(logging.INFO)
+
+
+class Redis(Infrastructure):
+    resource_type = "redis"
+
+    def __init__(
+        self, name, backend, versioned_clients: VersionedClients = None, resources=None
+    ):
+        super().__init__(name, backend, versioned_clients, resources)
+
+    def register_instance(self, name, kwargs):
+        self.resources = {"name": name}
+
+    def deploy(self, config={}):
+        if not self.resources:
+            return
+        config = GConfig(config=config)
+        redis_config = config.redis or {}
+        req_body = {
+            "tier": redis_config.get("tier", "BASIC"),
+            "memorySizeGb": redis_config.get("memorySizeGb", 1),
+            **redis_config,
+        }
+        resp = self.client.redis.execute(
+            "create",
+            params={"instanceId": self.resources["name"], "body": req_body},
+        )
+        self.client.redis.wait_for_operation(resp["name"])
+
+    def destroy(self):
+        try:
+            if not self.resources:
+                return
+            resp = self.client.redis.execute(
+                "delete",
+                parent_key="name",
+                parent_schema="projects/{project_id}/locations/{location_id}/instances/"
+                + self.resources["name"],
+            )
+            self.client.redis.wait_for_operation(resp["name"])
+            log.info(f"destroying redis {self.resources['name']}")
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info("redis already destroyed")
+            else:
+                raise e
+
+    def get(self):
+        if not self.resources:
+            return
+        resp = self.client.redis.execute(
+            "get",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/{location_id}/instances/"
+            + self.resources["name"],
+        )
+        return resp
+
+    def get_config(self):
+        if not self.resources:
+            return
+        redis = self.get()
+        return {
+            "resource_type": self.resource_type,
+            "values": {
+                "REDIS_INSTANCE_NAME": redis["name"],
+                "REDIS_HOST": redis["host"],
+                "REDIS_PORT": f"{redis['port']}",
+            },
+        }

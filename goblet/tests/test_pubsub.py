@@ -267,7 +267,8 @@ class TestPubSub:
 
         app.deploy(
             force=True,
-            skip_function=True,
+            skip_backend=True,
+            skip_infra=True,
             config={"pubsub": {"serviceAccountEmail": service_account}},
         )
 
@@ -404,7 +405,8 @@ class TestPubSub:
 
         app.deploy(
             force=True,
-            skip_function=True,
+            skip_backend=True,
+            skip_infra=True,
             config={"pubsub": {"serviceAccountEmail": service_account}},
         )
 

@@ -1,0 +1,19 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1663188615604-5e8a946a0a9d4-5ec32017-3a39fef8",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.redis.v1.OperationMetadata",
+      "createTime": "2022-09-14T20:50:15.631313606Z",
+      "endTime": "2022-09-14T20:52:17.420698686Z",
+      "target": "projects/goblet/locations/us-central1/instances/redis-test",
+      "verb": "delete",
+      "cancelRequested": false,
+      "apiVersion": "v1"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.protobuf.Empty"
+    }
+  }
+}

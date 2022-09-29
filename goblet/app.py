@@ -58,20 +58,42 @@ class Goblet(Register_Handlers):
 
             setattr(sys.modules[module_name], local, local_func)
 
-    def deploy(self, skip_function=False, only_function=False, config={}, force=False):
+    def deploy(
+        self,
+        skip_resources=False,
+        skip_backend=False,
+        skip_infra=False,
+        config={},
+        force=False,
+        write_config=False,
+        stage=None,
+    ):
         source = None
-        if not skip_function:
+        backend = self.backend_class(self)
+        if not skip_infra:
+            log.info(f"deploying infrastructure")
+            self.deploy_infrastructure(config=config)
+
+        infra_config = self.get_infrastructure_config()
+        backend.update_config(infra_config, write_config, stage)
+
+        if not skip_backend:
             log.info(f"preparing to deploy with backend {self.backend_class.__name__}")
-            source = self.backend_class(self).deploy(force=force, config=config)
-        if not only_function:
+            source = backend.deploy(force=force, config=config)
+        if not skip_resources:
             self.deploy_handlers(source, config=config)
 
-    def destroy(self, all=False):
+    def destroy(self, all=False, skip_infra=False):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
         for k, v in self.handlers.items():
             log.info(f"destroying {k}")
             v.destroy()
         self.backend_class(self).destroy(all=all)
+
+        if not skip_infra:
+            for k, v in self.infrastructure.items():
+                log.info(f"destroying {k}")
+                v.destroy()
 
     def package(self):
         self.backend_class(self).zip()

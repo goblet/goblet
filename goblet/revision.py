@@ -15,7 +15,8 @@ log.setLevel(logging.INFO)
 class RevisionSpec:
     def __init__(self, config={}, versioned_clients=None, name="goblet"):
         self.versioned_clients = versioned_clients
-        config = GConfig(config=config)
+        if not isinstance(config, GConfig):
+            config = GConfig(config=config)
         self.cloudrun_configs = config.cloudrun or {}
         self.cloudrun_revision = config.cloudrun_revision or {}
         self.cloudrun_container = config.cloudrun_container or {}

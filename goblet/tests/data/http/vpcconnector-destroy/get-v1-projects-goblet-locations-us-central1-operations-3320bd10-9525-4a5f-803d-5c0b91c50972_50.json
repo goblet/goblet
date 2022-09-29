@@ -1,0 +1,14 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/3320bd10-9525-4a5f-803d-5c0b91c50972",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.vpcaccess.v1.OperationMetadata",
+      "method": "google.cloud.vpcaccess.v1.VpcAccessService.DeleteConnector",
+      "createTime": "2022-09-09T19:21:45.005384Z",
+      "endTime": "2022-09-09T19:25:26.080858Z",
+      "target": "projects/goblet/locations/us-central1/connectors/vpc-test"
+    },
+    "done": true
+  }
+}

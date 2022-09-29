@@ -17,10 +17,24 @@ class GConfig:
             self.config = nested_update(self.config, config)
         self.stage = stage or os.environ.get("STAGE")
         self.validate()
-        if self.stage:
+
+    def update_g_config(self, stage=None, values={}, write_config=False):
+        self.stage = stage or os.environ.get("STAGE")
+        if write_config:
+            if stage:
+                self.config["stages"][self.stage] = nested_update(
+                    self.config.get("stages", {}).get(self.stage, {}), values
+                )
+            else:
+                self.config = nested_update(self.config, values)
+            self.write()
+
+        ## moved from init for writing config
+        if stage:
             self.config = nested_update(
                 self.config, self.config.get("stages", {}).get(self.stage, {})
             )
+        self.config = nested_update(self.config, values)
 
     @staticmethod
     def get_g_config():

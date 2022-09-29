@@ -5,6 +5,8 @@ from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
 from goblet.client import VersionedClients, get_default_location, get_default_project
+from goblet.infrastructures.redis import Redis
+from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
@@ -38,6 +40,8 @@ SUPPORTED_BACKENDS = {
     "cloudfunctionv2": CloudFunctionV2,
     "cloudrun": CloudRun,
 }
+
+SUPPORTED_INFRASTRUCTURES = {"redis": Redis, "vpcconnector": VPCConnector}
 
 
 class DecoratorAPI:
@@ -168,6 +172,20 @@ class DecoratorAPI:
             registration_kwargs={"name": name, "task_id": task_id, "kwargs": kwargs},
         )
 
+    def redis(self, name, **kwargs):
+        """Redis Infrastructure"""
+        return self._register_infrastructure(
+            handler_type="redis",
+            kwargs={"name": name, "kwargs": kwargs},
+        )
+
+    def vpcconnector(self, name, ipCidrRange=None, **kwargs):
+        """VPC Connector Infrastructure"""
+        return self._register_infrastructure(
+            handler_type="vpcconnector",
+            kwargs={"name": name, "ipCidrRange": ipCidrRange, "kwargs": kwargs},
+        )
+
     def _create_registration_function(self, handler_type, registration_kwargs=None):
         def _register_handler(user_handler):
             handler_name = user_handler.__name__
@@ -179,6 +197,9 @@ class DecoratorAPI:
 
     def _register_handler(self, handler_type, name, func, kwargs, options=None):
         raise NotImplementedError("_register_handler")
+
+    def _register_infrastructure(self, handler_type, kwargs):
+        raise NotImplementedError("_register_infrastructure")
 
     def register_middleware(self, func, event_type="all", before_or_after="before"):
         raise NotImplementedError("register_middleware")
@@ -226,6 +247,16 @@ class Register_Handlers(DecoratorAPI):
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
         }
+
+        self.infrastructure = {
+            "redis": Redis(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "vpcconnector": VPCConnector(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+        }
+
         self.middleware_handlers = {
             "before": {},
             "after": {},
@@ -316,11 +347,29 @@ class Register_Handlers(DecoratorAPI):
             kwargs=kwargs,
         )
 
+    def _register_infrastructure(self, handler_type, kwargs, options=None):
+        getattr(self, "_register_%s" % handler_type)(kwargs=kwargs)
+
+    def deploy_infrastructure(self, config={}):
+        """Call deploy for each infrastructure"""
+        for k, v in self.infrastructure.items():
+            log.info(f"deploying {k}")
+            v.deploy(config=config)
+
+    def get_infrastructure_config(self):
+        configs = []
+        for k, v in self.infrastructure.items():
+            if config := v.get_config():
+                configs.append(config)
+        return configs
+
     def deploy_handlers(self, source, config={}):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
             v.deploy(source, entrypoint="goblet_entrypoint", config=config)
+
+    ## TODO write sync for infrastructure
 
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
@@ -402,4 +451,14 @@ class Register_Handlers(DecoratorAPI):
     def _register_job(self, name, func, kwargs):
         self.handlers["jobs"].register_job(
             name=kwargs["name"], func=func, kwargs=kwargs
+        )
+
+    def _register_redis(self, kwargs):
+        self.infrastructure["redis"].register_instance(
+            kwargs["name"], kwargs=kwargs.get("kwargs", {})
+        )
+
+    def _register_vpcconnector(self, kwargs):
+        self.infrastructure["vpcconnector"].register_connector(
+            kwargs["name"], kwargs["ipCidrRange"], kwargs=kwargs.get("kwargs", {})
         )

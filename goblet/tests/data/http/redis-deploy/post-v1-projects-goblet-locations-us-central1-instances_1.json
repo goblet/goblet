@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1663187935015-5e8a91e0fb2c0-d28d3260-f20da6e0",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.redis.v1.OperationMetadata",
+      "createTime": "2022-09-14T20:38:55.980430138Z",
+      "target": "projects/goblet/locations/us-central1/instances/redis-test",
+      "verb": "create",
+      "cancelRequested": false,
+      "apiVersion": "v1"
+    },
+    "done": false
+  }
+}
