@@ -13,11 +13,6 @@ class VPCConnector(Infrastructure):
 
     resource_type = "vpcconnector"
 
-    def __init__(
-        self, name, backend, versioned_clients: VersionedClients = None, resources=None
-    ):
-        super().__init__(name, backend, versioned_clients, resources)
-
     def register_connector(self, name, ipCidrRange, kwargs):
         self.resources = {"name": name, "ipCidrRange": ipCidrRange}
 

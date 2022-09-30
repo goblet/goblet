@@ -40,6 +40,40 @@ class TestRedis:
         )
         assert "redis-test" in responses[0]["body"]["response"]["name"]
 
+    # def test_update_redis(self, monkeypatch):
+    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    #     monkeypatch.setenv("GOBLET_TEST_NAME", "redis-update")
+    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+    #     app = Goblet(function_name="goblet-example")
+    #     app.redis(name="redis-test")
+
+    #     app.deploy(
+    #         force=True,
+    #         skip_backend=True,
+    #         skip_resources=True,
+    #         config={
+    #             "redis": {
+    #                 "connectMode": "PRIVATE_SERVICE_ACCESS",
+    #                 "authorizedNetwork": "projects/goblet/global/networks/default",
+    #             }
+    #         },
+    #     )
+
+    #     app.deploy(
+    #         force=True,
+    #         skip_backend=True,
+    #         skip_resources=True,
+    #         config={"redis": {"memorySizeGb": 2}},
+    #     )
+
+    #     updated_redis = get_response(
+    #         "redis-update",
+    #         "get-v1-projects-goblet-locations-us-central1-instances-redis-test_1.json",
+    #     )
+    #     assert "redis-test" in updated_redis["body"]["memorySizeGb"] == 2
+
     def test_destroy_redis(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
@@ -55,25 +89,13 @@ class TestRedis:
         )
         assert "redis-test" in delete_redis["body"]["metadata"]["target"]
 
-    def test_deploy_redis_cloudrun(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    # def test_deploy_redis_cloudrun(self, monkeypatch):
+    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    #     monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-cloudrun")
+    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
-        app = Goblet(function_name="goblet-example", backend="cloudrun")
-        app.redis(name="redis-test-cloudrun")
+    #     app = Goblet(function_name="goblet-example", backend="cloudrun")
+    #     app.redis(name="redis-test-cloudrun")
 
-        app.deploy(
-            skip_resources=True,
-            config={
-                "cloudrun_revision": {
-                    "serviceAccount": "test-746@goblet.iam.gserviceaccount.com"
-                },
-                "cloudrun_container": {
-                    "env": [
-                        {"name": "EXTRA", "value": "VARIABLE"},
-                    ]
-                },
-            },
-        )
+    #     app.deploy(skip_resources=True)

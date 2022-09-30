@@ -10,11 +10,7 @@ log.setLevel(logging.INFO)
 
 class Redis(Infrastructure):
     resource_type = "redis"
-
-    def __init__(
-        self, name, backend, versioned_clients: VersionedClients = None, resources=None
-    ):
-        super().__init__(name, backend, versioned_clients, resources)
+    update_keys = ["displayName", "labels", "memorySizeGb", "replicaCount"]
 
     def register_instance(self, name, kwargs):
         self.resources = {"name": name}
@@ -29,11 +25,27 @@ class Redis(Infrastructure):
             "memorySizeGb": redis_config.get("memorySizeGb", 1),
             **redis_config,
         }
-        resp = self.client.redis.execute(
-            "create",
-            params={"instanceId": self.resources["name"], "body": req_body},
-        )
-        self.client.redis.wait_for_operation(resp["name"])
+        try:
+            resp = self.client.redis.execute(
+                "create",
+                params={"instanceId": self.resources["name"], "body": req_body},
+            )
+            self.client.redis.wait_for_operation(resp["name"])
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"updating redis {self.resources['name']}")
+                if req_body.get("tier") == "BASIC":
+                    self.update_keys.remove("replicaCount")
+                resp = self.client.redis.execute(
+                    "patch",
+                    parent_key="name",
+                    parent_schema="projects/{project_id}/locations/{location_id}/instances/"
+                    + self.resources["name"],
+                    params={"updateMask": ",".join(self.update_keys), "body": req_body},
+                )
+                self.client.redis.wait_for_operation(resp["name"])
+            else:
+                raise e
 
     def destroy(self):
         try:

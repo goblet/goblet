@@ -49,37 +49,37 @@ class TestVPCConnector:
         assert "vpc-test" in responses[1]["body"]["metadata"]["target"]
         assert responses[1]["body"]["done"] == True
 
-    def test_deploy_vpcconnector_cloudrun(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    # def test_deploy_vpcconnector_cloudrun(self, monkeypatch):
+    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    #     monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-cloudrun")
+    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        # requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+    #     # requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet-example-vpc", backend="cloudrun")
-        setattr(app, "entrypoint", "app")
+    #     app = Goblet(function_name="goblet-example-vpc", backend="cloudrun")
+    #     setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+    #     app.handlers["http"] = HTTP(dummy_function)
 
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
-        app.deploy(skip_resources=True, force=True, config={})
+    #     app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+    #     app.deploy(skip_resources=True, force=True, config={})
 
-    def test_deploy_vpcconnector_cloudfunction(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-cloudfunction")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    # def test_deploy_vpcconnector_cloudfunction(self, monkeypatch):
+    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    #     monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-cloudfunction")
+    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example-vpc", backend="cloudfunction")
-        setattr(app, "entrypoint", "app")
+    #     app = Goblet(function_name="goblet-example-vpc", backend="cloudfunction")
+    #     setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+    #     app.handlers["http"] = HTTP(dummy_function)
 
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
-        app.deploy(
-            skip_infra=True,
-            skip_resources=True,
-            force=True,
-            config={"cloudfunction": {"availableMemoryMb": 45}},
-        )
+    #     app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+    #     app.deploy(
+    #         skip_infra=True,
+    #         skip_resources=True,
+    #         force=True,
+    #         config={"cloudfunction": {"availableMemoryMb": 45}},
+    #     )
