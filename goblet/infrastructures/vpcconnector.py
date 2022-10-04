@@ -13,8 +13,8 @@ class VPCConnector(Infrastructure):
 
     resource_type = "vpcconnector"
 
-    def register_connector(self, name, ipCidrRange, kwargs):
-        self.resources = {"name": name, "ipCidrRange": ipCidrRange}
+    def register_connector(self, name, kwargs):
+        self.resources = {"name": name}
 
     def deploy(self, config={}):
         if not self.resources:
@@ -25,8 +25,7 @@ class VPCConnector(Infrastructure):
         # either min/max throughput or instances needs to be set
         req_body = {
             "network": vpcconnector_config.get("network", "default"),
-            "ipCidrRange": self.resources["ipCidrRange"]
-            or vpcconnector_config.get("ipCidrRange"),
+            "ipCidrRange": vpcconnector_config.get("ipCidrRange"),
             "minInstances": vpcconnector_config.get("minInstances", 2),  # DEFAULT
             "maxInstances": vpcconnector_config.get(
                 "maxInstances", vpcconnector_config.get("minInstances", 2) + 1

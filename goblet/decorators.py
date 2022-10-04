@@ -179,11 +179,11 @@ class DecoratorAPI:
             kwargs={"name": name, "kwargs": kwargs},
         )
 
-    def vpcconnector(self, name, ipCidrRange=None, **kwargs):
+    def vpcconnector(self, name, **kwargs):
         """VPC Connector Infrastructure"""
         return self._register_infrastructure(
             handler_type="vpcconnector",
-            kwargs={"name": name, "ipCidrRange": ipCidrRange, "kwargs": kwargs},
+            kwargs={"name": name, "kwargs": kwargs},
         )
 
     def _create_registration_function(self, handler_type, registration_kwargs=None):
@@ -460,5 +460,5 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_vpcconnector(self, kwargs):
         self.infrastructure["vpcconnector"].register_connector(
-            kwargs["name"], kwargs["ipCidrRange"], kwargs=kwargs.get("kwargs", {})
+            kwargs["name"], kwargs=kwargs.get("kwargs", {})
         )
