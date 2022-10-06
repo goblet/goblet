@@ -100,7 +100,7 @@ class RevisionSpec:
         region = get_default_location()
         project = get_default_project_number()
         self.latestArtifact = getCloudbuildArtifact(
-            self.versioned_clients.cloudbuild, self.name
+            self.versioned_clients.cloudbuild, self.name, config=self.config
         )
         self.req_body = {
             "template": {

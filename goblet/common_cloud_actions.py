@@ -171,7 +171,7 @@ class MissingArtifact(Exception):
 
 
 # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
-def getCloudbuildArtifact(client, artifactName):
+def getCloudbuildArtifact(client, artifactName, config):
     defaultProject = get_default_project()
     resp = client.execute(
         "list", parent_key="projectId", parent_schema=defaultProject, params={}
@@ -179,12 +179,15 @@ def getCloudbuildArtifact(client, artifactName):
 
     # search for latest build with artifactName
     latestArtifact = None
+    build_configs = config.cloudbuild or {}
+    registry = (
+        build_configs.get("artifact_registry")
+        or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{artifactName}"
+    )
+
     for build in resp["builds"]:
         # pending builds will not have results field.
-        if (
-            build.get("results")
-            and artifactName == build["results"]["images"][0]["name"].split("/")[-1]
-        ):
+        if build.get("results") and registry == build["results"]["images"][0]["name"]:
             latestArtifact = latestArtifact = (
                 build["results"]["images"][0]["name"]
                 + "@"
