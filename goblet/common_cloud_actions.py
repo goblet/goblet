@@ -171,25 +171,28 @@ class MissingArtifact(Exception):
 
 
 # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
-def getCloudbuildArtifact(client):
+def getCloudbuildArtifact(client, artifactName):
     defaultProject = get_default_project()
     resp = client.execute(
         "list", parent_key="projectId", parent_schema=defaultProject, params={}
     )
-    latestBuildId = resp["builds"][0]["id"]
-    resp = client.execute(
-        "get",
-        parent_key="projectId",
-        parent_schema=defaultProject,
-        params={"id": latestBuildId},
-    )
-    try:
-        latestArtifact = (
-            resp["results"]["images"][0]["name"]
-            + "@"
-            + resp["results"]["images"][0]["digest"]
-        )
-    except KeyError:
+
+    # search for latest build with artifactName
+    latestArtifact = None
+    for build in resp["builds"]:
+        # pending builds will not have results field.
+        if (
+            build.get("results")
+            and artifactName == build["results"]["images"][0]["name"].split("/")[-1]
+        ):
+            latestArtifact = latestArtifact = (
+                build["results"]["images"][0]["name"]
+                + "@"
+                + build["results"]["images"][0]["digest"]
+            )
+            break
+
+    if not latestArtifact:
         raise MissingArtifact("Missing artifact. Cloud Build may have failed.")
     return latestArtifact
 
