@@ -158,11 +158,16 @@ class CloudRun(Backend):
                     },
                 }
             else:
+                envs = [
+                    {"name": name, "value": value}
+                    for name, value in infra_config["values"].items()
+                ]
+                env = config_updates.get("cloudrun_container", {}).get("env", [])
+                env.extend(envs)
+
                 config_updates["cloudrun_container"] = {
-                    "env": [
-                        {"name": name, "value": value}
-                        for name, value in infra_config["values"].items()
-                    ]
+                    **config_updates.get("cloudrun_container", {}),
+                    "env": env,
                 }
         self.config.update_g_config(
             values=config_updates,
