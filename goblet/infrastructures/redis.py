@@ -1,4 +1,3 @@
-from goblet.client import VersionedClients
 from goblet.config import GConfig
 from goblet.infrastructures.infrastructure import Infrastructure
 from googleapiclient.errors import HttpError
@@ -61,7 +60,7 @@ class Redis(Infrastructure):
             log.info(f"destroying redis {self.resources['name']}")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info("redis already destroyed")
+                log.info(f"redis {self.resources['name']} already destroyed")
             else:
                 raise e
 

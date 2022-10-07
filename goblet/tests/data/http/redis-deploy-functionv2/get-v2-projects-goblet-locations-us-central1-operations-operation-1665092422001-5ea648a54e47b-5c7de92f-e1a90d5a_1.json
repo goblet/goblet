@@ -1,0 +1,103 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1665092422001-5ea648a54e47b-5c7de92f-e1a90d5a",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.OperationMetadata",
+      "createTime": "2022-10-06T21:40:22.514754306Z",
+      "endTime": "2022-10-06T21:41:25.583446708Z",
+      "target": "projects/goblet/locations/us-central1/functions/goblet-example",
+      "verb": "create",
+      "cancelRequested": false,
+      "apiVersion": "v2",
+      "requestResource": {
+        "@type": "type.googleapis.com/google.cloud.functions.v2.Function",
+        "name": "projects/goblet/locations/us-central1/functions/goblet-example",
+        "description": "created by goblet",
+        "buildConfig": {
+          "runtime": "python310",
+          "entryPoint": "goblet_entrypoint",
+          "source": {
+            "storageSource": {
+              "bucket": "gcf-v2-sources-871545765989-us-central1",
+              "object": "goblet-example/function-source.zip"
+            }
+          }
+        },
+        "serviceConfig": {
+          "service": "projects/goblet/locations/us-central1/services/goblet-example",
+          "timeoutSeconds": 60,
+          "environmentVariables": {
+            "REDIS_INSTANCE_NAME": "projects/goblet/locations/us-central1/instances/redis-test",
+            "REDIS_HOST": "10.43.16.3",
+            "REDIS_PORT": "6379"
+          },
+          "maxInstanceCount": 100,
+          "ingressSettings": "ALLOW_ALL",
+          "serviceAccountEmail": "871545765989-compute@developer.gserviceaccount.com",
+          "availableMemory": "256M"
+        },
+        "environment": "GEN_2"
+      },
+      "stages": [
+        {
+          "name": "BUILD",
+          "message": "Creating build",
+          "state": "COMPLETE",
+          "resource": "projects/goblet/locations/us-central1/builds/04e0cdd7-e58e-42fa-be8d-45bed7499c0b",
+          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/04e0cdd7-e58e-42fa-be8d-45bed7499c0b?project=871545765989"
+        },
+        {
+          "name": "SERVICE",
+          "message": "Creating Cloud Run service",
+          "state": "COMPLETE",
+          "resource": "projects/goblet/locations/us-central1/services/goblet-example",
+          "resourceUri": "https://console.cloud.google.com/run/detail/us-central1/goblet-example?project=goblet"
+        }
+      ]
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.Function",
+      "name": "projects/goblet/locations/us-central1/functions/goblet-example",
+      "description": "created by goblet",
+      "buildConfig": {
+        "build": "projects/goblet/locations/us-central1/builds/04e0cdd7-e58e-42fa-be8d-45bed7499c0b",
+        "runtime": "python310",
+        "entryPoint": "goblet_entrypoint",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-sources-871545765989-us-central1",
+            "object": "goblet-example/function-source.zip"
+          }
+        },
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-sources-871545765989-us-central1",
+            "object": "goblet-example/function-source.zip",
+            "generation": "1665092422237605"
+          }
+        }
+      },
+      "serviceConfig": {
+        "service": "projects/goblet/locations/us-central1/services/goblet-example",
+        "timeoutSeconds": 60,
+        "environmentVariables": {
+          "REDIS_INSTANCE_NAME": "projects/goblet/locations/us-central1/instances/redis-test",
+          "REDIS_HOST": "10.43.16.3",
+          "REDIS_PORT": "6379"
+        },
+        "maxInstanceCount": 100,
+        "ingressSettings": "ALLOW_ALL",
+        "uri": "https://goblet-example-ftjyujtcpa-uc.a.run.app",
+        "serviceAccountEmail": "871545765989-compute@developer.gserviceaccount.com",
+        "availableMemory": "256M",
+        "allTrafficOnLatestRevision": true,
+        "revision": "goblet-example-00001-sif"
+      },
+      "state": "ACTIVE",
+      "updateTime": "2022-10-06T21:40:22.510652656Z",
+      "environment": "GEN_2"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/instances/redis-test",
+    "locationId": "us-central1-b",
+    "redisVersion": "REDIS_6_X",
+    "reservedIpRange": "10.43.16.0/29",
+    "host": "10.43.16.3",
+    "port": 6379,
+    "currentLocationId": "us-central1-b",
+    "createTime": "2022-10-06T20:59:08.657098621Z",
+    "state": "READY",
+    "tier": "BASIC",
+    "memorySizeGb": 1,
+    "authorizedNetwork": "projects/goblet/global/networks/default",
+    "persistenceIamIdentity": "serviceAccount:service-871545765989@cloud-redis.iam.gserviceaccount.com",
+    "connectMode": "PRIVATE_SERVICE_ACCESS",
+    "transitEncryptionMode": "DISABLED",
+    "nodes": [
+      {
+        "id": "node-0",
+        "zone": "us-central1-b"
+      }
+    ],
+    "readReplicasMode": "READ_REPLICAS_DISABLED",
+    "persistenceConfig": {
+      "persistenceMode": "DISABLED"
+    }
+  }
+}

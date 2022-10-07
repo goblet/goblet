@@ -1,5 +1,4 @@
 from googleapiclient.errors import HttpError
-from goblet.client import VersionedClients
 from goblet.config import GConfig
 from goblet.infrastructures.infrastructure import Infrastructure
 
@@ -39,10 +38,11 @@ class VPCConnector(Infrastructure):
                 params={"connectorId": self.resources["name"], "body": req_body},
             )
             self.client.vpcconnector.wait_for_operation(resp["name"])
-            return self.get_config()
         except HttpError as e:
             if e.resp.status == 409:
-                log.info("vpc connector already exists, updating not supported")
+                log.info(
+                    f"vpc connector {self.resources['name']} already exists, updating not supported"
+                )
                 pass
             else:
                 raise e
@@ -72,7 +72,7 @@ class VPCConnector(Infrastructure):
             log.info("destroying vpc connector")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info("vpc connector already deleted")
+                log.info(f"vpc connector {self.resources['name']} already deleted")
             else:
                 raise e
 

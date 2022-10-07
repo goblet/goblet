@@ -22,7 +22,7 @@ class Infrastructure:
         raise NotImplementedError("deploy")
 
     def destroy(self, config={}):
-        raise NotImplementedError("destoy")
+        raise NotImplementedError("destroy")
 
     def get_config(self, config={}):
         raise NotImplementedError("get_config")

@@ -82,17 +82,17 @@ class CloudFunctionV2(Backend):
             resource_type = infra_config["resource_type"]
             if resource_type == "vpcconnector":
                 config_updates[self.config_key]["serviceConfig"] = {
-                    **config_updates.get("serviceConfig", {}),
+                    **config_updates[self.config_key].get("serviceConfig", {}),
                     "vpcConnector": infra_config["values"]["name"],
                     "vpcConnectorEgressSettings": infra_config["values"]["egress"],
                 }
             elif resource_type in ("redis"):
-                config_updates[self.config_key]["buildConfig"] = {
-                    **config_updates.get("buildConfig", {}),
+                config_updates[self.config_key]["serviceConfig"] = {
+                    **config_updates[self.config_key].get("serviceConfig", {}),
                     "environmentVariables": {
-                        **config_updates.get("buildConfig", {}).get(
-                            "environmentVariables", {}
-                        ),
+                        **config_updates[self.config_key]
+                        .get("serviceConfig", {})
+                        .get("environmentVariables", {}),
                         **infra_config.get("values"),
                     },
                 }

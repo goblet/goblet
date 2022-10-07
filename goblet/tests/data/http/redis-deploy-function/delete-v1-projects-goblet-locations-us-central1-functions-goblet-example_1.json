@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1nb3Zlcm5hbmNlLXJkL3VzLWNlbnRyYWwxL2dvYmxldC1leGFtcGxlLzJuLWRoN3ZSZTRZ",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/goblet/locations/us-central1/functions/goblet-example",
+      "type": "DELETE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.protobuf.Empty"
+      },
+      "updateTime": "2022-10-06T21:17:17Z"
+    }
+  }
+}

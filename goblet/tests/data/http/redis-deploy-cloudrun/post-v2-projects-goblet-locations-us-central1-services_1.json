@@ -1,0 +1,72 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/a6538a4e-5074-43bb-9e27-86da04379645",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.run.v2.Service",
+      "name": "projects/goblet/locations/us-central1/services/goblet-example",
+      "uid": "3ea8645c-9f03-407c-b422-cc5df4e183cf",
+      "generation": "1",
+      "createTime": "2022-10-06T21:11:27.046093Z",
+      "updateTime": "2022-10-06T21:11:27.046093Z",
+      "creator": "test@goblet.iam.gserviceaccount.com",
+      "lastModifier": "test@goblet.iam.gserviceaccount.com",
+      "launchStage": "GA",
+      "template": {
+        "scaling": {
+          "maxInstanceCount": 100
+        },
+        "timeout": "300s",
+        "serviceAccount": "871545765989-compute@developer.gserviceaccount.com",
+        "containers": [
+          {
+            "image": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-example@sha256:8386635af02c5ed5de5a51886c654a0564edf22270dfb732ab2a4d9627e3f03e",
+            "command": [
+              "functions-framework",
+              "--target=goblet_entrypoint"
+            ],
+            "env": [
+              {
+                "name": "REDIS_INSTANCE_NAME",
+                "value": "projects/goblet/locations/us-central1/instances/redis-test"
+              },
+              {
+                "name": "REDIS_HOST",
+                "value": "10.43.16.3"
+              },
+              {
+                "name": "REDIS_PORT",
+                "value": "6379"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "memory": "512Mi",
+                "cpu": "1000m"
+              },
+              "cpuIdle": true
+            },
+            "ports": [
+              {
+                "name": "http1",
+                "containerPort": 8080
+              }
+            ]
+          }
+        ],
+        "maxInstanceRequestConcurrency": 80
+      },
+      "traffic": [
+        {
+          "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
+          "percent": 100
+        }
+      ],
+      "terminalCondition": {
+        "state": "CONDITION_PENDING"
+      },
+      "reconciling": true,
+      "etag": "\"CP-I_ZkGEMil_RU/cHJvamVjdHMvcHJlbWlzZS1nb3Zlcm5hbmNlLXJkL2xvY2F0aW9ucy91cy1jZW50cmFsMS9zZXJ2aWNlcy9nb2JsZXQtZXhhbXBsZQ\""
+    }
+  }
+}

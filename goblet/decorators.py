@@ -369,8 +369,6 @@ class Register_Handlers(DecoratorAPI):
             log.info(f"deploying {k}")
             v.deploy(source, entrypoint="goblet_entrypoint", config=config)
 
-    ## TODO write sync for infrastructure
-
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
         for _, v in self.handlers.items():
