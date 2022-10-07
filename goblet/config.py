@@ -29,7 +29,7 @@ class GConfig:
                 self.config = nested_update(self.config, values)
             self.write()
 
-        ## moved from init for writing config
+        # moved from init for writing config
         if self.stage:
             self.config = nested_update(
                 self.config, self.config.get("stages", {}).get(self.stage, {})

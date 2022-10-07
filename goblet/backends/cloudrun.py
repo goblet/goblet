@@ -11,7 +11,6 @@ from goblet.common_cloud_actions import (
     destroy_cloudrun,
     destroy_cloudfunction_artifacts,
 )
-from goblet.config import GConfig
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile

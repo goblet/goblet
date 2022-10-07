@@ -71,7 +71,7 @@ class Goblet(Register_Handlers):
         source = None
         backend = self.backend_class(self)
         if not skip_infra:
-            log.info(f"deploying infrastructure")
+            log.info("deploying infrastructure")
             self.deploy_infrastructure(config=config)
 
         infra_config = self.get_infrastructure_config()

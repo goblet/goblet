@@ -1,7 +1,8 @@
 from goblet import Goblet
 from goblet.test_utils import get_response, get_responses, dummy_function
-from goblet.infrastructures.vpcconnector import VPCConnector
-from goblet.resources.http import HTTP
+
+# from goblet.infrastructures.vpcconnector import VPCConnector
+# from goblet.resources.http import HTTP
 
 
 class TestVPCConnector:
@@ -49,7 +50,7 @@ class TestVPCConnector:
         assert len(responses) == 2
         assert "vpc-test" in responses[0]["body"]["metadata"]["target"]
         assert "vpc-test" in responses[1]["body"]["metadata"]["target"]
-        assert responses[1]["body"]["done"] == True
+        assert responses[1]["body"]["done"]
 
     def test_deploy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

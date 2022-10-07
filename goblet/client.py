@@ -119,7 +119,7 @@ class Client:
                 http=self.http,
                 client_options=client_options,
             )
-        except UnknownApiNameOrVersion as e:
+        except UnknownApiNameOrVersion:
             # build client from document if not in static discovery
             self.client = build(
                 resource,
