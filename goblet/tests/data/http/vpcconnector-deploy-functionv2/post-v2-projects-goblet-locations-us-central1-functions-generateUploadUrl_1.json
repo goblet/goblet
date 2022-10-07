@@ -1,9 +1,9 @@
 {
   "headers": {},
   "body": {
-    "uploadUrl": "https://storage.googleapis.com/gcf-v2-uploads-871545765989-us-central1/c6e7537b-2a7f-416a-8314-9bd341a4106e.zip?GoogleAccessId=service-871545765989@gcf-admin-robot.iam.gserviceaccount.com&Expires=1664909176&Signature=Qe4YsFoPZev8QTM3RzNX6LmfDk2nH3gfB%2BTUe2ptKb3Cm3a1RM1%2F8ZT2a33Cpa2BcQ1tw2Aq8nlZv7LHhZeh24eQAZwtoTnlu9g5U2a9RK1s4SIwRowQ%2B0w5ePPP%2FwwH2%2Fj9SpOA%2Ft%2Fp28W%2B8zdDSOwF0YHd1q7sy7P3uEZqbgFf3ig8FqD8EUCHHrG%2FQBYoUIdetXxAuIKdWzYOf%2BdHsG5JUHFLiatSzIog%2FY33SCV%2Byw31LU%2F1m6URIsruvpMrAJ%2FwynpH4yw7Ie6klttr4gFM%2FzXrvc%2F3QmBqNkhUAraPfuEkpAHfH9K7wHGKTjkigJywauYAimrPhuxoXIjUSw%3D%3D",
+    "uploadUrl": "https://storage.googleapis.com/mock",
     "storageSource": {
-      "bucket": "gcf-v2-uploads-871545765989-us-central1",
+      "bucket": "gcf-v2-uploads-11111111-us-central1",
       "object": "c6e7537b-2a7f-416a-8314-9bd341a4106e.zip"
     }
   }

@@ -19,7 +19,7 @@
           "entryPoint": "goblet_entrypoint",
           "source": {
             "storageSource": {
-              "bucket": "gcf-v2-sources-871545765989-us-central1",
+              "bucket": "gcf-v2-sources-11111111-us-central1",
               "object": "goblet-example-vpc/function-source.zip"
             }
           }
@@ -31,7 +31,7 @@
           "vpcConnector": "projects/goblet/locations/us-central1/connectors/vpc-test",
           "vpcConnectorEgressSettings": "PRIVATE_RANGES_ONLY",
           "ingressSettings": "ALLOW_ALL",
-          "serviceAccountEmail": "871545765989-compute@developer.gserviceaccount.com",
+          "serviceAccountEmail": "11111111-compute@developer.gserviceaccount.com",
           "availableMemory": "256M"
         },
         "environment": "GEN_2"
@@ -42,7 +42,7 @@
           "message": "Creating build",
           "state": "COMPLETE",
           "resource": "projects/goblet/locations/us-central1/builds/beef2715-509a-4231-9a23-9c33797c0ff4",
-          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/beef2715-509a-4231-9a23-9c33797c0ff4?project=871545765989"
+          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/beef2715-509a-4231-9a23-9c33797c0ff4?project=11111111"
         },
         {
           "name": "SERVICE",
@@ -64,13 +64,13 @@
         "entryPoint": "goblet_entrypoint",
         "source": {
           "storageSource": {
-            "bucket": "gcf-v2-sources-871545765989-us-central1",
+            "bucket": "gcf-v2-sources-11111111-us-central1",
             "object": "goblet-example-vpc/function-source.zip"
           }
         },
         "sourceProvenance": {
           "resolvedStorageSource": {
-            "bucket": "gcf-v2-sources-871545765989-us-central1",
+            "bucket": "gcf-v2-sources-11111111-us-central1",
             "object": "goblet-example-vpc/function-source.zip",
             "generation": "1664907376835178"
           }
@@ -84,7 +84,7 @@
         "vpcConnectorEgressSettings": "PRIVATE_RANGES_ONLY",
         "ingressSettings": "ALLOW_ALL",
         "uri": "https://goblet-example-vpc-ftjyujtcpa-uc.a.run.app",
-        "serviceAccountEmail": "871545765989-compute@developer.gserviceaccount.com",
+        "serviceAccountEmail": "11111111-compute@developer.gserviceaccount.com",
         "availableMemory": "256M",
         "allTrafficOnLatestRevision": true,
         "revision": "goblet-example-vpc-00001-pig"

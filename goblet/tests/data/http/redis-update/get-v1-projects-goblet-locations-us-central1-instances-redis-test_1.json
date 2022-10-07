@@ -13,7 +13,7 @@
     "tier": "BASIC",
     "memorySizeGb": 2,
     "authorizedNetwork": "projects/goblet/global/networks/default",
-    "persistenceIamIdentity": "serviceAccount:service-871545765989@cloud-redis.iam.gserviceaccount.com",
+    "persistenceIamIdentity": "serviceAccount:service-11111111@cloud-redis.iam.gserviceaccount.com",
     "connectMode": "PRIVATE_SERVICE_ACCESS",
     "transitEncryptionMode": "DISABLED",
     "nodes": [

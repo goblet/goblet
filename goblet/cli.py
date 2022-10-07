@@ -271,7 +271,7 @@ def package(stage):
 def init(name):
     """Create new goblet app with files main.py, requirements.txt, and directory .goblet"""
     create_goblet_dir(name)
-    click.echo("created .goblet/json.config")
+    click.echo("created .goblet/config.json")
     click.echo("created requirements.txt")
     click.echo("created main.py")
     click.echo("created README.md")

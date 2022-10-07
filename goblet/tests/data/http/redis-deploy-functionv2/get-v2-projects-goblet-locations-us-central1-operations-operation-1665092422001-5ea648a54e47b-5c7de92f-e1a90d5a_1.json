@@ -19,7 +19,7 @@
           "entryPoint": "goblet_entrypoint",
           "source": {
             "storageSource": {
-              "bucket": "gcf-v2-sources-871545765989-us-central1",
+              "bucket": "gcf-v2-sources-11111111-us-central1",
               "object": "goblet-example/function-source.zip"
             }
           }
@@ -34,7 +34,7 @@
           },
           "maxInstanceCount": 100,
           "ingressSettings": "ALLOW_ALL",
-          "serviceAccountEmail": "871545765989-compute@developer.gserviceaccount.com",
+          "serviceAccountEmail": "11111111-compute@developer.gserviceaccount.com",
           "availableMemory": "256M"
         },
         "environment": "GEN_2"
@@ -45,7 +45,7 @@
           "message": "Creating build",
           "state": "COMPLETE",
           "resource": "projects/goblet/locations/us-central1/builds/04e0cdd7-e58e-42fa-be8d-45bed7499c0b",
-          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/04e0cdd7-e58e-42fa-be8d-45bed7499c0b?project=871545765989"
+          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/04e0cdd7-e58e-42fa-be8d-45bed7499c0b?project=11111111"
         },
         {
           "name": "SERVICE",
@@ -67,13 +67,13 @@
         "entryPoint": "goblet_entrypoint",
         "source": {
           "storageSource": {
-            "bucket": "gcf-v2-sources-871545765989-us-central1",
+            "bucket": "gcf-v2-sources-11111111-us-central1",
             "object": "goblet-example/function-source.zip"
           }
         },
         "sourceProvenance": {
           "resolvedStorageSource": {
-            "bucket": "gcf-v2-sources-871545765989-us-central1",
+            "bucket": "gcf-v2-sources-11111111-us-central1",
             "object": "goblet-example/function-source.zip",
             "generation": "1665092422237605"
           }
@@ -90,7 +90,7 @@
         "maxInstanceCount": 100,
         "ingressSettings": "ALLOW_ALL",
         "uri": "https://goblet-example-ftjyujtcpa-uc.a.run.app",
-        "serviceAccountEmail": "871545765989-compute@developer.gserviceaccount.com",
+        "serviceAccountEmail": "11111111-compute@developer.gserviceaccount.com",
         "availableMemory": "256M",
         "allTrafficOnLatestRevision": true,
         "revision": "goblet-example-00001-sif"
