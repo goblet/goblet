@@ -359,7 +359,8 @@ class Register_Handlers(DecoratorAPI):
     def get_infrastructure_config(self):
         configs = []
         for k, v in self.infrastructure.items():
-            if config := v.get_config():
+            config = v.get_config()
+            if config:
                 configs.append(config)
         return configs
 
