@@ -45,6 +45,15 @@ class TestGConfig:
         assert config.cloudfunction["environmentVariables"]["key"] == "value"
         assert config.cloudfunction["environmentVariables"]["key2"] == "value2"
 
+    def test_update_config_list(self):
+        config = GConfig({"cloudrun_container": {"env": [{"key1": "value1"}]}})
+        config.update_g_config(
+            values={"cloudrun_container": {"env": [{"key2": "value2"}]}}
+        )
+        assert len(config.cloudrun_container["env"]) == 2
+        assert config.cloudrun_container["env"][0]["key1"] == "value1"
+        assert config.cloudrun_container["env"][1]["key2"] == "value2"
+
     def test_update_config_stage(self):
         config = GConfig(test_config)
         config.update_g_config(stage="dev")

@@ -17,6 +17,7 @@ class RevisionSpec:
         self.versioned_clients = versioned_clients
         if not isinstance(config, GConfig):
             config = GConfig(config=config)
+        self.config = config
         self.cloudrun_configs = config.cloudrun or {}
         self.cloudrun_revision = config.cloudrun_revision or {}
         self.cloudrun_container = config.cloudrun_container or {}
