@@ -4,14 +4,16 @@ from goblet.test_utils import get_response, get_responses, dummy_function
 # from goblet.infrastructures.vpcconnector import VPCConnector
 # from goblet.resources.http import HTTP
 
+# TODO revisit VPC Connector deploy once Discovery Document is updated
+
 
 class TestVPCConnector:
     def test_add_vpcconnector(self):
         app = Goblet(function_name="goblet_example")
 
-        app.vpcconnector(name="vpc-test")
+        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
         vpc = app.infrastructure["vpcconnector"]
-        assert vpc.resources["name"] == "vpc-test"
+        assert vpc.resource["name"] == "vpc-test"
 
     def test_deploy_vpcconnector(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -20,13 +22,12 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet-example")
-        app.vpcconnector(name="vpc-test")
+        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
 
         # app.deploy(
         #     force=True,
         #     skip_backend=True,
         #     skip_resources=True,
-        #     config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
         # )
 
         vpc_conn = get_response(
@@ -43,7 +44,7 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        # vpc = VPCConnector("goblet-vpc", resources={"name": "vpc-test"})
+        # vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test", "ipCidrRange": "10.32.1.0/28"})
         # vpc.destroy()
 
         responses = get_responses("vpcconnector-destroy")
@@ -63,12 +64,11 @@ class TestVPCConnector:
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.vpcconnector(name="vpc-test")
+        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
         # app.deploy(
         #     skip_infra=True,
         #     skip_resources=True,
         #     force=True,
-        #     config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
         # )
 
         # app.destroy(skip_infra=True)
@@ -94,12 +94,11 @@ class TestVPCConnector:
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.vpcconnector(name="vpc-test")
+        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
         # app.deploy(
         #     skip_resources=True,
         #     skip_infra=True,
         #     force=True,
-        #     config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
         # )
 
         # app.destroy(skip_infra=True)
@@ -123,12 +122,11 @@ class TestVPCConnector:
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.vpcconnector(name="vpc-test")
+        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
         # app.deploy(
         #     skip_resources=True,
         #     skip_infra=True,
         #     force=True,
-        #     config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
         # )
 
         # app.destroy(skip_infra=True)

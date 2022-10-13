@@ -12,11 +12,11 @@ class VPCConnector(Infrastructure):
 
     resource_type = "vpcconnector"
 
-    def register_connector(self, name, kwargs):
-        self.resources = {"name": name}
+    def register_connector(self, name, ipCidrRange, kwargs):
+        self.resource = {"name": name, "ipCidrRange": ipCidrRange}
 
     def deploy(self, config={}):
-        if not self.resources:
+        if not self.resource:
             return
         config = GConfig(config=config)
         vpcconnector_config = config.vpcconnector or {}
@@ -24,7 +24,7 @@ class VPCConnector(Infrastructure):
         # either min/max throughput or instances needs to be set
         req_body = {
             "network": vpcconnector_config.get("network", "default"),
-            "ipCidrRange": vpcconnector_config.get("ipCidrRange"),
+            "ipCidrRange": self.resource["ipCidrRange"],
             "minInstances": vpcconnector_config.get("minInstances", 2),  # DEFAULT
             "maxInstances": vpcconnector_config.get(
                 "maxInstances", vpcconnector_config.get("minInstances", 2) + 1
@@ -35,49 +35,49 @@ class VPCConnector(Infrastructure):
         try:
             resp = self.client.vpcconnector.execute(
                 "create",
-                params={"connectorId": self.resources["name"], "body": req_body},
+                params={"connectorId": self.resource["name"], "body": req_body},
             )
             self.client.vpcconnector.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(
-                    f"vpc connector {self.resources['name']} already exists, updating not supported"
+                    f"vpc connector {self.resource['name']} already exists, updating not supported"
                 )
                 pass
             else:
                 raise e
 
     def get(self):
-        if not self.resources:
+        if not self.resource:
             return
         resp = self.client.vpcconnector.execute(
             "get",
             parent_key="name",
             parent_schema="projects/{project_id}/locations/{location_id}/connectors/"
-            + self.resources["name"],
+            + self.resource["name"],
         )
         return resp
 
     def destroy(self):
-        if not self.resources:
+        if not self.resource:
             return
         try:
             resp = self.client.vpcconnector.execute(
                 "delete",
                 parent_key="name",
                 parent_schema="projects/{project_id}/locations/{location_id}/connectors/"
-                + self.resources["name"],
+                + self.resource["name"],
             )
             self.client.vpcconnector.wait_for_operation(resp["name"])
             log.info("destroying vpc connector")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info(f"vpc connector {self.resources['name']} already deleted")
+                log.info(f"vpc connector {self.resource['name']} already deleted")
             else:
                 raise e
 
     def get_config(self):
-        if not self.resources:
+        if not self.resource:
             return
         vpc_connector = self.get()
 

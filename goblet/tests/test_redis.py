@@ -9,7 +9,7 @@ class TestRedis:
 
         app.redis(name="redis-test")
         redis = app.infrastructure["redis"]
-        assert redis.resources["name"] == "redis-test"
+        assert redis.resource["name"] == "redis-test"
 
     def test_deploy_redis(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -53,6 +53,8 @@ class TestRedis:
         app = Goblet(function_name="goblet-example")
         app.redis(name="redis-test")
 
+        # TODO fix redis update operation replay
+
         # app.deploy(
         #     force=True,
         #     skip_backend=True,
@@ -72,7 +74,7 @@ class TestRedis:
         monkeypatch.setenv("GOBLET_TEST_NAME", "redis-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        redis = Redis("goblet-redis", resources={"name": "redis-test"})
+        redis = Redis("goblet-redis", resource={"name": "redis-test"})
         redis.destroy()
 
         delete_redis = get_response(
@@ -81,32 +83,44 @@ class TestRedis:
         )
         assert "redis-test" in delete_redis["body"]["metadata"]["target"]
 
-    def test_deploy_cloudrun(self, monkeypatch):
+    def test_deploy_cloudrun(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri(
+            "HEAD",
+            "https://storage.googleapis.com/mock",
+            headers={"x-goog-hash": "crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=="},
+        )
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet-example", backend="cloudrun")
         app.redis(name="redis-test")
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        # app.deploy(
-        #     skip_resources=True,
-        #     skip_infra=True,
-        #     config={
-        #         "redis": {
-        #             "connectMode": "PRIVATE_SERVICE_ACCESS",
-        #             "authorizedNetwork": "projects/goblet/global/networks/default",
-        #         }
-        #     },
-        # )
-        # app.destroy(skip_infra=True)
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            config={
+                "redis": {
+                    "connectMode": "PRIVATE_SERVICE_ACCESS",
+                    "authorizedNetwork": "projects/goblet/global/networks/default",
+                }
+            },
+        )
+        app.destroy(skip_infra=True)
 
-        responses = get_responses("redis-deploy-cloudrun")
-        cloudrun_response = responses[4]["body"]["response"]
-        redis_response = responses[3]["body"]
+        cloudrun_response = get_response(
+            "redis-deploy-cloudrun",
+            "get-v2-projects-goblet-locations-us-central1-operations-a6538a4e-5074-43bb-9e27-86da04379645_1.json",
+        )["body"]["response"]
+        redis_response = get_response(
+            "redis-deploy-cloudrun",
+            "get-v1-projects-goblet-locations-us-central1-instances-redis-test_1.json",
+        )["body"]
 
         env_vars = cloudrun_response["template"]["containers"][0]["env"]
 
@@ -117,31 +131,38 @@ class TestRedis:
         assert env_vars[2]["name"] == "REDIS_PORT"
         assert env_vars[2]["value"] == str(redis_response["port"])
 
-    def test_deploy_cloudfunction(self, monkeypatch):
+    def test_deploy_cloudfunction(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-function")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri(
+            "HEAD",
+            "https://storage.googleapis.com/mock",
+            headers={"x-goog-hash": "crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=="},
+        )
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         app = Goblet(function_name="goblet-example", backend="cloudfunction")
         app.redis(name="redis-test")
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        # app.deploy(
-        #     skip_resources=True,
-        #     skip_infra=True,
-        #     config={
-        #         "redis": {
-        #             "connectMode": "PRIVATE_SERVICE_ACCESS",
-        #             "authorizedNetwork": "projects/goblet/global/networks/default",
-        #         }
-        #     },
-        # )
-        # app.destroy(skip_infra=True)
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            config={
+                "redis": {
+                    "connectMode": "PRIVATE_SERVICE_ACCESS",
+                    "authorizedNetwork": "projects/goblet/global/networks/default",
+                }
+            },
+        )
+        app.destroy(skip_infra=True)
 
         responses = get_responses("redis-deploy-function")
-        function_response = responses[5]["body"]["metadata"]
+        function_response = responses[6]["body"]["metadata"]
         redis_response = responses[3]["body"]
 
         env_vars = function_response["request"]["environmentVariables"]
@@ -149,27 +170,34 @@ class TestRedis:
         assert redis_response["port"] == int(env_vars["REDIS_PORT"])
         assert redis_response["name"] == env_vars["REDIS_INSTANCE_NAME"]
 
-    def test_deploy_cloudfunctionv2(self, monkeypatch):
+    def test_deploy_cloudfunctionv2(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-functionv2")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
+        requests_mock.register_uri(
+            "HEAD",
+            "https://storage.googleapis.com/mock",
+            headers={"x-goog-hash": "crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=="},
+        )
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+
         app = Goblet(function_name="goblet-example", backend="cloudfunctionv2")
         app.redis(name="redis-test")
         app.handlers["http"].register_http(dummy_function, {})
 
-        # app.deploy(
-        #     skip_resources=True,
-        #     skip_infra=True,
-        #     config={
-        #         "redis": {
-        #             "connectMode": "PRIVATE_SERVICE_ACCESS",
-        #             "authorizedNetwork": "projects/goblet/global/networks/default",
-        #         }
-        #     },
-        # )
-        # app.destroy(skip_infra=True)
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            config={
+                "redis": {
+                    "connectMode": "PRIVATE_SERVICE_ACCESS",
+                    "authorizedNetwork": "projects/goblet/global/networks/default",
+                }
+            },
+        )
+        app.destroy(skip_infra=True)
 
         responses = get_responses("redis-deploy-functionv2")
         functionv2_response = responses[3]["body"]["response"]

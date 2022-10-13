@@ -11,12 +11,12 @@ class Infrastructure:
         name,
         backend="cloudfunction",
         versioned_clients: VersionedClients = None,
-        resources=None,
+        resource=None,
     ):
         self.name = name
         self.backend = backend
         self.client = versioned_clients or VersionedClients()
-        self.resources = resources or {}
+        self.resource = resource or {}
 
     def deploy(self, config={}):
         raise NotImplementedError("deploy")
