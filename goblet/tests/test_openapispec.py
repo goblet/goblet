@@ -22,6 +22,11 @@ class PydanticModel(BaseModel):
     nested: NestedModel
 
 
+class PydanticModelDuplicate(BaseModel):
+    id: int
+    nested: NestedModel
+
+
 class TestOpenApiSpec:
     def test_add_route(self):
         route = RouteEntry(dummy, "route", "/home", "GET")
@@ -295,6 +300,36 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
+        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        assert request_content == {
+            "in": "body",
+            "name": "requestBody",
+            "schema": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/PydanticModel"},
+            },
+        }
+
+    def test_duplicate_nested(self):
+        def schema_typed() -> PydanticModel:
+            return PydanticModel()
+
+        route = RouteEntry(
+            schema_typed, "route", "/home", "GET", request_body=List[PydanticModel]
+        )
+
+        route2 = RouteEntry(
+            schema_typed,
+            "route",
+            "/home2",
+            "GET",
+            request_body=List[PydanticModelDuplicate],
+        )
+
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec.add_route(route2)
+
         request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
         assert request_content == {
             "in": "body",

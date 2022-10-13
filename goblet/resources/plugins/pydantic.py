@@ -28,7 +28,8 @@ class PydanticPlugin(BasePlugin):
         schema = copy.deepcopy(org_schema)
         if "definitions" in schema:
             for (k, v) in schema["definitions"].items():
-                self.spec.components.schema(k, v)
+                if k not in self.spec.components.schemas:
+                    self.spec.components.schema(k, v)
             del schema["definitions"]
 
         return schema
