@@ -191,10 +191,11 @@ class TestRedis:
             skip_resources=True,
             skip_infra=True,
             config={
+                "runtime": "python38",
                 "redis": {
                     "connectMode": "PRIVATE_SERVICE_ACCESS",
                     "authorizedNetwork": "projects/goblet/global/networks/default",
-                }
+                },
             },
         )
         app.destroy(skip_infra=True)
