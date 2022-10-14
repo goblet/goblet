@@ -1,4 +1,5 @@
 from goblet.client import VersionedClients
+from goblet.config import GConfig
 
 
 class Infrastructure:
@@ -12,11 +13,13 @@ class Infrastructure:
         backend="cloudfunction",
         versioned_clients: VersionedClients = None,
         resource=None,
+        config={},
     ):
         self.name = name
         self.backend = backend
         self.client = versioned_clients or VersionedClients()
         self.resource = resource or {}
+        self.config = GConfig(config=config)
 
     def deploy(self, config={}):
         raise NotImplementedError("deploy")

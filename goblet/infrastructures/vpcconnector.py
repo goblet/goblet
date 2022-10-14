@@ -12,14 +12,18 @@ class VPCConnector(Infrastructure):
 
     resource_type = "vpcconnector"
 
-    def register_connector(self, name, ipCidrRange, kwargs):
-        self.resource = {"name": name, "ipCidrRange": ipCidrRange}
+    def register_connector(self, name, kwargs):
+        self.resource = {"name": name}
+        vpcconnector_config = self.config.vpcconnector or {}
+
+        if not vpcconnector_config.get("ipCidrRange"):
+            raise ValueError("ipCidrRange not specified in config")
 
     def deploy(self, config={}):
         if not self.resource:
             return
-        config = GConfig(config=config)
-        vpcconnector_config = config.vpcconnector or {}
+        self.config.update_g_config(values=config)
+        vpcconnector_config = self.config.vpcconnector or {}
 
         # either min/max throughput or instances needs to be set
         req_body = {

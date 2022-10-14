@@ -9,14 +9,14 @@ VPC Connector
 .. code:: python
 
     app = Goblet()
-    app.vpcconnector("vpcconnector", ipCidrRange="10.8.0.0/28")
-
-.. note::
-    * In order to ensure proper configuration of the VPC Connector, the `ipCidrRange` key is required to be set within the `vpcconnector` decorator.
+    app.vpcconnector("vpcconnector")
 
 When deploying a backend, the vpc access configuration will be updated to include the specified vpc connector.
 To further configure your VPC Connector within Goblet, specify the **`vpcconnector`** key in your `config.json`. 
 You can reference `Connector Resource <https://cloud.google.com/vpc/docs/reference/vpcaccess/rest/v1/projects.locations.connectors#Connector>`_  for more information on available fields.
+
+.. note::
+    * In order to ensure proper configuration of the VPC Connector, the `ipCidrRange` key is required to be set within `vpcconnector` of your `config.json`.
 
 Redis
 ^^^^^

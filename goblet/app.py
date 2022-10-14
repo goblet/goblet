@@ -26,6 +26,7 @@ class Goblet(Register_Handlers):
         cors=None,
         client_versions=None,
         routes_type="apigateway",
+        config={},
     ):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         self.client_versions.update(client_versions or {})
@@ -42,6 +43,7 @@ class Goblet(Register_Handlers):
             cors=cors,
             client_versions=self.client_versions,
             routes_type=routes_type,
+            config=config,
         )
         self.log = logging.getLogger(__name__)
         self.headers = {}

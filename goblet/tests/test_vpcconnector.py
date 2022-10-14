@@ -1,5 +1,6 @@
 from goblet import Goblet
 from goblet.test_utils import get_response, get_responses, dummy_function
+from pytest import raises
 
 # from goblet.infrastructures.vpcconnector import VPCConnector
 # from goblet.resources.http import HTTP
@@ -9,11 +10,19 @@ from goblet.test_utils import get_response, get_responses, dummy_function
 
 class TestVPCConnector:
     def test_add_vpcconnector(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(
+            function_name="goblet_example",
+            config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
+        )
 
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+        app.vpcconnector(name="vpc-test")
         vpc = app.infrastructure["vpcconnector"]
         assert vpc.resource["name"] == "vpc-test"
+
+    def test_add_invalid_vpcconnector(self):
+        app = Goblet(function_name="goblet_example")
+        with raises(ValueError):
+            app.vpcconnector(name="vpc-test")
 
     def test_deploy_vpcconnector(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -21,8 +30,11 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example")
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+        app = Goblet(
+            function_name="goblet-example",
+            config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
+        )
+        app.vpcconnector(name="vpc-test")
 
         # app.deploy(
         #     force=True,
@@ -44,7 +56,7 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        # vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test", "ipCidrRange": "10.32.1.0/28"})
+        # vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test"))
         # vpc.destroy()
 
         responses = get_responses("vpcconnector-destroy")
@@ -59,12 +71,16 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example-vpc", backend="cloudrun")
+        app = Goblet(
+            function_name="goblet-example-vpc",
+            backend="cloudrun",
+            config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+        app.vpcconnector(name="vpc-test")
         # app.deploy(
         #     skip_infra=True,
         #     skip_resources=True,
@@ -89,12 +105,16 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-function")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example-vpc", backend="cloudfunction")
+        app = Goblet(
+            function_name="goblet-example-vpc",
+            backend="cloudfunction",
+            config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+        app.vpcconnector(name="vpc-test")
         # app.deploy(
         #     skip_resources=True,
         #     skip_infra=True,
@@ -117,12 +137,16 @@ class TestVPCConnector:
         monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-functionv2")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example-vpc", backend="cloudfunctionv2")
+        app = Goblet(
+            function_name="goblet-example-vpc",
+            backend="cloudfunctionv2",
+            config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.vpcconnector(name="vpc-test", ipCidrRange="10.32.1.0/28")
+        app.vpcconnector(name="vpc-test")
         # app.deploy(
         #     skip_resources=True,
         #     skip_infra=True,
