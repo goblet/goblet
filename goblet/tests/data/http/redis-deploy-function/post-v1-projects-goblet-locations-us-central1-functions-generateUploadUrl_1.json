@@ -1,0 +1,6 @@
+{
+  "headers": {},
+  "body": {
+    "uploadUrl": "https://storage.googleapis.com/mock"
+  }
+}

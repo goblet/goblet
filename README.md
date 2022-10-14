@@ -65,6 +65,10 @@ $ curl https://api.uc.gateway.dev/home
 * eventarc
 * cloudrun jobs
 
+#### Infrastructure
+* vpc connector
+* redis
+
 ## Data Typing Frameworks Supported
 
 * pydantic
@@ -204,7 +208,7 @@ INFO:goblet.deployer:deleting storage bucket......
 
 ## Docs
 
-[Goblet Documentation](goblet.github.io/goblet)
+[Goblet Documentation](https://goblet.github.io/goblet/build/html/index.html)
 
 ## Blog Posts
 

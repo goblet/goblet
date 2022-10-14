@@ -6,7 +6,7 @@ import google_auth_httplib2
 from google.api_core.client_options import ClientOptions
 from googleapiclient.discovery import build
 from goblet.test_utils import HttpRecorder, HttpReplay, DATA_DIR
-
+from googleapiclient.errors import UnknownApiNameOrVersion
 import logging
 
 log = logging.getLogger("goblet.client")
@@ -19,6 +19,8 @@ DEFAULT_CLIENT_VERSIONS = {
     "pubsub": "v1",
     "apigateway": "v1",
     "cloudscheduler": "v1",
+    "redis": "v1",
+    "vpcaccess": "v1",
 }
 
 
@@ -108,14 +110,26 @@ class Client:
         if regional:
             endpoint = f"https://{self.location_id}-{self.resource}.googleapis.com"
             client_options = ClientOptions(api_endpoint=endpoint)
-        self.client = build(
-            resource,
-            version,
-            credentials=self.credentials,
-            cache_discovery=False,
-            http=self.http,
-            client_options=client_options,
-        )
+        try:
+            self.client = build(
+                resource,
+                version,
+                credentials=self.credentials,
+                cache_discovery=False,
+                http=self.http,
+                client_options=client_options,
+            )
+        except UnknownApiNameOrVersion:
+            # build client from document if not in static discovery
+            self.client = build(
+                resource,
+                version,
+                credentials=self.credentials,
+                cache_discovery=False,
+                http=self.http,
+                client_options=client_options,
+                discoveryServiceUrl=f"https://{self.resource}.googleapis.com/$discovery/rest?version={self.version}",
+            )
 
         self.parent = None
         if self.parent_schema:
@@ -286,6 +300,24 @@ class VersionedClients:
             "eventarc",
             self.client_versions.get("eventarc", "v1"),
             calls="projects.locations.triggers",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def redis(self):
+        return Client(
+            "redis",
+            self.client_versions.get("redis", "v1"),
+            calls="projects.locations.instances",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def vpcconnector(self):
+        return Client(
+            "vpcaccess",
+            self.client_versions.get("vpcaccess", "v1"),
+            calls="projects.locations.connectors",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
 

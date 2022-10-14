@@ -14,7 +14,7 @@
     "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
     "updateTime": "2022-08-04T16:04:52.724Z",
     "versionId": "1",
-    "sourceUploadUrl": "https://storage.googleapis.com/uploads-915943219735.us-central1.cloudfunctions.appspot.com/20a48a3e-10be-442f-8d01-14120347434f.zip",
+    "sourceUploadUrl": "https://storage.googleapis.com/uploads-11111111.us-central1.cloudfunctions.appspot.com/20a48a3e-10be-442f-8d01-14120347434f.zip",
     "runtime": "python37",
     "ingressSettings": "ALLOW_ALL",
     "buildId": "0d1472ef-efd7-4558-ae6a-7eabf950a91a",

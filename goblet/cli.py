@@ -37,11 +37,23 @@ def version():
 @click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
 @click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-@click.option("--skip-function", "skip_function", is_flag=True)
-@click.option("--only-function", "only_function", is_flag=True)
+@click.option("--skip-resources", "skip_resources", is_flag=True)
+@click.option("--skip-backend", "skip_backend", is_flag=True)
+@click.option("--skip-infra", "skip_infra", is_flag=True)
 @click.option("--config-from-json-string", "config")
 @click.option("-f", "--force", "force", is_flag=True)
-def deploy(project, location, stage, skip_function, only_function, config, force):
+@click.option("--write-config", "write_config", is_flag=True)
+def deploy(
+    project,
+    location,
+    stage,
+    skip_resources,
+    skip_backend,
+    skip_infra,
+    config,
+    force,
+    write_config,
+):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
 
@@ -77,7 +89,13 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
         app.deploy(
-            skip_function, only_function, config=goblet_config.config, force=force
+            skip_resources,
+            skip_backend,
+            skip_infra,
+            config=goblet_config.config,
+            force=force,
+            stage=stage,
+            write_config=write_config,
         )
 
     except FileNotFoundError as not_found:
@@ -92,7 +110,8 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 @click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
 @click.option("-s", "--stage", "stage", envvar="STAGE")
 @click.option("-a", "--all", "all", is_flag=True)
-def destroy(project, location, stage, all):
+@click.option("--skip-infra", "skip_infra", is_flag=True)
+def destroy(project, location, stage, all, skip_infra):
     """
     Deletes all resources in gcp that are defined the current deployment
 
@@ -120,7 +139,7 @@ def destroy(project, location, stage, all):
                 os.environ[key] = value
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
-        app.destroy(all)
+        app.destroy(all, skip_infra)
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -252,7 +271,7 @@ def package(stage):
 def init(name):
     """Create new goblet app with files main.py, requirements.txt, and directory .goblet"""
     create_goblet_dir(name)
-    click.echo("created .goblet/json.config")
+    click.echo("created .goblet/config.json")
     click.echo("created requirements.txt")
     click.echo("created main.py")
     click.echo("created README.md")

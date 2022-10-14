@@ -17,7 +17,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP(dummy_function)
 
-        app.deploy(only_function=True, force=True)
+        app.deploy(skip_resources=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-function-deploy")
         assert len(responses) == 3
@@ -35,7 +35,12 @@ class TestDeployer:
 
         app.handlers["http"].register_http(dummy_function, {})
 
-        app.deploy(only_function=True, force=True, config={"runtime": "python38"})
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            force=True,
+            config={"runtime": "python38"},
+        )
 
         responses = get_responses("deployer-function-deploy-v2")
         assert len(responses) == 3
@@ -54,7 +59,8 @@ class TestDeployer:
         app.handlers["http"] = HTTP(dummy_function)
 
         app.deploy(
-            only_function=True,
+            skip_resources=True,
+            skip_infra=True,
             force=True,
             config={
                 "cloudrun_revision": {
@@ -125,7 +131,12 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP(dummy_function)
         bindings = [{"role": "roles/cloudfunctions.invoker", "members": ["allUsers"]}]
-        app.deploy(only_function=True, config={"bindings": bindings}, force=True)
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            config={"bindings": bindings},
+            force=True,
+        )
 
         responses = get_responses("deployer-function-bindings")
         assert len(responses) == 4
@@ -164,7 +175,8 @@ class TestDeployer:
         app.handlers["http"] = HTTP(dummy_function)
 
         app.deploy(
-            only_function=True,
+            skip_resources=True,
+            skip_infra=True,
             force=True,
             config={
                 "cloudrun_revision": {

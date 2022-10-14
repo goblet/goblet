@@ -1,0 +1,16 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 409,
+      "message": "Resource 'projects/goblet/locations/us-central1/instances/redis-test' already exists",
+      "status": "ALREADY_EXISTS",
+      "details": [
+        {
+          "@type": "type.googleapis.com/google.rpc.ResourceInfo",
+          "resourceName": "projects/goblet/locations/us-central1/instances/redis-test"
+        }
+      ]
+    }
+  }
+}

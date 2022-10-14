@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1664907459958-5ea3979bc1540-9eafa6d0-6c7c6280",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.OperationMetadata",
+      "createTime": "2022-10-04T18:17:39.987935344Z",
+      "target": "projects/goblet/locations/us-central1/functions/goblet-example-vpc",
+      "verb": "delete",
+      "cancelRequested": false,
+      "apiVersion": "v2"
+    },
+    "done": false
+  }
+}
