@@ -1,5 +1,4 @@
 from googleapiclient.errors import HttpError
-from goblet.config import GConfig
 from goblet.infrastructures.infrastructure import Infrastructure
 
 import logging
