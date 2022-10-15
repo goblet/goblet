@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Index &mdash; goblet 0.9.0 documentation</title>
+  <title>Infrastructure &mdash; goblet 0.9.0 documentation</title>
   
 
   
@@ -36,8 +36,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Blogs" href="blogs.html" />
+    <link rel="prev" title="Backends" href="backends.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,8 +96,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="backends.html">Backends</a></li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Infrastructure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vpc-connector">VPC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#redis">Redis</a></li>
+</ul>
+</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
@@ -153,11 +159,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Index</li>
+      <li>Infrastructure</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
+          
+            <a href="_sources/infrastructures.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -170,11 +178,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- 
+  <div class="section" id="infrastructure">
+<h1>Infrastructure<a class="headerlink" href="#infrastructure" title="Permalink to this headline">¶</a></h1>
+<p>You can now provision infrastructure within your Goblet code.</p>
+<div class="section" id="vpc-connector">
+<h2>VPC Connector<a class="headerlink" href="#vpc-connector" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">vpcconnector</span><span class="p">(</span><span class="s2">&quot;vpcconnector&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When deploying a backend, the vpc access configuration will be updated to include the specified vpc connector.
+To further configure your VPC Connector within Goblet, specify the <strong>`vpcconnector`</strong> key in your <cite>config.json</cite>.
+You can reference <a class="reference external" href="https://cloud.google.com/vpc/docs/reference/vpcaccess/rest/v1/projects.locations.connectors#Connector">Connector Resource</a>  for more information on available fields.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>In order to ensure proper configuration of the VPC Connector, the <cite>ipCidrRange</cite> key is required to be set within <cite>vpcconnector</cite> of your <cite>config.json</cite>.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="redis">
+<h2>Redis<a class="headerlink" href="#redis" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="p">(</span><span class="s2">&quot;redis-example&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When deploying a backend, the environment variables will automatically be updated to include the <cite>REDIS_INSTANCE_NAME</cite>, <cite>REDIS_HOST</cite> and <cite>REDIS_PORT</cite>.
+To further configure your Redis Instance within Goblet, specify the <strong>`redis`</strong> key in your <cite>config.json</cite>.
+You can reference <a class="reference external" href="https://cloud.google.com/memorystore/docs/redis/reference/rest/v1/projects.locations.instances#Instance">Redis Instance Resource</a> for more information on available fields.</p>
+</div>
 </div>
 
 
@@ -182,6 +214,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="blogs.html" class="btn btn-neutral float-right" title="Blogs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="backends.html" class="btn btn-neutral float-left" title="Backends" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

@@ -103,6 +103,14 @@ Backends
 
    backends
 
+Infrastructures
+---------------
+
+.. toctree::
+   :maxdepth: 2
+
+   infrastructures
+
 Blogs
 --------
 

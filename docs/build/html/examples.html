@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Examples &mdash; goblet 0.8.4 documentation</title>
+  <title>Examples &mdash; goblet 0.9.0 documentation</title>
   
 
   
@@ -94,6 +94,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="backends.html">Backends</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
@@ -436,7 +439,31 @@
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
-<span class="normal">265</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">request</span>
 <span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -503,24 +530,29 @@
     <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">({</span><span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;lng&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
 
+
 <span class="c1"># Custom Marshmallow Fields</span>
 <span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
 
 <span class="k">def</span> <span class="nf">enum_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add an OpenAPI extension for marshmallow_enum.EnumField instances</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">EnumField</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">enum</span><span class="p">]}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">enum</span><span class="p">]}</span>
     <span class="k">return</span> <span class="p">{}</span>
 
+
 <span class="n">app</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">marshmallow_attribute_function</span> <span class="o">=</span> <span class="n">enum_to_properties</span>
+
 
 <span class="k">class</span> <span class="nc">StopLight</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">green</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">yellow</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">red</span> <span class="o">=</span> <span class="mi">3</span>
+
 
 <span class="k">class</span> <span class="nc">TrafficStop</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
     <span class="n">light_color</span> <span class="o">=</span> <span class="n">EnumField</span><span class="p">(</span><span class="n">StopLight</span><span class="p">)</span>
@@ -528,7 +560,8 @@
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/traffic&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TrafficStop</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">TrafficStop</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;light_color&quot;</span><span class="p">:</span><span class="n">StopLight</span><span class="o">.</span><span class="n">green</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">TrafficStop</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;light_color&quot;</span><span class="p">:</span> <span class="n">StopLight</span><span class="o">.</span><span class="n">green</span><span class="p">})</span>
+
 
 <span class="c1"># Returns follow openapi spec</span>
 <span class="c1"># definitions:</span>
@@ -545,6 +578,7 @@
 <span class="c1"># Pydantic Typing</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
+
 <span class="k">class</span> <span class="nc">NestedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
 
@@ -552,6 +586,7 @@
 <span class="k">class</span> <span class="nc">PydanticModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">nested</span><span class="p">:</span> <span class="n">NestedModel</span>
+
 
 <span class="c1"># Request Body Typing</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/pydantic&quot;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="n">PydanticModel</span><span class="p">)</span>
@@ -626,15 +661,22 @@
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span>
 
+
 <span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">return</span> 
+    <span class="k">return</span>
+
 
 <span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">return</span> 
+    <span class="k">return</span>
+
 
 <span class="c1"># Example Storage trigger on the create/finalize event</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s2">&quot;BUCKET_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">)</span>
@@ -690,17 +732,26 @@
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
     <span class="k">return</span>
 
+
 <span class="c1"># Example Cloudrun Job with schedule</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">job1_task1</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
 
+
 <span class="c1"># Example Cloudrun Job with additional task</span>
 <span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">job1_task2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;different task for job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+
+
+<span class="c1"># Example Redis Instance</span>
+<span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="p">(</span><span class="s2">&quot;redis-test&quot;</span><span class="p">)</span>
+
+<span class="c1"># Example VPC Connector</span>
+<span class="n">app</span><span class="o">.</span><span class="n">vpcconnector</span><span class="p">(</span><span class="s2">&quot;vpc-conn-test&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 </div>
