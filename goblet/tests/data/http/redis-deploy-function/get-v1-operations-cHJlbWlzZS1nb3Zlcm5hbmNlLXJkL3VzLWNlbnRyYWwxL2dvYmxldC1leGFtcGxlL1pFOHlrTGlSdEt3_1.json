@@ -1,0 +1,57 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1nb3Zlcm5hbmNlLXJkL3VzLWNlbnRyYWwxL2dvYmxldC1leGFtcGxlL1pFOHlrTGlSdEt3",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/goblet/locations/us-central1/functions/goblet-example",
+      "type": "CREATE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+        "name": "projects/goblet/locations/us-central1/functions/goblet-example",
+        "description": "created by goblet",
+        "httpsTrigger": {},
+        "entryPoint": "goblet_entrypoint",
+        "sourceUploadUrl": "https://storage.googleapis.com/mock",
+        "environmentVariables": {
+          "REDIS_INSTANCE_NAME": "projects/goblet/locations/us-central1/instances/redis-test",
+          "REDIS_HOST": "10.43.16.3",
+          "REDIS_PORT": "6379"
+        },
+        "runtime": "python310"
+      },
+      "versionId": "1",
+      "updateTime": "2022-10-06T21:17:08Z",
+      "buildId": "20a1b354-6aba-4e8a-91ab-beb00bcc53b0",
+      "buildName": "projects/goblet/locations/us-central1/builds/20a1b354-6aba-4e8a-91ab-beb00bcc53b0"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+      "name": "projects/goblet/locations/us-central1/functions/goblet-example",
+      "description": "created by goblet",
+      "httpsTrigger": {
+        "url": "https://us-central1-goblet.cloudfunctions.net/goblet-example",
+        "securityLevel": "SECURE_OPTIONAL"
+      },
+      "status": "ACTIVE",
+      "entryPoint": "goblet_entrypoint",
+      "timeout": "60s",
+      "availableMemoryMb": 256,
+      "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+      "updateTime": "2022-10-06T21:17:08.482Z",
+      "versionId": "1",
+      "sourceUploadUrl": "https://storage.googleapis.com/mock",
+      "environmentVariables": {
+        "REDIS_INSTANCE_NAME": "projects/goblet/locations/us-central1/instances/redis-test",
+        "REDIS_HOST": "10.43.16.3",
+        "REDIS_PORT": "6379"
+      },
+      "runtime": "python310",
+      "ingressSettings": "ALLOW_ALL",
+      "buildId": "20a1b354-6aba-4e8a-91ab-beb00bcc53b0",
+      "buildName": "projects/goblet/locations/us-central1/builds/20a1b354-6aba-4e8a-91ab-beb00bcc53b0",
+      "dockerRegistry": "CONTAINER_REGISTRY"
+    }
+  }
+}

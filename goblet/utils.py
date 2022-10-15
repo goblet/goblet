@@ -63,6 +63,11 @@ def nested_update(d, u):
     for k, v in u.items():
         if isinstance(v, collections.abc.Mapping):
             d[k] = nested_update(d.get(k, {}), v)
+        elif isinstance(v, list):
+            d[k] = [] if not d.get(k) else d[k]
+            for obj in v:
+                if obj not in d[k]:
+                    d[k].append(obj)
         else:
             d[k] = v
     return d

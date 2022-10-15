@@ -1,0 +1,97 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1664907376650-5ea3974c4e78a-ad732159-2582b07a",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.OperationMetadata",
+      "createTime": "2022-10-04T18:16:17.138933785Z",
+      "endTime": "2022-10-04T18:17:30.107623456Z",
+      "target": "projects/goblet/locations/us-central1/functions/goblet-example-vpc",
+      "verb": "create",
+      "cancelRequested": false,
+      "apiVersion": "v2",
+      "requestResource": {
+        "@type": "type.googleapis.com/google.cloud.functions.v2.Function",
+        "name": "projects/goblet/locations/us-central1/functions/goblet-example-vpc",
+        "description": "created by goblet",
+        "buildConfig": {
+          "runtime": "python310",
+          "entryPoint": "goblet_entrypoint",
+          "source": {
+            "storageSource": {
+              "bucket": "gcf-v2-sources-11111111-us-central1",
+              "object": "goblet-example-vpc/function-source.zip"
+            }
+          }
+        },
+        "serviceConfig": {
+          "service": "projects/goblet/locations/us-central1/services/goblet-example-vpc",
+          "timeoutSeconds": 60,
+          "maxInstanceCount": 100,
+          "vpcConnector": "projects/goblet/locations/us-central1/connectors/vpc-test",
+          "vpcConnectorEgressSettings": "PRIVATE_RANGES_ONLY",
+          "ingressSettings": "ALLOW_ALL",
+          "serviceAccountEmail": "11111111-compute@developer.gserviceaccount.com",
+          "availableMemory": "256M"
+        },
+        "environment": "GEN_2"
+      },
+      "stages": [
+        {
+          "name": "BUILD",
+          "message": "Creating build",
+          "state": "COMPLETE",
+          "resource": "projects/goblet/locations/us-central1/builds/beef2715-509a-4231-9a23-9c33797c0ff4",
+          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/beef2715-509a-4231-9a23-9c33797c0ff4?project=11111111"
+        },
+        {
+          "name": "SERVICE",
+          "message": "Creating Cloud Run service",
+          "state": "COMPLETE",
+          "resource": "projects/goblet/locations/us-central1/services/goblet-example-vpc",
+          "resourceUri": "https://console.cloud.google.com/run/detail/us-central1/goblet-example-vpc?project=goblet"
+        }
+      ]
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.Function",
+      "name": "projects/goblet/locations/us-central1/functions/goblet-example-vpc",
+      "description": "created by goblet",
+      "buildConfig": {
+        "build": "projects/goblet/locations/us-central1/builds/beef2715-509a-4231-9a23-9c33797c0ff4",
+        "runtime": "python310",
+        "entryPoint": "goblet_entrypoint",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-sources-11111111-us-central1",
+            "object": "goblet-example-vpc/function-source.zip"
+          }
+        },
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-sources-11111111-us-central1",
+            "object": "goblet-example-vpc/function-source.zip",
+            "generation": "1664907376835178"
+          }
+        }
+      },
+      "serviceConfig": {
+        "service": "projects/goblet/locations/us-central1/services/goblet-example-vpc",
+        "timeoutSeconds": 60,
+        "maxInstanceCount": 100,
+        "vpcConnector": "projects/goblet/locations/us-central1/connectors/vpc-test",
+        "vpcConnectorEgressSettings": "PRIVATE_RANGES_ONLY",
+        "ingressSettings": "ALLOW_ALL",
+        "uri": "https://goblet-example-vpc-ftjyujtcpa-uc.a.run.app",
+        "serviceAccountEmail": "11111111-compute@developer.gserviceaccount.com",
+        "availableMemory": "256M",
+        "allTrafficOnLatestRevision": true,
+        "revision": "goblet-example-vpc-00001-pig"
+      },
+      "state": "ACTIVE",
+      "updateTime": "2022-10-04T18:16:17.134411905Z",
+      "environment": "GEN_2"
+    }
+  }
+}

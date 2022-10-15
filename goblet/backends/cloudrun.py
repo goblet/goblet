@@ -11,7 +11,6 @@ from goblet.common_cloud_actions import (
     destroy_cloudrun,
     destroy_cloudfunction_artifacts,
 )
-from goblet.config import GConfig
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
@@ -29,7 +28,8 @@ class CloudRun(Backend):
     def deploy(self, force=False, config=None):
         versioned_clients = VersionedClients(self.app.client_versions)
         if config:
-            self.config = GConfig(config=config)
+            self.config.update_g_config(values=config)
+        config = self.config
         put_headers = {
             "content-type": "application/zip",
         }
@@ -53,7 +53,7 @@ class CloudRun(Backend):
         if not changes:
             return None
 
-        self.create_build(versioned_clients.cloudbuild, source, self.name, config)
+        self.create_build(versioned_clients.cloudbuild, source, self.name)
 
         if not self.skip_run_deployment():
             serviceRevision = RevisionSpec(config, versioned_clients, self.name)
@@ -79,10 +79,8 @@ class CloudRun(Backend):
         if all:
             destroy_cloudfunction_artifacts(self.name)
 
-    def create_build(self, client, source=None, name="goblet", config={}):
+    def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
-        if config:
-            self.config = GConfig(config=config)
         build_configs = self.config.cloudbuild or {}
         registry = (
             build_configs.get("artifact_registry")
@@ -146,3 +144,33 @@ class CloudRun(Backend):
             return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
         except KeyError:
             return 0
+
+    def update_config(self, infra_configs=[], write_config=False, stage=None):
+        config_updates = {}
+        for infra_config in infra_configs:
+            resource_type = infra_config["resource_type"]
+            if resource_type == "vpcconnector":
+                config_updates["cloudrun_revision"] = {
+                    **config_updates.get("cloudrun_revision", {}),
+                    "vpcAccess": {
+                        "connector": infra_config["values"]["name"],
+                        "egress": infra_config["values"]["egress"],
+                    },
+                }
+            else:
+                envs = [
+                    {"name": name, "value": value}
+                    for name, value in infra_config["values"].items()
+                ]
+                env = config_updates.get("cloudrun_container", {}).get("env", [])
+                env.extend(envs)
+
+                config_updates["cloudrun_container"] = {
+                    **config_updates.get("cloudrun_container", {}),
+                    "env": env,
+                }
+        self.config.update_g_config(
+            values=config_updates,
+            write_config=write_config,
+            stage=stage,
+        )

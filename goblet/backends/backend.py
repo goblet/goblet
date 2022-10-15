@@ -19,6 +19,7 @@ class Backend:
     resource_type = ""
     version = ""
     required_files = ["main.py"]
+    config_key = ""
 
     def __init__(self, app, client, func_path, config={}):
         self.app = app
@@ -48,6 +49,9 @@ class Backend:
 
     def destroy(self, all=False):
         raise NotImplementedError("destroy")
+
+    def update_config(self, infra_config={}, write_config=False, stage=None):
+        raise NotImplementedError("update_config")
 
     def _create_zip(self):
         """Creates initial goblet zipfile"""

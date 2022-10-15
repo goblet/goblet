@@ -48,7 +48,9 @@ class Jobs(Handler):
             return
 
         config = GConfig(config=config)
-        artifact = getCloudbuildArtifact(self.versioned_clients.cloudbuild)
+        artifact = getCloudbuildArtifact(
+            self.versioned_clients.cloudbuild, self.name, config=config
+        )
 
         log.info("deploying cloudrun jobs......")
         for job_name, job in self.resources.items():
