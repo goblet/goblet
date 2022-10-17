@@ -71,7 +71,7 @@ class Jobs(Handler):
                 "metadata": {
                     "name": job_name,
                     "annotations": {"run.googleapis.com/launch-stage": "BETA"},
-                    **metadata
+                    **metadata,
                 },
                 "spec": {
                     "template": {
