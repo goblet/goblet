@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.9.0 documentation</title>
+  <title>Resources &mdash; goblet 0.9.1 documentation</title>
   
 
   
@@ -409,10 +409,12 @@ on possible values.</p>
 <div class="section" id="jobs">
 <h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this headline">¶</a></h2>
 <p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
-you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations should be added to the <cite>task_id=0</cite>. Options can be found at
-<a class="reference external" href="https://cloud.google.com/static/run/docs/reference/rest/v1/namespaces.jobs#ExecutionTemplateSpec">Cloudrun Jobs</a></p>
-<p>You can schedule executions by passing in a cron <cite>schedule</cite> to the first task.</p>
-<p>Each job task function takes in the task id.</p>
+you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations such as a schedule should be added to the <cite>task_id=0</cite>. Jobs can be further configured
+by setting various configs in <cite>config.json.</cite></p>
+<p><cite>jobs_annotations</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v1/ObjectMeta">Cloudrun Jobs Metadata</a></p>
+<p><cite>job_spec</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v1/TaskSpec">Cloudrun Jobs Spec</a></p>
+<p><cite>job_container</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v1/Container">Cloudrun Jobs Container</a></p>
+<p>You can schedule executions by passing in a cron <cite>schedule</cite> to the first task. Each job task function takes in the task id.</p>
 <p>To test a job locally you can run <cite>goblet job run APP_NAME-JOB_NAME TASK_ID</cite></p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
@@ -431,6 +433,7 @@ you can specify multiple decorators with a different <cite>task_id</cite>. Any c
     <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
 </pre></div>
 </div>
+<p>See the example <a class="reference external" href="https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json">config.json</a></p>
 </div>
 </div>
 
