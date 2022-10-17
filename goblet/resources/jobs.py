@@ -1,5 +1,3 @@
-from __future__ import annotations
-from importlib.metadata import metadata
 import logging
 
 from goblet.resources.handler import Handler
