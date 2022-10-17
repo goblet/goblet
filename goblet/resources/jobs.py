@@ -56,6 +56,7 @@ class Jobs(Handler):
         for job_name, job in self.resources.items():
 
             container = {**(config.job_container or {})}
+            annotations = {**(config.job_annotations or {})}
             container["image"] = artifact
             container["command"] = [
                 "goblet",
@@ -73,6 +74,7 @@ class Jobs(Handler):
                 },
                 "spec": {
                     "template": {
+                        "metadata": {"annotations": annotations},
                         "spec": {
                             "taskCount": len(job.keys()) - 1,
                             "template": {
