@@ -20,9 +20,9 @@
         "maxRetries": 1
     },
     "job_metadata":{
-        "run.googleapis.com/vpc-access-connector": "VPC_CONNECTOR",
-        "run.googleapis.com/cloudsql-instances": "SQL_CONNECTOR",
-        "run.googleapis.com/vpc-access-egress": "EGRESS"
+        "run.googleapis.com/vpc-access-connector": "projects/PROJECT/locations/LOCATION/connectors/CONNECTION_NAME",
+        "run.googleapis.com/cloudsql-instances": "projects/PROJECT/locations/LOCATION/connectors/SQL_CONNECTION",
+        "run.googleapis.com/vpc-access-egress": "private-ranges-only"
     },
     "scheduler":{
         "serviceAccount": "SA_SCHEDULER@PROJECT.iam.gserviceaccount.com"
