@@ -275,7 +275,7 @@ You can create and trigger cloudrun jobs using the `@app.job(...)` decorator. If
 you can specify multiple decorators with a different `task_id`. Any custom job configurations such as a schedule should be added to the `task_id=0`. Jobs can be further configured
 by setting various configs in `config.json.` 
 
-`jobs_metadata` can be found at `Cloudrun Jobs Metadata  <https://cloud.google.com/static/run/docs/reference/rest/v1/namespaces.jobs#ExecutionTemplateSpec>`__
+`jobs_annotations` can be found at `Cloudrun Jobs Metadata  <https://cloud.google.com/run/docs/reference/rest/v1/ObjectMeta>`__
 
 `job_spec` can be found at `Cloudrun Jobs Spec  <https://cloud.google.com/run/docs/reference/rest/v1/TaskSpec>`__
 

@@ -19,7 +19,7 @@
         "timeoutSeconds":"600s",
         "maxRetries": 1
     },
-    "job_metadata":{
+    "job_annotations":{
         "run.googleapis.com/vpc-access-connector": "projects/PROJECT/locations/LOCATION/connectors/CONNECTION_NAME",
         "run.googleapis.com/cloudsql-instances": "projects/PROJECT/locations/LOCATION/connectors/SQL_CONNECTION",
         "run.googleapis.com/vpc-access-egress": "private-ranges-only"

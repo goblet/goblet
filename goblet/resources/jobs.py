@@ -1,3 +1,5 @@
+from __future__ import annotations
+from importlib.metadata import metadata
 import logging
 
 from goblet.resources.handler import Handler
@@ -56,7 +58,7 @@ class Jobs(Handler):
         for job_name, job in self.resources.items():
 
             container = {**(config.job_container or {})}
-            metadata = {**(config.job_metadata or {})}
+            annotations = {**(config.job_annotations or {})}
             container["image"] = artifact
             container["command"] = [
                 "goblet",
@@ -71,10 +73,10 @@ class Jobs(Handler):
                 "metadata": {
                     "name": job_name,
                     "annotations": {"run.googleapis.com/launch-stage": "BETA"},
-                    **metadata,
                 },
                 "spec": {
                     "template": {
+                        "metadata": {"annotations": annotations},
                         "spec": {
                             "taskCount": len(job.keys()) - 1,
                             "template": {
