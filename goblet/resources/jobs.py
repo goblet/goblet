@@ -56,6 +56,7 @@ class Jobs(Handler):
         for job_name, job in self.resources.items():
 
             container = {**(config.job_container or {})}
+            metadata = {**(config.job_metadata or {})}
             container["image"] = artifact
             container["command"] = [
                 "goblet",
@@ -70,6 +71,7 @@ class Jobs(Handler):
                 "metadata": {
                     "name": job_name,
                     "annotations": {"run.googleapis.com/launch-stage": "BETA"},
+                    **metadata
                 },
                 "spec": {
                     "template": {

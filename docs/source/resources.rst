@@ -272,12 +272,16 @@ Jobs
 ^^^^
 
 You can create and trigger cloudrun jobs using the `@app.job(...)` decorator. If you would like to trigger multiple tasks in one job execution 
-you can specify multiple decorators with a different `task_id`. Any custom job configurations should be added to the `task_id=0`. Options can be found at 
-`Cloudrun Jobs  <https://cloud.google.com/static/run/docs/reference/rest/v1/namespaces.jobs#ExecutionTemplateSpec>`__
+you can specify multiple decorators with a different `task_id`. Any custom job configurations such as a schedule should be added to the `task_id=0`. Jobs can be further configured
+by setting various configs in `config.json.` 
 
-You can schedule executions by passing in a cron `schedule` to the first task.
+`jobs_metadata` can be found at `Cloudrun Jobs Metadata  <https://cloud.google.com/static/run/docs/reference/rest/v1/namespaces.jobs#ExecutionTemplateSpec>`__
 
-Each job task function takes in the task id. 
+`job_spec` can be found at `Cloudrun Jobs Spec  <https://cloud.google.com/run/docs/reference/rest/v1/TaskSpec>`__
+
+`job_container` can be found at `Cloudrun Jobs Container  <https://cloud.google.com/run/docs/reference/rest/v1/Container>`__
+
+You can schedule executions by passing in a cron `schedule` to the first task. Each job task function takes in the task id. 
 
 To test a job locally you can run `goblet job run APP_NAME-JOB_NAME TASK_ID`
 
@@ -299,3 +303,5 @@ Example usage:
     def job2(id):
         app.log.info(f"another job...{id}")
         return "200"
+
+See the example `config.json <https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json>`__

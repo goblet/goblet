@@ -6,11 +6,23 @@
                 "name": "ENV",
                 "value": "VALUE"
             }
-        ]
+        ],
+        "resources": {
+            "limits": {
+                "cpu": "4000m",
+                "memory": "7000Mi"
+            }
+        }
     },
     "job_spec":{
         "serviceAccountName": "SA@PROJECT.iam.gserviceaccount.com",
-        "timeoutSeconds":"600s"
+        "timeoutSeconds":"600s",
+        "maxRetries": 1
+    },
+    "job_metadata":{
+        "run.googleapis.com/vpc-access-connector": "VPC_CONNECTOR",
+        "run.googleapis.com/cloudsql-instances": "SQL_CONNECTOR",
+        "run.googleapis.com/vpc-access-egress": "EGRESS"
     },
     "scheduler":{
         "serviceAccount": "SA_SCHEDULER@PROJECT.iam.gserviceaccount.com"
