@@ -6,3 +6,4 @@ marshmallow==3.15.0
 pydantic==1.10.2
 ruamel.yaml==0.17.21
 markupsafe==2.0.1
+google-cloud-logging==3.1.2

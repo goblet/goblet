@@ -1,10 +1,13 @@
 import json
 import logging
 import sys
+import os
 
 from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
 from goblet.decorators import Register_Handlers
+from google.cloud.logging.handlers import StructuredLogHandler
+from google.cloud.logging_v2.handlers import setup_logging
 
 logging.basicConfig()
 
@@ -27,6 +30,7 @@ class Goblet(Register_Handlers):
         client_versions=None,
         routes_type="apigateway",
         config={},
+        log_level=logging.INFO,
     ):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         self.client_versions.update(client_versions or {})
@@ -53,12 +57,21 @@ class Goblet(Register_Handlers):
         module_name = GConfig().main_file or "main"
         module_name = module_name.replace(".py", "")
         if local and sys.modules.get(module_name):
-            self.log = logging.getLogger("werkzeug")
 
             def local_func(request):
                 return self(request)
 
             setattr(sys.modules[module_name], local, local_func)
+
+        # configure logging for local or gcp
+        if os.environ.get("X-GOBLET-LOCAL") or os.environ.get("GOBLET_HTTP_TEST"):
+            logging.basicConfig()
+            self.log = logging.getLogger("werkzeug")
+        elif not os.environ.get("X-GOBLET-DEPLOY"):
+            self.log.handlers.clear()
+            handler = StructuredLogHandler()
+            setup_logging(handler, log_level=log_level)
+            self.log = logging.getLogger(__name__)
 
     def deploy(
         self,
