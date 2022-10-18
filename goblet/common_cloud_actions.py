@@ -187,7 +187,11 @@ def getCloudbuildArtifact(client, artifactName, config):
 
     for build in resp["builds"]:
         # pending builds will not have results field.
-        if build.get("results") and registry == build["results"]["images"][0]["name"]:
+        if (
+            build.get("results")
+            and build["results"].get("images")
+            and registry == build["results"]["images"][0]["name"]
+        ):
             latestArtifact = latestArtifact = (
                 build["results"]["images"][0]["name"]
                 + "@"
