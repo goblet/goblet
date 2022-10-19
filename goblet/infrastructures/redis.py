@@ -17,11 +17,12 @@ class Redis(Infrastructure):
     def deploy(self, config={}):
         if not self.resource:
             return
-        config = GConfig(config=config)
-        redis_config = config.redis or {}
+        self.config.update_g_config(values=config)
+        redis_config = self.config.redis or {}
         req_body = {
             "tier": redis_config.get("tier", "BASIC"),
             "memorySizeGb": redis_config.get("memorySizeGb", 1),
+            "labels": self.config.labels,
             **redis_config,
         }
         try:

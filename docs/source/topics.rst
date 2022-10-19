@@ -867,3 +867,28 @@ handler or do post prosessing on your responses.
 
 You can have your middleware trigger only on certain event types using the `event_type` argument. Default is `all`. Possible 
 event types are `["all", "http", "schedule", "pubsub", "storage", "route"]`
+
+Labels
+^^^^^^
+
+Labels can be added to all resources that support labels by passing in a labels dictionary to `Goblet` app. You can also 
+specify labels in `config.json` under the key label.
+
+.. code:: python 
+
+   app = Goblet(function_name="example-job",  labels={"sample_label":"sample_value"})
+
+config.json 
+
+.. code:: json 
+
+    {
+        "labels":{"sample_label_2":"2"},
+        "stages":{
+            "test": {
+                "labels": {
+                    "sample_label_stage":"staged"
+                }
+            }
+        }
+    }

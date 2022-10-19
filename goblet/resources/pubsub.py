@@ -153,6 +153,7 @@ class PubSub(Handler):
                     "audience": push_url,
                 },
             },
+            "labels": gconfig.labels,
             **topic["config"],
         }
         create_pubsub_subscription(
@@ -164,12 +165,12 @@ class PubSub(Handler):
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
-        config = GConfig()
-        user_configs = config.cloudfunction or {}
+        gconfig = GConfig()
+        user_configs = gconfig.cloudfunction or {}
         if self.versioned_clients.cloudfunctions.version == "v1":
             req_body = {
                 "name": function_name,
-                "description": config.description or "created by goblet",
+                "description": gconfig.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": source["uploadUrl"],
                 "eventTrigger": {
@@ -177,8 +178,9 @@ class PubSub(Handler):
                     "resource": f"projects/{get_default_project()}/topics/{topic_name}",
                 },
                 "runtime": get_function_runtime(
-                    self.versioned_clients.cloudfunctions, config
+                    self.versioned_clients.cloudfunctions, gconfig
                 ),
+                "labels": gconfig.labels,
                 **user_configs,
             }
             create_cloudfunctionv1(
@@ -189,10 +191,10 @@ class PubSub(Handler):
                 "body": {
                     "name": function_name,
                     "environment": "GEN_2",
-                    "description": config.description or "created by goblet",
+                    "description": gconfig.description or "created by goblet",
                     "buildConfig": {
                         "runtime": get_function_runtime(
-                            self.versioned_clients.cloudfunctions, config
+                            self.versioned_clients.cloudfunctions, gconfig
                         ),
                         "entryPoint": entrypoint,
                         "source": {"storageSource": source["storageSource"]},
@@ -201,6 +203,7 @@ class PubSub(Handler):
                         "eventType": "google.cloud.pubsub.topic.v1.messagePublished",
                         "pubsubTopic": f"projects/{get_default_project()}/topics/{topic_name}",
                     },
+                    "labels": gconfig.labels,
                     **user_configs,
                 },
                 "functionId": function_name.split("/")[-1],
