@@ -63,6 +63,7 @@ class CloudFunctionV2(Backend):
                     "source": {"storageSource": source["storageSource"]},
                     **build_configs,
                 },
+                "labels": {**self.config.labels},
                 **user_configs,
             },
             "functionId": self.app.function_name,

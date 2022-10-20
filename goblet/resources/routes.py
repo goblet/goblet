@@ -112,6 +112,7 @@ class ApiGateway(Handler):
         return True
 
     def _deploy(self, source=None, entrypoint=None, config={}):
+        gconfig = GConfig(config)
         if (
             self.routes_type != "apigateway"
             and self.backend.startswith("cloudfunction")
@@ -132,7 +133,8 @@ class ApiGateway(Handler):
         self.generate_openapi_spec(base_url)
         try:
             resp = self.versioned_clients.apigateway_api.execute(
-                "create", params={"apiId": self.name}
+                "create",
+                params={"apiId": self.name, "body": {"labels": gconfig.labels}},
             )
             self.versioned_clients.apigateway_api.wait_for_operation(resp["name"])
         except HttpError as e:
@@ -140,7 +142,6 @@ class ApiGateway(Handler):
                 log.info("api already deployed")
             else:
                 raise e
-        goblet_config = GConfig()
         config = {
             "openapiDocuments": [
                 {
@@ -154,7 +155,8 @@ class ApiGateway(Handler):
                     }
                 }
             ],
-            **(goblet_config.apiConfig or {}),
+            "labels": gconfig.labels,
+            **(gconfig.apiConfig or {}),
         }
         try:
             config_version_name = self.name
@@ -185,6 +187,7 @@ class ApiGateway(Handler):
                 raise e
         gateway = {
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
+            "labels": gconfig.labels,
         }
         try:
             gateway_resp = self.versioned_clients.apigateway.execute(

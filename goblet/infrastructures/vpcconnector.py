@@ -32,6 +32,7 @@ class VPCConnector(Infrastructure):
             "maxInstances": vpcconnector_config.get(
                 "maxInstances", vpcconnector_config.get("minInstances", 2) + 1
             ),
+            "labels": self.config.labels,
             **vpcconnector_config,
         }
 

@@ -31,6 +31,7 @@ class Goblet(Register_Handlers):
         routes_type="apigateway",
         config={},
         log_level=logging.INFO,
+        labels={},
     ):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         self.client_versions.update(client_versions or {})
@@ -40,6 +41,7 @@ class Goblet(Register_Handlers):
         )
         # self.client_versions[self.backend_class.resource_type] = self.backend_class.version
         self.function_name = GConfig().function_name or function_name
+        self.labels = labels
 
         super(Goblet, self).__init__(
             function_name=self.function_name,
@@ -83,6 +85,7 @@ class Goblet(Register_Handlers):
         write_config=False,
         stage=None,
     ):
+        config.update({"labels": self.labels})
         source = None
         backend = self.backend_class(self)
         if not skip_infra:

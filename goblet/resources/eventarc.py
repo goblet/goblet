@@ -111,6 +111,7 @@ class EventArc(Handler):
                         "path": f"/x-goblet-eventarc-triggers/{trigger['trigger_name']}",
                     }
                 },
+                "labels": gconfig.labels,
                 **topic,
             }
             create_eventarc_trigger(

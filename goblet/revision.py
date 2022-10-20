@@ -108,6 +108,7 @@ class RevisionSpec:
             "template": {
                 **self.cloudrun_revision,
             },
+            "labels": {**self.config.labels},
             **self.cloudrun_configs,
         }
         self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
