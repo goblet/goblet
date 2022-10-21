@@ -31,10 +31,12 @@ class TestGConfig:
         monkeypatch.setenv("TEST", "test")
         assert GConfig().TEST == "test"
 
+    def test_env_variable_empty_dict(self):
+        assert GConfig({"TEST": {}}).TEST == {}
+
     def test_stages_env(self, monkeypatch):
         monkeypatch.setenv("STAGE", "dev")
         config = GConfig(test_config)
-        config.update_g_config()
         assert config.cloudfunction["environmentVariables"]["key"] == "dev"
 
     def test_update_config(self):

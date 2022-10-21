@@ -61,6 +61,7 @@ def deploy(
 
     Note: Make sure api-gateway, cloudfunctions, and storage are enabled in your project
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         _project = project or get_default_project()
         if not _project:
@@ -117,6 +118,7 @@ def destroy(project, location, stage, all, skip_infra):
 
     The --all flag removes cloudfunction artifacts in cloud storage as well
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         _project = project or get_default_project()
         if not _project:
@@ -160,6 +162,7 @@ def sync(project, location, stage, dryrun):
 
     Use --dryrun flag to see what resources are flagged as being deleted.
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         _project = project or get_default_project()
         if not _project:
@@ -190,6 +193,7 @@ def openapi(cloudfunction, stage, version):
 
     The cloudfunction argument sets the correct x-google-backend address in the openapi spec.
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     if stage:
         os.environ["STAGE"] = stage
     try:
@@ -227,6 +231,7 @@ def local(local_arg, stage, port):
 
     Goblet("test_function",local="local_function")
     """
+    os.environ["X-GOBLET-LOCAL"] = "true"
     try:
         if stage:
             os.environ["STAGE"] = stage
@@ -251,6 +256,7 @@ def local(local_arg, stage, port):
 @main.command()
 def package(stage):
     """generates the goblet zipped package in .goblet folder"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         if stage:
             os.environ["STAGE"] = stage
@@ -297,6 +303,7 @@ def list_stages():
 )
 def create(stage):
     """create a new stage in config.json"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     config = GConfig()
     if config.stages and stage in config.stages:
         return click.echo(f"stage {stage} already exists")
