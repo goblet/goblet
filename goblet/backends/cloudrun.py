@@ -132,7 +132,9 @@ class CloudRun(Backend):
             parent_schema=get_default_project(),
             params={},
         )
-        latest_build_source = resp["builds"][0]["source"]
+        latest_build_source = resp["builds"][0].get("source")
+        if not latest_build_source:
+            return 0
         bucket = latest_build_source["storageSource"]["bucket"]
         obj = latest_build_source["storageSource"]["object"]
         client = Client("cloudresourcemanager", "v1", calls="projects")
