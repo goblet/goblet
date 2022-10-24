@@ -172,6 +172,8 @@ class Client:
             count += sleep_duration
         if count > timeout:
             log.info("Timeout exceeded in wait_for_operation")
+            return None
+        return resp
 
     def execute(
         self,
