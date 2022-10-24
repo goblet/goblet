@@ -4,6 +4,7 @@ from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN, get_
 from goblet.errors import GobletError
 import pytest
 
+
 class TestDeployer:
     def test_deploy_http_function(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -73,7 +74,6 @@ class TestDeployer:
         responses = get_responses("deployer-cloudrun-deploy")
         assert len(responses) == 9
 
-
     def test_deploy_cloudrun_build_failed(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
@@ -97,7 +97,6 @@ class TestDeployer:
                     }
                 },
             )
-
 
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
