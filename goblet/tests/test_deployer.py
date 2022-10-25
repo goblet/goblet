@@ -1,6 +1,8 @@
 from goblet import Goblet
 from goblet.resources.http import HTTP
 from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN, get_response
+from goblet.errors import GobletError
+import pytest
 
 
 class TestDeployer:
@@ -71,6 +73,30 @@ class TestDeployer:
 
         responses = get_responses("deployer-cloudrun-deploy")
         assert len(responses) == 9
+
+    def test_deploy_cloudrun_build_failed(self, monkeypatch, requests_mock):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-deploy-build-failed")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+
+        app = Goblet(function_name="goblet", backend="cloudrun")
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP(dummy_function)
+        with pytest.raises(GobletError):
+            app.deploy(
+                skip_resources=True,
+                skip_infra=True,
+                force=True,
+                config={
+                    "cloudrun_revision": {
+                        "serviceAccount": "test-746@goblet.iam.gserviceaccount.com"
+                    }
+                },
+            )
 
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
