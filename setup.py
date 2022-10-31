@@ -29,6 +29,8 @@ REQUIRED = [
     "marshmallow",
     "pydantic",
     "ruamel.yaml",
+    "google-cloud-logging",
+    "protobuf"
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

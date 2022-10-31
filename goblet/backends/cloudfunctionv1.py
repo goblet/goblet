@@ -55,6 +55,7 @@ class CloudFunctionV1(Backend):
                 "sourceUploadUrl": source["uploadUrl"],
                 "httpsTrigger": {},
                 "runtime": get_function_runtime(self.client, self.config),
+                "labels": {**self.config.labels},
                 **user_configs,
             }
         }

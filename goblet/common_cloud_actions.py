@@ -12,6 +12,7 @@ from goblet.client import (
     get_credentials,
     get_default_project_number,
 )
+from goblet.errors import GobletError
 from goblet.utils import get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
@@ -160,7 +161,13 @@ def create_cloudbuild(client, req_body):
         timeout = 600
     else:
         timeout = int(timeout_seconds.split("s")[0])
-    client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
+    resp = client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
+    if not resp:
+        raise GobletError("Build Timed out")
+    if resp.get("error"):
+        raise GobletError(
+            f"Cloud build failed with error code {resp['error']['code']} and message {resp['error']['message']}"
+        )
 
 
 class MissingArtifact(Exception):
@@ -187,7 +194,11 @@ def getCloudbuildArtifact(client, artifactName, config):
 
     for build in resp["builds"]:
         # pending builds will not have results field.
-        if build.get("results") and registry == build["results"]["images"][0]["name"]:
+        if (
+            build.get("results")
+            and build["results"].get("images")
+            and registry == build["results"]["images"][0]["name"]
+        ):
             latestArtifact = latestArtifact = (
                 build["results"]["images"][0]["name"]
                 + "@"
