@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Topics &mdash; goblet 0.9.1 documentation</title>
+  <title>Topics &mdash; goblet 0.9.2 documentation</title>
   
 
   
@@ -107,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#multiple-cloudfunctions">Multiple Cloudfunctions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#syncing-state">Syncing State</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#middleware">Middleware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#labels">Labels</a></li>
 </ul>
 </li>
 </ul>
@@ -902,6 +903,27 @@ that are named similar to be deleted so make sure to run the command with <cite>
 handler or do post prosessing on your responses.</p>
 <p>You can have your middleware trigger only on certain event types using the <cite>event_type</cite> argument. Default is <cite>all</cite>. Possible
 event types are <cite>[“all”, “http”, “schedule”, “pubsub”, “storage”, “route”]</cite></p>
+</div>
+<div class="section" id="labels">
+<h2>Labels<a class="headerlink" href="#labels" title="Permalink to this headline">¶</a></h2>
+<p>Labels can be added to all resources that support labels by passing in a labels dictionary to <cite>Goblet</cite> app. You can also
+specify labels in <cite>config.json</cite> under the key label.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;example-job&quot;</span><span class="p">,</span>  <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sample_label&quot;</span><span class="p">:</span><span class="s2">&quot;sample_value&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>config.json</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;labels&quot;</span><span class="p">:{</span><span class="nt">&quot;sample_label_2&quot;</span><span class="p">:</span><span class="s2">&quot;2&quot;</span><span class="p">},</span>
+    <span class="nt">&quot;stages&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;test&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;labels&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;sample_label_stage&quot;</span><span class="p">:</span><span class="s2">&quot;staged&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 
