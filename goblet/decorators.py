@@ -427,7 +427,8 @@ class Register_Handlers(DecoratorAPI):
 
     def register_middleware(self, func, event_type="all", before_or_after="before"):
         middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
-        middleware_list.append(func)
+        if func not in middleware_list:
+            middleware_list.append(func)
         self.middleware_handlers[before_or_after][event_type] = middleware_list
 
     def _register_http(self, name, func, kwargs):
