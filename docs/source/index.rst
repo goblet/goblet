@@ -111,14 +111,6 @@ Infrastructures
 
    infrastructures
 
-Blogs
---------
-
-.. toctree::
-   :maxdepth: 2
-
-   blogs
-
 Integrations
 ------------
 
@@ -126,6 +118,22 @@ Integrations
    :maxdepth: 2
 
    integrations
+
+Plugins
+-------
+
+.. toctree::
+   :maxdepth: 2
+
+   plugins
+
+Blogs
+-----
+
+.. toctree::
+   :maxdepth: 2
+
+   blogs
 
 Examples
 --------
