@@ -347,7 +347,7 @@ cloudfunction also supports secret volumes
     }
 
 For the cloudrun backend you can specificy the list of secrets as environment variables or volumes. For example with the following configuration you would be able to access 
-your api_keys using `os.environ["API_KEY_1"]` which will return the value of the `api_key1` secret in Secret Manager.
+your api_keys using `os.environ["env-variable-name"]` which will return the value of the `secret-name` in Secret Manager.
 
 .. code:: json 
 
