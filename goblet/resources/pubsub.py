@@ -2,8 +2,6 @@ import base64
 from goblet.common_cloud_actions import (
     create_pubsub_subscription,
     destroy_pubsub_subscription,
-    get_cloudrun_url,
-    get_cloudfunction_url,
     get_function_runtime,
     create_cloudfunctionv2,
     create_cloudfunctionv1,
@@ -114,12 +112,8 @@ class PubSub(Handler):
     def _deploy_subscription(self, topic_name, topic, config={}):
         sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
-        if self.backend == "cloudrun":
-            push_url = get_cloudrun_url(self.versioned_clients.run, self.name)
-        else:
-            push_url = get_cloudfunction_url(
-                self.versioned_clients.cloudfunctions, self.name
-            )
+
+        push_url = self.backend.http_endpoint
 
         gconfig = GConfig(config=config)
         if gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):

@@ -16,7 +16,6 @@ from goblet.client import get_default_project
 from goblet.resources.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
-from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
 
 import ruamel.yaml
 
@@ -124,12 +123,7 @@ class ApiGateway(Handler):
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
         log.info("deploying api......")
-        if self.backend.startswith("cloudfunction"):
-            base_url = get_cloudfunction_url(
-                self.versioned_clients.cloudfunctions, self.name
-            )
-        if self.backend == "cloudrun":
-            base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
+        base_url = self.backend.http_endpoint
         self.generate_openapi_spec(base_url)
         try:
             resp = self.versioned_clients.apigateway_api.execute(
