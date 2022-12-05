@@ -178,6 +178,6 @@ class CloudRun(Backend):
             stage=stage,
         )
 
-    @property()
+    @property
     def http_endpoint(self):
         return get_cloudrun_url(self.client, self.name)
