@@ -1,7 +1,6 @@
 import logging
 
 from goblet.client import VersionedClients, get_default_location, get_default_project
-from goblet.backends import CloudFunctionV1
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
