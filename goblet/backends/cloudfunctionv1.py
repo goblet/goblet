@@ -8,7 +8,6 @@ from goblet.common_cloud_actions import (
     create_cloudfunctionv1,
     destroy_cloudfunction_artifacts,
     destroy_cloudfunction,
-    get_cloudfunction_url,
 )
 
 
@@ -92,4 +91,4 @@ class CloudFunctionV1(Backend):
 
     @property
     def http_endpoint(self):
-        return get_cloudfunction_url(self.client, self.name)
+        return self.func_path
