@@ -18,6 +18,8 @@ class Backend:
 
     resource_type = ""
     version = ""
+    required_files = ["main.py"]
+    config_key = ""
 
     def __init__(self, app, client, func_path, config={}):
         self.app = app
@@ -47,6 +49,9 @@ class Backend:
 
     def destroy(self, all=False):
         raise NotImplementedError("destroy")
+
+    def update_config(self, infra_config={}, write_config=False, stage=None):
+        raise NotImplementedError("update_config")
 
     def _create_zip(self):
         """Creates initial goblet zipfile"""
@@ -110,7 +115,7 @@ class Backend:
                 raise
 
     def zip(self):
-        """Zips requirements.txt, python files and any additional files based on config.custom_files"""
+        """Zips python files and any additional files based on config.custom_files"""
         if self.config.requirements_file:
             self._zip_file(self.config.requirements_file, "requirements.txt")
         else:
@@ -122,6 +127,9 @@ class Backend:
             self._zip_directory()
 
     def _zip_file(self, filename, arcname=None):
+        """skip files if not required and do not exist"""
+        if not os.path.exists(filename) and filename not in self.required_files:
+            return
         self.zipf.write(filename, arcname)
 
     def _zip_directory(self):

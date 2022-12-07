@@ -47,13 +47,16 @@ class Jobs(Handler):
         if not self.resources:
             return
 
-        config = GConfig(config=config)
-        artifact = getCloudbuildArtifact(self.versioned_clients.cloudbuild)
+        gconfig = GConfig(config=config)
+        artifact = getCloudbuildArtifact(
+            self.versioned_clients.cloudbuild, self.name, config=gconfig
+        )
 
         log.info("deploying cloudrun jobs......")
         for job_name, job in self.resources.items():
 
-            container = {**(config.job_container or {})}
+            container = {**(gconfig.job_container or {})}
+            annotations = {**(gconfig.job_annotations or {})}
             container["image"] = artifact
             container["command"] = [
                 "goblet",
@@ -68,15 +71,17 @@ class Jobs(Handler):
                 "metadata": {
                     "name": job_name,
                     "annotations": {"run.googleapis.com/launch-stage": "BETA"},
+                    "labels": gconfig.labels,
                 },
                 "spec": {
                     "template": {
+                        "metadata": {"annotations": annotations},
                         "spec": {
                             "taskCount": len(job.keys()) - 1,
                             "template": {
                                 "spec": {
                                     "containers": [container],
-                                    **(config.job_spec or {}),
+                                    **(gconfig.job_spec or {}),
                                 }
                             },
                         },

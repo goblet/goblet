@@ -1,0 +1,12 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/e358a481-ca61-41fa-87fa-b9ea5f21b036",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.vpcaccess.v1.OperationMetadata",
+      "method": "google.cloud.vpcaccess.v1.VpcAccessService.CreateConnector",
+      "createTime": "2022-10-04T18:42:05.422700Z",
+      "target": "projects/goblet/locations/us-central1/connectors/vpc-test"
+    }
+  }
+}

@@ -12,6 +12,7 @@ from goblet.client import (
     get_credentials,
     get_default_project_number,
 )
+from goblet.errors import GobletError
 from goblet.utils import get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
@@ -160,7 +161,13 @@ def create_cloudbuild(client, req_body):
         timeout = 600
     else:
         timeout = int(timeout_seconds.split("s")[0])
-    client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
+    resp = client.wait_for_operation(resp["name"], calls="operations", timeout=timeout)
+    if not resp:
+        raise GobletError("Build Timed out")
+    if resp.get("error"):
+        raise GobletError(
+            f"Cloud build failed with error code {resp['error']['code']} and message {resp['error']['message']}"
+        )
 
 
 class MissingArtifact(Exception):
@@ -171,25 +178,35 @@ class MissingArtifact(Exception):
 
 
 # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
-def getCloudbuildArtifact(client):
+def getCloudbuildArtifact(client, artifactName, config):
     defaultProject = get_default_project()
     resp = client.execute(
         "list", parent_key="projectId", parent_schema=defaultProject, params={}
     )
-    latestBuildId = resp["builds"][0]["id"]
-    resp = client.execute(
-        "get",
-        parent_key="projectId",
-        parent_schema=defaultProject,
-        params={"id": latestBuildId},
+
+    # search for latest build with artifactName
+    latestArtifact = None
+    build_configs = config.cloudbuild or {}
+    registry = (
+        build_configs.get("artifact_registry")
+        or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{artifactName}"
     )
-    try:
-        latestArtifact = (
-            resp["results"]["images"][0]["name"]
-            + "@"
-            + resp["results"]["images"][0]["digest"]
-        )
-    except KeyError:
+
+    for build in resp["builds"]:
+        # pending builds will not have results field.
+        if (
+            build.get("results")
+            and build["results"].get("images")
+            and registry == build["results"]["images"][0]["name"]
+        ):
+            latestArtifact = latestArtifact = (
+                build["results"]["images"][0]["name"]
+                + "@"
+                + build["results"]["images"][0]["digest"]
+            )
+            break
+
+    if not latestArtifact:
         raise MissingArtifact("Missing artifact. Cloud Build may have failed.")
     return latestArtifact
 

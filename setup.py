@@ -27,7 +27,10 @@ REQUIRED = [
     "google-api-python-client",
     "functions-framework",
     "marshmallow",
+    "pydantic",
     "ruamel.yaml",
+    "google-cloud-logging",
+    "protobuf"
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

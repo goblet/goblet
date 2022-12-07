@@ -1,0 +1,26 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/e358a481-ca61-41fa-87fa-b9ea5f21b036",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.vpcaccess.v1.OperationMetadata",
+      "method": "google.cloud.vpcaccess.v1.VpcAccessService.CreateConnector",
+      "createTime": "2022-10-04T18:42:05.422700Z",
+      "endTime": "2022-10-04T18:43:38.874412Z",
+      "target": "projects/goblet/locations/us-central1/connectors/vpc-test"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.vpcaccess.v1.Connector",
+      "name": "projects/goblet/locations/us-central1/connectors/vpc-test",
+      "network": "default",
+      "ipCidrRange": "10.32.1.0/28",
+      "state": "READY",
+      "minThroughput": 200,
+      "maxThroughput": 300,
+      "machineType": "e2-micro",
+      "minInstances": 2,
+      "maxInstances": 3
+    }
+  }
+}

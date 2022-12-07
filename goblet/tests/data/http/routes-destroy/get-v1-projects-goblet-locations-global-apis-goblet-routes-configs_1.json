@@ -24,7 +24,7 @@
         "displayName": "goblet-routes",
         "state": "ACTIVE",
         "serviceConfigId": "goblet-routes-01bf3na1oh9cs",
-        "gatewayServiceAccount": "projects/goblet/serviceAccounts/871545765989-compute@developer.gserviceaccount.com"
+        "gatewayServiceAccount": "projects/goblet/serviceAccounts/11111111-compute@developer.gserviceaccount.com"
       }
     ]
   }

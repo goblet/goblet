@@ -1,0 +1,30 @@
+{
+    "function_name":"FUNCTION_NAME",
+    "job_container": {
+        "env": [
+            {
+                "name": "ENV",
+                "value": "VALUE"
+            }
+        ],
+        "resources": {
+            "limits": {
+                "cpu": "4000m",
+                "memory": "7000Mi"
+            }
+        }
+    },
+    "job_spec":{
+        "serviceAccountName": "SA@PROJECT.iam.gserviceaccount.com",
+        "timeoutSeconds":"600s",
+        "maxRetries": 1
+    },
+    "job_annotations":{
+        "run.googleapis.com/vpc-access-connector": "projects/PROJECT/locations/LOCATION/connectors/CONNECTION_NAME",
+        "run.googleapis.com/cloudsql-instances": "projects/PROJECT/locations/LOCATION/connectors/SQL_CONNECTION",
+        "run.googleapis.com/vpc-access-egress": "private-ranges-only"
+    },
+    "scheduler":{
+        "serviceAccount": "SA_SCHEDULER@PROJECT.iam.gserviceaccount.com"
+    }
+}

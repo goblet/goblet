@@ -1,0 +1,44 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/operation-1665151460802-5ea7249517ed5-3434166a-35ed214b",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.redis.v1.OperationMetadata",
+      "createTime": "2022-10-07T14:04:20.876838614Z",
+      "endTime": "2022-10-07T14:10:59.104779099Z",
+      "target": "projects/goblet/locations/us-central1/instances/redis-test",
+      "verb": "update",
+      "cancelRequested": false,
+      "apiVersion": "v1"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.redis.v1.Instance",
+      "name": "projects/goblet/locations/us-central1/instances/redis-test",
+      "locationId": "us-central1-b",
+      "redisVersion": "REDIS_6_X",
+      "reservedIpRange": "10.43.16.0/29",
+      "host": "10.43.16.3",
+      "port": 6379,
+      "currentLocationId": "us-central1-b",
+      "createTime": "2022-10-06T20:59:08.657098621Z",
+      "state": "READY",
+      "tier": "BASIC",
+      "memorySizeGb": 2,
+      "authorizedNetwork": "projects/goblet/global/networks/default",
+      "persistenceIamIdentity": "serviceAccount:service-11111111@cloud-redis.iam.gserviceaccount.com",
+      "connectMode": "PRIVATE_SERVICE_ACCESS",
+      "transitEncryptionMode": "DISABLED",
+      "nodes": [
+        {
+          "id": "node-0",
+          "zone": "us-central1-b"
+        }
+      ],
+      "readReplicasMode": "READ_REPLICAS_DISABLED",
+      "persistenceConfig": {
+        "persistenceMode": "DISABLED"
+      }
+    }
+  }
+}

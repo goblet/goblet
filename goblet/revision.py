@@ -15,7 +15,9 @@ log.setLevel(logging.INFO)
 class RevisionSpec:
     def __init__(self, config={}, versioned_clients=None, name="goblet"):
         self.versioned_clients = versioned_clients
-        config = GConfig(config=config)
+        if not isinstance(config, GConfig):
+            config = GConfig(config=config)
+        self.config = config
         self.cloudrun_configs = config.cloudrun or {}
         self.cloudrun_revision = config.cloudrun_revision or {}
         self.cloudrun_container = config.cloudrun_container or {}
@@ -99,11 +101,15 @@ class RevisionSpec:
         client = self.versioned_clients.run
         region = get_default_location()
         project = get_default_project_number()
-        self.latestArtifact = getCloudbuildArtifact(self.versioned_clients.cloudbuild)
+        self.latestArtifact = getCloudbuildArtifact(
+            self.versioned_clients.cloudbuild, self.name, config=self.config
+        )
         self.req_body = {
             "template": {
                 **self.cloudrun_revision,
-            }
+            },
+            "labels": {**self.config.labels},
+            **self.cloudrun_configs,
         }
         self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
         self.req_body["template"]["containers"][0]["image"] = self.latestArtifact

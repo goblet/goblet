@@ -141,6 +141,31 @@ Example config.json:
 .. _GLOB: https://docs.python.org/3/library/glob.html
 
 
+You can also set environent variables for your goblet deployment by using the `deploy` key with the `environmentVariables` object. This is
+useful if you want to set stage specific variables during your depoyment. 
+
+.. code:: json
+
+    {
+        "stages":{
+            "dev": {
+                "deploy": {
+                    "environmentVariables": {
+                        "PUBSUB_TOPIC": "DEV_TOPIC"
+                    }
+                }
+            }
+        }
+    }
+
+then your goblet code could be like 
+
+.. code:: python 
+
+    @app.topic(os.environ["PUBSUB_TOPIC"])
+    def handle_topic(data):
+        return 
+
 You can customize the configs for an Api Gateway using the `apiConfig` key in `config.json`. Allowed fields can be found 
 `here <https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs#ApiConfig>`_ and include 
 
@@ -158,6 +183,23 @@ You can customize the configs for an Api Gateway using the `apiConfig` key in `c
             }
         }
     }  
+
+Private Python Libraries
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can install private libraries in your cloudfunctions by passing in a `GIT_TOKEN` to your `buildEnvironmentVariables`.
+For example in your `requirementx.txt` you would include `git+https://${GIT_TOKEN}@github.com/mygithubuser/myrepo` and your `config.json` 
+would look as follows 
+
+.. code:: json
+
+    {
+        "cloudfunction": {
+            "buildEnvironmentVariables": {
+                "GIT_TOKEN":"YOURGITHUBTOKEN"
+            }
+        }
+    } 
 
 Iam Bindings
 ^^^^^^^^^^^^
@@ -225,6 +267,11 @@ To test a scheduled job locally you will need to include two headers in your req
 
     curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
 
+The goblet app will run on port 8080 by default. You can specify a custom port with the ``-p`` flag. 
+
+.. code:: sh 
+
+    goblet local -p 6000
 
 Debugging with VScode
 ^^^^^^^^^^^^^^^^^^^^^
@@ -299,14 +346,24 @@ cloudfunction also supports secret volumes
         }
     }
 
-For the cloudrun backend you would specificy the list of secrets via `set-secrets`. `/secrets/api/key=mysecret:latest` sets a volume and `ENV=othersecret:1`
-sets an environment variable.  
+For the cloudrun backend you can specificy the list of secrets as environment variables or volumes. For example with the following configuration you would be able to access 
+your api_keys using `os.environ["env-variable-name"]` which will return the value of the `secret-name` in Secret Manager.
 
 .. code:: json 
 
     {
-        "cloudrun": {
-            "set-secrets": "/secrets/api/key=mysecret:latest,ENV=othersecret:1"
+        "cloudrun_container": {
+            "env": [
+                {
+                    "name": "env-variable-name",
+                    "valueSource": {
+                        "secretKeyRef" : {
+                            "secret": "secret-name",
+                            "version": "secret-version"
+                        }
+                    }
+                }
+            ]
         }
     }
 
@@ -546,12 +603,13 @@ Note that gcp `gateway`_ only supports openapi spec 2.0. You can additionally ge
 By default the param types will be created in the spec as strings and a base 200 response. 
 You can specify custom param and response types using python typing and pass in openapi requestType and responses to the route.
 
-If you use a custom schema type you should create a schema class that inherits from marshmallow Schema. 
+If you use a custom schema type you should create a schema class that inherits from marshmallow Schema or pydantic BaseClass. 
 
 .. code:: python 
 
     from typing import List
     from marshmallow import Schema, fields
+    from pydantic import BaseModel
 
     # Typed Path Param
     @app.route('/home/{name}/{id}', methods=["GET"])
@@ -568,13 +626,18 @@ If you use a custom schema type you should create a schema class that inherits f
         point = Point().load({"lat":0, "lng":0})
         return [point]
 
-    # custom responses and request_types
-    # Request body must be schema defition valid with openapi spec 2
-    @app.route('/custom', request_body={'schema': {"type": "array", "items": {'type': 'string'}}}, responses={'400': {'description': '400'}})
-    def custom():
-        request = app.current_request
-        assert request.data ["string1", "string2"]
-        return
+    # Pydantic Models
+    class NestedModel(BaseModel):
+        text: str
+
+    class PydanticModel(BaseModel):
+        id: int
+        nested: NestedModel
+
+    # Request Body Typing
+    @app.route("/pydantic", request_body=PydanticModel)
+    def traffic() -> PydanticModel:
+        return jsonify(PydanticModel().dict)
 
     # Defining Query Params
     @app.route("/custom",query_params=[{'name': 'test', 'type': 'string', 'required': True},{'name': 'test2', 'type': 'string', 'required': True}]
@@ -763,6 +826,7 @@ For example with the following files which each contain a function and share cod
 Could have the goblet `.config`
 
 .. code:: json 
+    
     {
         "stages": {
             "func1": {
@@ -813,3 +877,28 @@ handler or do post prosessing on your responses.
 
 You can have your middleware trigger only on certain event types using the `event_type` argument. Default is `all`. Possible 
 event types are `["all", "http", "schedule", "pubsub", "storage", "route"]`
+
+Labels
+^^^^^^
+
+Labels can be added to all resources that support labels by passing in a labels dictionary to `Goblet` app. You can also 
+specify labels in `config.json` under the key label.
+
+.. code:: python 
+
+   app = Goblet(function_name="example-job",  labels={"sample_label":"sample_value"})
+
+config.json 
+
+.. code:: json 
+
+    {
+        "labels":{"sample_label_2":"2"},
+        "stages":{
+            "test": {
+                "labels": {
+                    "sample_label_stage":"staged"
+                }
+            }
+        }
+    }

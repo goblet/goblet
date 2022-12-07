@@ -9,7 +9,6 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction,
     destroy_cloudfunction_artifacts,
 )
-from goblet.config import GConfig
 
 
 class CloudFunctionV2(Backend):
@@ -17,6 +16,7 @@ class CloudFunctionV2(Backend):
 
     resource_type = "cloudfunctionv2"
     supported_versions = ["v2alpha", "v2beta", "v2"]
+    config_key = "cloudfunction"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions
@@ -25,9 +25,9 @@ class CloudFunctionV2(Backend):
 
     def deploy(self, force=False, config=None):
         if config:
-            config = GConfig(config=config)
-        else:
-            config = self.config
+            self.config.update_g_config(values=config)
+        config = self.config
+
         put_headers = {
             "content-type": "application/zip",
         }
@@ -49,6 +49,9 @@ class CloudFunctionV2(Backend):
     def _get_upload_params(self, source, config=None):
         config = config or self.config
         user_configs = config.cloudfunction or {}
+        build_configs = user_configs.get("buildConfig", {})
+        if build_configs:
+            del user_configs["buildConfig"]
         params = {
             "body": {
                 "name": self.func_path,
@@ -58,7 +61,9 @@ class CloudFunctionV2(Backend):
                     "runtime": get_function_runtime(self.client, config),
                     "entryPoint": "goblet_entrypoint",
                     "source": {"storageSource": source["storageSource"]},
+                    **build_configs,
                 },
+                "labels": {**self.config.labels},
                 **user_configs,
             },
             "functionId": self.app.function_name,
@@ -71,3 +76,27 @@ class CloudFunctionV2(Backend):
         )
         resp = request("HEAD", source_info["downloadUrl"])
         return resp.headers["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+
+    def update_config(self, infra_configs=[], write_config=False, stage=None):
+        config_updates = {self.config_key: {}}
+        for infra_config in infra_configs:
+            resource_type = infra_config["resource_type"]
+            if resource_type == "vpcconnector":
+                config_updates[self.config_key]["serviceConfig"] = {
+                    **config_updates[self.config_key].get("serviceConfig", {}),
+                    "vpcConnector": infra_config["values"]["name"],
+                    "vpcConnectorEgressSettings": infra_config["values"]["egress"],
+                }
+            elif resource_type in ("redis"):
+                config_updates[self.config_key]["serviceConfig"] = {
+                    **config_updates[self.config_key].get("serviceConfig", {}),
+                    "environmentVariables": {
+                        **config_updates[self.config_key]
+                        .get("serviceConfig", {})
+                        .get("environmentVariables", {}),
+                        **infra_config.get("values"),
+                    },
+                }
+        self.config.update_g_config(
+            values=config_updates, write_config=write_config, stage=stage
+        )

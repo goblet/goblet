@@ -16,7 +16,23 @@ class GConfig:
         if config:
             self.config = nested_update(self.config, config)
         self.stage = stage or os.environ.get("STAGE")
+        self.update_stage_config()
         self.validate()
+
+    def update_g_config(self, stage=None, values={}, write_config=False):
+        self.stage = self.stage or stage
+        if write_config:
+            if self.stage:
+                self.config["stages"][self.stage] = nested_update(
+                    self.config.get("stages", {}).get(self.stage, {}), values
+                )
+            else:
+                self.config = nested_update(self.config, values)
+            self.write()
+        self.update_stage_config()
+        self.config = nested_update(self.config, values)
+
+    def update_stage_config(self):
         if self.stage:
             self.config = nested_update(
                 self.config, self.config.get("stages", {}).get(self.stage, {})
@@ -39,7 +55,7 @@ class GConfig:
         if os.environ.get(name):
             return os.environ.get(name)
         attr = self.config.get(name)
-        if attr:
+        if attr or attr == {}:
             return attr
         return None
 
@@ -56,6 +72,3 @@ class GConfig:
     def validate(self):
         if self.stage and self.stage not in self.config.get("stages"):
             raise ValueError(f"stage {self.stage} not found in config")
-        for stage in self.config.get("stages", {}):
-            if "function_name" not in self.config["stages"][stage]:
-                raise ValueError(f"function_name key missing for stage {stage}")

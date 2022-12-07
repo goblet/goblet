@@ -103,13 +103,13 @@ Backends
 
    backends
 
-Blogs
---------
+Infrastructures
+---------------
 
 .. toctree::
    :maxdepth: 2
 
-   blogs
+   infrastructures
 
 Integrations
 ------------
@@ -118,6 +118,22 @@ Integrations
    :maxdepth: 2
 
    integrations
+
+Plugins
+-------
+
+.. toctree::
+   :maxdepth: 2
+
+   plugins
+
+Blogs
+-----
+
+.. toctree::
+   :maxdepth: 2
+
+   blogs
 
 Examples
 --------

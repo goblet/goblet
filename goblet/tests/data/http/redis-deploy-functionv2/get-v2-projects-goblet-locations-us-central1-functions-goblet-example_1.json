@@ -1,0 +1,16 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 404,
+      "message": "Resource 'projects/goblet/locations/us-central1/functions/goblet-example' was not found",
+      "status": "NOT_FOUND",
+      "details": [
+        {
+          "@type": "type.googleapis.com/google.rpc.ResourceInfo",
+          "resourceName": "projects/goblet/locations/us-central1/functions/goblet-example"
+        }
+      ]
+    }
+  }
+}

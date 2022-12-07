@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "uploadUrl": "https://storage.googleapis.com/mock",
+    "storageSource": {
+      "bucket": "gcf-v2-uploads-11111111-us-central1",
+      "object": "c6e7537b-2a7f-416a-8314-9bd341a4106e.zip"
+    }
+  }
+}

@@ -9,12 +9,13 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     destroy_cloudfunction,
 )
-from goblet.config import GConfig
 
 
 class CloudFunctionV1(Backend):
     resource_type = "cloudfunction"
     supported_versions = ["v1"]
+    required_files = ["requirements.txt", "main.py"]
+    config_key = "cloudfunction"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions
@@ -23,9 +24,8 @@ class CloudFunctionV1(Backend):
 
     def deploy(self, force=False, config=None):
         if config:
-            config = GConfig(config=config)
-        else:
-            config = self.config
+            self.config.update_g_config(values=config)
+        config = self.config
         put_headers = {
             "content-type": "application/zip",
             "x-goog-content-length-range": "0,104857600",
@@ -55,6 +55,7 @@ class CloudFunctionV1(Backend):
                 "sourceUploadUrl": source["uploadUrl"],
                 "httpsTrigger": {},
                 "runtime": get_function_runtime(self.client, self.config),
+                "labels": {**self.config.labels},
                 **user_configs,
             }
         }
@@ -66,3 +67,24 @@ class CloudFunctionV1(Backend):
         )
         resp = request("HEAD", source_info["downloadUrl"])
         return resp.headers["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
+
+    def update_config(self, infra_configs=[], write_config=False, stage=None):
+        config_updates = {self.config_key: {}}
+        for infra_config in infra_configs:
+            resource_type = infra_config["resource_type"]
+            if resource_type == "vpcconnector":
+                config_updates[self.config_key] = {
+                    **config_updates.get(self.config_key, {}),
+                    "vpcConnector": infra_config["values"]["name"],
+                    "vpcConnectorEgressSettings": infra_config["values"]["egress"],
+                }
+
+            elif resource_type in ("redis"):
+                config_updates[self.config_key]["environmentVariables"] = {
+                    **config_updates[self.config_key].get("environmentVariables", {}),
+                    **infra_config.get("values"),
+                }
+
+        self.config.update_g_config(
+            values=config_updates, write_config=write_config, stage=stage
+        )

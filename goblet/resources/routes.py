@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from marshmallow.schema import Schema
+from pydantic import BaseModel
 import base64
 import logging
 import re
@@ -12,6 +13,7 @@ import goblet
 
 from goblet.resources.handler import Handler
 from goblet.client import get_default_project
+from goblet.resources.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
@@ -20,7 +22,6 @@ import ruamel.yaml
 
 # ignore aliases when dumping
 ruamel.yaml.representer.RoundTripRepresenter.ignore_aliases = lambda x, y: True
-
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -111,6 +112,7 @@ class ApiGateway(Handler):
         return True
 
     def _deploy(self, source=None, entrypoint=None, config={}):
+        gconfig = GConfig(config)
         if (
             self.routes_type != "apigateway"
             and self.backend.startswith("cloudfunction")
@@ -131,7 +133,8 @@ class ApiGateway(Handler):
         self.generate_openapi_spec(base_url)
         try:
             resp = self.versioned_clients.apigateway_api.execute(
-                "create", params={"apiId": self.name}
+                "create",
+                params={"apiId": self.name, "body": {"labels": gconfig.labels}},
             )
             self.versioned_clients.apigateway_api.wait_for_operation(resp["name"])
         except HttpError as e:
@@ -139,7 +142,6 @@ class ApiGateway(Handler):
                 log.info("api already deployed")
             else:
                 raise e
-        goblet_config = GConfig()
         config = {
             "openapiDocuments": [
                 {
@@ -153,7 +155,8 @@ class ApiGateway(Handler):
                     }
                 }
             ],
-            **(goblet_config.apiConfig or {}),
+            "labels": gconfig.labels,
+            **(gconfig.apiConfig or {}),
         }
         try:
             config_version_name = self.name
@@ -184,6 +187,7 @@ class ApiGateway(Handler):
                 raise e
         gateway = {
             "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
+            "labels": gconfig.labels,
         }
         try:
             gateway_resp = self.versioned_clients.apigateway.execute(
@@ -341,11 +345,12 @@ class OpenApiSpec:
         self.spec["produces"] = ["application/json"]
         self.spec["paths"] = {}
         marshmallow_plugin = MarshmallowPlugin()
+        pydantic_plugin = PydanticPlugin()
         self.component_spec = APISpec(
             title="",
             version="1.0.0",
             openapi_version="2.0",
-            plugins=[marshmallow_plugin],
+            plugins=[marshmallow_plugin, pydantic_plugin],
         )
         if marshmallow_attribute_function:
             marshmallow_plugin.converter.add_attribute_function(
@@ -354,10 +359,10 @@ class OpenApiSpec:
 
         self.spec["definitions"] = {}
 
-    def add_component(self, component):
+    def add_component(self, component, **kwargs):
         if component.__name__ in self.component_spec.components.schemas:
             return
-        self.component_spec.components.schema(component.__name__, schema=component)
+        self.component_spec.components.schema(component.__name__, **kwargs)
         self.spec["definitions"] = self.component_spec.to_dict()["definitions"]
 
     def add_apigateway_routes(self, apigateway):
@@ -371,7 +376,10 @@ class OpenApiSpec:
         if type_info in PRIMITIVE_MAPPINGS.keys():
             param_type = {"type": PRIMITIVE_MAPPINGS[type_info]}
         elif issubclass(type_info, Schema) and not only_primititves:
-            self.add_component(type_info)
+            self.add_component(type_info, schema=type_info)
+            param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
+        elif issubclass(type_info, BaseModel) and not only_primititves:
+            self.add_component(type_info, model=type_info)
             param_type = {"$ref": f"#/definitions/{type_info.__name__}"}
         else:
             raise ValueError(
@@ -400,14 +408,13 @@ class OpenApiSpec:
             params.append(param_entry)
 
         if entry.request_body:
-            if isinstance(entry.request_body, dict):
-                params.append(
-                    {
-                        "in": "body",
-                        "name": "requestBody",
-                        "schema": entry.request_body["schema"],
-                    }
-                )
+            params.append(
+                {
+                    "in": "body",
+                    "name": "requestBody",
+                    **self._extract_content(entry.request_body),
+                }
+            )
 
         if entry.form_data:
             params.append({"in": "formData", "name": "file", "type": "file"})
@@ -422,7 +429,7 @@ class OpenApiSpec:
         return_type = type_hints.get("return")
         content = {}
         if return_type:
-            content = self._extract_return_content(return_type)
+            content = self._extract_content(return_type)
 
         if entry.responses:
             method_spec["responses"] = entry.responses
@@ -449,7 +456,7 @@ class OpenApiSpec:
                 entry.method.lower(): dict(method_spec)
             }
 
-    def _extract_return_content(self, return_type):
+    def _extract_content(self, return_type):
         """
         Return openapi spec response content for the given return type
         """
@@ -461,6 +468,9 @@ class OpenApiSpec:
             param_type = self.get_param_type(type_info)
             return {"schema": {"type": "array", "items": {**param_type}}}
         if issubclass(return_type, Schema):
+            param_type = self.get_param_type(return_type)
+            return {"schema": {**param_type}}
+        if issubclass(return_type, BaseModel):
             param_type = self.get_param_type(return_type)
             return {"schema": {**param_type}}
 

@@ -1,0 +1,89 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/b4154170-d668-4848-9adf-784c73761f02",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.run.v2.Service",
+      "name": "projects/goblet/locations/us-central1/services/goblet-example-vpc",
+      "uid": "d4ea6bdd-21f3-4bc7-81e0-cd373670c8cb",
+      "generation": "2",
+      "createTime": "2022-10-04T18:11:51.585184Z",
+      "updateTime": "2022-10-04T18:12:10.823089Z",
+      "deleteTime": "2022-10-04T18:12:10.823089Z",
+      "expireTime": "2022-11-03T18:12:10.823089Z",
+      "creator": "test@goblet.iam.gserviceaccount.com",
+      "lastModifier": "test@goblet.iam.gserviceaccount.com",
+      "ingress": "INGRESS_TRAFFIC_ALL",
+      "launchStage": "GA",
+      "template": {
+        "scaling": {
+          "maxInstanceCount": 100
+        },
+        "vpcAccess": {
+          "connector": "projects/goblet/locations/us-central1/connectors/vpc-test",
+          "egress": "PRIVATE_RANGES_ONLY"
+        },
+        "timeout": "300s",
+        "serviceAccount": "11111111-compute@developer.gserviceaccount.com",
+        "containers": [
+          {
+            "image": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-example-vpc@sha256:f5269094be3c60c253b2bd8aecc03f235e4704d4320662995560515e69558280",
+            "command": [
+              "functions-framework",
+              "--target=goblet_entrypoint"
+            ],
+            "resources": {
+              "limits": {
+                "memory": "512Mi",
+                "cpu": "1000m"
+              },
+              "cpuIdle": true
+            },
+            "ports": [
+              {
+                "name": "http1",
+                "containerPort": 8080
+              }
+            ]
+          }
+        ],
+        "maxInstanceRequestConcurrency": 80
+      },
+      "traffic": [
+        {
+          "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
+          "percent": 100
+        }
+      ],
+      "observedGeneration": "1",
+      "terminalCondition": {
+        "type": "Ready",
+        "state": "CONDITION_PENDING",
+        "lastTransitionTime": "2022-10-04T18:12:03.170507Z"
+      },
+      "conditions": [
+        {
+          "type": "RoutesReady",
+          "state": "CONDITION_SUCCEEDED",
+          "lastTransitionTime": "2022-10-04T18:12:03.362465Z"
+        },
+        {
+          "type": "ConfigurationsReady",
+          "state": "CONDITION_SUCCEEDED",
+          "lastTransitionTime": "2022-10-04T18:12:02.467858Z"
+        }
+      ],
+      "latestReadyRevision": "projects/goblet/locations/us-central1/services/goblet-example-vpc/revisions/goblet-example-vpc-86lhh",
+      "latestCreatedRevision": "projects/goblet/locations/us-central1/services/goblet-example-vpc/revisions/goblet-example-vpc-86lhh",
+      "trafficStatuses": [
+        {
+          "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
+          "percent": 100
+        }
+      ],
+      "uri": "https://goblet-example-vpc-ftjyujtcpa-uc.a.run.app",
+      "reconciling": true,
+      "etag": "\"CPru8ZkGEOiuvYgD/cHJvamVjdHMvcHJlbWlzZS1nb3Zlcm5hbmNlLXJkL2xvY2F0aW9ucy91cy1jZW50cmFsMS9zZXJ2aWNlcy9nb2JsZXQtZXhhbXBsZS12cGM\""
+    }
+  }
+}

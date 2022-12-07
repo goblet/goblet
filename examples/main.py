@@ -1,3 +1,4 @@
+from urllib import request
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
 import logging
 
@@ -64,24 +65,29 @@ def points() -> List[Point]:
     point = Point().load({"lat": 0, "lng": 0})
     return [point]
 
+
 # Custom Marshmallow Fields
 from marshmallow_enum import EnumField
 from enum import Enum
+
 
 def enum_to_properties(self, field, **kwargs):
     """
     Add an OpenAPI extension for marshmallow_enum.EnumField instances
     """
     if isinstance(field, EnumField):
-        return {'type': 'string', 'enum': [m.name for m in field.enum]}
+        return {"type": "string", "enum": [m.name for m in field.enum]}
     return {}
 
+
 app.handlers["route"].marshmallow_attribute_function = enum_to_properties
+
 
 class StopLight(Enum):
     green = 1
     yellow = 2
     red = 3
+
 
 class TrafficStop(Schema):
     light_color = EnumField(StopLight)
@@ -89,7 +95,8 @@ class TrafficStop(Schema):
 
 @app.route("/traffic")
 def traffic() -> TrafficStop:
-    return TrafficStop().dump({"light_color":StopLight.green})
+    return TrafficStop().dump({"light_color": StopLight.green})
+
 
 # Returns follow openapi spec
 # definitions:
@@ -102,6 +109,25 @@ def traffic() -> TrafficStop:
 #         - green
 #         - yellow
 #         - red
+
+# Pydantic Typing
+from pydantic import BaseModel
+
+
+class NestedModel(BaseModel):
+    text: str
+
+
+class PydanticModel(BaseModel):
+    id: int
+    nested: NestedModel
+
+
+# Request Body Typing
+@app.route("/pydantic", request_body=PydanticModel)
+def traffic() -> PydanticModel:
+    return jsonify(PydanticModel().dict)
+
 
 # Custom Backend
 @app.route("/custom_backend", backend="https://www.CLOUDRUN_URL.com/home")
@@ -170,15 +196,22 @@ def pubsub_attributes(data):
     app.log.info(data)
     return
 
+
 # create a pubsub subscription instead of pubsub triggered function
-@app.topic('test', use_subscription=True)
+@app.topic("test", use_subscription=True)
 def pubsub_subscription_use_subscription(data):
-    return 
+    return
+
 
 # create a pubsub subscription instead of pubsub triggered function and add filter
-@app.topic('test', use_subscription=True, filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"')
+@app.topic(
+    "test",
+    use_subscription=True,
+    filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"',
+)
 def pubsub_subscription_filter(data):
-    return 
+    return
+
 
 # Example Storage trigger on the create/finalize event
 @app.storage("BUCKET_NAME", "finalize")
@@ -234,14 +267,23 @@ def bucket_get(data):
     app.log.info("bucket_get")
     return
 
+
 # Example Cloudrun Job with schedule
 @app.job("job1", schedule="* * * * *")
 def job1_task1(id):
     app.log.info(f"job...{id}")
     return "200"
 
+
 # Example Cloudrun Job with additional task
 @app.job("job1", task_id=1)
 def job1_task2(id):
     app.log.info(f"different task for job...{id}")
     return "200"
+
+
+# Example Redis Instance
+app.redis("redis-test")
+
+# Example VPC Connector
+app.vpcconnector("vpc-conn-test")

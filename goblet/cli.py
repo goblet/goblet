@@ -5,6 +5,7 @@ import logging
 import subprocess
 import json
 import requests
+import sys
 
 from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
@@ -36,11 +37,23 @@ def version():
 @click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
 @click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-@click.option("--skip-function", "skip_function", is_flag=True)
-@click.option("--only-function", "only_function", is_flag=True)
+@click.option("--skip-resources", "skip_resources", is_flag=True)
+@click.option("--skip-backend", "skip_backend", is_flag=True)
+@click.option("--skip-infra", "skip_infra", is_flag=True)
 @click.option("--config-from-json-string", "config")
 @click.option("-f", "--force", "force", is_flag=True)
-def deploy(project, location, stage, skip_function, only_function, config, force):
+@click.option("--write-config", "write_config", is_flag=True)
+def deploy(
+    project,
+    location,
+    stage,
+    skip_resources,
+    skip_backend,
+    skip_infra,
+    config,
+    force,
+    write_config,
+):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
 
@@ -48,6 +61,7 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 
     Note: Make sure api-gateway, cloudfunctions, and storage are enabled in your project
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         _project = project or get_default_project()
         if not _project:
@@ -58,15 +72,38 @@ def deploy(project, location, stage, skip_function, only_function, config, force
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
+
+        # import config from string
+        imported_config = {}
         if config:
-            config = json.loads(config)
-        app = get_goblet_app(GConfig().main_file or "main.py")
-        app.deploy(skip_function, only_function, config=config, force=False)
+            imported_config = json.loads(config)
+
+        # get goblet config
+        goblet_config = GConfig(imported_config)
+
+        # set deploy env vars
+        if goblet_config.deploy:
+            for key, value in goblet_config.deploy.get(
+                "environmentVariables", []
+            ).items():
+                os.environ[key] = value
+
+        app = get_goblet_app(goblet_config.main_file or "main.py")
+        app.deploy(
+            skip_resources,
+            skip_backend,
+            skip_infra,
+            config=goblet_config.config,
+            force=force,
+            stage=stage,
+            write_config=write_config,
+        )
 
     except FileNotFoundError as not_found:
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @main.command()
@@ -74,12 +111,14 @@ def deploy(project, location, stage, skip_function, only_function, config, force
 @click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
 @click.option("-s", "--stage", "stage", envvar="STAGE")
 @click.option("-a", "--all", "all", is_flag=True)
-def destroy(project, location, stage, all):
+@click.option("--skip-infra", "skip_infra", is_flag=True)
+def destroy(project, location, stage, all, skip_infra):
     """
     Deletes all resources in gcp that are defined the current deployment
 
     The --all flag removes cloudfunction artifacts in cloud storage as well
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         _project = project or get_default_project()
         if not _project:
@@ -90,13 +129,25 @@ def destroy(project, location, stage, all):
         os.environ["GOOGLE_LOCATION"] = location
         if stage:
             os.environ["STAGE"] = stage
-        app = get_goblet_app(GConfig().main_file or "main.py")
-        app.destroy(all)
+
+        # get goblet config
+        goblet_config = GConfig()
+
+        # set deploy env vars
+        if goblet_config.deploy:
+            for key, value in goblet_config.deploy.get(
+                "environmentVariables", []
+            ).items():
+                os.environ[key] = value
+
+        app = get_goblet_app(goblet_config.main_file or "main.py")
+        app.destroy(all, skip_infra)
 
     except FileNotFoundError as not_found:
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @main.command()
@@ -111,6 +162,7 @@ def sync(project, location, stage, dryrun):
 
     Use --dryrun flag to see what resources are flagged as being deleted.
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         _project = project or get_default_project()
         if not _project:
@@ -128,6 +180,7 @@ def sync(project, location, stage, dryrun):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @main.command()
@@ -140,6 +193,7 @@ def openapi(cloudfunction, stage, version):
 
     The cloudfunction argument sets the correct x-google-backend address in the openapi spec.
     """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     if stage:
         os.environ["STAGE"] = stage
     try:
@@ -149,6 +203,8 @@ def openapi(cloudfunction, stage, version):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
+
     if version:
         with open(f"{get_g_dir()}/{app.function_name}_openapi_spec.yml", "r") as f:
             data = f.read()
@@ -166,7 +222,8 @@ def openapi(cloudfunction, stage, version):
 @main.command()
 @click.argument("local_arg", default="local")
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-def local(local_arg, stage):
+@click.option("-p", "--port", "port", envvar="PORT", default=8080)
+def local(local_arg, stage, port):
     """
     Requires the local argument to be set in the Goblet class. The default is local.
 
@@ -174,6 +231,7 @@ def local(local_arg, stage):
 
     Goblet("test_function",local="local_function")
     """
+    os.environ["X-GOBLET-LOCAL"] = "true"
     try:
         if stage:
             os.environ["STAGE"] = stage
@@ -185,6 +243,7 @@ def local(local_arg, stage):
                 f"--target={local_arg}",
                 "--debug",
                 f"--source={source}",
+                f"--port={port}",
             ]
         )
     except subprocess.CalledProcessError:
@@ -197,6 +256,7 @@ def local(local_arg, stage):
 @main.command()
 def package(stage):
     """generates the goblet zipped package in .goblet folder"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     try:
         if stage:
             os.environ["STAGE"] = stage
@@ -207,6 +267,7 @@ def package(stage):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 @click.argument(
@@ -216,7 +277,7 @@ def package(stage):
 def init(name):
     """Create new goblet app with files main.py, requirements.txt, and directory .goblet"""
     create_goblet_dir(name)
-    click.echo("created .goblet/json.config")
+    click.echo("created .goblet/config.json")
     click.echo("created requirements.txt")
     click.echo("created main.py")
     click.echo("created README.md")
@@ -242,6 +303,7 @@ def list_stages():
 )
 def create(stage):
     """create a new stage in config.json"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
     config = GConfig()
     if config.stages and stage in config.stages:
         return click.echo(f"stage {stage} already exists")
@@ -281,6 +343,7 @@ def run_job(name, task_id):
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
         )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
