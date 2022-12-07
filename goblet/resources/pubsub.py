@@ -41,7 +41,7 @@ class PubSub(Handler):
         if (
             kwargs.get("use_subscription")
             or project != get_default_project()
-            or self.backend == "cloudrun"
+            or self.backend.resource_type == "cloudrun"
         ):
             deploy_type = "subscription"
 
@@ -119,13 +119,13 @@ class PubSub(Handler):
         if gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
             service_account = gconfig.pubsub.get("serviceAccountEmail")
         elif (
-            self.backend == "cloudrun"
+            self.backend.resource_type == "cloudrun"
             and gconfig.cloudrun
             and gconfig.cloudrun.get("service-account")
         ):
             service_account = gconfig.cloudrun.get("service-account")
         elif (
-            self.backend.startswith("cloudfunction")
+            self.backend.resource_type.startswith("cloudfunction")
             and gconfig.cloudfunction
             and gconfig.pubsub.get("serviceAccountEmail")
         ):

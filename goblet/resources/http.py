@@ -8,12 +8,7 @@ class HTTP(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
 
     def __init__(
-        self,
-        name,
-        versioned_clients=None,
-        cors=None,
-        resources=None,
-        backend="cloudfunction",
+        self, name, backend, versioned_clients=None, cors=None, resources=None
     ):
         super(HTTP, self).__init__(
             name=name,

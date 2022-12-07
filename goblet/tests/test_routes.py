@@ -9,6 +9,7 @@ from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
 )
+from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
 
 
 class TestRoutes:
@@ -221,13 +222,23 @@ class TestRoutes:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        gw = ApiGateway(name="test", routes_type="cloudrun", resources=[{}, {}])
+        gw = ApiGateway(
+            name="test",
+            routes_type="cloudrun",
+            resources=[{}, {}],
+            backend=CloudRun(Goblet(function_name="test", backend="cloudrun")),
+        )
 
         assert gw.deploy() is None
 
     def test_deploy_routes_type_cloudrun_with_incorrect_backend(self, monkeypatch):
 
-        ApiGateway(name="test", routes_type="cloudrun", resources=[{}, {}])
+        ApiGateway(
+            name="test",
+            routes_type="cloudrun",
+            resources=[{}, {}],
+            backend=CloudRun(Goblet(function_name="test", backend="cloudrun")),
+        )
         with pytest.raises(Exception):
             ApiGateway.deploy()
 
@@ -237,7 +248,11 @@ class TestRoutes:
         monkeypatch.setenv("GOBLET_TEST_NAME", "routes-destroy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        apigw = ApiGateway("goblet_routes", resources=["not_empty"])
+        apigw = ApiGateway(
+            "goblet_routes",
+            resources=["not_empty"],
+            backend=CloudFunctionV1(Goblet(function_name="goblet_routes")),
+        )
         apigw.destroy()
 
         responses = get_responses("routes-destroy")
@@ -252,20 +267,20 @@ class TestRoutes:
 
 class TestApiGateway:
     def test_path_param_matching(self):
-        gw = ApiGateway("test")
+        gw = ApiGateway("test", backend=CloudFunctionV1(Goblet()))
         assert gw._matched_path("/home/{home_id}", "/home/5")
         assert not gw._matched_path("/home/{home_id}", "/home/5/fail")
 
     def test_deadline(self):
-        gw = ApiGateway("test", backend="cloudrun")
+        gw = ApiGateway("test", backend=CloudRun(Goblet(backend="cloudrun")))
         assert gw.get_timeout(GConfig({"cloudrun_revision": {"timeout": 300}})) == 300
         assert gw.get_timeout(GConfig()) == 15
 
-        gw = ApiGateway("test", backend="cloudfunction")
+        gw = ApiGateway("test", backend=CloudFunctionV1(Goblet()))
         assert gw.get_timeout(GConfig({"cloudfunction": {"timeout": 300}})) == 300
         assert gw.get_timeout(GConfig()) == 15
 
-        gw = ApiGateway("test", backend="cloudfunctionv2")
+        gw = ApiGateway("test", backend=CloudFunctionV2(Goblet()))
         assert (
             gw.get_timeout(
                 GConfig({"cloudfunction": {"serviceConfig": {"timeoutSeconds": 300}}})
@@ -274,7 +289,7 @@ class TestApiGateway:
         )
         assert gw.get_timeout(GConfig()) == 15
 
-        gw = ApiGateway("test", backend="cloudfunction")
+        gw = ApiGateway("test", backend=CloudFunctionV1(Goblet()))
         assert (
             gw.get_timeout(
                 GConfig(

@@ -17,7 +17,7 @@ class TestDeployer:
         app = Goblet(function_name="goblet_example")
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+        app.handlers["http"] = HTTP("name", app)
 
         app.deploy(skip_resources=True, skip_infra=True, force=True)
 
@@ -58,7 +58,7 @@ class TestDeployer:
         app = Goblet(function_name="goblet", backend="cloudrun")
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+        app.handlers["http"] = HTTP("name", app)
 
         app.deploy(
             skip_resources=True,
@@ -85,7 +85,7 @@ class TestDeployer:
         app = Goblet(function_name="goblet", backend="cloudrun")
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+        app.handlers["http"] = HTTP("name", app)
         with pytest.raises(GobletError):
             app.deploy(
                 skip_resources=True,
@@ -155,7 +155,7 @@ class TestDeployer:
         app = Goblet(function_name="goblet_bindings")
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+        app.handlers["http"] = HTTP("name", app)
         bindings = [{"role": "roles/cloudfunctions.invoker", "members": ["allUsers"]}]
         app.deploy(
             skip_resources=True,
@@ -198,7 +198,7 @@ class TestDeployer:
         app = Goblet(function_name="goblet", backend="cloudrun")
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"] = HTTP(dummy_function)
+        app.handlers["http"] = HTTP("name", app)
 
         app.deploy(
             skip_resources=True,

@@ -35,17 +35,16 @@ class Goblet(Register_Handlers):
     ):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         self.client_versions.update(client_versions or {})
-        self.backend = backend
         self.backend_class = self.get_backend_and_check_versions(
             backend, client_versions or {}
         )
-        # self.client_versions[self.backend_class.resource_type] = self.backend_class.version
         self.function_name = GConfig().function_name or function_name
         self.labels = labels
+        self.backend = self.backend_class(self)
 
         super(Goblet, self).__init__(
             function_name=self.function_name,
-            backend=backend,
+            backend=self.backend,
             cors=cors,
             client_versions=self.client_versions,
             routes_type=routes_type,
@@ -87,7 +86,7 @@ class Goblet(Register_Handlers):
     ):
         config.update({"labels": self.labels})
         source = None
-        backend = self.backend_class(self)
+        backend = self.backend
         if not skip_infra:
             log.info("deploying infrastructure")
             self.deploy_infrastructure(config=config)
@@ -96,7 +95,7 @@ class Goblet(Register_Handlers):
         backend.update_config(infra_config, write_config, stage)
 
         if not skip_backend:
-            log.info(f"preparing to deploy with backend {self.backend_class.__name__}")
+            log.info(f"preparing to deploy with backend {self.backend.resource_type}")
             source = backend.deploy(force=force, config=config)
         if not skip_resources:
             self.deploy_handlers(source, config=config)
@@ -106,7 +105,7 @@ class Goblet(Register_Handlers):
         for k, v in self.handlers.items():
             log.info(f"destroying {k}")
             v.destroy()
-        self.backend_class(self).destroy(all=all)
+        self.backend.destroy(all=all)
 
         if not skip_infra:
             for k, v in self.infrastructure.items():
@@ -114,7 +113,7 @@ class Goblet(Register_Handlers):
                 v.destroy()
 
     def package(self):
-        self.backend_class(self).zip()
+        self.backend.zip()
 
 
 def jsonify(*args, **kwargs):

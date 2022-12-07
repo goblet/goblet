@@ -37,10 +37,10 @@ class ApiGateway(Handler):
     def __init__(
         self,
         name,
+        backend,
         versioned_clients=None,
         cors=None,
         resources=None,
-        backend="cloudfunction",
         routes_type="apigateway",
     ):
         super(ApiGateway, self).__init__(
@@ -114,7 +114,7 @@ class ApiGateway(Handler):
         gconfig = GConfig(config)
         if (
             self.routes_type != "apigateway"
-            and self.backend.startswith("cloudfunction")
+            and self.backend.resource_type.startswith("cloudfunction")
             and self.versioned_clients.cloudfunctions == "v1"
         ):
             raise ValueError(
@@ -291,15 +291,15 @@ class ApiGateway(Handler):
     def get_timeout(self, config):
         # get api gateway timeout
         deadline = (config.api_gateway or {}).get("deadline")
-        if self.backend == "cloudfunction" and not deadline:
+        if self.backend.resource_type == "cloudfunction" and not deadline:
             deadline = (config.cloudfunction or {}).get("timeout")
-        if self.backend == "cloudfunctionv2" and not deadline:
+        if self.backend.resource_type == "cloudfunctionv2" and not deadline:
             deadline = (
                 (config.cloudfunction or {})
                 .get("serviceConfig", {})
                 .get("timeoutSeconds")
             )
-        if self.backend == "cloudrun" and not deadline:
+        if self.backend.resource_type == "cloudrun" and not deadline:
             deadline = (config.cloudrun_revision or {}).get("timeout")
         # default deadline to 15 seconds, which is gcp api gateway default
         return deadline or 15
