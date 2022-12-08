@@ -65,7 +65,7 @@ class Goblet(Register_Handlers):
             setattr(sys.modules[module_name], local, local_func)
 
         # configure logging for local or gcp
-        if os.environ.get("X-GOBLET-LOCAL") or os.environ.get("GOBLET_HTTP_TEST"):
+        if os.environ.get("X_GOBLET_LOCAL") or os.environ.get("GOBLET_HTTP_TEST"):
             logging.basicConfig()
             self.log = logging.getLogger("werkzeug")
         elif not os.environ.get("X-GOBLET-DEPLOY"):

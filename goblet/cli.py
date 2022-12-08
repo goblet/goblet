@@ -231,7 +231,7 @@ def local(local_arg, stage, port):
 
     Goblet("test_function",local="local_function")
     """
-    os.environ["X-GOBLET-LOCAL"] = "true"
+    os.environ["X_GOBLET_LOCAL"] = "true"
     try:
         if stage:
             os.environ["STAGE"] = stage
