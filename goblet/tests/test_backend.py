@@ -3,7 +3,9 @@ from goblet.backends.backend import Backend
 
 
 class TestBackend:
-    def test_custom_files(self):
+    def test_custom_files(self, monkeypatch):
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+
         test_custom_files = {
             "custom_files": {"include": ["*.yaml"], "exclude": [".secret"]}
         }
