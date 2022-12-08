@@ -388,7 +388,7 @@ class OpenApiSpec:
             "address": entry.backend or self.cloudfunction,
             "protocol": "h2",
             "path_translation": "APPEND_PATH_TO_ADDRESS",
-            "deadline": self.deadline,
+            "deadline": entry.deadline or self.deadline,
         }
         method_spec["operationId"] = f"{entry.method.lower()}_{entry.function_name}"
 
@@ -501,6 +501,7 @@ class RouteEntry:
         self.backend = kwargs.get("backend")
         self.security = kwargs.get("security")
         self.tags = kwargs.get("tags")
+        self.deadline = kwargs.get("deadline")
         #: A list of names to extract from path:
         #: e.g, '/foo/{bar}/{baz}/qux -> ['bar', 'baz']
         self.view_args = self._parse_view_args()

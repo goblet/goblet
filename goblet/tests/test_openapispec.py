@@ -48,6 +48,23 @@ class TestOpenApiSpec:
         }
         assert spec.spec["paths"] == expected_json
 
+    def test_custom_deadlines(self):
+        route = RouteEntry(
+            dummy,
+            "route",
+            "/home",
+            "GET",
+        )
+        route2 = RouteEntry(dummy, "deadline", "/deadline", "GET", deadline=30)
+        spec = OpenApiSpec("test", "xyz.cloudfunction", deadline=10)
+        spec.add_route(route)
+        spec.add_route(route2)
+
+        assert spec.spec["paths"]["/home"]["get"]["x-google-backend"]["deadline"] == 10
+        assert (
+            spec.spec["paths"]["/deadline"]["get"]["x-google-backend"]["deadline"] == 30
+        )
+
     def test_add_route_post(self):
         route = RouteEntry(dummy, "route", "/home", "GET")
         route_post = RouteEntry(dummy, "route", "/home", "POST")
