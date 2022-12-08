@@ -12,7 +12,6 @@ class Handler:
     valid_backends = []
     resources = None
     resource_type = ""
-    backend = ""
     can_sync = False
 
     def __init__(
