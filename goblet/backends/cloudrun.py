@@ -10,6 +10,7 @@ from goblet.common_cloud_actions import (
     create_cloudbuild,
     destroy_cloudrun,
     destroy_cloudfunction_artifacts,
+    get_cloudrun_url,
 )
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
@@ -176,3 +177,7 @@ class CloudRun(Backend):
             write_config=write_config,
             stage=stage,
         )
+
+    @property
+    def http_endpoint(self):
+        return get_cloudrun_url(self.client, self.name)

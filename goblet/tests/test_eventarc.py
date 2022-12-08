@@ -5,6 +5,7 @@ from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
 )
+from goblet.backends.cloudrun import CloudRun
 
 from unittest.mock import Mock
 
@@ -87,7 +88,7 @@ class TestEventArc:
 
         eventarc = EventArc(
             "test-eventarc",
-            backend="cloudrun",
+            backend=CloudRun(Goblet(function_name="test-eventarc", backend="cloudrun")),
             resources=[
                 {
                     "trigger_name": "test-eventarc-bucket-get",
@@ -125,7 +126,7 @@ class TestEventArc:
 
         eventarc = EventArc(
             "test-eventarc",
-            backend="cloudrun",
+            backend=CloudRun(Goblet(function_name="test-eventarc", backend="cloudrun")),
             resources=[
                 {
                     "trigger_name": "test-eventarc-bucket-get",
@@ -163,7 +164,7 @@ class TestEventArc:
 
         eventarc = EventArc(
             "test-eventarc",
-            backend="cloudrun",
+            backend=CloudRun(Goblet(function_name="test-eventarc", backend="cloudrun")),
             resources=[
                 {
                     "trigger_name": "test-eventarc-bucket-get",
@@ -202,7 +203,7 @@ class TestEventArc:
 
         eventarc = EventArc(
             "test-eventarc",
-            backend="cloudrun",
+            backend=CloudRun(Goblet(function_name="test-eventarc", backend="cloudrun")),
             resources=[
                 {
                     "trigger_name": "test-eventarc-bucket-get",

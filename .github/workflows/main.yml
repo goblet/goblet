@@ -50,6 +50,8 @@ jobs:
       - name: Run pytest
         run: |
           export PYTHONPATH=$(pwd)
+          export X_GOBLET_LOCAL=true
+          export GOBLET_HTTP_TEST=REPLAY
           coverage run -m pytest goblet/tests;
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v1

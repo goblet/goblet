@@ -10,6 +10,8 @@ from goblet.test_utils import (
     mock_dummy_function,
 )
 
+from goblet.backends import CloudFunctionV1
+
 
 class TestJobs:
     def test_add_job(self):
@@ -80,7 +82,9 @@ class TestJobs:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "test-job"
-        jobs = Jobs(goblet_name)
+        jobs = Jobs(
+            goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
+        )
         jobs.register_job("test", None, {"task_id": 0})
         jobs._deploy()
 
@@ -121,7 +125,7 @@ class TestJobs:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "test-job"
-        jobs = Jobs(goblet_name)
+        jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name="test-job")))
         jobs.register_job("test2", None, {"task_id": 0})
         jobs.sync()
 
@@ -136,7 +140,7 @@ class TestJobs:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet-test"
-        jobs = Jobs(goblet_name)
+        jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name=goblet_name)))
         jobs.register_job("test", None, {"task_id": 0})
         jobs.destroy()
 

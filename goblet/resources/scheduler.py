@@ -85,7 +85,7 @@ class Scheduler(Handler):
         if not self.resources:
             return
 
-        if self.backend.startswith("cloudfunction"):
+        if self.backend.resource_type.startswith("cloudfunction"):
             resp = self.versioned_clients.cloudfunctions.execute(
                 "get", parent_key="name", parent_schema=self.cloudfunction
             )
@@ -98,7 +98,7 @@ class Scheduler(Handler):
                 target = resp["serviceConfig"]["uri"]
                 service_account = resp["serviceConfig"]["serviceAccountEmail"]
 
-        if self.backend == "cloudrun":
+        if self.backend.resource_type == "cloudrun":
             # dont get target in scheduler is needed only for jobs
             cloudrun_target = None
             config = GConfig(config=config)
@@ -116,7 +116,7 @@ class Scheduler(Handler):
         for job_name, job in self.resources.items():
             if job["uri"]:
                 target = job["uri"]
-            elif self.backend.startswith("cloudfunction"):
+            elif self.backend.resource_type.startswith("cloudfunction"):
                 target = target
             else:
                 # only run once

@@ -2,8 +2,6 @@ import base64
 from goblet.common_cloud_actions import (
     create_pubsub_subscription,
     destroy_pubsub_subscription,
-    get_cloudrun_url,
-    get_cloudfunction_url,
     get_function_runtime,
     create_cloudfunctionv2,
     create_cloudfunctionv1,
@@ -43,7 +41,7 @@ class PubSub(Handler):
         if (
             kwargs.get("use_subscription")
             or project != get_default_project()
-            or self.backend == "cloudrun"
+            or self.backend.resource_type == "cloudrun"
         ):
             deploy_type = "subscription"
 
@@ -114,24 +112,20 @@ class PubSub(Handler):
     def _deploy_subscription(self, topic_name, topic, config={}):
         sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
-        if self.backend == "cloudrun":
-            push_url = get_cloudrun_url(self.versioned_clients.run, self.name)
-        else:
-            push_url = get_cloudfunction_url(
-                self.versioned_clients.cloudfunctions, self.name
-            )
+
+        push_url = self.backend.http_endpoint
 
         gconfig = GConfig(config=config)
         if gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
             service_account = gconfig.pubsub.get("serviceAccountEmail")
         elif (
-            self.backend == "cloudrun"
+            self.backend.resource_type == "cloudrun"
             and gconfig.cloudrun
             and gconfig.cloudrun.get("service-account")
         ):
             service_account = gconfig.cloudrun.get("service-account")
         elif (
-            self.backend.startswith("cloudfunction")
+            self.backend.resource_type.startswith("cloudfunction")
             and gconfig.cloudfunction
             and gconfig.pubsub.get("serviceAccountEmail")
         ):

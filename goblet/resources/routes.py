@@ -16,7 +16,6 @@ from goblet.client import get_default_project
 from goblet.resources.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
-from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
 
 import ruamel.yaml
 
@@ -38,10 +37,10 @@ class ApiGateway(Handler):
     def __init__(
         self,
         name,
+        backend,
         versioned_clients=None,
         cors=None,
         resources=None,
-        backend="cloudfunction",
         routes_type="apigateway",
     ):
         super(ApiGateway, self).__init__(
@@ -115,7 +114,7 @@ class ApiGateway(Handler):
         gconfig = GConfig(config)
         if (
             self.routes_type != "apigateway"
-            and self.backend.startswith("cloudfunction")
+            and self.backend.resource_type.startswith("cloudfunction")
             and self.versioned_clients.cloudfunctions == "v1"
         ):
             raise ValueError(
@@ -124,12 +123,7 @@ class ApiGateway(Handler):
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
         log.info("deploying api......")
-        if self.backend.startswith("cloudfunction"):
-            base_url = get_cloudfunction_url(
-                self.versioned_clients.cloudfunctions, self.name
-            )
-        if self.backend == "cloudrun":
-            base_url = get_cloudrun_url(self.versioned_clients.run, self.name)
+        base_url = self.backend.http_endpoint
         self.generate_openapi_spec(base_url)
         try:
             resp = self.versioned_clients.apigateway_api.execute(
@@ -297,15 +291,15 @@ class ApiGateway(Handler):
     def get_timeout(self, config):
         # get api gateway timeout
         deadline = (config.api_gateway or {}).get("deadline")
-        if self.backend == "cloudfunction" and not deadline:
+        if self.backend.resource_type == "cloudfunction" and not deadline:
             deadline = (config.cloudfunction or {}).get("timeout")
-        if self.backend == "cloudfunctionv2" and not deadline:
+        if self.backend.resource_type == "cloudfunctionv2" and not deadline:
             deadline = (
                 (config.cloudfunction or {})
                 .get("serviceConfig", {})
                 .get("timeoutSeconds")
             )
-        if self.backend == "cloudrun" and not deadline:
+        if self.backend.resource_type == "cloudrun" and not deadline:
             deadline = (config.cloudrun_revision or {}).get("timeout")
         # default deadline to 15 seconds, which is gcp api gateway default
         return deadline or 15
