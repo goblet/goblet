@@ -13,6 +13,7 @@ lint:
 	flake8 goblet
 
 coverage:
+	export GOBLET_HTTP_TEST=REPLAY
 	coverage run -m pytest goblet/tests;
 	coverage report -m --include="goblet/*" --omit="goblet/tests/*";
 
