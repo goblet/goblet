@@ -7,6 +7,7 @@ from goblet.backends.cloudrun import CloudRun
 from goblet.client import VersionedClients, get_default_location, get_default_project
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
+from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
@@ -104,6 +105,17 @@ class DecoratorAPI:
             handler_type="schedule",
             registration_kwargs={
                 "schedule": schedule,
+                "timezone": timezone,
+                "kwargs": kwargs,
+            },
+        )
+
+    def bqremotefunction(self, function_name, timezone="UTC", **kwargs):
+        """Scheduler job Http trigger"""
+        return self._create_registration_function(
+            handler_type="bqremotefunction",
+            registration_kwargs={
+                "functionName": function_name,
                 "timezone": timezone,
                 "kwargs": kwargs,
             },
@@ -247,6 +259,9 @@ class Register_Handlers(DecoratorAPI):
             "schedule": Scheduler(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
+            "bqremotefunction": BigQueryRemoteFunction(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            )
         }
 
         self.infrastructure = {
@@ -346,7 +361,7 @@ class Register_Handlers(DecoratorAPI):
     def _register_handler(self, handler_type, name, func, kwargs, options=None):
 
         getattr(self, "_register_%s" % handler_type)(
-            name=name,
+            name,
             func=func,
             kwargs=kwargs,
         )
@@ -465,3 +480,8 @@ class Register_Handlers(DecoratorAPI):
         self.infrastructure["vpcconnector"].register_connector(
             kwargs["name"], kwargs=kwargs.get("kwargs", {})
         )
+
+    def _register_bqremotefunction(self, name, func, kwargs):
+        name = kwargs.get("kwargs", {}).get("name") or name
+        # self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
+        self.handlers["bqremotefunction"].register_bqremotefunction(name=name, func=func, kwargs=kwargs)
