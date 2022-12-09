@@ -346,14 +346,24 @@ cloudfunction also supports secret volumes
         }
     }
 
-For the cloudrun backend you would specificy the list of secrets via `set-secrets`. `/secrets/api/key=mysecret:latest` sets a volume and `ENV=othersecret:1`
-sets an environment variable.  
+For the cloudrun backend you can specificy the list of secrets as environment variables or volumes. For example with the following configuration you would be able to access 
+your api_keys using `os.environ["env-variable-name"]` which will return the value of the `secret-name` in Secret Manager.
 
 .. code:: json 
 
     {
-        "cloudrun": {
-            "set-secrets": "/secrets/api/key=mysecret:latest,ENV=othersecret:1"
+        "cloudrun_container": {
+            "env": [
+                {
+                    "name": "env-variable-name",
+                    "valueSource": {
+                        "secretKeyRef" : {
+                            "secret": "secret-name",
+                            "version": "secret-version"
+                        }
+                    }
+                }
+            ]
         }
     }
 

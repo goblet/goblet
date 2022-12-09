@@ -25,9 +25,7 @@ class EventArc(Handler):
     valid_backends = ["cloudrun"]
     can_sync = True
 
-    def __init__(
-        self, name, versioned_clients=None, resources=None, backend="cloudfunction"
-    ):
+    def __init__(self, name, backend, versioned_clients=None, resources=None):
         super(EventArc, self).__init__(
             name,
             versioned_clients=versioned_clients,

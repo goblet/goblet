@@ -306,6 +306,7 @@ def create_pubsub_subscription(client, sub_name, req_body):
             keys.remove("name")
             keys.remove("topic")
             keys.remove("filter")
+            keys.remove("enableMessageOrdering")
             updateMask = ",".join(keys)
             client.execute(
                 "patch",

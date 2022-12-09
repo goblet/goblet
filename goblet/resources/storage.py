@@ -27,9 +27,7 @@ class Storage(Handler):
     resource_type = "storage"
     valid_backends = ["cloudfunction", "cloudfunctionv2"]
 
-    def __init__(
-        self, name, versioned_clients=None, resources=None, backend="cloudfunction"
-    ):
+    def __init__(self, name, backend, versioned_clients=None, resources=None):
         super(Storage, self).__init__(
             name,
             versioned_clients=versioned_clients,

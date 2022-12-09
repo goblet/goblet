@@ -223,7 +223,7 @@ class Register_Handlers(DecoratorAPI):
     def __init__(
         self,
         function_name,
-        backend="cloudfunction",
+        backend,
         cors=None,
         client_versions=None,
         routes_type="apigateway",

@@ -7,6 +7,7 @@ from goblet.test_utils import (
     mock_dummy_function,
     dummy_function,
 )
+from goblet.backends import CloudRun, CloudFunctionV1
 
 
 class TestScheduler:
@@ -122,7 +123,7 @@ class TestScheduler:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
-        scheduler = Scheduler(goblet_name)
+        scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
         scheduler.register_job(
             "test-job",
             None,
@@ -147,7 +148,7 @@ class TestScheduler:
         monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        scheduler = Scheduler("goblet", backend="cloudrun")
+        scheduler = Scheduler("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
         scheduler.register_job(
@@ -176,7 +177,9 @@ class TestScheduler:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet-test-schedule"
-        scheduler = Scheduler(goblet_name)
+        scheduler = Scheduler(
+            goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
+        )
         scheduler.register_job(
             "test-job",
             None,
@@ -234,7 +237,9 @@ class TestScheduler:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
-        scheduler = Scheduler(goblet_name)
+        scheduler = Scheduler(
+            goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
+        )
         scheduler.register_job(
             "test-job",
             None,
@@ -254,7 +259,7 @@ class TestScheduler:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet"
-        scheduler = Scheduler(goblet_name)
+        scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
         scheduler.register_job(
             "scheduled_job",
             None,

@@ -10,7 +10,7 @@ class Infrastructure:
     def __init__(
         self,
         name,
-        backend="cloudfunction",
+        backend=None,
         versioned_clients: VersionedClients = None,
         resource=None,
         config={},

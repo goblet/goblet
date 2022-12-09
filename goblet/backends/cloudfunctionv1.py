@@ -88,3 +88,7 @@ class CloudFunctionV1(Backend):
         self.config.update_g_config(
             values=config_updates, write_config=write_config, stage=stage
         )
+
+    @property
+    def http_endpoint(self):
+        return self.func_path
