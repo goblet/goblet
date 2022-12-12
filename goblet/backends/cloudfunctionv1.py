@@ -92,3 +92,8 @@ class CloudFunctionV1(Backend):
     @property
     def http_endpoint(self):
         return self.func_path
+
+    def get_environment_vars(self):
+        return self.config.config.get("cloudfunction", {}).get(
+            "environmentVariables", {}
+        )

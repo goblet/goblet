@@ -273,6 +273,13 @@ The goblet app will run on port 8080 by default. You can specify a custom port w
 
     goblet local -p 6000
 
+You can set environment variables defined in your `config.json` locally by passing in the `--set-env` flag. Note that 
+this will pass through environment variables set in a stage as well if you specify the `--stage` flag. 
+
+.. code:: sh 
+
+    goblet local --set-env --stage dev
+
 Debugging with VScode
 ^^^^^^^^^^^^^^^^^^^^^
 

@@ -181,3 +181,10 @@ class CloudRun(Backend):
     @property
     def http_endpoint(self):
         return get_cloudrun_url(self.client, self.name)
+
+    def get_environment_vars(self):
+        env_dict = {}
+        env = self.config.config.get("cloudrun_container", {}).get("env", [])
+        for env_item in env:
+            env_dict[env_item["name"]] = env_item["value"]
+        return env_dict
