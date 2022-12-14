@@ -142,6 +142,7 @@ class Backend:
         for pattern in self.zip_config.get("include", []):
             globbed_files.extend(Path("").rglob(pattern))
         globbed_files.extend(Path("").rglob(".goblet/*"))
+        exclusion_set.add("bqremotefunction.zip")
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.log.info(f"...adding {path}")
