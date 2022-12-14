@@ -49,7 +49,7 @@ def get_goblet_app(main_file="main.py"):
 
 def get_g_dir():
     """Gets the .goblet directory"""
-    return f"{os.path.realpath('.')}/.goblet"
+    return f"/tmp/.goblet"
 
 
 def get_dir():
