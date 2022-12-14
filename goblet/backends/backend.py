@@ -141,6 +141,7 @@ class Backend:
         globbed_files = []
         for pattern in self.zip_config.get("include", []):
             globbed_files.extend(Path("").rglob(pattern))
+        globbed_files.extend(Path("").rglob(".goblet/*"))
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.log.info(f"...adding {path}")
