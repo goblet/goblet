@@ -21,6 +21,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "cloudscheduler": "v1",
     "redis": "v1",
     "vpcaccess": "v1",
+    "bigqueryconnection":"v1"
 }
 
 
@@ -326,6 +327,42 @@ class VersionedClients:
     @property
     def gcloud(self):
         return self.client_versions.get("gcloud")
+
+    @property
+    def bigqueryconnection(self):
+        return Client(
+            "bigqueryconnection",
+            self.client_versions.get("bigqueryconnection", "v1"),
+            calls="projects.locations.connections",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def bigqueryconnections(self):
+        return Client(
+            "bigqueryconnections",
+            self.client_versions.get("bigqueryconnections", "v1"),
+            calls="projects.locations.connections",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def bigqueryconnectionget(self):
+        return Client(
+            "bigqueryconnection",
+            self.client_versions.get("bigqueryconnection", "v1"),
+            calls="projects.locations.connections",
+            parent_schema="projects/{project_id}/locations/{location_id}/connections/",
+        )
+
+    @property
+    def bigquery(self):
+        return Client(
+            "bigquery",
+            self.client_versions.get("bigquery", "v2"),
+            calls="routines",
+            parent_schema="{project_id}",
+        )
 
     @property
     def run_uploader(self):

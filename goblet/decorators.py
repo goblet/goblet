@@ -39,7 +39,7 @@ EVENT_TYPES = [
 SUPPORTED_BACKENDS = {
     "cloudfunction": CloudFunctionV1,
     "cloudfunctionv2": CloudFunctionV2,
-    "cloudrun": CloudRun,
+    "cloudrun": CloudRun
 }
 
 SUPPORTED_INFRASTRUCTURES = {"redis": Redis, "vpcconnector": VPCConnector}
@@ -110,15 +110,12 @@ class DecoratorAPI:
             },
         )
 
-    def bqremotefunction(self, function_name, timezone="UTC", **kwargs):
-        """Scheduler job Http trigger"""
+    def bqremotefunction(self, **kwargs):
         return self._create_registration_function(
             handler_type="bqremotefunction",
             registration_kwargs={
-                "functionName": function_name,
-                "timezone": timezone,
-                "kwargs": kwargs,
-            },
+                "kwargs": kwargs
+            }
         )
 
     def topic(self, topic, **kwargs):
@@ -414,6 +411,7 @@ class Register_Handlers(DecoratorAPI):
             or len(self.handlers["schedule"].resources) > 0
             or self.handlers["http"].resources
             or self.handlers["pubsub"].is_http()
+            or len(self.handlers["bqremotefunction"].resources) > 0
         ):
             return True
         return False
@@ -483,5 +481,4 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_bqremotefunction(self, name, func, kwargs):
         name = kwargs.get("kwargs", {}).get("name") or name
-        # self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
         self.handlers["bqremotefunction"].register_bqremotefunction(name=name, func=func, kwargs=kwargs)

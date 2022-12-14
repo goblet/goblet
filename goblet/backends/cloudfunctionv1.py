@@ -91,4 +91,4 @@ class CloudFunctionV1(Backend):
 
     @property
     def http_endpoint(self):
-        return self.func_path
+        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
