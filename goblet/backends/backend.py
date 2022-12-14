@@ -32,7 +32,7 @@ class Backend:
 
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
-        include = ["*.py"]
+        include = ["*.py", ".goblet/*.py"]
         exclude = ["build", "docs", "examples", "test", "tests", "venv"]
 
         include.extend(custom_files.get("include", []))
@@ -143,4 +143,5 @@ class Backend:
             globbed_files.extend(Path("").rglob(pattern))
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
+                self.log.info(f"...adding {path}")
                 self.zipf.write(str(path))

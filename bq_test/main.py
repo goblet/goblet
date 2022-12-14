@@ -1,8 +1,8 @@
 from goblet import Goblet, goblet_entrypoint
-app = Goblet(function_name="bigqueryremote", config={"custom_files": {"include":[".goblet"]}})
+from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 
-def entry(request):
-    return app(request)
+app=Goblet(function_name="bqremotefunction", config={"custom_files":{"include":[".goblet/*"]}})
+goblet_entrypoint(app)
 
 @app.bqremotefunction(
     dataset_id="blogs2",
