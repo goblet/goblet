@@ -124,7 +124,7 @@ class Backend:
     def http_endpoint(self):
         raise NotImplementedError("http_endpoint")
 
-    
+
     def zip(self):
         """Zips python files and any additional files based on config.custom_files"""
         if self.config.requirements_file:
