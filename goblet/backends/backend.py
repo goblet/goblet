@@ -53,6 +53,11 @@ class Backend:
     def update_config(self, infra_config={}, write_config=False, stage=None):
         raise NotImplementedError("update_config")
 
+    @property
+    def zipf(self):
+        if not self._zipf:
+            self._zipf = self._create_zip()
+        return self._zipf
     def _create_zip(self):
         """Creates initial goblet zipfile"""
         if not os.path.isdir(get_g_dir()):
