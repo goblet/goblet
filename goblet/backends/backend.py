@@ -27,7 +27,7 @@ class Backend:
         self.log = logging.getLogger("goblet.backend")
         self.log.setLevel(logging.INFO)
         self.zip_path = get_g_dir() + f"/{self.name}.zip"
-        self.zipf = self._create_zip()
+        self.zipf = None
         self.config = GConfig(config=config)
 
         # specifies which files to be zipped
@@ -141,8 +141,6 @@ class Backend:
         globbed_files = []
         for pattern in self.zip_config.get("include", []):
             globbed_files.extend(Path("").rglob(pattern))
-        globbed_files.extend(Path("").rglob(".goblet/*.json"))
-        exclusion_set.add("*.zip")
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.log.info(f"...adding {path}")
