@@ -126,6 +126,7 @@ class BigQueryRemoteFunction(Handler):
     def _deploy(self, source=None, entrypoint=None, config={}):
         log.info("deploying bigquery remote function......")
         bq_query_connection = self.deploy_bigqueryconnection(f"{self.name}", {"cloudResource": {}})
+
         for resource_name, resource in self.resources.items():
             # create_routine_query = self.create_routine(resource, bq_query_connection)
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
@@ -135,7 +136,7 @@ class BigQueryRemoteFunction(Handler):
                 query_result = self.versioned_clients.bigquery.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
                 )
-                log.info(f"created bq query. response {query_result}")
+                log.info(f"created bq routine.")
             except HttpError as e:
                 if e.resp.status == 409:
                     log.info(f"updated bigquery query: for {self.name}")
@@ -160,12 +161,18 @@ class BigQueryRemoteFunction(Handler):
 
     def deploy_bigqueryconnection(self, remote_function_name, remote_function):
         connection_id = f"{self.name}"
+
         try:
 
             bq_connection = self.versioned_clients.bigqueryconnection.execute(
                 "create", params={"body": remote_function, "connectionId":connection_id}
             )
             log.info(f"created bigquery connection name: {remote_function_name} for {self.name}")
+            log.info(f"creating cloud function invoker policy")
+            policy = self.create_policy(bq_connection)
+            self.versioned_clients.bigqueryconnection.execute(
+                "setIamPolicy", params={"body": policy, "connectionId": connection_id}
+            )
         except HttpError as e:
             if e.resp.status == 409:
                 client = self.versioned_clients.bigqueryconnectionget
@@ -176,6 +183,7 @@ class BigQueryRemoteFunction(Handler):
                 pass
             else:
                 raise e
+
         return bq_connection
 
     def destroy(self):
@@ -197,3 +205,16 @@ class BigQueryRemoteFunction(Handler):
                 log.info("Scheduled jobs already destroyed")
             else:
                 raise e
+
+    def create_policy(self, connection):
+        policy = {
+            "policy": {
+                "bindings":{
+                    "role": "roles/cloudfunctions.functions.invoke",
+                    "members": [
+                        f"serviceAccount:{connection['cloudResource']['serviceAccountId']}"
+                    ]
+                }
+            }
+        }
+        return policy
