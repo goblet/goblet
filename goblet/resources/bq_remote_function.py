@@ -171,7 +171,7 @@ class BigQueryRemoteFunction(Handler):
             log.info(f"creating cloud function invoker policy")
             policy = self.create_policy(bq_connection)
             self.versioned_clients.bigqueryconnection.execute(
-                "setIamPolicy", params={"body": policy}
+                "setIamPolicy", params={"body": policy}, parent=False
             )
         except HttpError as e:
             if e.resp.status == 409:
