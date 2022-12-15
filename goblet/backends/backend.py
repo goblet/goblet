@@ -124,6 +124,7 @@ class Backend:
     def http_endpoint(self):
         raise NotImplementedError("http_endpoint")
 
+    
     def zip(self):
         """Zips python files and any additional files based on config.custom_files"""
         if self.config.requirements_file:
@@ -149,5 +150,4 @@ class Backend:
             globbed_files.extend(Path("").rglob(pattern))
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
-                self.log.info(f"...adding {path}")
                 self.zipf.write(str(path))
