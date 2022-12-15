@@ -27,7 +27,7 @@ class Backend:
         self.log = logging.getLogger("goblet.backend")
         self.log.setLevel(logging.INFO)
         self.zip_path = get_g_dir() + f"/{self.name}.zip"
-        self.zipf = self._create_zip()
+        self._zipf = None
         self.config = GConfig(config=config)
 
         # specifies which files to be zipped
@@ -52,6 +52,12 @@ class Backend:
 
     def update_config(self, infra_config={}, write_config=False, stage=None):
         raise NotImplementedError("update_config")
+
+    @property
+    def zipf(self):
+        if not self._zipf:
+            self._zipf = self._create_zip()
+        return self._zipf
 
     def _create_zip(self):
         """Creates initial goblet zipfile"""
