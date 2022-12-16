@@ -44,11 +44,9 @@ class BigQueryRemoteFunction(Handler):
         return inputs, outputs
 
     def create_routine_payload(self, resource, connection):
-        client = self.versioned_clients.bigqueryconnectionget
-        connection_id = connection["name"]
         remote_function_options = {
                 "endpoint": self.backend.http_endpoint,
-                "connection": client.parent+connection_id,
+                "connection": connection["name"],
                 "userDefinedContext": {
                     "X_GOBLET_NAME": resource['routine_name']
                 }
