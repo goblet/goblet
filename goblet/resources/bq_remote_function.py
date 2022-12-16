@@ -133,7 +133,9 @@ class BigQueryRemoteFunction(Handler):
             try:
                 # query_request = {"query": create_routine_query}
 
-
+                self.versioned_clients.bigqueryconnection.execute(
+                    "insert", params={"body": create_routine_query, "connectionId": bq_query_connection.name}
+                )
                 log.info(f"created bq routine.")
             except HttpError as e:
                 if e.resp.status == 409:
