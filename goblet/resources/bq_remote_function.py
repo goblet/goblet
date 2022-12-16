@@ -131,6 +131,9 @@ class BigQueryRemoteFunction(Handler):
             # create_routine_query = self.create_routine(resource, bq_query_connection)
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
             try:
+                print(self.name)
+                print(bq_query_connection["name"])
+                print(bq_query_connection)
                 routine_creation_result = self.versioned_clients.bigquery.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
                 )
