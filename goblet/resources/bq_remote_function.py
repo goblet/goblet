@@ -165,7 +165,7 @@ class BigQueryRemoteFunction(Handler):
         try:
 
             bq_connection = self.versioned_clients.bigqueryconnection.execute(
-                "create", params={"body": remote_function, "connectionId":"bq_remote_function_connection"}
+                "create", params={"body": remote_function, "connectionId":self.name}
             )
             log.info(f"created bigquery connection name: {remote_function_name} for {self.name}")
 
