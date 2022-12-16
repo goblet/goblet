@@ -176,7 +176,7 @@ class BigQueryRemoteFunction(Handler):
                 log.info(f"creating cloud function invoker policy")
                 policy = self.create_policy(bq_connection)
                 self.versioned_clients.bigqueryconnection.execute(
-                    "", params={"body": policy,"resource":"projects/premise-data-platform-dev/locations/us-central1/connections/setIamPolicy$"}, parent=False)
+                    "setIamPolicy", params={"body": policy,"resource":"projects/premise-data-platform-dev/locations/us-central1/connections/"}, parent=False)
                 log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
                 pass
             else:
