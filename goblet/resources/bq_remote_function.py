@@ -62,7 +62,7 @@ class BigQueryRemoteFunction(Handler):
 
         query_request = {
             "routineReference": routine_reference,
-            "routineType": "PROCEDURE",
+            "routineType": "SCALAR_FUNCTION",
             "arguments":arguments,
             "returnType": return_type,
             "remoteFunctionOptions":remote_function_options
