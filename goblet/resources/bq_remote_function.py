@@ -131,8 +131,6 @@ class BigQueryRemoteFunction(Handler):
             # create_routine_query = self.create_routine(resource, bq_query_connection)
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
             try:
-                # query_request = {"query": create_routine_query}
-
                 routine_creation_result = self.versioned_clients.bigquery.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
                 )
@@ -175,11 +173,11 @@ class BigQueryRemoteFunction(Handler):
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+connection_id}, parent=False
                 )
-                log.info(f"creating cloud function invoker policy")
-                policy = self.create_policy(bq_connection)
-                self.versioned_clients.bigquery_iam.execute(
-                    "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest"}, parent=False)
-                log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
+                # log.info(f"creating cloud function invoker policy")
+                # policy = self.create_policy(bq_connection)
+                # self.versioned_clients.bigquery_iam.execute(
+                #     "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest"}, parent=False)
+                # log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
                 pass
             else:
                 raise e
