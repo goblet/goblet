@@ -133,9 +133,7 @@ class BigQueryRemoteFunction(Handler):
             try:
                 # query_request = {"query": create_routine_query}
 
-                query_result = self.versioned_clients.bigquery.execute(
-                    "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
-                )
+
                 log.info(f"created bq routine.")
             except HttpError as e:
                 if e.resp.status == 409:
@@ -168,17 +166,17 @@ class BigQueryRemoteFunction(Handler):
                 "create", params={"body": remote_function, "connectionId":connection_id}
             )
             log.info(f"created bigquery connection name: {remote_function_name} for {self.name}")
-            log.info(f"creating cloud function invoker policy")
-            policy = self.create_policy(bq_connection)
-            self.versioned_clients.bigqueryconnection.execute(
-                "setIamPolicy", params={"body": policy}, parent=False
-            )
+
         except HttpError as e:
             if e.resp.status == 409:
                 client = self.versioned_clients.bigqueryconnectionget
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+connection_id}, parent=False
                 )
+                log.info(f"creating cloud function invoker policy")
+                policy = self.create_policy(bq_connection)
+                self.versioned_clients.bigqueryconnection.execute(
+                    "setIamPolicy", params={"body": policy}, resource=bq_connection["name"])
                 log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
                 pass
             else:
