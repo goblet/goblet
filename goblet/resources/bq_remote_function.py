@@ -46,7 +46,7 @@ class BigQueryRemoteFunction(Handler):
     def create_routine_payload(self, resource, connection):
         remote_function_options = {
                 "endpoint": self.backend.http_endpoint,
-                "connection": connection["name"],
+                "connection": self.name,
                 "userDefinedContext": {
                     "X_GOBLET_NAME": resource['routine_name']
                 }
@@ -159,11 +159,10 @@ class BigQueryRemoteFunction(Handler):
 
     def deploy_bigqueryconnection(self, remote_function_name, remote_function):
         connection_id = f"{self.name}"
-
         try:
 
             bq_connection = self.versioned_clients.bigqueryconnection.execute(
-                "create", params={"body": remote_function, "connectionId":self.name}
+                "create", params={"body": remote_function, "connectionId":connection_id}
             )
             log.info(f"created bigquery connection name: {remote_function_name} for {self.name}")
 
