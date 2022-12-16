@@ -46,7 +46,7 @@ class BigQueryRemoteFunction(Handler):
     def create_routine_payload(self, resource, connection):
         remote_function_options = {
                 "endpoint": self.backend.http_endpoint,
-                "connection": self.name,
+                "connection": "projects/premise-data-platform-dev/locations/us-central1/connections/bqremotefunctionTest",
                 "userDefinedContext": {
                     "X_GOBLET_NAME": resource['routine_name']
                 }
