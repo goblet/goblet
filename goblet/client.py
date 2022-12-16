@@ -338,6 +338,15 @@ class VersionedClients:
         )
 
     @property
+    def bigquery_iam(self):
+        return Client(
+            "bigqueryconnection",
+            self.client_versions.get("bigqueryconnection", "v1"),
+            calls="projects.locations.connections",
+            parent_schema="projects/{project_id}/locations/{location_id}/connections",
+        )
+
+    @property
     def bigqueryconnections(self):
         return Client(
             "bigqueryconnections",
