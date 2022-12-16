@@ -1,15 +1,10 @@
 import logging
 from typing import get_type_hints
 
-
-from goblet.backends import CloudFunctionV1, CloudRun
 from goblet.resources.handler import Handler
 from goblet.client import (
-    get_default_project,
-    get_default_location,
+    get_default_project
 )
-from goblet.common_cloud_actions import get_cloudrun_url, get_cloudfunction_url
-from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError
 
@@ -56,49 +51,24 @@ class BigQueryRemoteFunction(Handler):
                 "datasetId": resource["dataset_id"],
                 "routineId": resource["routine_name"]
             }
-        return_type = {"typeKind": "INT64"}
+        return_type = {"typeKind": "STRING"}
         arguments = [
             {"name":"X",
              "dataType":{
                  "typeKind":"INT64"
-                }
-             },
-            {"name": "Y",
-             "dataType": {
-                 "typeKind": "INT64"
                 }
              }
         ]
 
         query_request = {
             "routineReference": routine_reference,
-            "routineType": "SCALAR_FUNCTION",
+            "routineType": "ROUTINE",
             "arguments":arguments,
             "returnType": return_type,
             "remoteFunctionOptions":remote_function_options
         }
 
         return query_request
-
-    def create_routine(self, resource, connection):
-        signature = f"{resource['routine_name']}({', '.join(resource['inputs'])}) RETURNS {','.join(resource['outputs'])}"
-        project_id = get_default_project()
-        connection_name = self.name
-        location = get_default_location()
-        # create_statement = f"CREATE FUNCTION `{project_id}.{resource['dataset_id']}`.{signature} REMOTE WITH " \
-        #                    f"CONNECTION " \
-        #                    f"`{project_id}.{location}.{connection_name}` " \
-        #                    f"OPTIONS(" \
-        #                    f"endpoint=`{self.backend.http_endpoint}`, " \
-        #                    f"user_defined_context=[(\"X_GOBLET_NAME\",\"{resource['routine_name']}\")]" \
-        #                    f")"
-        create_statement = "CREATE FUNCTION blogs2.bqremotefunctionTest(x NUMERIC, y NUMERIC) RETURNS NUMERIC " \
-                           "REMOTE WITH CONNECTION bqRemoteConnectionTest " \
-                           "OPTIONS(endpoint='https://us-central1-premise-data-platform-dev.cloudfunctions.net/bqRemoteConnectionTest')"
-        create_statement = "CREATE TEMP FUNCTION addFourAndDivideAny(x ANY TYPE, y ANY TYPE) AS ( (x + 4) / y )"
-        # create_statement = f"SELECT * FROM [{resource['dataset_id']}.users]"
-        print(create_statement)
-        return create_statement
 
     def register_bqremotefunction(self, name, func, kwargs):
         kwargs = kwargs.pop("kwargs")
@@ -128,13 +98,12 @@ class BigQueryRemoteFunction(Handler):
         bq_query_connection = self.deploy_bigqueryconnection(f"{self.name}", {"cloudResource": {}})
 
         for resource_name, resource in self.resources.items():
-            # create_routine_query = self.create_routine(resource, bq_query_connection)
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
             try:
                 print(self.name)
                 print(bq_query_connection["name"])
                 print(bq_query_connection)
-                routine_creation_result = self.versioned_clients.bigquery_routines.execute(
+                self.versioned_clients.bigquery_routines.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
                 )
                 log.info(f"created bq routine.")
