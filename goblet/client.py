@@ -365,12 +365,12 @@ class VersionedClients:
         )
 
     @property
-    def bigquery(self):
+    def bigqueryconnections(self):
         return Client(
-            "bigquery",
-            self.client_versions.get("bigquery", "v2"),
-            calls="routines",
-            parent_schema="{project_id}",
+            "bigqueryconnections",
+            self.client_versions.get("bigqueryconnections", "v1"),
+            calls="projects.locations.connections",
+            parent_schema="projects/{project_id}/locations/{location_id}",
         )
 
     @property
