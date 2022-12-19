@@ -92,8 +92,9 @@ class BigQueryRemoteFunction(Handler):
         return True
 
     def __call__(self, request, context=None):
-        headers = request.headers
-        func_name = headers.get("X-Goblet-Name")
+        user_defined_context = request.json["userDefinedContext"]
+
+        func_name = user_defined_context["X-Goblet-Name"]
         if not func_name:
             raise ValueError("No X-Goblet-Name header found")
 

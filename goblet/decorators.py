@@ -338,8 +338,6 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
-        if request.headers.get("X-Goblet-Name") == "bqremotefunctionTest":
-            return "bqremotefunction"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
         if (
