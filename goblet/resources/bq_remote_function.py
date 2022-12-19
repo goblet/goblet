@@ -23,7 +23,7 @@ class BigQueryRemoteFunction(Handler):
     """
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
-    resource_type = "bq_remote_function"
+    resource_type = "bqremotefunction"
     create_statement = ""
 
     def get_hints(self, func):
