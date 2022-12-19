@@ -1,70 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Resources &mdash; goblet 0.9.2 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Resources &mdash; goblet 0.9.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Backends" href="backends.html" />
     <link rel="prev" title="Topics" href="topics.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> goblet
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -72,18 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 </ul>
@@ -109,83 +62,45 @@
 <li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">goblet</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Resources</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/resources.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="resources">
+             
+  <section id="resources">
 <h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="http">
+<section id="http">
 <h2>Http<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
 <p>You can have a http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
 only deploy a cloudfunction. The function takes in a flask request object</p>
@@ -216,8 +131,8 @@ triggered.</p>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on pr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="routes">
+</section>
+<section id="routes">
 <h2>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h2>
 <p>The Goblet.route() method is used to construct which routes you want to create for your API.
 Behind the scenese goblet will configure an Api Config and Api Gateway on gcp.</p>
@@ -256,13 +171,20 @@ The argument names for the view function must match the name of the captured arg
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span><span class="p">}</span>
 </pre></div>
 </div>
+<p>By default there is a timeout on api gateway of 15 seconds. This can be overriden by setting <cite>“api_gateway”: {“deadline”: 45}</cite> in <cite>config.json</cite>. You
+can configure a per route deadline by passing in the deadline parameter in your route.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/deadline&#39;</span><span class="p">,</span> <span class="n">deadline</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">deadline</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;custom_deadline&#39;</span>
+</pre></div>
+</div>
 <p>By default routes are deployed to an api gateway. For cloudrun you have the option to use <cite>route_type=cloudrun</cite> to simply use the cloudrun
 instance itself. The routes work the same as with an apigateway, but you would access the api via the cloudrun url instead of the api gateway url.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudrun-routing&quot;</span><span class="p">,</span> <span class="n">routes_type</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="scheduled-jobs">
+</section>
+<section id="scheduled-jobs">
 <h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this headline">¶</a></h2>
 <p>To deploy scheduled jobs using a cron schedule use the <code class="docutils literal notranslate"><span class="pre">&#64;app.schedule(...)</span></code> decorator. The cron schedule follows the unix-cron format.
 More information on the cron format can be found <a class="reference external" href="https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules">here</a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
@@ -300,8 +222,8 @@ with the name of your scheduled function.</p>
 <span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="n">FUNCTION_NAME</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="pubsub">
+</section>
+<section id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
 provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
@@ -339,8 +261,8 @@ For additional information on configuration values available see <a class="refer
     <span class="k">return</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="storage">
+</section>
+<section id="storage">
 <h2>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger functions from storage events using the <code class="docutils literal notranslate"><span class="pre">&#64;app.storage(BUCKET,</span> <span class="pre">EVENT)</span></code> decorator. It is required to pass in the bucket name and the event_type.
 The following events are supported by GCP</p>
@@ -364,8 +286,8 @@ The following events are supported by GCP</p>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="eventarc">
+</section>
+<section id="eventarc">
 <h2>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger functions from evenarc events using the <cite>&#64;app.eventarc(topic=None, event_filters=[])</cite> decorator. Specifying a topic will create a trigger on a custom pubsub topic. For
 all other events, specify the event attribute  and event value in the <cite>event_filters</cite> list. See <a class="reference external" href="https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud">Creating Triggers</a> for more information
@@ -405,8 +327,8 @@ on possible values.</p>
     <span class="k">return</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="jobs">
+</section>
+<section id="jobs">
 <h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this headline">¶</a></h2>
 <p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
 you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations such as a schedule should be added to the <cite>task_id=0</cite>. Jobs can be further configured
@@ -434,55 +356,38 @@ by setting various configs in <cite>config.json.</cite></p>
 </pre></div>
 </div>
 <p>See the example <a class="reference external" href="https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json">config.json</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="backends.html" class="btn btn-neutral float-right" title="Backends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backends.html" class="btn btn-neutral float-right" title="Backends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, austen novis.
-
-    </p>
+    <p>&#169; Copyright 2020, austen novis.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

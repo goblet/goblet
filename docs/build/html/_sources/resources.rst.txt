@@ -90,6 +90,15 @@ The argument names for the view function must match the name of the captured arg
     def users(first, second):
         return {'first': first, 'second': second}
 
+By default there is a timeout on api gateway of 15 seconds. This can be overriden by setting `"api_gateway": {"deadline": 45}` in `config.json`. You 
+can configure a per route deadline by passing in the deadline parameter in your route. 
+
+.. code:: python 
+
+    @app.route('/deadline', deadline=10)
+    def deadline():
+        return 'custom_deadline'
+
 By default routes are deployed to an api gateway. For cloudrun you have the option to use `route_type=cloudrun` to simply use the cloudrun 
 instance itself. The routes work the same as with an apigateway, but you would access the api via the cloudrun url instead of the api gateway url.
 
