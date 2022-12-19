@@ -326,13 +326,14 @@ class Register_Handlers(DecoratorAPI):
 
     def get_event_type(self, request, context=None):
         """Parse event type from the event request and context"""
-        log.info(request)
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
         if context and context.event_type:
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.headers.get("X-Goblet-Name") == "bqremotefunctionTest":
+            return "bqremotefunction"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
         if (
