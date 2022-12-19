@@ -65,10 +65,12 @@ class BigQueryRemoteFunction(Handler):
              }
         ]
         return_type = {"typeKind": "INT64"}
+        language = "SQL"
 
         query_request = {
+            "language":language,
             "routineReference": routine_reference,
-            "routineType": "SCALAR_FUNCTION",
+            "routineType": "PROCEDURE",
             "arguments":arguments,
             # "returnType": return_type,
             "remoteFunctionOptions":remote_function_options
