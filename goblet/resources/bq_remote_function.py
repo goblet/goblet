@@ -51,14 +51,20 @@ class BigQueryRemoteFunction(Handler):
                 "datasetId": resource["dataset_id"],
                 "routineId": resource["routine_name"]
             }
-        return_type = {"typeKind": "STRING"}
+
         arguments = [
             {"name":"X",
              "dataType":{
                  "typeKind":"INT64"
                 }
+             },
+            {"name": "Y",
+             "dataType": {
+                 "typeKind": "INT64"
+             }
              }
         ]
+        return_type = {"typeKind": "INT64"}
 
         query_request = {
             "routineReference": routine_reference,
