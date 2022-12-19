@@ -309,7 +309,7 @@ class Register_Handlers(DecoratorAPI):
         if event_type == "eventarc":
             response = self.handlers["eventarc"](request)
         if event_type == "bqremotefunction":
-            response = self.handlers["eventarc"](request)
+            response = self.handlers["bqremotefunction"](request)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
@@ -325,6 +325,7 @@ class Register_Handlers(DecoratorAPI):
 
     def get_event_type(self, request, context=None):
         """Parse event type from the event request and context"""
+        log.info(request)
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
         if context and context.event_type:
