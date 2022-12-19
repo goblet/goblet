@@ -86,7 +86,8 @@ class BigQueryRemoteFunction(Handler):
             "routine_name": name,
             "dataset_id": kwargs["dataset_id"],
             "inputs": input,
-            "outputs" : output
+            "outputs" : output,
+            "func": func
         }
         return True
 
