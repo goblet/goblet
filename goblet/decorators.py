@@ -327,7 +327,10 @@ class Register_Handlers(DecoratorAPI):
         """Parse event type from the event request and context"""
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
-        print(request)
+        if request.is_json:
+            print("printing json")
+            print(request.get_json(silent=True))
+        print(request.headers)
         if context and context.event_type:
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
