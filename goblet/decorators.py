@@ -332,7 +332,7 @@ class Register_Handlers(DecoratorAPI):
             #print("printing json")
             print(request.get_json(silent=True))
             print(request.json)
-            return("bqremotefunctionTest")
+            return("bqremotefunction")
 
         if context and context.event_type:
             return context.event_type.split(".")[1].split("/")[0]
