@@ -18,6 +18,8 @@ class CloudFunctionV2(Backend):
     resource_type = "cloudfunctionv2"
     supported_versions = ["v2alpha", "v2beta", "v2"]
     config_key = "cloudfunction"
+    monitoring_type = "cloud_function"
+    monitoring_label_key = "function_name"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions

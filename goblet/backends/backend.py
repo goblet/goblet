@@ -20,6 +20,8 @@ class Backend:
     version = ""
     required_files = ["main.py"]
     config_key = ""
+    monitoring_type = ""
+    monitoring_label_key = ""
 
     def __init__(self, app, client, func_path, config={}):
         self.app = app
