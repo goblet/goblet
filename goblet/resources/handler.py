@@ -12,15 +12,14 @@ class Handler:
     valid_backends = []
     resources = None
     resource_type = ""
-    backend = "cloudfunction"
     can_sync = False
 
     def __init__(
         self,
         name,
+        backend,
         versioned_clients: VersionedClients = None,
         resources=None,
-        backend="cloudfunction",
     ):
         self.name = name
         self.backend = backend
@@ -29,9 +28,9 @@ class Handler:
         self.cloudfunction = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{name}"
 
     def deploy(self, source=None, entrypoint=None, config={}):
-        if self.resources and self.backend not in self.valid_backends:
+        if self.resources and self.backend.resource_type not in self.valid_backends:
             log.info(
-                f"skipping... {self.backend} not supported for {self.resource_type}"
+                f"skipping... {self.backend.resource_type} not supported for {self.resource_type}"
             )
             return
         self._deploy(source, entrypoint, config=config)

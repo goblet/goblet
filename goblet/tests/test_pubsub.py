@@ -11,6 +11,7 @@ from goblet.test_utils import (
     get_response,
     mock_dummy_function,
 )
+from goblet.backends import CloudRun, CloudFunctionV1
 
 
 class TestPubSub:
@@ -288,6 +289,7 @@ class TestPubSub:
 
         pubsub = PubSub(
             "goblet_topic",
+            backend=CloudFunctionV1(Goblet()),
             resources={
                 "test-topic": {"trigger": {"test-topic": {}}, "subscription": {}}
             },
@@ -308,7 +310,7 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", backend="cloudrun")
+        pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         pubsub.register_topic("test", None, kwargs={"topic": "test", "kwargs": {}})
 
         cloudrun_url = "https://goblet-12345.a.run.app"
@@ -339,7 +341,7 @@ class TestPubSub:
         pubsub = PubSub(
             "goblet",
             resources={"test": {"trigger": {}, "subscription": {"test": {}}}},
-            backend="cloudrun",
+            backend=CloudRun(Goblet(backend="cloudrun")),
         )
         pubsub.destroy()
 
@@ -354,7 +356,10 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-update-subscription")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("test-cross-project")
+        pubsub = PubSub(
+            "test-cross-project",
+            backend=CloudFunctionV1(Goblet()),
+        )
         pubsub.register_topic(
             "test",
             None,
@@ -379,7 +384,7 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-sync-cloudrun")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", backend="cloudrun")
+        pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         pubsub.sync(dryrun=True)
         pubsub.sync()
 

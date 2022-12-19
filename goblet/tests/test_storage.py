@@ -1,7 +1,7 @@
 from goblet import Goblet
 from goblet.resources.storage import Storage
 from goblet.test_utils import get_responses, dummy_function, mock_dummy_function
-
+from goblet.backends import CloudFunctionV1
 from unittest.mock import Mock
 import pytest
 
@@ -80,6 +80,7 @@ class TestStorage:
         storage = Storage(
             "goblet_storage",
             resources=[{"bucket": "test", "event_type": "finalize", "name": "test"}],
+            backend=CloudFunctionV1(Goblet(backend="cloudrun")),
         )
         storage.destroy()
 

@@ -88,3 +88,12 @@ class CloudFunctionV1(Backend):
         self.config.update_g_config(
             values=config_updates, write_config=write_config, stage=stage
         )
+
+    @property
+    def http_endpoint(self):
+        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
+
+    def get_environment_vars(self):
+        return self.config.config.get("cloudfunction", {}).get(
+            "environmentVariables", {}
+        )

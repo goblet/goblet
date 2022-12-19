@@ -223,7 +223,8 @@ def openapi(cloudfunction, stage, version):
 @click.argument("local_arg", default="local")
 @click.option("-s", "--stage", "stage", envvar="STAGE")
 @click.option("-p", "--port", "port", envvar="PORT", default=8080)
-def local(local_arg, stage, port):
+@click.option("--set-env", "set_env", is_flag=True)
+def local(local_arg, stage, port, set_env):
     """
     Requires the local argument to be set in the Goblet class. The default is local.
 
@@ -231,12 +232,17 @@ def local(local_arg, stage, port):
 
     Goblet("test_function",local="local_function")
     """
-    os.environ["X-GOBLET-LOCAL"] = "true"
+    os.environ["X_GOBLET_LOCAL"] = "true"
     try:
         if stage:
             os.environ["STAGE"] = stage
         config = GConfig()
         source = config.main_file or "main.py"
+        if set_env:
+            app = get_goblet_app(source)
+            env_dict = app.backend.get_environment_vars()
+            for k, v in env_dict.items():
+                os.environ[k] = v
         subprocess.check_output(
             [
                 "functions-framework",
