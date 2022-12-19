@@ -45,6 +45,7 @@ class Alerts(Handler):
         default_alert_kwargs = {}
         for condition in alert["conditions"]:
             condition.format_filter_or_query(
+                self.name,
                 self.backend.monitoring_type,
                 self.backend.name,
                 self.backend.monitoring_label_key,
@@ -70,7 +71,7 @@ class Alerts(Handler):
                     }
                 },
             )
-            log.info(f"created alert: {alert_name} for {self.name}")
+            log.info(f"created alert: {self.name}-{alert_name}")
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"updated scheduled job: {alert_name} for {self.name}")
@@ -144,6 +145,7 @@ class AlertCondition:
         self, name, threshold=None, absence=None, log_match=None, MQL=None
     ) -> None:
         self.name = name
+        self.app_name = ""
         if [threshold, absence, log_match, MQL].count(None) != 3:
             raise ValueError("Exactly 1 condition option can be set")
         if threshold:
@@ -169,11 +171,15 @@ class AlertCondition:
             self._condition["filter"] = self.filter
         if self._condition.get("query"):
             self._condition["query"] = self.query
-        return {"displayName": self.name, self.condition_key: self._condition}
+        return {
+            "displayName": f"{self.app_name}-{self.name}",
+            self.condition_key: self._condition,
+        }
 
     def format_filter_or_query(
-        self, monitoring_type, resource_name, monitoring_label_key
+        self, app_name, monitoring_type, resource_name, monitoring_label_key
     ):
+        self.app_name = app_name
         self.filter = self.filter.format(
             monitoring_type=monitoring_type,
             resource_name=resource_name,
@@ -213,34 +219,27 @@ class MetricCondition(AlertCondition):
             },
         )
 
+
 class CustomMetricCondition(MetricCondition):
     def __init__(
         self, name, metric_filter, value, metric_descriptor={}, **kwargs
     ) -> None:
-        self.metric_filter = 'resource.type="{monitoring_type}" resource.labels.{monitoring_label_key}="{resource_name}" ' + metric_filter
-        # Defaults
-        self.metric_descriptor = {
-            "name":f"projects/{get_default_project}/metricDescriptors/logging.googleapis.com/user/{name}",
-            "metricKind": "DELTA",
-            "valueType": "INT64",
-            "unit": "1",
-            "description": "measure error rates in media-metadata-service cloudfunction",
-            "type": f"logging.googleapis.com/user/{name}",
-        }
-        # User Override
-        self.metric_descriptor.update(metric_descriptor)
+        self.metric_filter = (
+            'resource.type="{monitoring_type}" resource.labels.{monitoring_label_key}="{resource_name}" '
+            + metric_filter
+        )
 
         super().__init__(
             name=name,
             metric=f"logging.googleapis.com/user/{name}",
             value=value,
-            **kwargs
+            **kwargs,
         )
 
-
     def format_filter_or_query(
-        self, monitoring_type, resource_name, monitoring_label_key
+        self, app_name, monitoring_type, resource_name, monitoring_label_key
     ):
+        self.app_name = app_name
         self.filter = self.filter.format(
             monitoring_type=monitoring_type,
             resource_name=resource_name,
@@ -255,22 +254,45 @@ class CustomMetricCondition(MetricCondition):
         return
 
     def deploy_extra(self, versioned_clients):
-        metric_body = {
-            "name": self.name,
-            "description": f"Goblet generated custom metric for metric {self.name}",
-            "filter": self.metric_filter,
-            "metricDescriptor": self.metric_descriptor
+        # Defaults
+        metric_descriptor = {
+            "name": f"projects/{get_default_project}/metricDescriptors/logging.googleapis.com/user/{self.app_name}-{self.name}",
+            "metricKind": "DELTA",
+            "valueType": "INT64",
+            "unit": "1",
+            "description": "measure error rates in media-metadata-service cloudfunction",
+            "type": f"logging.googleapis.com/user/{self.app_name}-{self.name}",
         }
-        log.info(f"deploying custom metric {self.name}")
-        versioned_clients.logging_metric.execute(
-                "create",
-                params={
-                    "body": metric_body
-                },
-            )
+        # User Override
+        metric_descriptor.update(metric_descriptor)
 
+        metric_body = {
+            "name": f"{self.app_name}-{self.name}",
+            "description": f"Goblet generated custom metric for metric {self.app_name}-{self.name}",
+            "filter": self.metric_filter,
+            "metricDescriptor": metric_descriptor,
+        }
+        try:
+            versioned_clients.logging_metric.execute(
+                "create",
+                params={"body": metric_body},
+            )
+            log.info(f"deploying custom metric {self.app_name}-{self.name}")
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"updating custom metric {self.app_name}-{self.name}")
+                versioned_clients.logging_metric.execute(
+                    "update",
+                    parent_key="metricName",
+                    parent_schema=f"projects/{get_default_project()}/metrics/{self.app_name}-{self.name}",
+                    params={"body": metric_body},
+                )
+            else:
+                raise e
 
         # severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)
+
+
 # "resource.type=\"cloud_run_revision\" resource.labels.service_name=\"media-metadata-service\" severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)
 # {
 #   "name": "media-metadata-service-errors-metric",
@@ -287,7 +309,6 @@ class CustomMetricCondition(MetricCondition):
 #   "createTime": "2022-09-28T20:58:57.256243488Z",
 #   "updateTime": "2022-10-18T14:00:17.944708237Z"
 # }
-
 
 
 class ErrorLoggedCondition(AlertCondition):

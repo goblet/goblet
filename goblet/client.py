@@ -344,7 +344,7 @@ class VersionedClients:
             calls="projects.alertPolicies",
             parent_schema="projects/{project_id}",
         )
-    
+
     @property
     def logging_metric(self):
         return Client(
@@ -352,4 +352,4 @@ class VersionedClients:
             self.client_versions.get("logging", "v2"),
             calls="projects.metrics",
             parent_schema="projects/{project_id}",
-    )
+        )
