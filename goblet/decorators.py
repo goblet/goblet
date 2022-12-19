@@ -282,6 +282,7 @@ class Register_Handlers(DecoratorAPI):
 
     def __call__(self, request, context=None):
         """Goblet entrypoint"""
+        log.info(request)
         self.current_request = request
         self.request_context = context
         event_type = self.get_event_type(request, context)
