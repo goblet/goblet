@@ -60,11 +60,11 @@ class BigQueryRemoteFunction(Handler):
              },
             {"name": "Y",
              "dataType": {
-                 "typeKind": "INT64"
+                 "typeKind": "STRING"
              }
              }
         ]
-        return_type = {"typeKind": "INT64"}
+        return_type = {"typeKind": "STRING"}
         language = "SQL"
 
         query_request = {
