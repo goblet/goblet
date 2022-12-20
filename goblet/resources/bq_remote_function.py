@@ -35,7 +35,7 @@ class BigQueryRemoteFunction(Handler):
             if var_name == "return":
                 outputs.append(BIGQUERY_DATATYPES[var_type])
             else:
-                inputs.append(f"{var_name} {BIGQUERY_DATATYPES[var_type]}")
+                inputs.append({"name":var_name, "data_type": BIGQUERY_DATATYPES[var_type]})
         return inputs, outputs
 
     def create_routine_payload(self, resource, connection):
@@ -52,19 +52,15 @@ class BigQueryRemoteFunction(Handler):
                 "routineId": resource["routine_name"]
             }
 
-        arguments = [
-            {"name":"X",
+        arguments = []
+        for input in resource["inputs"]:
+            argument = {"name":input["name"],
              "dataType":{
-                 "typeKind":"INT64"
+                 "typeKind":input["data_type"]
                 }
-             },
-            {"name": "Y",
-             "dataType": {
-                 "typeKind": "STRING"
              }
-             }
-        ]
-        return_type = {"typeKind": "STRING"}
+            arguments.append(argument)
+        return_type = {"typeKind": resource["output"][0]}
         language = "SQL"
 
         query_request = {
@@ -86,12 +82,34 @@ class BigQueryRemoteFunction(Handler):
             "routine_name": name,
             "dataset_id": kwargs["dataset_id"],
             "inputs": input,
-            "outputs" : output,
+            "output" : output,
             "func": func
         }
         return True
 
     def __call__(self, request, context=None):
+        '''
+        :param request: JSON formatted str
+            The request is sent from bigquery routine
+
+            Example:
+            {
+                'requestId': '82c508b3-6520-4406-ad06-6425f28fa41b',
+                'caller': '//bigquery.googleapis.com/projects/premise-data-platform-dev/jobs/bquxjob_2597aba9_1852ff4c871',
+                'sessionUser': 'diego.diaz@premise.com',
+                'userDefinedContext': {   'X-Goblet-Name': 'bqremotefunctionTest' },
+                'calls': [[1, 'a'], [1, 'a']]
+            }
+        :return: string JSON formatted
+
+            Example
+            {
+                'replies': [  ]
+            }
+
+            * Replies is a JSON formatted str
+
+        '''
         user_defined_context = request.json["userDefinedContext"]
 
         func_name = user_defined_context["X-Goblet-Name"]
@@ -101,7 +119,12 @@ class BigQueryRemoteFunction(Handler):
         cloud_method = self.resources[func_name]
         if not cloud_method:
             raise ValueError(f"Method {func_name} not found")
-        return cloud_method["func"](request)
+        bq_tuples = request["calls"]
+        tuples_replies = []
+        for tuple in bq_tuples:
+            tuples_replies.append(cloud_method["func"](*tuple))
+        reply = {"replies" : tuples_replies}
+        return reply
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         log.info("deploying bigquery remote function......")
