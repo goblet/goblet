@@ -12,8 +12,8 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 BIGQUERY_DATATYPES = {
-    bool : "Boolean",
-    str : "String",
+    bool : "BOOLEAN",
+    str : "STRING",
     int : "NUMERIC"
 }
 
