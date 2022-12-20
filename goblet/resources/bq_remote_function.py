@@ -112,7 +112,7 @@ class BigQueryRemoteFunction(Handler):
 
         '''
         user_defined_context = request.json["userDefinedContext"]
-
+        print(request)
         func_name = user_defined_context["X-Goblet-Name"]
         if not func_name:
             raise ValueError("No X-Goblet-Name header found")
