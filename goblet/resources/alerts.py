@@ -22,15 +22,30 @@ class Alerts(Handler):
     resource_type = "alerts"
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
+    _gcp_deployed_alerts = {}
 
     def register_alert(self, name, conditions, notification_channels=[], **kwargs):
         # custom log condition?
-        self.resources[name] = {
-            "name": name,
+        self.resources[f"{self.name}-{name}"] = {
+            "name": f"{self.name}-{name}",
             "conditions": conditions,
             "notification_channels": notification_channels,
             "kwargs": kwargs,
         }
+
+    @property
+    def gcp_deployed_alerts(self):
+        """
+        List of deployed gcp alerts, since we need to get unique id's from alerts in order to patch or avoid creating duplicates
+        """
+        if not self._gcp_deployed_alerts:
+            alerts = self.versioned_clients.monitoring_alert.execute(
+                "list", parent_key="name"
+            )
+            for alert in alerts.get("alertPolicies", []):
+                self._gcp_deployed_alerts[alert["displayName"]] = alert
+
+        return self._gcp_deployed_alerts
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         if not self.resources:
@@ -57,32 +72,34 @@ class Alerts(Handler):
             condition.deploy_extra(self.versioned_clients)
 
         default_alert_kwargs.update(alert["kwargs"])
-        try:
+
+        body = {
+            "displayName": alert_name,
+            "conditions": formatted_conditions,
+            "notificationChannels": alert["notification_channels"],
+            "combiner": "OR",
+            **default_alert_kwargs,
+        }
+
+        # check if exists
+        if alert_name in self.gcp_deployed_alerts:
+            # patch
+            self.versioned_clients.monitoring_alert.execute(
+                "patch",
+                parent_key="name",
+                parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
+                params={"updateMask": ",".join(body.keys()), "body": body},
+            )
+
+            log.info(f"updated alert: {alert_name}")
+        else:
+            # deploy
             self.versioned_clients.monitoring_alert.execute(
                 "create",
                 parent_key="name",
-                params={
-                    "body": {
-                        "displayName": alert_name,
-                        "conditions": formatted_conditions,
-                        "notificationChannels": alert["notification_channels"],
-                        "combiner": "OR",
-                        **default_alert_kwargs,
-                    }
-                },
+                params={"body": body},
             )
-            log.info(f"created alert: {self.name}-{alert_name}")
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info(f"updated scheduled job: {alert_name} for {self.name}")
-                # self.versioned_clients.cloudscheduler.execute(
-                #     "patch",
-                #     parent_key="name",
-                #     parent_schema=job["name"],
-                #     params={"body": job},
-                # )
-            else:
-                raise e
+            log.info(f"created alert: {alert_name}")
 
     # def _sync(self, dryrun=False):
     #     jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
@@ -116,28 +133,36 @@ class Alerts(Handler):
     #         else:
     #             raise e
 
-    # def destroy(self):
-    #     if not self.resources:
-    #         return
-    #     for job_name in self.resources.keys():
-    #         self._destroy_job(job_name)
+    def destroy(self):
+        if not self.resources:
+            return
+        for alert_name in self.resources.keys():
+            self._destroy_alert(alert_name)
 
-    # def _destroy_job(self, job_name):
-    #     try:
-    #         self.versioned_clients.cloudscheduler.execute(
-    #             "delete",
-    #             parent_key="name",
-    #             parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
-    #             + self.name
-    #             + "-"
-    #             + job_name,
-    #         )
-    #         log.info(f"Destroying scheduled job {job_name}......")
-    #     except HttpError as e:
-    #         if e.resp.status == 404:
-    #             log.info("Scheduled jobs already destroyed")
-    #         else:
-    #             raise e
+    def _destroy_alert(self, alert_name):
+        if not self.gcp_deployed_alerts.get(alert_name):
+            log.info(f"Alert {alert_name} already destroyed")
+        else:
+            try:
+                self.versioned_clients.monitoring_alert.execute(
+                    "delete",
+                    parent_key="name",
+                    parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
+                )
+                log.info(f"Destroying alert {alert_name}......")
+            except HttpError as e:
+                if e.resp.status == 404:
+                    log.info(f"Alert {alert_name} already destroyed")
+                else:
+                    raise e
+        for condition in self.resources[alert_name].get("conditions", []):
+            condition.format_filter_or_query(
+                self.name,
+                self.backend.monitoring_type,
+                self.backend.name,
+                self.backend.monitoring_label_key,
+            )
+            condition.destroy_extra(self.versioned_clients)
 
 
 class AlertCondition:
@@ -188,6 +213,9 @@ class AlertCondition:
         return
 
     def deploy_extra(self, versioned_clients):
+        pass
+
+    def destroy_extra(self, versioned_clients):
         pass
 
 
@@ -290,25 +318,19 @@ class CustomMetricCondition(MetricCondition):
             else:
                 raise e
 
-        # severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)
-
-
-# "resource.type=\"cloud_run_revision\" resource.labels.service_name=\"media-metadata-service\" severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)
-# {
-#   "name": "media-metadata-service-errors-metric",
-#   "description": "measure error rates in media-metadata-service cloudfunction",
-#   "filter": "resource.type=\"cloud_run_revision\" resource.labels.service_name=\"media-metadata-service\" severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)",
-#   "metricDescriptor": {
-#     "name": "projects/premise-data-platform-prod/metricDescriptors/logging.googleapis.com/user/media-metadata-service-errors-metric",
-#     "metricKind": "DELTA",
-#     "valueType": "INT64",
-#     "unit": "1",
-#     "description": "measure error rates in media-metadata-service cloudfunction",
-#     "type": "logging.googleapis.com/user/media-metadata-service-errors-metric"
-#   },
-#   "createTime": "2022-09-28T20:58:57.256243488Z",
-#   "updateTime": "2022-10-18T14:00:17.944708237Z"
-# }
+    def destroy_extra(self, versioned_clients):
+        try:
+            versioned_clients.logging_metric.execute(
+                "delete",
+                parent_key="metricName",
+                parent_schema=f"projects/{get_default_project()}/metrics/{self.app_name}-{self.name}",
+            )
+            log.info(f"deleting custom metric {self.app_name}-{self.name}")
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info(f"Custom metric {self.app_name}-{self.name} already destroyed")
+            else:
+                raise e
 
 
 class ErrorLoggedCondition(AlertCondition):
