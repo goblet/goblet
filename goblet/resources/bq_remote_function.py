@@ -89,28 +89,7 @@ class BigQueryRemoteFunction(Handler):
         return True
 
     def __call__(self, request, context=None):
-        '''
-        :param request: JSON formatted str
-            The request is sent from bigquery routine
 
-            Example:
-            {
-                'requestId': '82c508b3-6520-4406-ad06-6425f28fa41b',
-                'caller': '//bigquery.googleapis.com/projects/premise-data-platform-dev/jobs/bquxjob_2597aba9_1852ff4c871',
-                'sessionUser': 'diego.diaz@premise.com',
-                'userDefinedContext': {   'X-Goblet-Name': 'bqremotefunctionTest' },
-                'calls': [[1, 'a'], [1, 'a']]
-            }
-        :return: string JSON formatted
-
-            Example
-            {
-                'replies': [  ]
-            }
-
-            * Replies is a JSON formatted str
-{"calls":[[1,"1","True"], [1,"2", "True"]], "userDefinedContext":{"X_Goblet_Name":"bqremotefunctionTest2"}}
-        '''
         user_defined_context = request.json["userDefinedContext"]
         func_name = user_defined_context["X-Goblet-Name"]
         if not func_name:
