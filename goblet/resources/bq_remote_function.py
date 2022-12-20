@@ -114,14 +114,13 @@ class BigQueryRemoteFunction(Handler):
         user_defined_context = request.json["userDefinedContext"]
         print(request)
         print("test")
-        log.info("printing request")
-        log.info(request)
         func_name = user_defined_context["X-Goblet-Name"]
         if not func_name:
             raise ValueError("No X-Goblet-Name header found")
 
         cloud_method = self.resources[func_name]
         if not cloud_method:
+            print(f"error cloud method {cloud_method}")
             raise ValueError(f"Method {func_name} not found")
         bq_tuples = request["calls"]
         tuples_replies = []
@@ -132,7 +131,16 @@ class BigQueryRemoteFunction(Handler):
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         log.info("deploying bigquery remote function......")
-        bq_query_connection = self.deploy_bigqueryconnection(f"{self.name}", {"cloudResource": {}})
+        bq_query_connection = None
+        try:
+            bq_query_connection = self.deploy_bigqueryconnection(f"{self.name}", {"cloudResource": {}})
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"Connection already created.bigquery query: for {self.name}")
+                pass
+            else:
+                log.error(f"updated bigquery query: for {e.error_details}")
+                raise e
 
         for resource_name, resource in self.resources.items():
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
