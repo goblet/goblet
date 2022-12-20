@@ -101,7 +101,7 @@ class BigQueryRemoteFunction(Handler):
         cloud_method = self.resources[func_name]
         if not cloud_method:
             raise ValueError(f"Method {func_name} not found")
-        return cloud_method["func"]()
+        return cloud_method["func"](request)
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         log.info("deploying bigquery remote function......")
