@@ -12,9 +12,9 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 BIGQUERY_DATATYPES = {
-    bool : "BOOLEAN",
-    str : "STRING",
-    int : "NUMERIC"
+    bool : "Boolean",
+    str : "String",
+    int : "Numeric"
 }
 
 class BigQueryRemoteFunction(Handler):
