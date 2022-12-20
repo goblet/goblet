@@ -109,7 +109,7 @@ class BigQueryRemoteFunction(Handler):
             }
 
             * Replies is a JSON formatted str
-
+{"calls":[[1,"1","True"], [1,"2", "True"]], "userDefinedContext":{"X_Goblet_Name":"bqremotefunctionTest2"}}
         '''
         user_defined_context = request.json["userDefinedContext"]
         func_name = user_defined_context["X-Goblet-Name"]

@@ -284,8 +284,8 @@ class Register_Handlers(DecoratorAPI):
         """Goblet entrypoint"""
         self.current_request = request
         self.request_context = context
-        event_type = self.get_event_type(request, context)
         print(request.json)
+        event_type = self.get_event_type(request, context)
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
         response = None
