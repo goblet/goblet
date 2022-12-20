@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import get_type_hints
 
@@ -124,7 +125,7 @@ class BigQueryRemoteFunction(Handler):
         for tuple in bq_tuples:
             tuples_replies.append(cloud_method["func"](*tuple))
         reply = {"replies" : tuples_replies}
-        return reply
+        return json.dumps(reply)
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         log.info("deploying bigquery remote function......")
@@ -162,6 +163,7 @@ class BigQueryRemoteFunction(Handler):
                     # TODO: Handle deleting multiple jobs with same name
                     self._destroy_job(filtered_name)
 
+    #TODO change signature name
     def deploy_bigqueryconnection(self, remote_function_name, remote_function):
         connection_id = f"{self.name}"
         try:
