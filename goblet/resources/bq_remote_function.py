@@ -120,9 +120,8 @@ class BigQueryRemoteFunction(Handler):
         if not cloud_method:
             print(f"error cloud method {cloud_method}")
             raise ValueError(f"Method {func_name} not found")
-        print("obtaining calls")
-        print(user_defined_context["calls"])
-        bq_tuples = user_defined_context["calls"]
+        print(f'obtaining calls {request.json["calls"]}')
+        bq_tuples = request.json["calls"]
         tuples_replies = []
         for tuple in bq_tuples:
             tuples_replies.append(cloud_method["func"](*tuple))
