@@ -327,6 +327,7 @@ class Register_Handlers(DecoratorAPI):
         """Parse event type from the event request and context"""
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
+        print(request.json)
         if request.is_json and request.json.get("userDefinedContext") and request.json["userDefinedContext"]["X-Goblet-Name"]:
 
             print("executing bqremotefunction")
