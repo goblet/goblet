@@ -31,6 +31,15 @@ class BigQueryRemoteFunction(Handler):
     create_statement = ""
 
     def get_hints(self, func):
+        """
+        Inspect hint in function func and creates an array for input and output with SQL Datatypes
+        according to https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types
+        restricted to https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions#limitations
+        :param func: function/method class to be inspected
+        :return: inputs, outputs
+                inputs = [{"name":<variable_name>, "data_type":<data_type>}]
+                See data types on BIGQUERY_DATATYPES
+        """
         type_hints = get_type_hints(func)
         inputs = []
         outputs = []
@@ -43,6 +52,14 @@ class BigQueryRemoteFunction(Handler):
         return inputs, outputs
 
     def create_routine_payload(self, resource, connection):
+        """
+        Create a routine object according to BigQuery specification
+        :param resource: a resource saved in resources in Handler
+        :param connection: a dict representing a bigquery connection
+                (https://cloud.google.com/bigquery/docs/reference/bigqueryconnection/rest/v1/projects.locations.connections)
+        :return: a dict representing a routine according to
+                https://cloud.google.com/bigquery/docs/reference/rest/v2/routines
+        """
         remote_function_options = {
                 "endpoint": self.backend.http_endpoint,
                 "connection": connection["name"],
@@ -79,6 +96,13 @@ class BigQueryRemoteFunction(Handler):
         return query_request
 
     def register_bqremotefunction(self, name, func, kwargs):
+        """
+        Register in handler resources
+        :param name: name of resource
+        :param func: function/method
+        :param kwargs:
+        :return:
+        """
         kwargs = kwargs.pop("kwargs")
         headers = kwargs.get("headers", {})
         input, output = self.get_hints(func)
@@ -114,7 +138,12 @@ class BigQueryRemoteFunction(Handler):
                 {"calls":[[1,"1","True"], [1,"2", "True"]], "userDefinedContext":{"X-Goblet-Name":"bqremotefunctionTest2"}}
     '''
     def __call__(self, request, context=None):
-
+        """
+        To be called from cloud functions
+        :param request:
+        :param context:
+        :return:
+        """
         user_defined_context = request.json["userDefinedContext"]
         func_name = user_defined_context["X-Goblet-Name"]
         if not func_name:
