@@ -202,7 +202,7 @@ class BigQueryRemoteFunction(Handler):
                 )
                 log.info(f"creating cloud function invoker policy")
                 policy = self.create_policy(bq_connection)
-                self.versioned_clients.bigquery_iam.execute(
+                self.versioned_clients.cloudfunctions.execute(
                     "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest2"}, parent=False)
                 log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
                 pass
