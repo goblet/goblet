@@ -15,7 +15,10 @@ log.setLevel(logging.INFO)
 BIGQUERY_DATATYPES = {
     bool : "BOOL",
     str : "STRING",
-    int : "NUMERIC"
+    int : "INT64",
+    float: "NUMERIC",
+    list: "JSON",
+    dict: "JSON"
 }
 
 class BigQueryRemoteFunction(Handler):
