@@ -14,8 +14,8 @@ log.setLevel(logging.INFO)
 
 class Alerts(Handler):
     """Cloud Monitoring Alert Policies that can trigger notification channels based on built in or custom metrics.
-    https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies. Alerts and Alert conditions contain a 
-    few common defaults, that are used by GCP. These can be overriden by passing in the correct params. 
+    https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies. Alerts and Alert conditions contain a
+    few common defaults, that are used by GCP. These can be overriden by passing in the correct params.
     """
 
     resource_type = "alerts"
@@ -150,6 +150,7 @@ class AlertCondition:
     """Base class for Alert Conditions. Only one of type threshold, absense, log_match, or MQL can be specified per condition.
     The method format_filter_or_query is used to inject values from the backend into the filters and conditions. These can be injected into
     custom filters as well. Currently monitoring_type,resource_name, and monitoring_label_key are supported."""
+
     def __init__(
         self, name, threshold=None, absence=None, log_match=None, MQL=None
     ) -> None:
@@ -237,8 +238,9 @@ class MetricCondition(AlertCondition):
 
 class CustomMetricCondition(MetricCondition):
     """
-    Creates and deploys a custom metric specified by the user, before creating a generic metric condition. 
+    Creates and deploys a custom metric specified by the user, before creating a generic metric condition.
     """
+
     def __init__(
         self, name, metric_filter, value, metric_descriptor={}, **kwargs
     ) -> None:
