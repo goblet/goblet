@@ -14,6 +14,7 @@ from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
 from goblet.resources.jobs import Jobs
+from goblet.resources.alerts import Alerts
 
 from googleapiclient.errors import HttpError
 
@@ -172,6 +173,13 @@ class DecoratorAPI:
             registration_kwargs={"name": name, "task_id": task_id, "kwargs": kwargs},
         )
 
+    def alert(self, name, conditions, **kwargs):
+        """Alert Resource"""
+        return self._register_infrastructure(
+            handler_type="alert",
+            kwargs={"name": name, "conditions": conditions, "kwargs": kwargs},
+        )
+
     def redis(self, name, **kwargs):
         """Redis Infrastructure"""
         return self._register_infrastructure(
@@ -245,6 +253,9 @@ class Register_Handlers(DecoratorAPI):
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
             "schedule": Scheduler(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
+            "alerts": Alerts(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
         }
@@ -454,6 +465,11 @@ class Register_Handlers(DecoratorAPI):
     def _register_job(self, name, func, kwargs):
         self.handlers["jobs"].register_job(
             name=kwargs["name"], func=func, kwargs=kwargs
+        )
+
+    def _register_alert(self, kwargs):
+        self.handlers["alerts"].register_alert(
+            kwargs["name"], kwargs["conditions"], kwargs=kwargs.get("kwargs", {})
         )
 
     def _register_redis(self, kwargs):

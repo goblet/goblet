@@ -10,7 +10,7 @@ Goblet is a framework for writing serverless rest apis in python in google cloud
 It provides:
 
 * A command line tool for creating, deploying, and managing your api
-* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, Cloudrun Jobs, and other GCP services.
+* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, Cloudrun Jobs, Redis, Monotoring alerts and other GCP services.
 * Local environment for testing and running your api endpoints
 * Dynamically generated openapispec
 * Support for multiple stages
@@ -30,6 +30,32 @@ def home():
 @app.route('/home/{id}', methods=["POST"])
 def post_example(id: int) -> List[int]:
     return jsonify([id])
+```
+
+You can also create other GCP resources that are related to your REST api:
+
+```python
+from goblet import Goblet, jsonify, goblet_entrypoint
+
+app = Goblet(function_name="goblet_example")
+goblet_entrypoint(app)
+
+# Scheduled job
+@app.schedule("5 * * * *")
+def scheduled_job():
+    return jsonify("success")
+
+# Pubsub subscription
+@app.topic("test")
+def pubsub_subscription(data):
+    app.log.info(data)
+    return
+
+# Example Redis Instance
+app.redis("redis-test")
+
+# Example Metric Alert for the cloudfunctin metric execution_count with a threshold of 10
+app.alert("metric",conditions=[MetricCondition("test", metric="cloudfunctions.googleapis.com/function/execution_count", value=10)])
 ```
 
 Once you've written your code, you just run goblet deploy and Goblet takes care of deploying your app.
@@ -68,6 +94,7 @@ $ curl https://api.uc.gateway.dev/home
 #### Infrastructure
 * vpc connector
 * redis
+* alerts
 
 ## Data Typing Frameworks Supported
 
@@ -259,6 +286,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [Cloudsql](https://cloud.google.com/sql) infrastructure \
  &#9744; [Spanner](https://cloud.google.com/spanner) infrastructure \
  &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot)
+ &#9745; [Alerts](https://cloud.google.com/monitoring/alerts)
 
 ## Want to Contribute
 
