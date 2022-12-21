@@ -200,11 +200,11 @@ class BigQueryRemoteFunction(Handler):
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+connection_id}, parent=False
                 )
-                # log.info(f"creating cloud function invoker policy")
-                # policy = self.create_policy(bq_connection)
-                # self.versioned_clients.bigquery_iam.execute(
-                #     "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest2"}, parent=False)
-                # log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
+                log.info(f"creating cloud function invoker policy")
+                policy = self.create_policy(bq_connection)
+                self.versioned_clients.bigquery_iam.execute(
+                    "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest2"}, parent=False)
+                log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
                 pass
             else:
                 raise e
@@ -235,7 +235,7 @@ class BigQueryRemoteFunction(Handler):
         policy = {
             "policy": {
                 "bindings":{
-                    "role": "roles/cloudfunctions.developer",
+                    "role": "roles/cloudfunctions.invoker",
                     "members": [
                         f"serviceAccount:{connection['cloudResource']['serviceAccountId']}"
                     ]
