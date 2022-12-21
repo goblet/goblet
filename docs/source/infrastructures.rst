@@ -8,8 +8,9 @@ Alerts
 ^^^^^^
 
 You can deploy alerts related to your application by using the alert method. Each alert takes a name and a list of conditions. Notification channels
-can be added to the `alerts.notification_channel` key in `config.json` or explicity in the alert. The base `AlertCondition`` class allows you to 
+can be added to the `alerts.notification_channel` key in `config.json` or explicity in the alert. The base `AlertCondition` class allows you to 
 fully customize your alert based on the fields privided by the `GCP Alert Resource <https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#conditionhttps://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#condition>`_
+
 If you do not need a fully customized alert you can use the built in classes for `MetricCondition`, `LogMatchCondition`, and `CustomMetricCondition`. These come with 
 defaults in terms of duration and aggregations, but can be overriden as needed. The `CustomMetricCondition` creates a custom metric based on the filter provided and then 
 creates an alert using that metric.  
@@ -19,7 +20,7 @@ creates an alert using that metric.
     from goblet.resources.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
     app = Goblet()
     
-    # Example Metric Alert for the cloudfunctin metric execution_count with a threshold of 10
+    # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
     app.alert("metric",conditions=[MetricCondition("test", metric="cloudfunctions.googleapis.com/function/execution_count", value=10)])
 
     # Example Log Match metric that will trigger an incendent off of any Error logs

@@ -54,7 +54,7 @@ def pubsub_subscription(data):
 # Example Redis Instance
 app.redis("redis-test")
 
-# Example Metric Alert for the cloudfunctin metric execution_count with a threshold of 10
+# Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
 app.alert("metric",conditions=[MetricCondition("test", metric="cloudfunctions.googleapis.com/function/execution_count", value=10)])
 ```
 
