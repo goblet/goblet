@@ -112,8 +112,22 @@ class BigQueryRemoteFunction(Handler):
     '''
     def __call__(self, request, context=None):
 
+        user_defined_context = request.json["userDefinedContext"]
+        func_name = user_defined_context["X-Goblet-Name"]
+        if not func_name:
+            raise ValueError("No X-Goblet-Name header found")
 
-        return None
+        cloud_method = self.resources[func_name]
+        if not cloud_method:
+            print(f"error cloud method {cloud_method}")
+            raise ValueError(f"Method {func_name} not found")
+        print(f'obtaining calls {request.json["calls"]}')
+        bq_tuples = request.json["calls"]
+        tuples_replies = []
+        for tuple in bq_tuples:
+            tuples_replies.append(cloud_method["func"](*tuple))
+        reply = {"replies" : tuples_replies}
+        return json.dumps(reply)
 
     def _deploy(self, source=None, entrypoint=None, config={}):
         log.info("deploying bigquery remote function......")
