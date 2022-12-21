@@ -115,28 +115,6 @@ class BigQueryRemoteFunction(Handler):
         }
         return True
 
-    '''
-            :param request: JSON formatted str
-                The request is sent from bigquery routine
-
-                Example:
-                {
-                    'requestId': '82c508b3-6520-4406-ad06-6425f28fa41b',
-                    'caller': '//bigquery.googleapis.com/projects/premise-data-platform-dev/jobs/bquxjob_2597aba9_1852ff4c871',
-                    'sessionUser': 'diego.diaz@premise.com',
-                    'userDefinedContext': {   'X-Goblet-Name': 'bqremotefunctionTest' },
-                    'calls': [[1, 'a'], [1, 'a']]
-                }
-            :return: string JSON formatted
-
-                Example
-                {
-                    'replies': [  ]
-                }
-
-                * Replies is a JSON formatted str
-                {"calls":[[1,"1","True"], [1,"2", "True"]], "userDefinedContext":{"X-Goblet-Name":"bqremotefunctionTest2"}}
-    '''
     def __call__(self, request, context=None):
         """
         To be called from cloud functions
@@ -177,12 +155,12 @@ class BigQueryRemoteFunction(Handler):
         for resource_name, resource in self.resources.items():
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
             try:
-                print(self.name)
-                print(bq_query_connection["name"])
-                print(bq_query_connection)
-                self.versioned_clients.bigquery_routines.execute(
-                    "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
-                )
+                # print(self.name)
+                # print(bq_query_connection["name"])
+                # print(bq_query_connection)
+                # self.versioned_clients.bigquery_routines.execute(
+                #     "insert", params={"body": create_routine_query, "projectId":get_default_project(), "datasetId":resource["dataset_id"]}, parent_key="projectId"
+                # )
                 log.info(f"created bq routine.")
             except HttpError as e:
                 if e.resp.status == 409:
@@ -222,11 +200,11 @@ class BigQueryRemoteFunction(Handler):
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+connection_id}, parent=False
                 )
-                # log.info(f"creating cloud function invoker policy")
-                # policy = self.create_policy(bq_connection)
-                # self.versioned_clients.bigquery_iam.execute(
-                #     "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest"}, parent=False)
-                # log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
+                log.info(f"creating cloud function invoker policy")
+                policy = self.create_policy(bq_connection)
+                self.versioned_clients.bigquery_iam.execute(
+                    "setIamPolicy", params={"body": policy,"resource":f"projects/98058317567/locations/us-central1/connections/bqremotefunctionTest2"}, parent=False)
+                log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
                 pass
             else:
                 raise e
