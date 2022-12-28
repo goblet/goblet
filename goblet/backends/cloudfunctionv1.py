@@ -104,6 +104,6 @@ class CloudFunctionV1(Backend):
                 }
             }
         }
-        client.cloudfunctions.execute(
+        client.execute(
             "setIamPolicy", params={"body": policy}, parent_key="resource",
             parent_schema=resource_name)
