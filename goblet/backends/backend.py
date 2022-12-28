@@ -151,3 +151,4 @@ class Backend:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
+
