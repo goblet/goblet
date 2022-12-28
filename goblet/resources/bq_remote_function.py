@@ -95,7 +95,7 @@ class BigQueryRemoteFunction(Handler):
 
         for resource_name, resource in self.resources.items():
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
-            routine_name = resource["name"]
+            routine_name = resource["routine_name"]
             try:
                 self.versioned_clients.bigquery_routines.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(),
