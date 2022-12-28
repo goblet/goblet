@@ -26,6 +26,7 @@ class BigQueryRemoteFunction(Handler):
     cloudrun
         https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions
     """
+    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
     resource_type = "bqremotefunction"
 
