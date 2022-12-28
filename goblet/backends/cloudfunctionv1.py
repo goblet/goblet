@@ -92,3 +92,18 @@ class CloudFunctionV1(Backend):
     @property
     def http_endpoint(self):
         return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{self.name}"
+
+    def set_iam_policy(self, client, resource_name, service_account_id):
+        policy = {
+            "policy": {
+                "bindings": {
+                    "role": "roles/cloudfunctions.invoker",
+                    "members": [
+                        f"serviceAccount:{service_account_id}"
+                    ]
+                }
+            }
+        }
+        client.cloudfunctions.execute(
+            "setIamPolicy", params={"body": policy}, parent_key="resource",
+            parent_schema=resource_name)
