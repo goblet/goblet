@@ -20,7 +20,7 @@ BIGQUERY_DATATYPES = {
     bool : "BOOL",
     str : "STRING",
     int : "INT64",
-    float: "NUMERIC",
+    float: "FLOAT64",
     list: "JSON",
     dict: "JSON"
 }
