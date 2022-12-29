@@ -123,7 +123,7 @@ class BigQueryRemoteFunction(Handler):
                     log.info(f"Updating bigquery remote function with name: {routine_name}")
                     self.versioned_clients.bigquery_routines.execute(
                         "update", params={"body": create_routine_query, "projectId": get_default_project(),
-                                          "datasetId": resource["dataset_id"], "routineId":routine["routineReference"]["routineId"]}, parent_key="projectId"
+                                          "datasetId": resource["dataset_id"], "routineId":routine_name}, parent_key="projectId"
                     )
                     log.info(f"Updated bigquery remote function with name: {routine_name}")
                 else:
