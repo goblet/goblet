@@ -140,10 +140,10 @@ class BigQueryRemoteFunction(Handler):
                     # TODO: Handle deleting multiple jobs with same name
                     self._destroy_job(filtered_name)
 
-    def deploy_bigqueryconnection(self, remote_function_name):
+    def deploy_bigqueryconnection(self, connection_name):
         """
             Creates (or get if exists) a connection resource with Handler.name
-        :param remote_function_name:
+        :param connection_name: name for the connection
         :return:
         """
         connection_id = f"{self.name}"
@@ -156,7 +156,7 @@ class BigQueryRemoteFunction(Handler):
 
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"Bigquery connection already exist with name: {remote_function_name} for {self.name}")
+                log.info(f"Bigquery connection already exist with name: {connection_name} for {self.name}")
                 client = self.versioned_clients.bigqueryconnectionget
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+connection_id}, parent=False
@@ -164,16 +164,6 @@ class BigQueryRemoteFunction(Handler):
                 pass
             else:
                 raise e
-        # try:
-        #     log.info(f"Creating cloud function invoker policy")
-        #     policy = self.create_policy(bq_connection)
-        #     self.versioned_clients.cloudfunctions.execute(
-        #         "setIamPolicy", params={"body": policy}, parent_key="resource",
-        #         parent_schema=f"projects/premise-data-platform-dev/locations/us-central1/functions/bqremotefunctionTest2")
-        #     log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
-        # except:
-        #     log.error("Couldnt assign invoker policy for bigquery remote connection")
-
         return bq_connection
 
     def destroy(self):
@@ -195,19 +185,6 @@ class BigQueryRemoteFunction(Handler):
                 log.info("Scheduled jobs already destroyed")
             else:
                 raise e
-
-    def create_policy(self, connection):
-        policy = {
-            "policy": {
-                "bindings":{
-                    "role": "roles/cloudfunctions.invoker",
-                    "members": [
-                        f"serviceAccount:{connection['cloudResource']['serviceAccountId']}"
-                    ]
-                }
-            }
-        }
-        return policy
 
     def get_hints(self, func):
         """
