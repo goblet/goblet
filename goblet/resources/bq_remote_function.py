@@ -112,7 +112,7 @@ class BigQueryRemoteFunction(Handler):
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
             routine_name = resource["routine_name"]
             try:
-                self.versioned_clients.bigquery_routines.execute(
+                routine = self.versioned_clients.bigquery_routines.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(),
                                       "datasetId":resource["dataset_id"]}, parent_key="projectId"
                 )
@@ -120,9 +120,14 @@ class BigQueryRemoteFunction(Handler):
             except HttpError as e:
                 if e.resp.status == 409:
                     log.info(f"Bigquery remote function already exist name: {routine_name}")
-                    pass
+                    log.info(f"Updating bigquery remote function with name: {routine_name}")
+                    self.versioned_clients.bigquery_routines.execute(
+                        "update", params={"body": create_routine_query, "projectId": get_default_project(),
+                                          "datasetId": resource["dataset_id"], "routineId":routine["routineReference"]["routineId"]}, parent_key="projectId"
+                    )
+                    log.info(f"Updated bigquery remote function with name: {routine_name}")
                 else:
-                    log.error(f"Bigquery remote function couldn't be created "
+                    log.error(f"Bigquery remote function couldn't be created nor updated"
                               f"name {routine_name} with error: {e.error_details}")
                     raise e
 
