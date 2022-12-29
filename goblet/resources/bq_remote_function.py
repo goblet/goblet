@@ -12,6 +12,10 @@ from googleapiclient.errors import HttpError
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
+'''
+    Allowed types for BigQuery remote functions
+    https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions#limitations
+'''
 BIGQUERY_DATATYPES = {
     bool : "BOOL",
     str : "STRING",
@@ -22,10 +26,12 @@ BIGQUERY_DATATYPES = {
 }
 
 class BigQueryRemoteFunction(Handler):
-    """Cloud Big Query Remote Functions (Big Query routines) connected to cloudfunctions or
-    cloudrun
+    """
+        Cloud Big Query Remote Functions (Big Query routines) connected to cloudfunctions or
+        cloudrun
         https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions
     """
+
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
     resource_type = "bqremotefunction"
@@ -78,6 +84,15 @@ class BigQueryRemoteFunction(Handler):
         return json.dumps(reply)
 
     def _deploy(self, source=None, entrypoint=None, config={}):
+        """
+        Get a connection resource for Handler.name and set cloudfunction
+        invoker IAM role to the service account assigned to the connection
+        for all the cloudfunctions registered in this Handler
+        :param source: inherited from Handler
+        :param entrypoint: inherited from Handler
+        :param config: inherited from Handler
+        :return:
+        """
         log.info("Deploying bigquery remote functions")
         bq_query_connection = None
         try:
@@ -126,6 +141,11 @@ class BigQueryRemoteFunction(Handler):
                     self._destroy_job(filtered_name)
 
     def deploy_bigqueryconnection(self, remote_function_name):
+        """
+            Creates (or get if exists) a connection resource with Handler.name
+        :param remote_function_name:
+        :return:
+        """
         connection_id = f"{self.name}"
         resource_type = {"cloudResource": {}}
         try:
@@ -144,15 +164,15 @@ class BigQueryRemoteFunction(Handler):
                 pass
             else:
                 raise e
-        try:
-            log.info(f"Creating cloud function invoker policy")
-            policy = self.create_policy(bq_connection)
-            self.versioned_clients.cloudfunctions.execute(
-                "setIamPolicy", params={"body": policy}, parent_key="resource",
-                parent_schema=f"projects/premise-data-platform-dev/locations/us-central1/functions/bqremotefunctionTest2")
-            log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
-        except:
-            log.error("Couldnt assign invoker policy for bigquery remote connection")
+        # try:
+        #     log.info(f"Creating cloud function invoker policy")
+        #     policy = self.create_policy(bq_connection)
+        #     self.versioned_clients.cloudfunctions.execute(
+        #         "setIamPolicy", params={"body": policy}, parent_key="resource",
+        #         parent_schema=f"projects/premise-data-platform-dev/locations/us-central1/functions/bqremotefunctionTest2")
+        #     log.info(f"updated bigquery connection job: {remote_function_name} for {self.name}")
+        # except:
+        #     log.error("Couldnt assign invoker policy for bigquery remote connection")
 
         return bq_connection
 
