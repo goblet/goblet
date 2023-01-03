@@ -329,7 +329,7 @@ class VersionedClients:
         return self.client_versions.get("gcloud")
 
     @property
-    def bigqueryconnection(self):
+    def bigquery_connections(self):
         return Client(
             "bigqueryconnection",
             self.client_versions.get("bigqueryconnection", "v1"),
@@ -347,32 +347,13 @@ class VersionedClients:
         )
 
     @property
-    def bigquery_iam(self):
+    def bigquery_routines(self):
         return Client(
-            "bigqueryconnection",
-            self.client_versions.get("bigqueryconnection", "v1"),
-            calls="projects.locations.connections",
-            parent_schema="projects/{project_id}/locations/{location_id}/connections",
+            "bigquery",
+            self.client_versions.get("bigquery", "v2"),
+            calls="routines",
+            parent_schema="{project_id}",
         )
-
-    @property
-    def bigqueryconnections(self):
-        return Client(
-            "bigqueryconnections",
-            self.client_versions.get("bigqueryconnections", "v1"),
-            calls="projects.locations.connections",
-            parent_schema="projects/{project_id}/locations/{location_id}",
-        )
-
-    @property
-    def bigqueryconnectionget(self):
-        return Client(
-            "bigqueryconnection",
-            self.client_versions.get("bigqueryconnection", "v1"),
-            calls="projects.locations.connections",
-            parent_schema="projects/{project_id}/locations/{location_id}/connections/",
-        )
-
     @property
     def run_uploader(self):
         return Client(
@@ -382,13 +363,6 @@ class VersionedClients:
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
 
-    @property
-    def bigquery_routines(self):
-        return Client(
-            "bigquery",
-            self.client_versions.get("bigquery", "v2"),
-            calls="routines",
-            parent_schema="{project_id}",
-        )
+
 
 

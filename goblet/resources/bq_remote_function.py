@@ -96,7 +96,7 @@ class BigQueryRemoteFunction(Handler):
         log.info("Deploying bigquery remote functions")
         bq_query_connection = None
         try:
-            bq_query_connection = self.deploy_bigqueryconnection(f"{self.name}")
+            bq_query_connection = self.deploy_bigquery_connection(f"{self.name}")
             self.backend.set_iam_policy(self.versioned_clients.cloudfunctions,
                 f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{self.name}",
                 bq_query_connection['cloudResource']['serviceAccountId'])
@@ -143,7 +143,7 @@ class BigQueryRemoteFunction(Handler):
                     # TODO: Handle deleting multiple jobs with same name
                     self._destroy_job(filtered_name)
 
-    def deploy_bigqueryconnection(self, connection_name):
+    def deploy_bigquery_connection(self, connection_name):
         """
             Creates (or get if exists) a connection resource with Handler.name
         :param connection_name: name for the connection
@@ -152,7 +152,7 @@ class BigQueryRemoteFunction(Handler):
         connection_id = f"{self.name}"
         resource_type = {"cloudResource": {}}
         try:
-            bq_connection = self.versioned_clients.bigqueryconnection.execute(
+            bq_connection = self.versioned_clients.bigquery_connections.execute(
                 "create", params={"body": resource_type, "connectionId":connection_id}
             )
             log.info(f"Created bigquery connection name: {connection_id}")
@@ -160,7 +160,7 @@ class BigQueryRemoteFunction(Handler):
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"Bigquery connection already exist with name: {connection_name} for {self.name}")
-                client = self.versioned_clients.bigqueryconnectionget
+                client = self.versioned_clients.bigquery_connections
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+connection_id}, parent=False
                 )
@@ -172,20 +172,24 @@ class BigQueryRemoteFunction(Handler):
     def destroy(self):
         if not self.resources:
             return
-        for job_name in self.resources.keys():
-            self._destroy_bqremote(job_name)
+        self._destroy_bigquery_connection()
+        for resource_name, resource in self.resources.items():
+            self._destroy_resource(resource_name)
 
-    def _destroy_bqremote(self, job_name):
+    def _destroy_resource(self, resource_name):
         try:
-            self.versioned_clients.bigquery.execute(
+            resource = self.resources[resource_name]
+            dataset_id = resource["dataset_id"]
+            routine_id = resource["routine_name"]
+            self.versioned_clients.bigquery_routines.execute(
                 "delete",
-                parent_schema="{project_id}/locations/{location_id}/jobs/"
-                + self.name
+                params={"projectId":get_default_project(),"datasetId":dataset_id,"routineId":routine_id},
+                parent_key="project_id"
             )
-            log.info(f"Destroying scheduled job {job_name}......")
+            log.info(f"Destroyed routine {routine_id} for dataset {dataset_id}")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info("Scheduled jobs already destroyed")
+                log.info("Routine already destroyed")
             else:
                 raise e
 
@@ -253,3 +257,9 @@ class BigQueryRemoteFunction(Handler):
         }
 
         return query_request
+
+    def _destroy_bigquery_connection(self):
+        connection_id = f"{self.name}"
+        client = self.versioned_clients.bigquery_connections
+        result = client.execute("delete", params={"name": client.parent + connection_id}, parent=False)
+        print(result)
