@@ -162,7 +162,7 @@ class BigQueryRemoteFunction(Handler):
                 log.info(f"Bigquery connection already exist with name: {connection_name} for {self.name}")
                 client = self.versioned_clients.bigquery_connections
                 bq_connection = client.execute(
-                    "get", params={"name": client.parent+connection_id}, parent_key="location"
+                    "get", params={"name": client.parent+connection_id}, parent_schema="projects/{project_id}/locations/{location_id}/connections/"
                 )
                 pass
             else:
