@@ -1,6 +1,6 @@
 from urllib import request
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
-from goblet.resources.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
+from goblet.infrastructures.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
 import logging
 
 app = Goblet(function_name="goblet_example", region="us-central-1")

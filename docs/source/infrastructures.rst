@@ -17,7 +17,7 @@ creates an alert using that metric.
 
 .. code:: python
 
-    from goblet.resources.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
+    from goblet.infrastructures.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
     app = Goblet()
     
     # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10

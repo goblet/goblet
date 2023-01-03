@@ -19,7 +19,6 @@ class Alerts(Handler):
     """
 
     resource_type = "alerts"
-    valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
     _gcp_deployed_alerts = {}
 
@@ -46,7 +45,10 @@ class Alerts(Handler):
                 self._gcp_deployed_alerts[alert["displayName"]] = alert
         return self._gcp_deployed_alerts
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def get_config(self):
+        return None
+
+    def deploy(self, source=None, entrypoint=None, config={}):
         if not self.resources:
             return
         gconfig = GConfig(config=config)
