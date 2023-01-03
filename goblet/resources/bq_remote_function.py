@@ -261,5 +261,5 @@ class BigQueryRemoteFunction(Handler):
     def _destroy_bigquery_connection(self):
         connection_id = f"{self.name}"
         client = self.versioned_clients.bigquery_connections
-        result = client.execute("delete", params={"name": client.parent + connection_id})
+        result = client.execute("delete", params={"name": client.parent + connection_id}, parent_key="project_id")
         print(result)
