@@ -36,7 +36,7 @@ class TestAlerts:
         )
 
         jobs = app.infrastructure["alerts"]
-        assert len(jobs.alerts) == 3
+        assert len(jobs.resources) == 3
 
     def test_format_filter_or_query(self):
         condition = MetricCondition(
@@ -168,6 +168,7 @@ class TestAlerts:
             ],
         )
 
+        app.infrastructure["alerts"]._gcp_deployed_alerts = {}
         app.infrastructure["alerts"].sync()
 
         responses = get_responses("alerts-sync")
