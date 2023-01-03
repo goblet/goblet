@@ -20,6 +20,8 @@ from goblet.write_files import write_dockerfile
 class CloudRun(Backend):
     resource_type = "cloudrun"
     supported_versions = ["v2"]
+    monitoring_type = "cloud_run_revision"
+    monitoring_label_key = "service_name"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).run

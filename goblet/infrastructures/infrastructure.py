@@ -6,6 +6,7 @@ class Infrastructure:
     """Base Infrastructure Class"""
 
     resource_type = ""
+    can_sync = False
 
     def __init__(
         self,
@@ -26,6 +27,13 @@ class Infrastructure:
 
     def destroy(self, config={}):
         raise NotImplementedError("destroy")
+
+    def sync(self, dryrun=False):
+        if self.can_sync:
+            self._sync(dryrun)
+
+    def _sync(self, dryrun=False):
+        pass
 
     def get_config(self, config={}):
         raise NotImplementedError("get_config")

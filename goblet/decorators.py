@@ -14,6 +14,7 @@ from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
 from goblet.resources.jobs import Jobs
+from goblet.infrastructures.alerts import Alerts
 
 from googleapiclient.errors import HttpError
 
@@ -172,6 +173,13 @@ class DecoratorAPI:
             registration_kwargs={"name": name, "task_id": task_id, "kwargs": kwargs},
         )
 
+    def alert(self, name, conditions, **kwargs):
+        """Alert Resource"""
+        return self._register_infrastructure(
+            handler_type="alert",
+            kwargs={"name": name, "conditions": conditions, "kwargs": kwargs},
+        )
+
     def redis(self, name, **kwargs):
         """Redis Infrastructure"""
         return self._register_infrastructure(
@@ -258,6 +266,9 @@ class Register_Handlers(DecoratorAPI):
                 backend=backend,
                 versioned_clients=versioned_clients,
                 config=config,
+            ),
+            "alerts": Alerts(
+                function_name, backend=backend, versioned_clients=versioned_clients
             ),
         }
 
@@ -354,12 +365,6 @@ class Register_Handlers(DecoratorAPI):
     def _register_infrastructure(self, handler_type, kwargs, options=None):
         getattr(self, "_register_%s" % handler_type)(kwargs=kwargs)
 
-    def deploy_infrastructure(self, config={}):
-        """Call deploy for each infrastructure"""
-        for k, v in self.infrastructure.items():
-            log.info(f"deploying {k}")
-            v.deploy(config=config)
-
     def get_infrastructure_config(self):
         configs = []
         for _, v in self.infrastructure.items():
@@ -374,9 +379,16 @@ class Register_Handlers(DecoratorAPI):
             log.info(f"deploying {k}")
             v.deploy(source, entrypoint="goblet_entrypoint", config=config)
 
+    def deploy_infrastructure(self, config={}):
+        """Call deploy for each infrastructure"""
+        for k, v in self.infrastructure.items():
+            log.info(f"deploying {k}")
+            v.deploy(config=config)
+
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
-        for _, v in self.handlers.items():
+        # Sync Infrastructure
+        for _, v in self.infrastructure.items():
             try:
                 v.sync(dryrun)
             except HttpError as e:
@@ -384,11 +396,14 @@ class Register_Handlers(DecoratorAPI):
                     continue
                 raise e
 
-    def destroy(self):
-        """Call each handlers destroy method"""
-        for k, v in self.handlers.items():
-            log.info(f"destroying {k}")
-            v.destroy()
+        # Sync Handlers
+        for _, v in self.handlers.items():
+            try:
+                v.sync(dryrun)
+            except HttpError as e:
+                if e.resp.status == 403:
+                    continue
+                raise e
 
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
@@ -454,6 +469,11 @@ class Register_Handlers(DecoratorAPI):
     def _register_job(self, name, func, kwargs):
         self.handlers["jobs"].register_job(
             name=kwargs["name"], func=func, kwargs=kwargs
+        )
+
+    def _register_alert(self, kwargs):
+        self.infrastructure["alerts"].register_alert(
+            kwargs["name"], kwargs["conditions"], kwargs=kwargs.get("kwargs", {})
         )
 
     def _register_redis(self, kwargs):

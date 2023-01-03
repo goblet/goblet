@@ -16,6 +16,8 @@ class CloudFunctionV1(Backend):
     supported_versions = ["v1"]
     required_files = ["requirements.txt", "main.py"]
     config_key = "cloudfunction"
+    monitoring_type = "cloud_function"
+    monitoring_label_key = "function_name"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions

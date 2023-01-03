@@ -335,3 +335,21 @@ class VersionedClients:
             calls="projects.locations.functions",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
+
+    @property
+    def monitoring_alert(self):
+        return Client(
+            "monitoring",
+            self.client_versions.get("monitoring", "v3"),
+            calls="projects.alertPolicies",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def logging_metric(self):
+        return Client(
+            "logging",
+            self.client_versions.get("logging", "v2"),
+            calls="projects.metrics",
+            parent_schema="projects/{project_id}",
+        )
