@@ -183,8 +183,7 @@ class BigQueryRemoteFunction(Handler):
             routine_id = resource["routine_name"]
             self.versioned_clients.bigquery_routines.execute(
                 "delete",
-                params={"projectId":get_default_project(),"datasetId":dataset_id,"routineId":routine_id},
-                parent_key="project_id"
+                params={"projectId":get_default_project(),"datasetId":dataset_id,"routineId":routine_id},parent=False
             )
             log.info(f"Destroyed routine {routine_id} for dataset {dataset_id}")
         except HttpError as e:
@@ -261,5 +260,10 @@ class BigQueryRemoteFunction(Handler):
     def _destroy_bigquery_connection(self):
         connection_id = f"{self.name}"
         client = self.versioned_clients.bigquery_connections
-        result = client.execute("delete", params={"name": client.parent +"/connections/"+ connection_id}, parent=False)
-        print(result)
+        try:
+            client.execute("delete", params={"name": client.parent +"/connections/"+ connection_id}, parent=False)
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info("Connection already destroyed")
+        return True
+
