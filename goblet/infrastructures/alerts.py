@@ -24,16 +24,16 @@ class Alerts(Infrastructure):
     _gcp_deployed_alerts = {}
 
     def __init__(
-        self, name, backend=None, versioned_clients=None, resources=None, config={}
+        self, name, backend=None, versioned_clients=None, resource=None, config={}
     ):
         super(Alerts, self).__init__(
             name,
             versioned_clients=versioned_clients,
-            resource=resources,
+            resource=resource,
             backend=backend,
-            config={},
+            config=config,
         )
-        self.resources = resources or []
+        self.resources = resource or []
 
     def register_alert(self, name, conditions, notification_channels=None, **kwargs):
         self.resources[f"{self.name}-{name}"] = {
