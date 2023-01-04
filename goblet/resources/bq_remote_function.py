@@ -112,7 +112,7 @@ class BigQueryRemoteFunction(Handler):
             create_routine_query = self.create_routine_payload(resource, bq_query_connection)
             routine_name = resource["routine_name"]
             try:
-                routine = self.versioned_clients.bigquery_routines.execute(
+                self.versioned_clients.bigquery_routines.execute(
                     "insert", params={"body": create_routine_query, "projectId":get_default_project(),
                                       "datasetId":resource["dataset_id"]}, parent_key="projectId"
                 )
@@ -130,18 +130,26 @@ class BigQueryRemoteFunction(Handler):
                     raise e
 
     def _sync(self, dryrun=False):
-        jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
-        filtered_jobs = list(
-            filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
+        connection_id = f"{self.name}"
+        client = self.versioned_clients.bigquery_connections
+        bq_connection = client.execute(
+            "get", params={"name": client.parent + "/connections/" + connection_id}, parent=False
         )
-        for filtered_job in filtered_jobs:
-            split_name = filtered_job["name"].split("/")[-1].split("-")
-            filtered_name = split_name[1]
-            if not self.resources.get(filtered_name):
-                log.info(f'Detected unused job in GCP {filtered_job["name"]}')
-                if not dryrun:
-                    # TODO: Handle deleting multiple jobs with same name
-                    self._destroy_job(filtered_name)
+        print(bq_connection["database"])
+        # routines = self.versioned_clients.bigquery_routines.execute("list", params={"projectId":get_default_project(),
+        #                                                                             "datasetId":})
+        # jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
+        # filtered_jobs = list(
+        #     filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
+        # )
+        # for filtered_job in filtered_jobs:
+        #     split_name = filtered_job["name"].split("/")[-1].split("-")
+        #     filtered_name = split_name[1]
+        #     if not self.resources.get(filtered_name):
+        #         log.info(f'Detected unused job in GCP {filtered_job["name"]}')
+        #         if not dryrun:
+        #             # TODO: Handle deleting multiple jobs with same name
+        #             self._destroy_job(filtered_name)
 
     def deploy_bigquery_connection(self, connection_name):
         """
@@ -170,11 +178,31 @@ class BigQueryRemoteFunction(Handler):
         return bq_connection
 
     def destroy(self):
+        """
+        Destroy connection then destroy one by one every routine
+        :return:
+        """
         if not self.resources:
             return
         self._destroy_bigquery_connection()
         for resource_name, resource in self.resources.items():
             self._destroy_resource(resource_name)
+
+    def _destroy_bigquery_connection(self):
+        """
+        Destroy bigquery connection, if already exist do nothing
+        :return:
+        """
+        connection_id = f"{self.name}"
+        client = self.versioned_clients.bigquery_connections
+        try:
+            client.execute("delete", params={"name": client.parent +"/connections/"+ connection_id}, parent=False)
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info("Connection already destroyed")
+            else:
+                raise e
+        return True
 
     def _destroy_resource(self, resource_name):
         try:
@@ -257,13 +285,4 @@ class BigQueryRemoteFunction(Handler):
 
         return query_request
 
-    def _destroy_bigquery_connection(self):
-        connection_id = f"{self.name}"
-        client = self.versioned_clients.bigquery_connections
-        try:
-            client.execute("delete", params={"name": client.parent +"/connections/"+ connection_id}, parent=False)
-        except HttpError as e:
-            if e.resp.status == 404:
-                log.info("Connection already destroyed")
-        return True
 
