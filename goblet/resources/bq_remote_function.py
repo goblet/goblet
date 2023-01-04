@@ -142,7 +142,7 @@ class BigQueryRemoteFunction(Handler):
             routines = list(filter(lambda available_routine: routine_id == available_routine["routineReference"]["routineId"], available_routines["routines"]))
 
             for filtered_routine in routines:
-                filtered_id = filtered_routine["routineReference"]
+                filtered_id = filtered_routine["routineReference"]["routineId"]
                 if filtered_id not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
                     if not dryrun:
