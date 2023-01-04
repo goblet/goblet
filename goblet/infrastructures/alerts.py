@@ -19,8 +19,21 @@ class Alerts(Infrastructure):
     """
 
     resource_type = "alerts"
+    resources = None
     can_sync = True
     _gcp_deployed_alerts = {}
+
+    def __init__(
+        self, name, backend=None, versioned_clients=None, resources=None, config={}
+    ):
+        super(Alerts, self).__init__(
+            name,
+            versioned_clients=versioned_clients,
+            resource=resources,
+            backend=backend,
+            config={},
+        )
+        self.resources = resources or []
 
     def register_alert(self, name, conditions, notification_channels=None, **kwargs):
         self.resources[f"{self.name}-{name}"] = {
