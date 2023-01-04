@@ -139,8 +139,10 @@ class BigQueryRemoteFunction(Handler):
             filtered_routines_id = []
             client = self.versioned_clients.bigquery_routines
             routines = client.execute("list", params={"datasetId":dataset_id, "projectId":get_default_project()}, parent=False)
-            print(routines)
-            return
+
+            if len(routines) == 0:
+                return
+
             for routine in routines["routines"]:
                 routine_id = routine["routineReference"]["routineId"]
                 filtered_routines_id.append(routine_id)
