@@ -126,7 +126,7 @@ class BigQueryRemoteFunction(Handler):
                     log.info(f"Updated remote function {routine_name}")
                 else:
                     log.error(f"Bigquery remote function couldn't be created nor updated"
-                              f"name {routine_name} with error: {e.error_details}")
+                              f" name {routine_name} with error: {e.error_details}")
                     raise e
 
     def _sync(self, dryrun=False):
