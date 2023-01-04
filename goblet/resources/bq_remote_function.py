@@ -102,10 +102,10 @@ class BigQueryRemoteFunction(Handler):
                 bq_query_connection['cloudResource']['serviceAccountId'])
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"Connection already created.bigquery query: for {self.name}")
+                log.info(f"Connection already created bigquery query: for {self.name}")
                 pass
             else:
-                log.error(f"Updated bigquery query: for {e.error_details}")
+                log.error(f"Create connection {e.error_details}")
                 raise e
 
         for resource_name, resource in self.resources.items():
@@ -171,8 +171,8 @@ class BigQueryRemoteFunction(Handler):
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+"/connections/"+connection_id}, parent=False
                 )
-                pass
             else:
+                log.error(e.error_details)
                 raise e
         return bq_connection
 
