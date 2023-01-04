@@ -1,6 +1,6 @@
 import logging
 
-from goblet.resources.handler import Handler
+from goblet.infrastructures.infrastructure import Infrastructure
 from goblet.client import (
     get_default_project,
 )
@@ -12,7 +12,7 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-class Alerts(Handler):
+class Alerts(Infrastructure):
     """Cloud Monitoring Alert Policies that can trigger notification channels based on built in or custom metrics.
     https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies. Alerts and Alert conditions contain a
     few common defaults, that are used by GCP. These can be overriden by passing in the correct params.
