@@ -248,6 +248,7 @@ class BigQueryRemoteFunction(Handler):
         """
         remote_function_options = {
                 "endpoint": self.backend.http_endpoint,
+                "connection": connection["name"],
                 "userDefinedContext": {
                     "X-Goblet-Name": resource['routine_name']
                 }
