@@ -136,24 +136,19 @@ class BigQueryRemoteFunction(Handler):
         dataset_id = resource["dataset_id"]
         connection_id = self.name
         try:
-            filtered_routines_id = []
             client = self.versioned_clients.bigquery_routines
-            routines = client.execute("list", params={"datasetId":dataset_id, "projectId":get_default_project()}, parent=False)
+            filtered_routines = client.execute("list", params={"datasetId":dataset_id, "projectId":get_default_project()}, parent=False)
 
-            if len(routines) == 0:
+            if len(filtered_routines) == 0:
                 log.info(f"No routines found for datasetId:{dataset_id} on projectId:{get_default_project()} location:{get_default_location()}")
                 return
 
-            for routine in routines["routines"]:
+            for routine in filtered_routines["routines"]:
                 routine_id = routine["routineReference"]["routineId"]
-                filtered_routines_id.append(routine_id)
-
-            for resource_name, resource in self.resources.items():
-                routine_id = resource["routine_id"]
-                if routine_id not in filtered_routines_id:
+                if routine_id not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
                     if not dryrun:
-                        self._destroy_routine(resource_name)
+                        self._destroy_routine(routine_id)
 
         except HttpError as e:
             if e.resp.status == 409:
