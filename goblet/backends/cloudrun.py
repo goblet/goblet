@@ -105,7 +105,7 @@ class CloudRun(Backend):
             "steps": [
                 {
                     "name": "gcr.io/cloud-builders/docker",
-                    "args": ["build", "-t", registry, "."],
+                    "args": ["build", "--network=cloudbuild", "-t", registry, "."],
                 }
             ],
             "images": [registry],
