@@ -132,7 +132,7 @@ class BigQueryRemoteFunction(Handler):
     def _sync(self, dryrun=False):
         if len(self.resources) <= 0:
             return
-        resource = self.resources.values()
+        resource = list(self.resources.values())[0]
         print(resource)
         # bq_connection = client.execute(
         #     "get", params={"name": client.parent + "/connections/" + connection_id}, parent=False
