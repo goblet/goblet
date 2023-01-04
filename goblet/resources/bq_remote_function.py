@@ -130,11 +130,14 @@ class BigQueryRemoteFunction(Handler):
                     raise e
 
     def _sync(self, dryrun=False):
-        # self.data
+        if len(self.resources) <= 0:
+            return
+        resource = self.resources.values()[0]
+        print(resource)
         # bq_connection = client.execute(
         #     "get", params={"name": client.parent + "/connections/" + connection_id}, parent=False
         # )
-        print(self.dataset_id)
+
         # routines = self.versioned_clients.bigquery_routines.execute("list", params={"projectId":get_default_project(),
         #                                                                             "datasetId":})
         # jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
