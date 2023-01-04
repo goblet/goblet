@@ -148,7 +148,7 @@ class BigQueryRemoteFunction(Handler):
                 if routine_id not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
                     if not dryrun:
-                        self._destroy_routine(routine_id)
+                        self._destroy_routine(dataset_id, routine_id)
 
         except HttpError as e:
             if e.resp.status == 409:
@@ -206,7 +206,7 @@ class BigQueryRemoteFunction(Handler):
             return
         self._destroy_bigquery_connection()
         for resource_name, resource in self.resources.items():
-            self._destroy_routine(resource_name)
+            self._destroy_routine(resource["dataset_id"], resource["routine_name"])
 
     def _destroy_bigquery_connection(self):
         """
@@ -224,11 +224,8 @@ class BigQueryRemoteFunction(Handler):
                 raise e
         return True
 
-    def _destroy_routine(self, resource_name):
+    def _destroy_routine(self, dataset_id, routine_id):
         try:
-            resource = self.resources[resource_name]
-            dataset_id = resource["dataset_id"]
-            routine_id = resource["routine_name"]
             self.versioned_clients.bigquery_routines.execute(
                 "delete",
                 params={"projectId":get_default_project(),"datasetId":dataset_id,"routineId":routine_id},parent=False
