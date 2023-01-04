@@ -131,22 +131,23 @@ class BigQueryRemoteFunction(Handler):
 
     def _sync(self, dryrun=False):
         client = self.versioned_clients.bigquery_routines
+        checked_dataset_id = []
         for routine_id, routine in self.resources.items():
             dataset_id = routine["dataset_id"]
+            if dataset_id in checked_dataset_id:
+                continue
+            checked_dataset_id.append(dataset_id)
             available_routines = client.execute("list",
                                                params={"datasetId": dataset_id, "projectId": get_default_project()},
                                                parent=False)
             if "routines" not in available_routines:
                 continue
 
-            routines = list(filter(lambda available_routine: routine_id == available_routine["routineReference"]["routineId"], available_routines["routines"]))
-
-            for filtered_routine in routines:
-                filtered_id = filtered_routine["routineReference"]["routineId"]
-                if filtered_id not in self.resources:
+            for available_routine in available_routines["routines"]:
+                if available_routine["routineReference"]["routine_id"] not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
                     if not dryrun:
-                        self._destroy_routine(dataset_id, routine_id)
+                        self._destroy_routine(dataset_id, available_routine["routineReference"]["routine_id"])
 
 
 
