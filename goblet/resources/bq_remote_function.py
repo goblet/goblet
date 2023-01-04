@@ -171,6 +171,7 @@ class BigQueryRemoteFunction(Handler):
                 bq_connection = client.execute(
                     "get", params={"name": client.parent+"/connections/"+connection_id}, parent=False
                 )
+                log.info(f"Returning connection {bq_connection['name']}")
             else:
                 log.error(e.error_details)
                 raise e
