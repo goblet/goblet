@@ -69,6 +69,8 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 
 # Install dependencies.
+RUN pip install keyrings.google-artifactregistry-auth==1.1.1
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
