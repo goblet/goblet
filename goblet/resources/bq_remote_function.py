@@ -150,32 +150,6 @@ class BigQueryRemoteFunction(Handler):
                         self._destroy_routine(dataset_id, available_routine["routineReference"]["routine_id"])
 
 
-
-        # if len(self.resources) <= 0:
-        #     return
-        # resource = list(self.resources.values())[0]
-        # dataset_id = resource["dataset_id"]
-        # try:
-        #
-        #
-        #
-        #     if len(filtered_routines) == 0:
-        #         log.info(f"No routines found for datasetId:{dataset_id} on projectId:{get_default_project()} location:{get_default_location()}")
-        #         return
-        #
-        #     for routine in filtered_routines["routines"]:
-        #         routine_id = routine["routineReference"]["routineId"]
-        #         if routine_id not in self.resources:
-        #             log.info(f'Detected unused routine in GCP {routine_id}')
-        #             if not dryrun:
-        #                 self._destroy_routine(dataset_id, routine_id)
-        #
-        # except HttpError as e:
-        #     if e.resp.status == 409:
-        #         log.error("Connection not found")
-        #     else:
-        #         log.error(e.error_details)
-
     def deploy_bigquery_connection(self, connection_name):
         """
             Creates (or get if exists) a connection resource with Handler.name
