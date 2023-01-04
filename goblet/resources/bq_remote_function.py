@@ -131,7 +131,7 @@ class BigQueryRemoteFunction(Handler):
 
     def _sync(self, dryrun=False):
         client = self.versioned_clients.bigquery_routines
-        for routine_id, routine in self.resources:
+        for routine_id, routine in self.resources.items():
             dataset_id = routine["dataset_id"]
             available_routines = client.execute("list",
                                                params={"datasetId": dataset_id, "projectId": get_default_project()},
