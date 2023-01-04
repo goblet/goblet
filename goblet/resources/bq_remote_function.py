@@ -119,57 +119,61 @@ class BigQueryRemoteFunction(Handler):
                 log.info(f"Created bq routine {routine_name}")
             except HttpError as e:
                 if e.resp.status == 409:
-                    log.info(f"Remote function already exist, updating for name: {routine_name}")
                     self.versioned_clients.bigquery_routines.execute(
                         "update", params={"body": create_routine_query, "projectId": get_default_project(),
                                           "datasetId": resource["dataset_id"], "routineId":routine_name}, parent_key="projectId"
                     )
+                    log.info(f"Updated remote function {routine_name}")
                 else:
                     log.error(f"Bigquery remote function couldn't be created nor updated"
                               f"name {routine_name} with error: {e.error_details}")
                     raise e
 
     def _sync(self, dryrun=False):
-        if len(self.resources) <= 0:
-            return
-        resource = list(self.resources.values())[0]
-        dataset_id = resource["dataset_id"]
-        connection_id = self.name
-        try:
-            client = self.versioned_clients.bigquery_routines
-            filtered_routines = client.execute("list", params={"datasetId":dataset_id, "projectId":get_default_project()}, parent=False)
+        client = self.versioned_clients.bigquery_routines
+        for routine_id, routine in self.resources:
+            dataset_id = routine["dataset_id"]
+            available_routines = client.execute("list",
+                                               params={"datasetId": dataset_id, "projectId": get_default_project()},
+                                               parent=False)
+            if "routines" not in available_routines:
+                continue
 
-            if len(filtered_routines) == 0:
-                log.info(f"No routines found for datasetId:{dataset_id} on projectId:{get_default_project()} location:{get_default_location()}")
-                return
+            routines = list(filter(lambda available_routine: routine_id == available_routine["routineReference"]["routineId"], available_routines["routines"]))
 
-            for routine in filtered_routines["routines"]:
-                routine_id = routine["routineReference"]["routineId"]
-                if routine_id not in self.resources:
+            for filtered_routine in routines:
+                filtered_id = filtered_routine["routineReference"]
+                if filtered_id not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
                     if not dryrun:
                         self._destroy_routine(dataset_id, routine_id)
 
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.error("Connection not found")
-            else:
-                log.error(e.error_details)
 
-        # routines = self.versioned_clients.bigquery_routines.execute("list", params={"projectId":get_default_project(),
-        #                                                                             "datasetId":})
-        # jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
-        # filtered_jobs = list(
-        #     filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
-        # )
-        # for filtered_job in filtered_jobs:
-        #     split_name = filtered_job["name"].split("/")[-1].split("-")
-        #     filtered_name = split_name[1]
-        #     if not self.resources.get(filtered_name):
-        #         log.info(f'Detected unused job in GCP {filtered_job["name"]}')
-        #         if not dryrun:
-        #             # TODO: Handle deleting multiple jobs with same name
-        #             self._destroy_job(filtered_name)
+
+        # if len(self.resources) <= 0:
+        #     return
+        # resource = list(self.resources.values())[0]
+        # dataset_id = resource["dataset_id"]
+        # try:
+        #
+        #
+        #
+        #     if len(filtered_routines) == 0:
+        #         log.info(f"No routines found for datasetId:{dataset_id} on projectId:{get_default_project()} location:{get_default_location()}")
+        #         return
+        #
+        #     for routine in filtered_routines["routines"]:
+        #         routine_id = routine["routineReference"]["routineId"]
+        #         if routine_id not in self.resources:
+        #             log.info(f'Detected unused routine in GCP {routine_id}')
+        #             if not dryrun:
+        #                 self._destroy_routine(dataset_id, routine_id)
+        #
+        # except HttpError as e:
+        #     if e.resp.status == 409:
+        #         log.error("Connection not found")
+        #     else:
+        #         log.error(e.error_details)
 
     def deploy_bigquery_connection(self, connection_name):
         """
