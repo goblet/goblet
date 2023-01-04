@@ -133,10 +133,28 @@ class BigQueryRemoteFunction(Handler):
         if len(self.resources) <= 0:
             return
         resource = list(self.resources.values())[0]
-        print(resource)
-        # bq_connection = client.execute(
-        #     "get", params={"name": client.parent + "/connections/" + connection_id}, parent=False
-        # )
+        dataset_id = resource["dataset_id"]
+        connection_id = self.name
+        try:
+            filtered_routines_id = []
+            client = self.versioned_clients.bigquery_routines
+            routines = client.execute("list", params={"datasetId":dataset_id, "projectId":get_default_project()}, parent=False)
+            for routine in routines["routines"]:
+                routine_id = routine["routineReference"]["routineId"]
+                filtered_routines_id.append(routine_id)
+
+            for resource_name, resource in self.resources.items():
+                routine_id = resource["routine_id"]
+                if routine_id not in filtered_routines_id:
+                    log.info(f'Detected unused routine in GCP {routine_id}')
+                    if not dryrun:
+                        self._destroy_routine(resource_name)
+
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.error("Connection not found")
+            else:
+                log.error(e.error_details)
 
         # routines = self.versioned_clients.bigquery_routines.execute("list", params={"projectId":get_default_project(),
         #                                                                             "datasetId":})
@@ -188,7 +206,7 @@ class BigQueryRemoteFunction(Handler):
             return
         self._destroy_bigquery_connection()
         for resource_name, resource in self.resources.items():
-            self._destroy_resource(resource_name)
+            self._destroy_routine(resource_name)
 
     def _destroy_bigquery_connection(self):
         """
@@ -206,7 +224,7 @@ class BigQueryRemoteFunction(Handler):
                 raise e
         return True
 
-    def _destroy_resource(self, resource_name):
+    def _destroy_routine(self, resource_name):
         try:
             resource = self.resources[resource_name]
             dataset_id = resource["dataset_id"]
