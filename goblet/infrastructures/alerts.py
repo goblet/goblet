@@ -36,7 +36,7 @@ class Alerts(Infrastructure):
         List of deployed gcp alerts, since we need to get unique id's from alerts in order to patch or avoid creating duplicates
         """
         if not self._gcp_deployed_alerts:
-            alerts = self.versioned_clients.monitoring_alert.execute(
+            alerts = self.client.monitoring_alert.execute(
                 "list",
                 parent_key="name",
                 params={"filter": f'display_name=starts_with("{self.name}-")'},
@@ -76,7 +76,7 @@ class Alerts(Infrastructure):
             formatted_conditions.append(condition.condition)
 
             # deploy custom metrics if needed
-            condition.deploy_extra(self.versioned_clients)
+            condition.deploy_extra(self.client)
 
         default_alert_kwargs.update(alert["kwargs"])
         alert["notification_channels"].extend(notification_channels)
@@ -91,7 +91,7 @@ class Alerts(Infrastructure):
         # check if exists
         if alert_name in self.gcp_deployed_alerts:
             # patch
-            self.versioned_clients.monitoring_alert.execute(
+            self.client.monitoring_alert.execute(
                 "patch",
                 parent_key="name",
                 parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
@@ -101,7 +101,7 @@ class Alerts(Infrastructure):
             log.info(f"updated alert: {alert_name}")
         else:
             # deploy
-            self.versioned_clients.monitoring_alert.execute(
+            self.client.monitoring_alert.execute(
                 "create",
                 parent_key="name",
                 params={"body": body},
@@ -127,7 +127,7 @@ class Alerts(Infrastructure):
             log.info(f"Alert {alert_name} already destroyed")
         else:
             try:
-                self.versioned_clients.monitoring_alert.execute(
+                self.client.monitoring_alert.execute(
                     "delete",
                     parent_key="name",
                     parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
@@ -145,7 +145,7 @@ class Alerts(Infrastructure):
                 self.backend.name,
                 self.backend.monitoring_label_key,
             )
-            condition.destroy_extra(self.versioned_clients)
+            condition.destroy_extra(self.client)
 
 
 class AlertCondition:
