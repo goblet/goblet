@@ -140,7 +140,7 @@ class BigQueryRemoteFunction(Handler):
             available_routines = client.execute("list",
                                                params={"datasetId": dataset_id, "projectId": get_default_project()},
                                                parent=False)
-            if "routines" not in available_routines:
+            if "routines" in available_routines:
                 continue
 
             for available_routine in available_routines["routines"]:
