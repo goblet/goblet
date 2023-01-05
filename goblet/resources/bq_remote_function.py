@@ -144,7 +144,6 @@ class BigQueryRemoteFunction(Handler):
                                                 parent=False)
             if "routines" not in available_routines:
                 continue
-            print(list(resource_name for resource_name in list(self.resources.keys())))
             for available_routine in available_routines["routines"]:
                 print(f"Checking {available_routine['routineReference']['routineId']}")
                 if available_routine["routineReference"]["routineId"] not in self.resources:
