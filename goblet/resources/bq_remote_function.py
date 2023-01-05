@@ -214,6 +214,7 @@ class BigQueryRemoteFunction(Handler):
             if e.resp.status == 409:
                 log.info(f"Routine {routine_id} already destroyed")
             else:
+                log.error(f"Couldn't destroy {routine_id} for dataset {dataset_id}. {e.error_details}")
                 raise e
 
     def get_hints(self, func):
