@@ -213,6 +213,8 @@ class BigQueryRemoteFunction(Handler):
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"Routine {routine_id} already destroyed")
+            elif e.resp.status == 404:
+                log.info(f"Routine {routine_id} doesn't exist. already destroyed?")
             else:
                 log.error(f"Couldn't destroy {routine_id} for dataset {dataset_id}. {e.error_details}")
                 raise e
