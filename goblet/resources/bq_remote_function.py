@@ -132,6 +132,13 @@ class BigQueryRemoteFunction(Handler):
                     raise e
 
     def _sync(self, dryrun=False):
+        """
+        If a BQ routine is in GCP but is not registered in the resources
+        then will be deleted. If dryrun is set then just info to log.
+        The routines checked in GCP are only those that are in all
+        the dataset_id defined for every routine registered in the resources
+        :param dryrun: if True then just send information to log
+        """
         client = self.versioned_clients.bigquery_routines
         checked_dataset_id = []
         for routine_id, routine in self.resources.items():
