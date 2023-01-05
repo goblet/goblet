@@ -211,7 +211,7 @@ class BigQueryRemoteFunction(Handler):
             )
             log.info(f"Destroyed routine {routine_id} for dataset {dataset_id}")
         except HttpError as e:
-            if e.resp.status == 404:
+            if e.resp.status == 409:
                 log.info(f"Routine {routine_id} already destroyed")
             else:
                 raise e
