@@ -142,7 +142,7 @@ class BigQueryRemoteFunction(Handler):
                                                parent=False)
             if "routines" not in available_routines:
                 continue
-            print(list(filter(lambda filtered_routine: filtered_routine["routineReference"]["routineId"] , available_routines["routines"])))
+            print(list(filtered_routine["routineReference"]["routineId"] for filtered_routine in available_routines["routines"]))
             for available_routine in available_routines["routines"]:
                 if available_routine["routineReference"]["routineId"] not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
