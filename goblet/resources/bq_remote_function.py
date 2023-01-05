@@ -148,7 +148,7 @@ class BigQueryRemoteFunction(Handler):
                 if available_routine["routineReference"]["routineId"] not in self.resources:
                     log.info(f'Detected unused routine in GCP {available_routine["routineReference"]["routineId"]}')
                     if not dryrun:
-                        self._destroy_routine(dataset_id, available_routine["routineReference"]["routine_id"])
+                        self._destroy_routine(dataset_id, available_routine["routineReference"]["routineId"])
 
     def deploy_bigquery_connection(self, connection_name):
         """
