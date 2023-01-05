@@ -145,7 +145,6 @@ class BigQueryRemoteFunction(Handler):
             if "routines" not in available_routines:
                 continue
             for available_routine in available_routines["routines"]:
-                print(f"Checking {available_routine['routineReference']['routineId']}")
                 if available_routine["routineReference"]["routineId"] not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
                     if not dryrun:
