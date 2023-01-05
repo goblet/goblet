@@ -5,9 +5,10 @@ FROM python:3.10-slim
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 
-# Install dependencies.
-RUN pip install keyrings.google-artifactregistry-auth==1.1.1
+# install keyring backend to handle artifact registry authentication
+# RUN pip install keyrings.google-artifactregistry-auth==1.1.1
 
+# Install dependencies.
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
