@@ -140,9 +140,9 @@ class BigQueryRemoteFunction(Handler):
             available_routines = client.execute("list",
                                                params={"datasetId": dataset_id, "projectId": get_default_project()},
                                                parent=False)
-            if "routines" in available_routines:
+            if "routines" not in available_routines:
                 continue
-
+            print(list(filter(lambda filtered_routine: filtered_routine["routineReference"]["routineId"] , available_routines["routines"])))
             for available_routine in available_routines["routines"]:
                 if available_routine["routineReference"]["routineId"] not in self.resources:
                     log.info(f'Detected unused routine in GCP {routine_id}')
