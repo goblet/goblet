@@ -311,7 +311,7 @@ class TestPubSub:
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
-        pubsub.register_topic("test", None, kwargs={"topic": "test", "kwargs": {}})
+        pubsub.register("test", None, kwargs={"topic": "test", "kwargs": {}})
 
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
@@ -360,7 +360,7 @@ class TestPubSub:
             "test-cross-project",
             backend=CloudFunctionV1(Goblet()),
         )
-        pubsub.register_topic(
+        pubsub.register(
             "test",
             None,
             kwargs={"topic": "test", "kwargs": {"project": "goblet-cross-project"}},

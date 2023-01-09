@@ -28,7 +28,7 @@ class PubSub(Handler):
     resource_type = "pubsub"
     can_sync = True
 
-    def register_topic(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         topic = kwargs["topic"]
         kwargs = kwargs.pop("kwargs")
         attributes = kwargs.get("attributes", {})

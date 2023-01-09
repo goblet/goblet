@@ -22,12 +22,15 @@ class Alerts(Infrastructure):
     can_sync = True
     _gcp_deployed_alerts = {}
 
-    def register_alert(self, name, conditions, notification_channels=None, **kwargs):
+    def register(self, name, **kwargs):
+        kwargs = kwargs.get("kwargs", {})
+        conditions = kwargs.pop("conditions")
+        notification_channels = kwargs.pop("notification_channels", [])
         self.resource[f"{self.name}-{name}"] = {
             "name": f"{self.name}-{name}",
             "conditions": conditions,
-            "notification_channels": notification_channels or [],
-            "kwargs": kwargs.get("kwargs", {}),
+            "notification_channels": notification_channels,
+            "kwargs": kwargs,
         }
 
     @property

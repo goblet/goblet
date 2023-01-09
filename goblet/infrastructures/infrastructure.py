@@ -22,6 +22,9 @@ class Infrastructure:
         self.resource = resource or {}
         self.config = GConfig(config=config)
 
+    def register(self, name, kwargs):
+        raise NotImplementedError("register")
+
     def deploy(self, config={}):
         raise NotImplementedError("deploy")
 

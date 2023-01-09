@@ -38,9 +38,9 @@ class Goblet(Register_Handlers):
         self.backend_class = self.get_backend_and_check_versions(
             backend, client_versions or {}
         )
-        self.function_name = GConfig().function_name or function_name
+        self.function_name = GConfig(config).function_name or function_name
         self.labels = labels
-        self.backend = self.backend_class(self)
+        self.backend = self.backend_class(self, config=config)
 
         super(Goblet, self).__init__(
             function_name=self.function_name,
@@ -55,7 +55,7 @@ class Goblet(Register_Handlers):
         self.g = G()
 
         # Setup Local
-        module_name = GConfig().main_file or "main"
+        module_name = GConfig(config).main_file or "main"
         module_name = module_name.replace(".py", "")
         if local and sys.modules.get(module_name):
 
