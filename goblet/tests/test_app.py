@@ -154,12 +154,12 @@ class TestDecoraters:
 
         @app.route("/test2")
         @app.stage("TEST2")
-        def dummy_function():
+        def dummy_function2():
             return "test"
 
         @app.route("/test3")
         @app.stage("TEST2")
-        def dummy_function():
+        def dummy_function3():
             return "test"
 
         assert len(app.handlers["route"].resources) == 2

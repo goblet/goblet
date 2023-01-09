@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from functools import wraps
+
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
