@@ -45,7 +45,7 @@ class Storage(Handler):
                 f"/calling/storage for more information. "
             )
 
-    def register_bucket(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         bucket_name = kwargs["bucket"]
         event_type = kwargs["event_type"]
         self.validate_event_type(event_type)

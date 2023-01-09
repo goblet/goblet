@@ -142,6 +142,28 @@ class TestDecoraters:
 
         assert app(mock_request, {}) == "test after request"
 
+    def test_stages(self, monkeypatch):
+        monkeypatch.setenv("STAGE", "TEST2")
+
+        app = Goblet("test", config={"stages": {"TEST2": {}}})
+
+        @app.route("/test")
+        @app.stage("TEST")
+        def dummy_function():
+            return "test"
+
+        @app.route("/test2")
+        @app.stage("TEST2")
+        def dummy_function():
+            return "test"
+
+        @app.route("/test3")
+        @app.stage("TEST2")
+        def dummy_function():
+            return "test"
+
+        assert len(app.handlers["route"].resources) == 2
+
 
 # Causes tests to fail
 # class TestGoblet:

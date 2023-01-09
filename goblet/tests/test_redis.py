@@ -99,7 +99,7 @@ class TestRedis:
         app = Goblet(function_name="goblet-example", backend="cloudrun")
         app.redis(name="redis-test")
 
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register("", dummy_function, {})
 
         app.deploy(
             skip_resources=True,
@@ -147,7 +147,7 @@ class TestRedis:
         app = Goblet(function_name="goblet-example", backend="cloudfunction")
         app.redis(name="redis-test")
 
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register("", dummy_function, {})
 
         app.deploy(
             skip_resources=True,
@@ -185,7 +185,7 @@ class TestRedis:
 
         app = Goblet(function_name="goblet-example", backend="cloudfunctionv2")
         app.redis(name="redis-test")
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register("", dummy_function, {})
 
         app.deploy(
             skip_resources=True,

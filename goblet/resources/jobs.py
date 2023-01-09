@@ -19,9 +19,9 @@ class Jobs(Handler):
     valid_backends = ["cloudrun"]
     can_sync = True
 
-    def register_job(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         task_id = kwargs["task_id"]
-        job_name = f"{self.name}-{name}"
+        job_name = f"{self.name}-{kwargs['name']}"
         if self.resources.get(job_name):
             self.resources[job_name][task_id] = {"func": func}
         else:

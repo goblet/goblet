@@ -23,7 +23,7 @@ class Scheduler(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
 
-    def register_job(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         schedule = kwargs["schedule"]
         timezone = kwargs["timezone"]
         kwargs = kwargs.pop("kwargs")

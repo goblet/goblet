@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-
+from functools import wraps
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
@@ -169,15 +169,16 @@ class DecoratorAPI:
                 },
             )
         return self._create_registration_function(
-            handler_type="job",
+            handler_type="jobs",
             registration_kwargs={"name": name, "task_id": task_id, "kwargs": kwargs},
         )
 
     def alert(self, name, conditions, **kwargs):
         """Alert Resource"""
+        kwargs["conditions"] = conditions
         return self._register_infrastructure(
-            handler_type="alert",
-            kwargs={"name": name, "conditions": conditions, "kwargs": kwargs},
+            handler_type="alerts",
+            kwargs={"name": name, "kwargs": kwargs},
         )
 
     def redis(self, name, **kwargs):
@@ -194,23 +195,38 @@ class DecoratorAPI:
             kwargs={"name": name, "kwargs": kwargs},
         )
 
+    def stage(self, stage, stages=[]):
+        # Only registers if stage matches.
+        def _register_stage(func):
+            if os.getenv("STAGE") == stage or os.getenv("STAGE") in stages:
+                return func
+
+        return _register_stage
+
     def _create_registration_function(self, handler_type, registration_kwargs=None):
         def _register_handler(user_handler):
-            handler_name = user_handler.__name__
-            kwargs = registration_kwargs or {}
-            self._register_handler(handler_type, handler_name, user_handler, kwargs)
+            if user_handler:
+                handler_name = user_handler.__name__
+                kwargs = registration_kwargs or {}
+                self._register_handler(handler_type, handler_name, user_handler, kwargs)
             return user_handler
 
         return _register_handler
 
     def _register_handler(self, handler_type, name, func, kwargs, options=None):
-        raise NotImplementedError("_register_handler")
 
-    def _register_infrastructure(self, handler_type, kwargs):
-        raise NotImplementedError("_register_infrastructure")
+        name = kwargs.get("kwargs", {}).get("name") or name
+        self.handlers[handler_type].register(name=name, func=func, kwargs=kwargs)
+
+    def _register_infrastructure(self, handler_type, kwargs, options=None):
+        self.infrastructure[handler_type].register(
+            kwargs["name"], kwargs=kwargs.get("kwargs", {})
+        )
 
     def register_middleware(self, func, event_type="all", before_or_after="before"):
-        raise NotImplementedError("register_middleware")
+        middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
+        middleware_list.append(func)
+        self.middleware_handlers[before_or_after][event_type] = middleware_list
 
 
 class Register_Handlers(DecoratorAPI):
@@ -259,7 +275,10 @@ class Register_Handlers(DecoratorAPI):
 
         self.infrastructure = {
             "redis": Redis(
-                function_name, backend=backend, versioned_clients=versioned_clients
+                function_name,
+                backend=backend,
+                versioned_clients=versioned_clients,
+                config=config,
             ),
             "vpcconnector": VPCConnector(
                 function_name,
@@ -268,7 +287,10 @@ class Register_Handlers(DecoratorAPI):
                 config=config,
             ),
             "alerts": Alerts(
-                function_name, backend=backend, versioned_clients=versioned_clients
+                function_name,
+                backend=backend,
+                versioned_clients=versioned_clients,
+                config=config,
             ),
         }
 
@@ -354,17 +376,6 @@ class Register_Handlers(DecoratorAPI):
 
         return event
 
-    def _register_handler(self, handler_type, name, func, kwargs, options=None):
-
-        getattr(self, "_register_%s" % handler_type)(
-            name=name,
-            func=func,
-            kwargs=kwargs,
-        )
-
-    def _register_infrastructure(self, handler_type, kwargs, options=None):
-        getattr(self, "_register_%s" % handler_type)(kwargs=kwargs)
-
     def get_infrastructure_config(self):
         configs = []
         for _, v in self.infrastructure.items():
@@ -439,49 +450,3 @@ class Register_Handlers(DecoratorAPI):
             self.client_versions[version_key] = backend_class.supported_versions[-1]
 
         return backend_class
-
-    def register_middleware(self, func, event_type="all", before_or_after="before"):
-        middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
-        middleware_list.append(func)
-        self.middleware_handlers[before_or_after][event_type] = middleware_list
-
-    def _register_http(self, name, func, kwargs):
-        self.handlers["http"].register_http(func, kwargs=kwargs)
-
-    def _register_route(self, name, func, kwargs):
-        self.handlers["route"].register_route(name=name, func=func, kwargs=kwargs)
-
-    def _register_schedule(self, name, func, kwargs):
-        name = kwargs.get("kwargs", {}).get("name") or name
-        self.handlers["schedule"].register_job(name=name, func=func, kwargs=kwargs)
-
-    def _register_pubsub(self, name, func, kwargs):
-        self.handlers["pubsub"].register_topic(name=name, func=func, kwargs=kwargs)
-
-    def _register_storage(self, name, func, kwargs):
-        name = kwargs.get("name") or kwargs["bucket"]
-        self.handlers["storage"].register_bucket(name=name, func=func, kwargs=kwargs)
-
-    def _register_eventarc(self, name, func, kwargs):
-        name = kwargs.get("kwargs", {}).get("name") or name
-        self.handlers["eventarc"].register_trigger(name=name, func=func, kwargs=kwargs)
-
-    def _register_job(self, name, func, kwargs):
-        self.handlers["jobs"].register_job(
-            name=kwargs["name"], func=func, kwargs=kwargs
-        )
-
-    def _register_alert(self, kwargs):
-        self.infrastructure["alerts"].register_alert(
-            kwargs["name"], kwargs["conditions"], kwargs=kwargs.get("kwargs", {})
-        )
-
-    def _register_redis(self, kwargs):
-        self.infrastructure["redis"].register_instance(
-            kwargs["name"], kwargs=kwargs.get("kwargs", {})
-        )
-
-    def _register_vpcconnector(self, kwargs):
-        self.infrastructure["vpcconnector"].register_connector(
-            kwargs["name"], kwargs=kwargs.get("kwargs", {})
-        )

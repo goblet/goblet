@@ -10,7 +10,7 @@ class Redis(Infrastructure):
     resource_type = "redis"
     update_keys = ["displayName", "labels", "memorySizeGb", "replicaCount"]
 
-    def register_instance(self, name, kwargs):
+    def register(self, name, kwargs):
         self.resource = {"name": name}
 
     def deploy(self, config={}):

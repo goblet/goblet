@@ -34,7 +34,7 @@ class EventArc(Handler):
         )
         self.resources = resources or []
 
-    def register_trigger(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         event_filters = kwargs.get("event_filters")
         region = kwargs.get("kwargs", {}).get("region", get_default_location())
         if kwargs.get("topic"):

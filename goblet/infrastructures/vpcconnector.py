@@ -11,7 +11,7 @@ class VPCConnector(Infrastructure):
 
     resource_type = "vpcconnector"
 
-    def register_connector(self, name, kwargs):
+    def register(self, name, kwargs):
         self.resource = {"name": name}
         vpcconnector_config = self.config.vpcconnector or {}
 
