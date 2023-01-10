@@ -21,7 +21,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "cloudscheduler": "v1",
     "redis": "v1",
     "vpcaccess": "v1",
-    "bigquery": "v2"
+    "bigquery": "v1"
 }
 
 
