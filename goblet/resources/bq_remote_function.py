@@ -189,6 +189,7 @@ class BigQueryRemoteFunction(Handler):
                 )
                 log.info(f"Returning connection {bq_connection['name']}")
             else:
+                log.info("Error not 409")
                 log.error(e.error_details)
                 raise e
         return bq_connection
