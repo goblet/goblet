@@ -47,7 +47,7 @@ class BigQueryRemoteFunction(Handler):
         """
         kwargs = kwargs.pop("kwargs")
         headers = kwargs.get("headers", {})
-        input, output = self.get_hints(func)
+        input, output = self._get_hints(func)
         self.resources[name] = {
             "routine_name": name,
             "dataset_id": kwargs["dataset_id"],
@@ -74,9 +74,7 @@ class BigQueryRemoteFunction(Handler):
 
         cloud_method = self.resources[func_name]
         if not cloud_method:
-            print(f"error cloud method {cloud_method}")
             raise ValueError(f"Method {func_name} not found")
-        print(f'obtaining calls {request.json["calls"]}')
         bq_tuples = request.json["calls"]
         tuples_replies = []
         for tuple in bq_tuples:
@@ -155,7 +153,18 @@ class BigQueryRemoteFunction(Handler):
                 if available_routine["routineReference"]["routineId"] not in self.resources:
                     log.info(f'Detected unused routine in GCP {available_routine["routineReference"]["routineId"]}')
                     if not dryrun:
-                        self._destroy_routine(dataset_id, available_routine["routineReference"]["routineId"])
+                        self.destroy_routine(dataset_id, available_routine["routineReference"]["routineId"])
+
+    def destroy(self):
+        """
+        Destroy connection then destroy one by one every routine
+        :return:
+        """
+        if not self.resources:
+            return
+        self.destroy_bigquery_connection()
+        for resource_name, resource in self.resources.items():
+            self.destroy_routine(resource["dataset_id"], resource["routine_name"])
 
     def deploy_bigquery_connection(self, connection_name):
         """
@@ -184,18 +193,7 @@ class BigQueryRemoteFunction(Handler):
                 raise e
         return bq_connection
 
-    def destroy(self):
-        """
-        Destroy connection then destroy one by one every routine
-        :return:
-        """
-        if not self.resources:
-            return
-        self._destroy_bigquery_connection()
-        for resource_name, resource in self.resources.items():
-            self._destroy_routine(resource["dataset_id"], resource["routine_name"])
-
-    def _destroy_bigquery_connection(self):
+    def destroy_bigquery_connection(self):
         """
         Destroy bigquery connection, if already exist do nothing
         :return:
@@ -211,7 +209,7 @@ class BigQueryRemoteFunction(Handler):
                 raise e
         return True
 
-    def _destroy_routine(self, dataset_id, routine_id):
+    def destroy_routine(self, dataset_id, routine_id):
         try:
             self.versioned_clients.bigquery_routines.execute(
                 "delete",
@@ -228,7 +226,7 @@ class BigQueryRemoteFunction(Handler):
                 log.error(f"Couldn't destroy {routine_id} for dataset {dataset_id}. {e.error_details}")
                 raise e
 
-    def get_hints(self, func):
+    def _get_hints(self, func):
         """
         Inspect hint in function func and creates an array for input and output with SQL Datatypes
         according to https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types

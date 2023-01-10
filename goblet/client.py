@@ -21,16 +21,16 @@ DEFAULT_CLIENT_VERSIONS = {
     "cloudscheduler": "v1",
     "redis": "v1",
     "vpcaccess": "v1",
-    "bigqueryconnection":"v1"
+    "bigqueryconnection": "v1"
 }
 
 
 def get_default_project():
     for k in (
-        "GOOGLE_PROJECT",
-        "GCLOUD_PROJECT",
-        "GOOGLE_CLOUD_PROJECT",
-        "CLOUDSDK_CORE_PROJECT",
+            "GOOGLE_PROJECT",
+            "GCLOUD_PROJECT",
+            "GOOGLE_CLOUD_PROJECT",
+            "CLOUDSDK_CORE_PROJECT",
     ):
         if k in os.environ:
             return os.environ[k]
@@ -53,14 +53,14 @@ def get_default_project_number():
 
 def get_default_location():
     for k in (
-        "GOOGLE_ZONE",
-        "GCLOUD_ZONE",
-        "CLOUDSDK_COMPUTE_ZONE",
-        "GOOGLE_REGION",
-        "GCLOUD_REGION",
-        "CLOUDSDK_COMPUTE_REGION",
-        "GOOGLE_LOCATION",
-        "GCLOUD_LOCATION",
+            "GOOGLE_ZONE",
+            "GCLOUD_ZONE",
+            "CLOUDSDK_COMPUTE_ZONE",
+            "GOOGLE_REGION",
+            "GCLOUD_REGION",
+            "CLOUDSDK_COMPUTE_REGION",
+            "GOOGLE_LOCATION",
+            "GCLOUD_LOCATION",
     ):
         if k in os.environ:
             return os.environ[k]
@@ -83,13 +83,13 @@ def get_credentials():
 
 class Client:
     def __init__(
-        self,
-        resource,
-        version="v1",
-        credentials=None,
-        calls=None,
-        parent_schema=None,
-        regional=False,
+            self,
+            resource,
+            version="v1",
+            credentials=None,
+            calls=None,
+            parent_schema=None,
+            regional=False,
     ):
         self.project_id = get_default_project()
         self.location_id = get_default_location()
@@ -153,7 +153,7 @@ class Client:
         return None
 
     def wait_for_operation(
-        self, operation, timeout=600, calls="projects.locations.operations"
+            self, operation, timeout=600, calls="projects.locations.operations"
     ):
         """Helper function which calls the operation endpoint until an operation in completed"""
         done = False
@@ -177,13 +177,13 @@ class Client:
         return resp
 
     def execute(
-        self,
-        api,
-        calls=None,
-        parent_schema=None,
-        parent=True,
-        parent_key="parent",
-        params=None,
+            self,
+            api,
+            calls=None,
+            parent_schema=None,
+            parent=True,
+            parent_key="parent",
+            params=None,
     ):
         """Executes the GCP client api call. parent_schema is the name or parent param required for most api calls. project
         and location is automatically added if the schema contains {project_id} or {location_id}. The parent_key is used if
@@ -347,14 +347,6 @@ class VersionedClients:
         )
 
     @property
-    def bigquery_routines(self):
-        return Client(
-            "bigquery",
-            self.client_versions.get("bigquery", "v2"),
-            calls="routines",
-            parent_schema="{project_id}",
-        )
-    @property
     def run_uploader(self):
         return Client(
             "cloudfunctions",
@@ -362,7 +354,3 @@ class VersionedClients:
             calls="projects.locations.functions",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
-
-
-
-

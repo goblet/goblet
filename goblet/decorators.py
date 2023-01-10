@@ -284,7 +284,6 @@ class Register_Handlers(DecoratorAPI):
         """Goblet entrypoint"""
         self.current_request = request
         self.request_context = context
-        print(request.json)
         event_type = self.get_event_type(request, context)
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
@@ -329,8 +328,6 @@ class Register_Handlers(DecoratorAPI):
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
         if request.is_json and request.json.get("userDefinedContext") and request.json["userDefinedContext"].get("X-Goblet-Name"):
-            print(request.get_json(silent=True))
-            print(request.json)
             return("bqremotefunction")
 
         if context and context.event_type:
