@@ -772,7 +772,7 @@ You can view your current stages using ``goblet stage list``. To deploy or destr
 environment variable ``STAGE``. For example ``goblet deploy -s dev``.
 
 You can limit what resources are deployed by stage by using the stage decorator. For example, the following will only
-be deployed and run when stage is dev.
+be deployed and run when stage is dev. You can specify multiple stages with the stages argument. `stages=["dev","qa"]`.
 
 .. code:: python 
 
