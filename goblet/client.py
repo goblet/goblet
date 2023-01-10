@@ -334,8 +334,8 @@ class VersionedClients:
         return Client(
             "bigqueryconnection",
             self.client_versions.get("bigqueryconnection", "v1"),
-            calls="projects.locations.connections",
-            parent_schema="projects/{project_id}/locations/{location_id}",
+            calls="connections",
+            parent_schema="{project_id}",
         )
 
     @property
