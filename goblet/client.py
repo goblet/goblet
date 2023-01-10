@@ -351,7 +351,7 @@ class VersionedClients:
     def bigquery_routines(self):
         return Client(
             "bigquery",
-            self.client_versions.get("bigquery", "v2"),
+            self.client_versions.get("bigquery", "v1"),
             calls="routines",
             parent_schema="{project_id}",
         )
