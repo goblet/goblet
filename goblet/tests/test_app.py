@@ -1,5 +1,6 @@
 from goblet import jsonify, Response, Goblet
 from unittest.mock import Mock
+import pytest
 
 # from goblet.client import DEFAULT_CLIENT_VERSIONS
 
@@ -142,7 +143,7 @@ class TestDecoraters:
 
         assert app(mock_request, {}) == "test after request"
 
-    def test_stages(self, monkeypatch):
+    def test_stage(self, monkeypatch):
         monkeypatch.setenv("STAGE", "TEST2")
 
         app = Goblet("test", config={"stages": {"TEST2": {}}})
@@ -159,6 +160,35 @@ class TestDecoraters:
 
         @app.route("/test3")
         @app.stage("TEST2")
+        def dummy_function3():
+            return "test"
+
+        assert len(app.handlers["route"].resources) == 2
+
+        with pytest.raises(ValueError):
+
+            @app.route("/test4")
+            @app.stage()
+            def dummy_function4():
+                return "test"
+
+    def test_stages(self, monkeypatch):
+        monkeypatch.setenv("STAGE", "TEST2")
+
+        app = Goblet("test", config={"stages": {"TEST2": {}}})
+
+        @app.route("/test")
+        @app.stage(stages=["TEST", "TEST2"])
+        def dummy_function():
+            return "test"
+
+        @app.route("/test2")
+        @app.stage("TEST2")
+        def dummy_function2():
+            return "test"
+
+        @app.route("/test3")
+        @app.stage(stages=["TEST", "TEST3"])
         def dummy_function3():
             return "test"
 

@@ -195,7 +195,9 @@ class DecoratorAPI:
             kwargs={"name": name, "kwargs": kwargs},
         )
 
-    def stage(self, stage, stages=[]):
+    def stage(self, stage=None, stages=[]):
+        if not stage and not stages:
+            raise ValueError("One of stage or stages should be set")
         # Only registers if stage matches.
         def _register_stage(func):
             if os.getenv("STAGE") == stage or os.getenv("STAGE") in stages:
