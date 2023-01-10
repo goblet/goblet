@@ -354,3 +354,14 @@ class VersionedClients:
             calls="projects.locations.functions",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
+
+    @property
+    def bigquery_routines(self):
+        return Client(
+            "bigquery",
+            self.client_versions.get("bigquery", "v2"),
+            calls="routines",
+            parent_schema="{project_id}",
+        )
+
+
