@@ -21,7 +21,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "cloudscheduler": "v1",
     "redis": "v1",
     "vpcaccess": "v1",
-    "bigquery": "v1",
+    "bigquery": "v2",
     "bigqueryconnection": "v1"
 }
 
@@ -351,7 +351,7 @@ class VersionedClients:
     def bigquery_routines(self):
         return Client(
             "bigquery",
-            self.client_versions.get("bigquery", "v1"),
+            self.client_versions.get("bigquery", "v2"),
             calls="routines",
             parent_schema="{project_id}",
         )
