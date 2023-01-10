@@ -338,15 +338,6 @@ class VersionedClients:
         )
 
     @property
-    def bigquery_routines(self):
-        return Client(
-            "bigqueryconnection",
-            self.client_versions.get("bigqueryconnection", "v1"),
-            calls="projects.locations.routines",
-            parent_schema="projects/{project_id}/locations/{location_id}/routines",
-        )
-
-    @property
     def run_uploader(self):
         return Client(
             "cloudfunctions",
@@ -363,5 +354,3 @@ class VersionedClients:
             calls="routines",
             parent_schema="{project_id}",
         )
-
-
