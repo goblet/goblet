@@ -7,7 +7,7 @@ from goblet.client import (
     get_default_project, get_default_location
 )
 
-from googleapiclient.errors import HttpError
+from googleapiclient.errors import HttpError, Error
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -180,7 +180,7 @@ class BigQueryRemoteFunction(Handler):
             )
             log.info(f"Created bigquery connection name: {connection_id}")
 
-        except HttpError as e:
+        except Error as e:
             if e.resp.status == 409:
                 log.info(f"Bigquery connection already exist with name: {connection_name} for {self.name}")
                 client = self.versioned_clients.bigquery_connections
