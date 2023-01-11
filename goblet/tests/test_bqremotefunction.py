@@ -64,7 +64,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "bqremotefunction-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
         test_name = "bqremotefunction"
         test_dataset_id = "blogs"
