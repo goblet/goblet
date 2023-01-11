@@ -70,7 +70,7 @@ class TestBqRemoteFunction:
         app = Goblet(function_name="bqremotefunction_test")
         test_name = "bqremotefunction_test"
         test_dataset_id = "blogs"
-        app.handlers["http"].register_http(dummy_function, {})
+        # app.handlers["http"].register_http(dummy_function, {})
 
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
