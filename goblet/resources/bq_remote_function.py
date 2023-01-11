@@ -173,7 +173,7 @@ class BigQueryRemoteFunction(Handler):
         :return:
         """
         connection_id = f"{self.name}"
-        resource_type = {"connections":{},"cloudResource": {}}
+        resource_type = {"cloudResource": {}}
         try:
             bq_connection = self.versioned_clients.bigquery_connections.execute(
                 "create", params={"body": resource_type, "connectionId": connection_id}
