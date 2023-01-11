@@ -60,12 +60,12 @@ class TestBqRemoteFunction:
     #     assert mock.call_count == 1
 
     def test_deploy_bqremotefunction(self, monkeypatch):
-        #monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        #monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "bqremotefunction-deploy")
-        #monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        #monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
         app = Goblet(function_name="bqremotefunction_test")
         test_name = "bqremotefunction_test"
@@ -76,7 +76,7 @@ class TestBqRemoteFunction:
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
         )
 
-        app.deploy()
+        app.deploy(force=True)
         #
         # goblet_name = "goblet_example"
         # scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
