@@ -180,7 +180,7 @@ class BigQueryRemoteFunction(Handler):
             )
             log.info(f"Created bigquery connection name: {connection_id}")
 
-        except Error as e:
+        except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"Bigquery connection already exist with name: {connection_name} for {self.name}")
                 client = self.versioned_clients.bigquery_connections
@@ -192,6 +192,7 @@ class BigQueryRemoteFunction(Handler):
                 log.info(f"Error not 409 {self.name}")
                 log.error(e.error_details)
                 raise e
+        log.info(bq_connection)
         return bq_connection
 
     def destroy_bigquery_connection(self):
