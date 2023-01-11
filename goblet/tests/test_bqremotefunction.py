@@ -65,10 +65,10 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOBLET_TEST_NAME", "bqremotefunction-deploy")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="bqremotefunction_test2")
-        test_name = "bqremotefunction"
+        app = Goblet(function_name="bqremotefunction_test3")
+        test_name = "bqremotefunction_test3"
         test_dataset_id = "blogs"
-        app.handlers["http"].register_http(dummy_function, {})
+        # app.handlers["http"].register_http(dummy_function, {})
 
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
