@@ -123,18 +123,14 @@ class TestBqRemoteFunction:
         assert "role" in bindings[0][0]
         assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
 
-        routines = list(request["body"] for request in responses if
-                        "arguments" in request["body"] and "remoteFunctionOptions" in request["body"])
-        #
+        routines = list(request["body"] for request in responses if "remoteFunctionOptions" in request["body"])
         assert len(routines) == 1
         routine = routines[0]
-        arguments = json.dumps(routine["arguments"])
-        return_type = json.dumps(routine["returnType"])
-        input,output = BigQueryRemoteFunction._get_hints(bqremotefunction_string_test_blogs_1)
-        input = json.dumps(input)
-        output = json.dumps(output)
-        assert input == arguments
-        assert output == return_type
+        remote_function_options = routine[0]["remoteFunctionOptions"]
+        user_defined_context = "{'X-Goblet-Name': 'bqremotefunction_string_test_blogs_1'}"
+        assert "connection" in remote_function_options and test_name in remote_function_options["connection"]
+        assert user_defined_context == json.dumps(remote_function_options["userDefinedContext"])
+
 
     # def test_destroy_bqremotefunction(self, monkeypatch):
     #     test_deploy_name = "bqremotefunction-destroy"
