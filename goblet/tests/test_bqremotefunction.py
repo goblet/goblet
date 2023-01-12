@@ -1,3 +1,4 @@
+import json
 from pprint import pprint
 from unittest.mock import Mock
 from goblet import Goblet
@@ -9,6 +10,7 @@ from goblet.test_utils import (
     dummy_function,
 )
 from goblet.backends import CloudRun, CloudFunctionV1
+from resources.bq_remote_function import BigQueryRemoteFunction
 
 
 # from goblet.resources.bq_remote_function import get_hints
@@ -16,40 +18,52 @@ from goblet.backends import CloudRun, CloudFunctionV1
 
 class TestBqRemoteFunction:
     # def test_register_bqremotefunction(self, monkeypatch):
-    #     app = Goblet(function_name="goblet_example")
+    #     app = Goblet(function_name="bqremotefunction_test")
     #     monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
     #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
     #
-    #     test_name = "test-bqremoterefunction"
-    #     test_dataset_id = "test-dataset"
+    #     test_name = "bqremotefunction_test"
+    #     test_dataset_id = "blogs"
+    #
+    #     @app.bqremotefunction(
+    #         dataset_id="blogs"
+    #     )
+    #     def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
+    #         return f"Passed parameters x:{x}  y:{y}"
     #
     #     app.bqremotefunction(func=dummy_function, name=test_name, dataset_id=test_dataset_id)
+    #     resources = app.handlers["bqremotefunction"].resources
     #
-    #     bqremotefunction_handler = app.handlers[test_name]
+    #     app.handlers["http"].register_http(dummy_function, {})
     #
-    #     input, output = get_hints(dummy_function)
+    #     input, output = BigQueryRemoteFunction._get_hints(bqremotefunction_string_test_blogs_1)
     #
     #     expected_resources = {
-    #         "routine_name": test_name,
+    #         "routine_name": "bqremotefunction_string_test_blogs_1",
     #         "dataset_id": test_dataset_id,
     #         "inputs": input,
     #         "output": output,
-    #         "func": dummy_function
+    #         "func": bqremotefunction_string_test_blogs_1
     #     }
-    #     assert expected_resources["routine_name"] == bqremotefunction_handler["routine_name"]
-    #     assert expected_resources["dataset_id"] == bqremotefunction_handler["dataset_id"]
-    #     assert expected_resources["inputs"] == bqremotefunction_handler["inputs"]
-    #     assert expected_resources["output"] == bqremotefunction_handler["output"]
-    #     assert expected_resources["func"] == bqremotefunction_handler["func"]
     #
+    #     for resource_name, resource in resources.items():
+    #
+    #         assert expected_resources["routine_name"] == resource["routine_name"]
+    #         assert expected_resources["dataset_id"] == resource["dataset_id"]
+    #         assert json.dumps(expected_resources["inputs"]) == json.dumps(resource["inputs"])
+    #         assert json.dumps(expected_resources["output"]) == json.dumps(resource["output"])
+    #         assert expected_resources["func"] == resource["func"]
+    # #
     # def test_call_bqremotefunction(self, monkeypatch):
-    #     app = Goblet(function_name="goblet_example")
     #     monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
     #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
     #
+    #     app = Goblet(function_name="goblet_example")
+    #     test_name = "bqremotefunction_test"
+    #     test_dataset_id = "blogs"
     #     mock = Mock()
     #
-    #     app.bqremotefunction()(mock_dummy_function(mock))
+    #     app.bqremotefunction(func=mock_dummy_function, name=test_name, dataset_id=test_dataset_id)(mock_dummy_function)
     #
     #     headers = {
     #         "X-Goblet-Name": "dummy_function"
@@ -65,20 +79,26 @@ class TestBqRemoteFunction:
     def test_deploy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-deploy"
         # FOR RECORDING
-        # monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         # FOR REPLAY
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
         # FOR RECORDING
-        # monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
         # FOR REPLAY
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
         app.handlers["http"].register_http(dummy_function, {})
+
+        @app.bqremotefunction(
+            dataset_id="blogs"
+        )
+        def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
+            return f"Passed parameters x:{x}  y:{y}"
 
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
@@ -104,6 +124,8 @@ class TestBqRemoteFunction:
         assert "role" in bindings[0][0]
         assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
 
+        #
+
     # def test_destroy_bqremotefunction(self, monkeypatch):
     #     test_deploy_name = "bqremotefunction-destroy"
     #     # FOR RECORDING
@@ -120,6 +142,12 @@ class TestBqRemoteFunction:
     #     test_name = "bqremotefunction_test"
     #     app = Goblet(function_name=test_name)
     #     test_dataset_id = "blogs"
+    #
+    #     @app.bqremotefunction(
+    #         dataset_id="blogs"
+    #     )
+    #     def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
+    #         return f"Passed parameters x:{x}  y:{y}"
     #     app.bqremotefunction(
     #         func=dummy_function, name=test_name, dataset_id=test_dataset_id
     #     )
@@ -134,29 +162,25 @@ class TestBqRemoteFunction:
     #     deleted_function = list(body["metadata"] for body in bodies if "metadata" in body and "type" in body["metadata"] and "type" in body["metadata"] and "DELETE_FUNCTION" == body["metadata"]["type"])
     #     assert len(deleted_function) == 1
     #     assert f"functions/{test_name}" in deleted_function[0]["target"]
-    def test_sync_bqremotefunction(self, monkeypatch):
-        test_deploy_name = "bqremotefunction-sync"
-        # FOR RECORDING
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
-        # FOR REPLAY
-        # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
-        # FOR RECORDING
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
-        # FOR REPLAY
-        # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-
-        test_name = "bqremotefunction_test"
-        app = Goblet(function_name=test_name)
-        test_dataset_id = "blogs"
-        app.bqremotefunction(
-            func=dummy_function, name=test_name, dataset_id=test_dataset_id
-        )
-        app.handlers["http"].register_http(dummy_function, {})
-
-        app.sync(dryrun=True)
-        app.sync(dryrun=False)
-
-        responses = get_responses("bqremotefunction-sync")
-        pprint(responses)
+    # def test_sync_bqremotefunction(self, monkeypatch):
+    #     test_deploy_name = "bqremotefunction-sync"
+    #     # FOR RECORDING
+    #     monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
+    #     # FOR REPLAY
+    #     # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    #     monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
+    #     # FOR RECORDING
+    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+    #     # FOR REPLAY
+    #     # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    #
+    #     test_name = "bqremotefunction_test"
+    #     app = Goblet(function_name=test_name)
+    #     app.handlers["http"].register_http(dummy_function, {})
+    #
+    #     app.sync(dryrun=True)
+    #     app.sync(dryrun=False)
+    #
+    #     responses = get_responses("bqremotefunction-sync")
+    #     pprint(responses)

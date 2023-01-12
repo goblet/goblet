@@ -47,7 +47,7 @@ class BigQueryRemoteFunction(Handler):
         """
         kwargs = kwargs.pop("kwargs")
         headers = kwargs.get("headers", {})
-        input, output = self._get_hints(func)
+        input, output = BigQueryRemoteFunction._get_hints(func)
         self.resources[name] = {
             "routine_name": name,
             "dataset_id": kwargs["dataset_id"],
@@ -228,7 +228,7 @@ class BigQueryRemoteFunction(Handler):
                 log.error(f"Couldn't destroy {routine_id} for dataset {dataset_id}. {e.error_details}")
                 raise e
 
-    def _get_hints(self, func):
+    def _get_hints(func):
         """
         Inspect hint in function func and creates an array for input and output with SQL Datatypes
         according to https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types
