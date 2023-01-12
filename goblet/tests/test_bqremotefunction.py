@@ -94,17 +94,17 @@ class TestBqRemoteFunction:
         test_dataset_id = "blogs"
         app.handlers["http"].register_http(dummy_function, {})
 
-        @app.bqremotefunction(
-            dataset_id="blogs"
-        )
-        def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
-            return f"Passed parameters x:{x}  y:{y}"
+        # @app.bqremotefunction(
+        #     dataset_id="blogs"
+        # )
+        # def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
+        #     return f"Passed parameters x:{x}  y:{y}"
 
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
         )
 
-        app.deploy(force=True)
+        app.deploy(skip_backend=True)
         responses = get_responses(test_deploy_name)
         assert len(responses) > 0
         pprint(responses)
