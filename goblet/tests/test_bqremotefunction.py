@@ -105,7 +105,7 @@ class TestBqRemoteFunction:
     #     assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
 
     def test_destroy_bqremotefunction(self, monkeypatch):
-        test_deploy_name = "bqremotefunction-deploy"
+        test_deploy_name = "bqremotefunction-destroy"
         # FOR RECORDING
         monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         # FOR REPLAY
@@ -123,6 +123,7 @@ class TestBqRemoteFunction:
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
         )
+        app.handlers["http"].register_http(dummy_function, {})
         app.destroy()
         responses = get_responses(test_deploy_name)
         pprint(responses)
