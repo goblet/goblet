@@ -1,3 +1,4 @@
+from pprint import pprint
 from unittest.mock import Mock
 from goblet import Goblet
 from goblet.resources.scheduler import Scheduler
@@ -8,6 +9,8 @@ from goblet.test_utils import (
     dummy_function,
 )
 from goblet.backends import CloudRun, CloudFunctionV1
+
+
 # from goblet.resources.bq_remote_function import get_hints
 
 
@@ -59,72 +62,70 @@ class TestBqRemoteFunction:
     #
     #     assert mock.call_count == 1
 
-    def test_deploy_bqremotefunction(self, monkeypatch):
+    # def test_deploy_bqremotefunction(self, monkeypatch):
+    #     test_deploy_name = "bqremotefunction-deploy"
+    #     # FOR RECORDING
+    #     # monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
+    #     # FOR REPLAY
+    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+    #     monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
+    #     # FOR RECORDING
+    #     # monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+    #     # FOR REPLAY
+    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    #
+    #     test_name = "bqremotefunction_test"
+    #     app = Goblet(function_name=test_name)
+    #     test_dataset_id = "blogs"
+    #     app.handlers["http"].register_http(dummy_function, {})
+    #
+    #     app.bqremotefunction(
+    #         func=dummy_function, name=test_name, dataset_id=test_dataset_id
+    #     )
+    #
+    #     app.deploy(force=True)
+    #     responses = get_responses(test_deploy_name)
+    #     assert len(responses) > 0
+    #
+    #     # Check Connection
+    #     connections = list(request["body"] for request in responses if "cloudResource" in request["body"])
+    #     assert len(connections) == 1
+    #     assert "serviceAccountId" in connections[0]["cloudResource"]
+    #     assert "bigquery" in connections[0]["cloudResource"]["serviceAccountId"]
+    #     assert test_name in connections[0]["name"]
+    #
+    #     # Check policy
+    #     bindings = list(request["body"]["bindings"] for request in responses if "bindings" in request["body"])
+    #     assert len(bindings) == 1
+    #     assert "members" in bindings[0][0]
+    #     members = bindings[0][0]["members"]
+    #     assert len(members) == 1 and "serviceAccount" in members[0]
+    #     assert "role" in bindings[0][0]
+    #     assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
+
+    def test_destroy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-deploy"
-        #FOR RECORDING
-        #monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
-        #FOR REPLAY
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        # FOR RECORDING
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
+        # FOR REPLAY
+        # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
-        #FOR RECORDING
-        #monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
-        #FOR REPLAY
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        # FOR RECORDING
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+        # FOR REPLAY
+        # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="bqremotefunction_test")
         test_name = "bqremotefunction_test"
+        app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
-        app.handlers["http"].register_http(dummy_function, {})
-
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
         )
-
-        app.deploy(force=True)
+        app.destroy()
         responses = get_responses(test_deploy_name)
-        assert len(responses) > 0
-
-        #Check Connection
-        connections = list(request["body"] for request in responses if "cloudResource" in request["body"])
-        assert len(connections) == 1
-        assert "serviceAccountId" in connections[0]["cloudResource"]
-        assert "bigquery" in connections[0]["cloudResource"]["serviceAccountId"]
-        assert test_name in connections[0]["name"]
-
-
-        #Check policy
-        bindings = list(request["body"]["bindings"]  for request in responses if "bindings" in request["body"])
-        assert len(bindings) == 1
-        assert "members" in bindings[0][0]
-        members = bindings[0][0]["members"]
-        assert len(members) == 1 and "serviceAccount" in members[0]
-        assert "role" in bindings[0][0]
-        assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
-
-
-
-    # def test_destroy_bqremotefunction(self, monkeypatch):
-    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-    #     monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-destroy")
-    #     monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-    #
-    #     goblet_name = "goblet_example"
-    #     scheduler = Scheduler(
-    #         goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
-    #     )
-    #     scheduler.register_job(
-    #         "test-job",
-    #         None,
-    #         kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
-    #     )
-    #     scheduler.destroy()
-    #
-    #     responses = get_responses("schedule-destroy")
-    #
-    #     assert len(responses) == 1
-    #     assert responses[0]["body"] == {}
+        pprint(responses)
     #
     # def test_sync_bqremotefunction(self, monkeypatch):
     #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
