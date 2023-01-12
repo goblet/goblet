@@ -83,28 +83,26 @@ class TestBqRemoteFunction:
 
         app.deploy(force=True)
         responses = get_responses(test_deploy_name)
-        print(responses)
-        # assert responses[]
-        #
-        # goblet_name = "goblet_example"
-        # scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
-        # scheduler.register_job(
-        #     "test-job",
-        #     None,
-        #     kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
-        # )
-        # scheduler.deploy()
+        assert len(responses) > 0
 
-        # responses = get_responses("schedule-deploy")
-        #
-        # assert goblet_name in responses[0]["body"]["name"]
-        # assert (
-        #         responses[1]["body"]["httpTarget"]["headers"]["X-Goblet-Name"] == "test-job"
-        # )
-        # assert (
-        #         responses[1]["body"]["httpTarget"]["headers"]["X-Goblet-Type"] == "schedule"
-        # )
-        # assert responses[1]["body"]["schedule"] == "* * * * *"
+        #Check Connection
+        connections = list(request["body"] for request in responses if "cloudResource" in request["body"])
+        assert len(connections) == 1
+        assert "serviceAccountId" in connections[0]["cloudResource"]
+        assert "bigquery" in connections[0]["cloudResource"]["serviceAccountId"]
+        assert test_name in connections[0]["name"]
+
+
+        #Check policy
+        bindings = list(request["body"]["bindings"]  for request in responses if "bindings" in request["body"])
+        assert len(bindings) == 1
+        assert "members" in bindings[0][0]
+        members = bindings[0][0]["members"]
+        assert len(members) == 1 and "serviceAccount" in members[0]
+        assert "role" in bindings[0][0]
+        assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
+
+
 
     # def test_destroy_bqremotefunction(self, monkeypatch):
     #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
