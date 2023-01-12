@@ -107,9 +107,6 @@ class TestBqRemoteFunction:
         app.deploy(force=True)
         responses = get_responses(test_deploy_name)
         assert len(responses) > 0
-        pprint(responses)
-        assert True
-        return
         # Check Connection
         connections = list(request["body"] for request in responses if "cloudResource" in request["body"])
         assert len(connections) == 1
@@ -126,7 +123,18 @@ class TestBqRemoteFunction:
         assert "role" in bindings[0][0]
         assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
 
+        routines = list(request["body"] for request in responses if
+                        "arguments" in request["body"] and "remoteFunctionOptions" in request["body"])
         #
+        assert len(routines) == 1
+        routine = routines[0]
+        arguments = json.dumps(routine["arguments"])
+        return_type = json.dumps(routine["returnType"])
+        input,output = BigQueryRemoteFunction._get_hints(bqremotefunction_string_test_blogs_1)
+        input = json.dumps(input)
+        output = json.dumps(output)
+        assert input == arguments
+        assert output == return_type
 
     # def test_destroy_bqremotefunction(self, monkeypatch):
     #     test_deploy_name = "bqremotefunction-destroy"
