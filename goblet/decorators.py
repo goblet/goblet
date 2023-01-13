@@ -34,13 +34,13 @@ EVENT_TYPES = [
     "route",
     "eventarc",
     "job",
-    "bqremotefunction"
+    "bqremotefunction",
 ]
 
 SUPPORTED_BACKENDS = {
     "cloudfunction": CloudFunctionV1,
     "cloudfunctionv2": CloudFunctionV2,
-    "cloudrun": CloudRun
+    "cloudrun": CloudRun,
 }
 
 SUPPORTED_INFRASTRUCTURES = {"redis": Redis, "vpcconnector": VPCConnector}
@@ -113,10 +113,7 @@ class DecoratorAPI:
 
     def bqremotefunction(self, **kwargs):
         return self._create_registration_function(
-            handler_type="bqremotefunction",
-            registration_kwargs={
-                "kwargs": kwargs
-            }
+            handler_type="bqremotefunction", registration_kwargs={"kwargs": kwargs}
         )
 
     def topic(self, topic, **kwargs):
@@ -259,7 +256,7 @@ class Register_Handlers(DecoratorAPI):
             ),
             "bqremotefunction": BigQueryRemoteFunction(
                 function_name, backend=backend, versioned_clients=versioned_clients
-            )
+            ),
         }
 
         self.infrastructure = {
@@ -327,8 +324,12 @@ class Register_Handlers(DecoratorAPI):
         """Parse event type from the event request and context"""
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
-        if request.is_json and request.json.get("userDefinedContext") and request.json["userDefinedContext"].get("X-Goblet-Name"):
-            return("bqremotefunction")
+        if (
+            request.is_json
+            and request.json.get("userDefinedContext")
+            and request.json["userDefinedContext"].get("X-Goblet-Name")
+        ):
+            return "bqremotefunction"
 
         if context and context.event_type:
             return context.event_type.split(".")[1].split("/")[0]
@@ -487,4 +488,6 @@ class Register_Handlers(DecoratorAPI):
 
     def _register_bqremotefunction(self, name, func, kwargs):
         name = kwargs.get("kwargs", {}).get("name") or name
-        self.handlers["bqremotefunction"].register_bqremotefunction(name=name, func=func, kwargs=kwargs)
+        self.handlers["bqremotefunction"].register_bqremotefunction(
+            name=name, func=func, kwargs=kwargs
+        )

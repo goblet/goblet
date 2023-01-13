@@ -314,3 +314,58 @@ Example usage:
         return "200"
 
 See the example `config.json <https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json>`__
+
+BigQuery Remote Functions
+^^^^^^^^^^^^^^
+
+To deploy scheduled jobs using a cron schedule use the ``@app.schedule(...)`` decorator. The cron schedule follows the unix-cron format.
+More information on the cron format can be found `here`_. Make sure `Cloud Scheduler`_ is enabled in your account if you want to deploy
+scheduled jobs.
+
+Example usage:
+
+.. code:: python
+
+    @app.schedule('5 * * * *')
+    def scheduled_job():
+        return app.jsonify("success")
+
+You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for `job <https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#Job>`__.
+
+.. code:: python
+
+    @app.schedule('5 * * * *', headers={"x-cron": "5 * * * *"}, body="a base64-encoded string")
+    @app.schedule('6 * * * *', headers={"x-cron": "6 * * * *"}, body="another base64-encoded string")
+    @app.schedule('10 * * * *', httpMethod="POST")
+    def scheduled_job():
+        app.current_request.body
+        app.current_request.headers
+        return app.jsonify("success")
+
+Note that several of customizable fields require specific formats which include `body` which is a base64 encoded string. In order
+to use a json field for the body you would need to use the following code
+
+.. code:: python
+
+    base64.b64encode(json.dumps({"key":"value"}).encode('utf-8')).decode('ascii')
+
+and then in your function you would decode the body using
+
+.. code:: python
+
+    json.loads(base64.b64decode(raw_payload).decode('utf-8'))
+
+Another unique field is `attemptDeadline` which requires a duration format such as `3.5s`
+
+To test your scheduled jobs locally you will need to pass a `X-Goblet-Type` header with the value `schedule` and a `X-Goblet-Name` header
+with the name of your scheduled function.
+
+For example:
+
+.. code::
+
+    "X-Goblet-Type": "schedule",
+    "X-Goblet-Name": FUNCTION_NAME
+
+.. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
+.. _CLOUD SCHEDULER: https://cloud.google.com/scheduler
