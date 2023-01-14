@@ -318,54 +318,82 @@ See the example `config.json <https://github.com/goblet/goblet/blob/main/example
 BigQuery Remote Functions
 ^^^^^^^^^^^^^^
 
-To deploy scheduled jobs using a cron schedule use the ``@app.schedule(...)`` decorator. The cron schedule follows the unix-cron format.
-More information on the cron format can be found `here`_. Make sure `Cloud Scheduler`_ is enabled in your account if you want to deploy
-scheduled jobs.
+To deploy BigQuery remote functions use ``@app.bqremotefunction(...)`` decorator.
+BigQuery remote functions documentation can be found `here <https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions>`_.
 
 Example usage:
 
 .. code:: python
 
-    @app.schedule('5 * * * *')
-    def scheduled_job():
-        return app.jsonify("success")
+    @app.bqremotefunction(dataset_id=...)
+    def my_remote_function(x: str, y: str) -> str:
+        return f"input parameters are {x} and {y}"
 
-You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for `job <https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#Job>`__.
+Allowed data type can be found `data types for remote functions <https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types>`_.
+The routine name on BigQuery will be <goblet_function_name>_<remotefunction_name>.
 
-.. code:: python
-
-    @app.schedule('5 * * * *', headers={"x-cron": "5 * * * *"}, body="a base64-encoded string")
-    @app.schedule('6 * * * *', headers={"x-cron": "6 * * * *"}, body="another base64-encoded string")
-    @app.schedule('10 * * * *', httpMethod="POST")
-    def scheduled_job():
-        app.current_request.body
-        app.current_request.headers
-        return app.jsonify("success")
-
-Note that several of customizable fields require specific formats which include `body` which is a base64 encoded string. In order
-to use a json field for the body you would need to use the following code
+As an example:
 
 .. code:: python
 
-    base64.b64encode(json.dumps({"key":"value"}).encode('utf-8')).decode('ascii')
+    from goblet import Goblet, goblet_entrypoint
 
-and then in your function you would decode the body using
+    app = Goblet(function_name="my_functions")
+    goblet_entrypoint(app)
+
+    @app.bqremotefunction(dataset_id="my_dataset_id")
+    def my_routine(x: str, y: str) -> str:
+        return f"Name: {x} LastName: {y}"
+
+Creates a routine named my_functions_my_routine with two strings as
+input parameters with names x and y and return a formatted string. The dataset id
+will be "my_dataset_id".
+
+The dataset_id reference a dataset in BigQuery already created in the same
+location and project in GCP.
+
+To call a routine from BigQuery just use
+
+.. code:: sql
+
+    select my_functions_my_routine(name, last_name) from my_dataset_id.table
+
+This will apply my_functions_my_routine to every tuple present in table
+my_dataset_id.table passing fields name and last_name from the table as inputs.
+Data type inputs for the routine used in BigQuery query must match with data types used in the python function
+definition. In the example above select will return as many single-tuple value as tuples
+exist in the table.
+
+
+Another example:
 
 .. code:: python
 
-    json.loads(base64.b64decode(raw_payload).decode('utf-8'))
+    from goblet import Goblet, goblet_entrypoint
 
-Another unique field is `attemptDeadline` which requires a duration format such as `3.5s`
+    app = Goblet(function_name="math_example")
+    goblet_entrypoint(app)
+    @app.bqremotefunction(dataset_id="blogs")
+    def multiply(x: int, y: int, z: int) -> int:
+        w = x * y * z
+        return w
 
-To test your scheduled jobs locally you will need to pass a `X-Goblet-Type` header with the value `schedule` and a `X-Goblet-Name` header
-with the name of your scheduled function.
+Should be called this way:
 
-For example:
+.. code:: sql
 
-.. code::
+    select math_example_multiply(x,y,z) from my_dataset_id.table
 
-    "X-Goblet-Type": "schedule",
-    "X-Goblet-Name": FUNCTION_NAME
+And will return an integer resulting from the multiplication from the three fields
+x,y,z in table my_dataset_id.table for every tuple in the table.
 
-.. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
-.. _CLOUD SCHEDULER: https://cloud.google.com/scheduler
+
+When deploying a BigQuery remote function, Goblet creates the resources in GCP: a
+`BigQuery connection <https://cloud.google.com/bigquery/docs/reference/bigqueryconnection>`_,
+a `BigQuery routine <https://cloud.google.com/bigquery/docs/reference/rest/v2/routines>`_ and
+a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).
+
+
+
+
+
