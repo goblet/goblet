@@ -123,7 +123,7 @@ class CloudFunctionV2(Backend):
             "setIamPolicy",
             params={"body": policy},
             parent_key="resource",
-            parent_schema=resource_name,
+            parent_schema=resource_name)
 
     def get_environment_vars(self):
         return (
