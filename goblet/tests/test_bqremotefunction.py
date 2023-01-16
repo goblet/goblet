@@ -34,7 +34,7 @@ class TestBqRemoteFunction:
         )
         resources = app.handlers["bqremotefunction"].resources
 
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register(dummy_function, {})
 
         input, output = BigQueryRemoteFunction._get_hints(string_test_blogs_1)
 
@@ -98,7 +98,7 @@ class TestBqRemoteFunction:
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register(dummy_function, {})
 
         @app.bqremotefunction(dataset_id="blogs")
         def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
@@ -172,7 +172,7 @@ class TestBqRemoteFunction:
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
         )
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register(dummy_function, {})
         app.destroy()
         responses = get_responses(test_deploy_name)
 
