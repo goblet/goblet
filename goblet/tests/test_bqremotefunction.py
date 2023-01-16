@@ -60,7 +60,7 @@ class TestBqRemoteFunction:
 
     def test_call_bqremotefunction(self, monkeypatch):
         # monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platorm-dev")
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
@@ -97,7 +97,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
         # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
@@ -105,7 +105,7 @@ class TestBqRemoteFunction:
         # app.handlers["http"].register_http(dummy_function, {})
 
         @app.bqremotefunction(dataset_id="blogs")
-        def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
+        def string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
 
         app.bqremotefunction(
