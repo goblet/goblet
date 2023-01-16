@@ -120,7 +120,7 @@ class TestScheduler:
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
         scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
