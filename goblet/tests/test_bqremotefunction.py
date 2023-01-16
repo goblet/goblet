@@ -148,7 +148,7 @@ class TestBqRemoteFunction:
         routine = routines[0]
         remote_function_options = routine["remoteFunctionOptions"]
         user_defined_context = (
-            '{"X-Goblet-Name": "bqremotefunction_string_test_blogs_1"}'
+            '{"X-Goblet-Name": "bqremotefunction_test_string_test_blogs_1"}'
         )
         assert (
             "connection" in remote_function_options
