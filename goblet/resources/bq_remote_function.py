@@ -148,7 +148,6 @@ class BigQueryRemoteFunction(Handler):
         # :param dryrun:
         # :return:
 
-
         # client = self.versioned_clients.bigquery_routines
         # checked_dataset_id = []
         # for routine_id, routine in self.resources.items():
