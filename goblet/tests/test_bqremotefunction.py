@@ -35,7 +35,7 @@ class TestBqRemoteFunction:
         )
         resources = app.handlers["bqremotefunction"].resources
 
-        app.handlers["http"].register_http(dummy_function, {})
+        # app.handlers["http"].register_http(dummy_function, {})
 
         input, output = BigQueryRemoteFunction._get_hints(string_test_blogs_1)
 
