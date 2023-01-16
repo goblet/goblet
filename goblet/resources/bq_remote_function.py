@@ -35,7 +35,7 @@ class BigQueryRemoteFunction(Handler):
     can_sync = False
     resource_type = "bqremotefunction"
 
-    def _register_bqremotefunction(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         """
         Register in handler resources
         :param name: name of resource
