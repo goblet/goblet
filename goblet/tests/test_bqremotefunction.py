@@ -19,7 +19,8 @@ from resources.bq_remote_function import BigQueryRemoteFunction
 class TestBqRemoteFunction:
     def test_register_bqremotefunction(self, monkeypatch):
         app = Goblet(function_name="bqremotefunction_test")
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
+        # monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
@@ -34,7 +35,7 @@ class TestBqRemoteFunction:
         )
         resources = app.handlers["bqremotefunction"].resources
 
-        app.handlers["http"].register(dummy_function, {})
+        app.handlers["http"].register_http(dummy_function, {})
 
         input, output = BigQueryRemoteFunction._get_hints(string_test_blogs_1)
 
@@ -58,7 +59,8 @@ class TestBqRemoteFunction:
             assert expected_resources["func"] == resource["func"]
 
     def test_call_bqremotefunction(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
+        # monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platorm-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
@@ -90,25 +92,27 @@ class TestBqRemoteFunction:
 
     def test_deploy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-deploy"
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
+        # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
-        app = Goblet(function_name="bqremotefunction_test")
+        app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
-        # app.handlers["http"].register(name="dummy_function", func=dummy_function,kwargs={})
-        bqremotefunction = BigQueryRemoteFunction(name="bqremotefunction_test",backend=app)
+        # app.handlers["http"].register_http(dummy_function, {})
+
         @app.bqremotefunction(dataset_id="blogs")
         def bqremotefunction_string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
 
-        # app.bqremotefunction(
-        #     func=dummy_function, name=test_name, dataset_id=test_dataset_id
-        # )
+        app.bqremotefunction(
+            func=dummy_function, name=test_name, dataset_id=test_dataset_id
+        )
 
-        # app.deploy(force=True)
+        app.deploy(force=True)
         responses = get_responses(test_deploy_name)
         assert len(responses) > 0
         # Check Connection
@@ -156,10 +160,12 @@ class TestBqRemoteFunction:
 
     def test_destroy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-destroy"
-        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
@@ -172,7 +178,7 @@ class TestBqRemoteFunction:
         app.bqremotefunction(
             func=dummy_function, name=test_name, dataset_id=test_dataset_id
         )
-        app.handlers["http"].register(dummy_function, {})
+        # app.handlers["http"].register_http(dummy_function, {})
         app.destroy()
         responses = get_responses(test_deploy_name)
 
