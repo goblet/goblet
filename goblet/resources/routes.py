@@ -58,7 +58,7 @@ class ApiGateway(Handler):
         # ([a-z0-9-.]+) for api gateway name
         return name.replace("_", "-")
 
-    def register_route(self, name, func, kwargs):
+    def register(self, name, func, kwargs):
         path = kwargs.pop("path")
         methods = kwargs.pop("methods")
         kwargs = kwargs.pop("kwargs")

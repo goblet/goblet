@@ -20,6 +20,8 @@ class Backend:
     version = ""
     required_files = ["main.py"]
     config_key = ""
+    monitoring_type = ""
+    monitoring_label_key = ""
 
     def __init__(self, app, client, func_path, config={}):
         self.app = app
@@ -150,3 +152,6 @@ class Backend:
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
                 self.zipf.write(str(path))
+
+    def get_environment_vars(self):
+        raise NotImplementedError("get_environment_vars")

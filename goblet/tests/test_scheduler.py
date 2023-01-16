@@ -124,7 +124,7 @@ class TestScheduler:
 
         goblet_name = "goblet_example"
         scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
-        scheduler.register_job(
+        scheduler.register(
             "test-job",
             None,
             kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
@@ -151,7 +151,7 @@ class TestScheduler:
         scheduler = Scheduler("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
-        scheduler.register_job(
+        scheduler.register(
             "test-job",
             None,
             kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
@@ -180,12 +180,12 @@ class TestScheduler:
         scheduler = Scheduler(
             goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
         )
-        scheduler.register_job(
+        scheduler.register(
             "test-job",
             None,
             kwargs={"schedule": "* * 1 * *", "timezone": "UTC", "kwargs": {}},
         )
-        scheduler.register_job(
+        scheduler.register(
             "test-job",
             None,
             kwargs={
@@ -194,7 +194,7 @@ class TestScheduler:
                 "kwargs": {"httpMethod": "POST"},
             },
         )
-        scheduler.register_job(
+        scheduler.register(
             "test-job",
             None,
             kwargs={
@@ -240,7 +240,7 @@ class TestScheduler:
         scheduler = Scheduler(
             goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
         )
-        scheduler.register_job(
+        scheduler.register(
             "test-job",
             None,
             kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
@@ -260,7 +260,7 @@ class TestScheduler:
 
         goblet_name = "goblet"
         scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
-        scheduler.register_job(
+        scheduler.register(
             "scheduled_job",
             None,
             kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},

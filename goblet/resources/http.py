@@ -18,7 +18,7 @@ class HTTP(Handler):
         )
         self.resources = resources or []
 
-    def register_http(self, func, kwargs):
+    def register(self, name, func, kwargs):
         self.resources.append({"func": func, "headers": kwargs.get("headers", {})})
 
     def __call__(self, request, context=None):
