@@ -208,4 +208,3 @@ class CloudRun(Backend):
         for env_item in env:
             env_dict[env_item["name"]] = env_item["value"]
         return env_dict
-
