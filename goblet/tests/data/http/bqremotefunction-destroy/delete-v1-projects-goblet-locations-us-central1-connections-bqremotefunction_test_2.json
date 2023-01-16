@@ -1,0 +1,30 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 403,
+      "message": "BigQuery Connection API has not been used in project 406658330702 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/bigqueryconnection.googleapis.com/overview?project=406658330702 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+      "status": "PERMISSION_DENIED",
+      "details": [
+        {
+          "@type": "type.googleapis.com/google.rpc.Help",
+          "links": [
+            {
+              "description": "Google developers console API activation",
+              "url": "https://console.developers.google.com/apis/api/bigqueryconnection.googleapis.com/overview?project=406658330702"
+            }
+          ]
+        },
+        {
+          "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+          "reason": "SERVICE_DISABLED",
+          "domain": "googleapis.com",
+          "metadata": {
+            "consumer": "projects/406658330702",
+            "service": "bigqueryconnection.googleapis.com"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/connections/bqremotefunction_test",
+    "creationTime": "1673896058500",
+    "lastModifiedTime": "1673896058500",
+    "cloudResource": {
+      "serviceAccountId": "bqcx-98058317567-kb9p@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "headers": {},
+  "body": {
+    "etag": "yUJULiRifeMrxyO4zqYD3Q==",
+    "routineReference": {
+      "projectId": "premise-data-platform-dev",
+      "datasetId": "blogs",
+      "routineId": "bqremotefunction_test_string_test_blogs_1"
+    },
+    "routineType": "SCALAR_FUNCTION",
+    "creationTime": "1673896060724",
+    "lastModifiedTime": "1673896060724",
+    "arguments": [
+      {
+        "name": "x",
+        "dataType": {
+          "typeKind": "STRING"
+        }
+      },
+      {
+        "name": "y",
+        "dataType": {
+          "typeKind": "STRING"
+        }
+      }
+    ],
+    "returnType": {
+      "typeKind": "STRING"
+    },
+    "remoteFunctionOptions": {
+      "endpoint": "https://us-central1-premise-data-platform-dev.cloudfunctions.net/bqremotefunction_test",
+      "connection": "projects/goblet/locations/us-central1/connections/bqremotefunction_test",
+      "userDefinedContext": {
+        "X-Goblet-Name": "bqremotefunction_test_string_test_blogs_1"
+      }
+    }
+  }
+}
