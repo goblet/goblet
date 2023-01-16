@@ -353,7 +353,8 @@ class VersionedClients:
             "bigquery",
             self.client_versions.get("bigquery", "v2"),
             calls="routines",
-            parent_schema="{project_id}")
+            parent_schema="{project_id}",
+        )
 
     @property
     def monitoring_alert(self):

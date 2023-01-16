@@ -2,18 +2,15 @@ import json
 import logging
 from typing import get_type_hints
 
-from goblet.resources.handler import Handler
-from goblet.client import get_default_project, get_default_location
+from googleapiclient.errors import HttpError
 
-from googleapiclient.errors import HttpError, Error
+from goblet.resources.handler import Handler
+from goblet.client import get_default_project
+
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
-"""
-    Allowed types for BigQuery remote functions
-    https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions#limitations
-"""
 BIGQUERY_DATATYPES = {
     bool: "BOOL",
     str: "STRING",
@@ -29,6 +26,10 @@ class BigQueryRemoteFunction(Handler):
     Cloud Big Query Remote Functions (Big Query routines) connected to cloudfunctions or
     cloudrun
     https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions
+
+    Allowed types for BigQuery remote functions
+    https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions#limitations
+
     """
 
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
@@ -44,13 +45,12 @@ class BigQueryRemoteFunction(Handler):
         :return:
         """
         kwargs = kwargs.pop("kwargs")
-        headers = kwargs.get("headers", {})
-        input, output = BigQueryRemoteFunction._get_hints(func)
+        _input, _output = BigQueryRemoteFunction._get_hints(func)
         self.resources[self.name + "_" + name] = {
             "routine_name": self.name + "_" + name,
             "dataset_id": kwargs["dataset_id"],
-            "inputs": input,
-            "output": output,
+            "inputs": _input,
+            "output": _output,
             "func": func,
         }
         return True
@@ -75,8 +75,8 @@ class BigQueryRemoteFunction(Handler):
             raise ValueError(f"Method {func_name} not found")
         bq_tuples = request.json["calls"]
         tuples_replies = []
-        for tuple in bq_tuples:
-            tuples_replies.append(cloud_method["func"](*tuple))
+        for _tuple in bq_tuples:
+            tuples_replies.append(cloud_method["func"](*_tuple))
         reply = {"replies": tuples_replies}
         return json.dumps(reply)
 
@@ -97,15 +97,14 @@ class BigQueryRemoteFunction(Handler):
             self.backend.set_iam_policy(
                 bq_query_connection["cloudResource"]["serviceAccountId"]
             )
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info(f"Connection already created bigquery query: for {self.name}")
-                pass
+        except HttpError as exception:
+            if exception.resp.status == 409:
+                log.info("Connection already created bigquery query: for %s", self.name)
             else:
-                log.error(f"Create connection {e.error_details}")
-                raise e
+                log.error("Create connection %s", exception.error_details)
+                raise exception
 
-        for resource_name, resource in self.resources.items():
+        for _, resource in self.resources.items():
             create_routine_query = self.create_routine_payload(
                 resource, bq_query_connection
             )
@@ -120,9 +119,9 @@ class BigQueryRemoteFunction(Handler):
                     },
                     parent_key="projectId",
                 )
-                log.info(f"Created bq routine {routine_name}")
-            except HttpError as e:
-                if e.resp.status == 409:
+                log.info("Created bq routine %s", routine_name)
+            except HttpError as exception:
+                if exception.resp.status == 409:
                     self.versioned_clients.bigquery_routines.execute(
                         "update",
                         params={
@@ -133,20 +132,22 @@ class BigQueryRemoteFunction(Handler):
                         },
                         parent_key="projectId",
                     )
-                    log.info(f"Updated remote function {routine_name}")
+                    log.info("Updated remote function %s", routine_name)
                 else:
                     log.error(
-                        f"Bigquery remote function couldn't be created nor updated"
-                        f" name {routine_name} with error: {e.error_details}"
+                        "Bigquery remote function couldn't be created "
+                        "nor updated name %s with error: %s",
+                        routine_name,
+                        exception.error_details,
                     )
-                    raise e
+                    raise exception
 
         # def _sync(self, dryrun=False):
-        """
-            ITERATE ALL DATASET TO GET ALL ROUTINES
-        :param dryrun:
-        :return:
-        """
+
+        # ITERATE ALL DATASET TO GET ALL ROUTINES
+        # :param dryrun:
+        # :return:
+
 
         # client = self.versioned_clients.bigquery_routines
         # checked_dataset_id = []
@@ -156,15 +157,17 @@ class BigQueryRemoteFunction(Handler):
         #         continue
         #     checked_dataset_id.append(dataset_id)
         #     available_routines = client.execute("list",
-        #                                         params={"datasetId": dataset_id, "projectId": get_default_project()},
-        #                                         parent=False)
+        #     params={"datasetId": dataset_id, "projectId": get_default_project()},
+        #     parent=False)
         #     if "routines" not in available_routines:
         #         continue
         #     for available_routine in available_routines["routines"]:
         #         if available_routine["routineReference"]["routineId"] not in self.resources:
-        #             log.info(f'Detected unused routine in GCP {available_routine["routineReference"]["routineId"]}')
-        #             if not dryrun:
-        #                 self.destroy_routine(dataset_id, available_routine["routineReference"]["routineId"])
+        #               log.info(f'Detected unused routine in GCP
+        #                {available_routine["routineReference"]["routineId"]}')
+        #         if not dryrun:
+        #         self.destroy_routine(dataset_id,
+        #         available_routine["routineReference"]["routineId"])
 
     def destroy(self):
         """
@@ -174,7 +177,7 @@ class BigQueryRemoteFunction(Handler):
         if not self.resources:
             return
         self.destroy_bigquery_connection()
-        for resource_name, resource in self.resources.items():
+        for _, resource in self.resources.items():
             self.destroy_routine(resource["dataset_id"], resource["routine_name"])
 
     def deploy_bigquery_connection(self, connection_name):
@@ -189,12 +192,14 @@ class BigQueryRemoteFunction(Handler):
             bq_connection = self.versioned_clients.bigquery_connections.execute(
                 "create", params={"body": resource_type, "connectionId": connection_id}
             )
-            log.info(f"Created bigquery connection name: {connection_id}")
+            log.info("Created bigquery connection name: %s", connection_id)
 
-        except HttpError as e:
-            if e.resp.status == 409:
+        except HttpError as exception:
+            if exception.resp.status == 409:
                 log.info(
-                    f"Bigquery connection already exist with name: {connection_name} for {self.name}"
+                    "Bigquery connection already exist with name: %s for %s",
+                    connection_name,
+                    self.name,
                 )
                 client = self.versioned_clients.bigquery_connections
                 bq_connection = client.execute(
@@ -202,11 +207,10 @@ class BigQueryRemoteFunction(Handler):
                     params={"name": client.parent + "/connections/" + connection_id},
                     parent=False,
                 )
-                log.info(f"Returning connection {bq_connection['name']}")
+                log.info("Returning connection %s", bq_connection["name"])
             else:
-                log.info(f"Error not 409 {self.name}")
-                log.error(e.error_details)
-                raise e
+                log.error(exception.error_details)
+                raise exception
         log.info(bq_connection)
         return bq_connection
 
@@ -223,14 +227,19 @@ class BigQueryRemoteFunction(Handler):
                 params={"name": client.parent + "/connections/" + connection_id},
                 parent=False,
             )
-        except HttpError as e:
-            if e.resp.status == 404:
-                log.info(f"Connection {connection_id} already destroyed")
+        except HttpError as exception:
+            if exception.resp.status == 404:
+                log.info("Connection %s already destroyed", connection_id)
             else:
-                raise e
+                raise exception
         return True
 
     def destroy_routine(self, dataset_id, routine_id):
+        """
+
+        :param dataset_id:
+        :param routine_id:
+        """
         try:
             self.versioned_clients.bigquery_routines.execute(
                 "delete",
@@ -241,23 +250,27 @@ class BigQueryRemoteFunction(Handler):
                 },
                 parent=False,
             )
-            log.info(f"Destroyed routine {routine_id} for dataset {dataset_id}")
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info(f"Routine {routine_id} already destroyed")
-            elif e.resp.status == 404:
-                log.info(f"Routine {routine_id} doesn't exist. already destroyed?")
+            log.info("Destroyed routine % for dataset %s", routine_id, dataset_id)
+        except HttpError as exception:
+            if exception.resp.status == 409:
+                log.info("Routine %s already destroyed", routine_id)
+            elif exception.resp.status == 404:
+                log.info("Routine %s doesn't exist. already destroyed?", routine_id)
             else:
                 log.error(
-                    f"Couldn't destroy {routine_id} for dataset {dataset_id}. {e.error_details}"
+                    "Couldn't destroy %s for dataset %s. %s",
+                    routine_id,
+                    dataset_id,
+                    exception.error_details,
                 )
-                raise e
+                raise exception
 
     def _get_hints(func):
         """
         Inspect hint in function func and creates an array for input and output with SQL Datatypes
         according to https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types
-        restricted to https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions#limitations
+        restricted to
+        https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions#limitations
         :param func: function/method class to be inspected
         :return: inputs, outputs
                 inputs = [{"name":<variable_name>, "data_type":<data_type>}]
@@ -281,7 +294,8 @@ class BigQueryRemoteFunction(Handler):
         Create a routine object according to BigQuery specification
         :param resource: a resource saved in resources in Handler
         :param connection: a dict representing a bigquery connection
-                (https://cloud.google.com/bigquery/docs/reference/bigqueryconnection/rest/v1/projects.locations.connections)
+        (https://cloud.google.com/bigquery/docs/reference/bigqueryconnection/
+            rest/v1/projects.locations.connections)
         :return: a dict representing a routine according to
                 https://cloud.google.com/bigquery/docs/reference/rest/v2/routines
         """
@@ -297,10 +311,10 @@ class BigQueryRemoteFunction(Handler):
         }
 
         arguments = []
-        for input in resource["inputs"]:
+        for _input in resource["inputs"]:
             argument = {
-                "name": input["name"],
-                "dataType": {"typeKind": input["data_type"]},
+                "name": _input["name"],
+                "dataType": {"typeKind": _input["data_type"]},
             }
             arguments.append(argument)
         return_type = {"typeKind": resource["output"][0]}
