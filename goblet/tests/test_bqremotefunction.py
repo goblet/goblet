@@ -20,7 +20,6 @@ class TestBqRemoteFunction:
     def test_register_bqremotefunction(self, monkeypatch):
         app = Goblet(function_name="bqremotefunction_test")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
@@ -60,7 +59,6 @@ class TestBqRemoteFunction:
 
     def test_call_bqremotefunction(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
@@ -93,11 +91,9 @@ class TestBqRemoteFunction:
     def test_deploy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-deploy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
@@ -161,11 +157,9 @@ class TestBqRemoteFunction:
     def test_destroy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-destroy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "RECORD")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
@@ -204,7 +198,7 @@ class TestBqRemoteFunction:
     #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
     #     monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
     #     # FOR REPLAY
-    #     # monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    #     # monke-ypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
     #
     #     test_name = "bqremotefunction_test"
     #     app = Goblet(function_name=test_name)
