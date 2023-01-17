@@ -360,19 +360,18 @@ class Register_Handlers(DecoratorAPI):
         """Parse event type from the event request and context"""
         if os.environ.get("CLOUD_RUN_TASK_INDEX"):
             return "job"
-        if (
-            request.is_json
-            and request.json.get("userDefinedContext")
-            and request.json["userDefinedContext"].get("X-Goblet-Name")
-        ):
-            return "bqremotefunction"
-
         if context and context.event_type:
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
+        if (
+            request.is_json
+            and request.json.get("userDefinedContext")
+            and request.json["userDefinedContext"].get("X-Goblet-Name")
+        ):
+            return "bqremotefunction"
         if (
             request.is_json
             and request.get_json(silent=True)

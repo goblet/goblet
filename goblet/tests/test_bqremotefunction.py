@@ -58,10 +58,11 @@ class TestBqRemoteFunction:
             "calls": [[2, 2], [3, 3]],
         }
 
-        mock_event = Mock()
-        mock_event.json = body
+        mock_request = Mock()
+        mock_request.json = body
+        mock_request.headers = {}
 
-        result = json.loads(app(mock_event, None))
+        result = json.loads(app(mock_request, None))
 
         assert result["replies"][0] == 4
         assert result["replies"][1] == 9
