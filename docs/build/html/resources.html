@@ -1,34 +1,70 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resources &mdash; goblet 0.9.3 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+  <title>Resources &mdash; goblet 0.10.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    <script src="_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Backends" href="backends.html" />
     <link rel="prev" title="Topics" href="topics.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="index.html" class="icon icon-home"> goblet
+          
+
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -36,7 +72,18 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 </ul>
@@ -52,6 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#eventarc">Eventarc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#jobs">Jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bigquery-remote-functions">BigQuery Remote Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -74,33 +122,74 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
+            
+          
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">goblet</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
       <li>Resources</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+          
             <a href="_sources/resources.rst.txt" rel="nofollow"> View page source</a>
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
-  <section id="resources">
+            
+  <div class="section" id="resources">
 <h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
-<section id="http">
+<div class="section" id="http">
 <h2>Http<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
 <p>You can have a http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
 only deploy a cloudfunction. The function takes in a flask request object</p>
@@ -131,8 +220,8 @@ triggered.</p>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on pr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="routes">
+</div>
+<div class="section" id="routes">
 <h2>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h2>
 <p>The Goblet.route() method is used to construct which routes you want to create for your API.
 Behind the scenese goblet will configure an Api Config and Api Gateway on gcp.</p>
@@ -183,11 +272,11 @@ instance itself. The routes work the same as with an apigateway, but you would a
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudrun-routing&quot;</span><span class="p">,</span> <span class="n">routes_type</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="scheduled-jobs">
+</div>
+<div class="section" id="scheduled-jobs">
 <h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this headline">¶</a></h2>
 <p>To deploy scheduled jobs using a cron schedule use the <code class="docutils literal notranslate"><span class="pre">&#64;app.schedule(...)</span></code> decorator. The cron schedule follows the unix-cron format.
-More information on the cron format can be found <a class="reference external" href="https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules">here</a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
+More information on the cron format can be found <a href="#id2"><span class="problematic" id="id3">`here`_</span></a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
 scheduled jobs.</p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">)</span>
@@ -222,8 +311,8 @@ with the name of your scheduled function.</p>
 <span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="n">FUNCTION_NAME</span>
 </pre></div>
 </div>
-</section>
-<section id="pubsub">
+</div>
+<div class="section" id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
 provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
@@ -261,8 +350,8 @@ For additional information on configuration values available see <a class="refer
     <span class="k">return</span>
 </pre></div>
 </div>
-</section>
-<section id="storage">
+</div>
+<div class="section" id="storage">
 <h2>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger functions from storage events using the <code class="docutils literal notranslate"><span class="pre">&#64;app.storage(BUCKET,</span> <span class="pre">EVENT)</span></code> decorator. It is required to pass in the bucket name and the event_type.
 The following events are supported by GCP</p>
@@ -286,8 +375,8 @@ The following events are supported by GCP</p>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="eventarc">
+</div>
+<div class="section" id="eventarc">
 <h2>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger functions from evenarc events using the <cite>&#64;app.eventarc(topic=None, event_filters=[])</cite> decorator. Specifying a topic will create a trigger on a custom pubsub topic. For
 all other events, specify the event attribute  and event value in the <cite>event_filters</cite> list. See <a class="reference external" href="https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud">Creating Triggers</a> for more information
@@ -327,8 +416,8 @@ on possible values.</p>
     <span class="k">return</span>
 </pre></div>
 </div>
-</section>
-<section id="jobs">
+</div>
+<div class="section" id="jobs">
 <h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this headline">¶</a></h2>
 <p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
 you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations such as a schedule should be added to the <cite>task_id=0</cite>. Jobs can be further configured
@@ -356,38 +445,114 @@ by setting various configs in <cite>config.json.</cite></p>
 </pre></div>
 </div>
 <p>See the example <a class="reference external" href="https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json">config.json</a></p>
-</section>
-</section>
+</div>
+<div class="section" id="bigquery-remote-functions">
+<h2>BigQuery Remote Functions<a class="headerlink" href="#bigquery-remote-functions" title="Permalink to this headline">¶</a></h2>
+<p>To deploy BigQuery remote functions use <code class="docutils literal notranslate"><span class="pre">&#64;app.bqremotefunction(...)</span></code> decorator.
+BigQuery remote functions documentation can be found <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions">here</a>.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=...</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_remote_function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;input parameters are </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Allowed data type can be found <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types">data types for remote functions</a>.
+The routine name on BigQuery will be &lt;goblet_function_name&gt;_&lt;remotefunction_name&gt;.</p>
+<p>As an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;my_functions&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;my_dataset_id&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_routine</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Name: </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> LastName: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Creates a routine named my_functions_my_routine with two strings as
+input parameters with names x and y and return a formatted string. The dataset id
+will be “my_dataset_id”.</p>
+<p>The dataset_id reference a dataset in BigQuery already created in the same
+location and project in GCP.</p>
+<p>To call a routine from BigQuery just use</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">my_functions_my_routine</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span> <span class="k">from</span> <span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span>
+</pre></div>
+</div>
+<p>This will apply my_functions_my_routine to every tuple present in table
+my_dataset_id.table passing fields name and last_name from the table as inputs.
+Data type inputs for the routine used in BigQuery query must match with data types used in the python function
+definition. In the example above select will return as many single-tuple value as tuples
+exist in the table.</p>
+<p>Another example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;math_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;blogs&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
+    <span class="k">return</span> <span class="n">w</span>
+</pre></div>
+</div>
+<p>Should be called this way:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">math_example_multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span> <span class="k">from</span> <span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span>
+</pre></div>
+</div>
+<p>And will return an integer resulting from the multiplication from the three fields
+x,y,z in table my_dataset_id.table for every tuple in the table.</p>
+<p>When deploying a BigQuery remote function, Goblet creates the resources in GCP: a
+<a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/bigqueryconnection">BigQuery connection</a>,
+a <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/rest/v2/routines">BigQuery routine</a> and
+a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).</p>
+</div>
+</div>
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="backends.html" class="btn btn-neutral float-right" title="Backends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, austen novis.</p>
-  </div>
+    <p>
+        &#169; Copyright 2020, austen novis.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

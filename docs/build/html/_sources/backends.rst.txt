@@ -111,3 +111,9 @@ In order to set a custom artifact registry, use the "artifact_registry" configur
             "serviceAccount": "service-account@project.iam.gserviceaccount.com"
         }
     }
+
+To install packages from Artifact Registry ensure `roles/artifactregistry.reader` role has been added to cloudbuild service account and the artifact registry keyring backend install has been enabled within the Dockerfile
+
+.. code:: python
+    
+    RUN pip install keyrings.google-artifactregistry-auth==1.1.1
