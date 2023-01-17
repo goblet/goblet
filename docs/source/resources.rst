@@ -356,7 +356,7 @@ To call a routine from BigQuery just use
 
 .. code:: sql
 
-    select my_functions_my_routine(name, last_name) from my_dataset_id.table
+    select PROJECT.my_dataset_id.my_functions_my_routine(name, last_name) from my_dataset_id.table
 
 This will apply my_functions_my_routine to every tuple present in table
 my_dataset_id.table passing fields name and last_name from the table as inputs.
@@ -382,7 +382,7 @@ Should be called this way:
 
 .. code:: sql
 
-    select math_example_multiply(x,y,z) from my_dataset_id.table
+    select PROJECT.my_dataset_id.math_example_multiply(x,y,z) from my_dataset_id.table
 
 And will return an integer resulting from the multiplication from the three fields
 x,y,z in table my_dataset_id.table for every tuple in the table.
@@ -392,8 +392,3 @@ When deploying a BigQuery remote function, Goblet creates the resources in GCP: 
 `BigQuery connection <https://cloud.google.com/bigquery/docs/reference/bigqueryconnection>`_,
 a `BigQuery routine <https://cloud.google.com/bigquery/docs/reference/rest/v2/routines>`_ and
 a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).
-
-
-
-
-

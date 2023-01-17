@@ -186,11 +186,10 @@ class CloudRun(Backend):
 
     def set_iam_policy(self, service_account_id):
         client = self.client
-        resource_name = self.name
         policy = {
             "policy": {
                 "bindings": {
-                    "role": "roles/cloudrun.invoker",
+                    "role": "roles/run.invoker",
                     "members": [f"serviceAccount:{service_account_id}"],
                 }
             }
@@ -199,7 +198,7 @@ class CloudRun(Backend):
             "setIamPolicy",
             params={"body": policy},
             parent_key="resource",
-            parent_schema=resource_name,
+            parent_schema=self.run_name,
         )
 
     def get_environment_vars(self):

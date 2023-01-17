@@ -46,8 +46,11 @@ class BigQueryRemoteFunction(Handler):
         """
         kwargs = kwargs.pop("kwargs")
         _input, _output = BigQueryRemoteFunction._get_hints(func)
-        self.resources[self.name + "_" + name] = {
-            "routine_name": self.name + "_" + name,
+        # Routine names must contain only letters, numbers, and underscores, and be at most 256 characters long.
+        routine_name = self.name + "_" + name
+        routine_name = routine_name.replace("-", "_")
+        self.resources[routine_name] = {
+            "routine_name": routine_name,
             "dataset_id": kwargs["dataset_id"],
             "inputs": _input,
             "output": _output,
