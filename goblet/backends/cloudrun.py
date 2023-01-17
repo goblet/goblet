@@ -184,6 +184,23 @@ class CloudRun(Backend):
     def http_endpoint(self):
         return get_cloudrun_url(self.client, self.name)
 
+    def set_iam_policy(self, service_account_id):
+        client = self.client
+        policy = {
+            "policy": {
+                "bindings": {
+                    "role": "roles/run.invoker",
+                    "members": [f"serviceAccount:{service_account_id}"],
+                }
+            }
+        }
+        client.execute(
+            "setIamPolicy",
+            params={"body": policy},
+            parent_key="resource",
+            parent_schema=self.run_name,
+        )
+
     def get_environment_vars(self):
         env_dict = {}
         env = self.config.config.get("cloudrun_container", {}).get("env", [])

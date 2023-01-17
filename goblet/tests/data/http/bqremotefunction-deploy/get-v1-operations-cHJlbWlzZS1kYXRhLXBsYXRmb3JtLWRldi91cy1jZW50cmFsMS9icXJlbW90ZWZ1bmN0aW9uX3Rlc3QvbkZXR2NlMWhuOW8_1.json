@@ -1,0 +1,29 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1kYXRhLXBsYXRmb3JtLWRldi91cy1jZW50cmFsMS9icXJlbW90ZWZ1bmN0aW9uX3Rlc3QvbkZXR2NlMWhuOW8",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/goblet/locations/us-central1/functions/bqremotefunction_test",
+      "type": "CREATE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+        "name": "projects/goblet/locations/us-central1/functions/bqremotefunction_test",
+        "description": "created by goblet",
+        "httpsTrigger": {},
+        "entryPoint": "goblet_entrypoint",
+        "sourceUploadUrl": "https://storage.googleapis.com/uploads-225494038240.us-central1.cloudfunctions.appspot.com/517a9c66-9b88-4f12-8ee3-dbe00566bbd1.zip?GoogleAccessId=service-98058317567@gcf-admin-robot.iam.gserviceaccount.com&Expires=1673897812&Signature=iIGSdgPX4ScWu8ynvndPrddx3CcKrWlKx2vVCjqSnQ2SsngJFjB2G52yrmyTa3P3tP%2BvKUUeUeXETj4vjfvgEVeX%2F%2ByPzj%2BuEHBgTKKBhFbpkYXA%2F34iT4SRy308QHQ0XuJgKlD%2BDSwyxU9ynqGwUQr2FmzJewzS6ng0EbU1iFv7d%2BE0K9gDlwBSbV5ci0vs8IsuJ6ZgUBi26ZR6p3cZFAZJTAgnvS6qjGqiTEW%2FSkeTKzCQoKSX4KQXbttFENPiC1nfjUvqe0O8qpVV11ckN1aVk6e4qgEak5JTI4Xn8TBYUR5Dsr%2FDy6syW4EA%2BKJloL7wVXlW686NqBckApIGyA%3D%3D",
+        "runtime": "python37"
+      },
+      "versionId": "1",
+      "updateTime": "2023-01-16T19:07:30Z",
+      "buildId": "4d0dc355-0ef2-410a-9e36-2fcc97923aae",
+      "buildName": "projects/goblet/locations/us-central1/builds/4d0dc355-0ef2-410a-9e36-2fcc97923aae"
+    },
+    "done": true,
+    "error": {
+      "code": 3,
+      "message": "Build failed: missing main.py and GOOGLE_FUNCTION_SOURCE not specified. Either create the function in main.py or specify GOOGLE_FUNCTION_SOURCE to point to the file that contains the function; Error ID: 5c04ec9c"
+    }
+  }
+}

@@ -314,3 +314,81 @@ Example usage:
         return "200"
 
 See the example `config.json <https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json>`__
+
+BigQuery Remote Functions
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To deploy BigQuery remote functions use ``@app.bqremotefunction(...)`` decorator.
+BigQuery remote functions documentation can be found `here <https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions>`_.
+
+Example usage:
+
+.. code:: python
+
+    @app.bqremotefunction(dataset_id=...)
+    def my_remote_function(x: str, y: str) -> str:
+        return f"input parameters are {x} and {y}"
+
+Allowed data type can be found `data types for remote functions <https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types>`_.
+The routine name on BigQuery will be <goblet_function_name>_<remotefunction_name>.
+
+As an example:
+
+.. code:: python
+
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="my_functions")
+    goblet_entrypoint(app)
+
+    @app.bqremotefunction(dataset_id="my_dataset_id")
+    def my_routine(x: str, y: str) -> str:
+        return f"Name: {x} LastName: {y}"
+
+Creates a routine named my_functions_my_routine with two strings as
+input parameters with names x and y and return a formatted string. The dataset id
+will be "my_dataset_id".
+
+The dataset_id reference a dataset in BigQuery already created in the same
+location and project in GCP.
+
+To call a routine from BigQuery just use
+
+.. code:: sql
+
+    select PROJECT.my_dataset_id.my_functions_my_routine(name, last_name) from my_dataset_id.table
+
+This will apply my_functions_my_routine to every tuple present in table
+my_dataset_id.table passing fields name and last_name from the table as inputs.
+Data type inputs for the routine used in BigQuery query must match with data types used in the python function
+definition. In the example above select will return as many single-tuple value as tuples
+exist in the table.
+
+
+Another example:
+
+.. code:: python
+
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="math_example")
+    goblet_entrypoint(app)
+    @app.bqremotefunction(dataset_id="blogs")
+    def multiply(x: int, y: int, z: int) -> int:
+        w = x * y * z
+        return w
+
+Should be called this way:
+
+.. code:: sql
+
+    select PROJECT.my_dataset_id.math_example_multiply(x,y,z) from my_dataset_id.table
+
+And will return an integer resulting from the multiplication from the three fields
+x,y,z in table my_dataset_id.table for every tuple in the table.
+
+
+When deploying a BigQuery remote function, Goblet creates the resources in GCP: a
+`BigQuery connection <https://cloud.google.com/bigquery/docs/reference/bigqueryconnection>`_,
+a `BigQuery routine <https://cloud.google.com/bigquery/docs/reference/rest/v2/routines>`_ and
+a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).

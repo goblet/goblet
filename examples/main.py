@@ -282,6 +282,12 @@ def job1_task2(id):
     app.log.info(f"different task for job...{id}")
     return "200"
 
+# Example BQ Remote Function
+# Called in BQ with the following sql: SELECT `PROJECT.DATASET.math_example_multiply(x,y,z)` from DATASET.table
+@app.bqremotefunction(dataset_id="DATASET")
+def multiply(x: int, y: int, z: int) -> int:
+    w = x * y * z
+    return w
 
 # Example Redis Instance
 app.redis("redis-test")

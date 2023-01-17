@@ -36,6 +36,8 @@ class Handler:
                 f"skipping... {self.backend.resource_type} not supported for {self.resource_type}"
             )
             return
+        if not self.resources:
+            return
         self._deploy(source, entrypoint, config=config)
 
     def _deploy(self, source=None, entrypoint=None, config={}):

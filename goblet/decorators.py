@@ -7,6 +7,7 @@ from goblet.backends.cloudrun import CloudRun
 from goblet.client import VersionedClients, get_default_location, get_default_project
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
+from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import ApiGateway
@@ -34,6 +35,7 @@ EVENT_TYPES = [
     "route",
     "eventarc",
     "job",
+    "bqremotefunction",
 ]
 
 SUPPORTED_BACKENDS = {
@@ -108,6 +110,11 @@ class DecoratorAPI:
                 "timezone": timezone,
                 "kwargs": kwargs,
             },
+        )
+
+    def bqremotefunction(self, **kwargs):
+        return self._create_registration_function(
+            handler_type="bqremotefunction", registration_kwargs={"kwargs": kwargs}
         )
 
     def topic(self, topic, **kwargs):
@@ -274,6 +281,9 @@ class Register_Handlers(DecoratorAPI):
             "schedule": Scheduler(
                 function_name, backend=backend, versioned_clients=versioned_clients
             ),
+            "bqremotefunction": BigQueryRemoteFunction(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
         }
 
         self.infrastructure = {
@@ -331,6 +341,8 @@ class Register_Handlers(DecoratorAPI):
             response = self.handlers["http"](request)
         if event_type == "eventarc":
             response = self.handlers["eventarc"](request)
+        if event_type == "bqremotefunction":
+            response = self.handlers["bqremotefunction"](request)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
@@ -354,6 +366,12 @@ class Register_Handlers(DecoratorAPI):
             return "schedule"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
+        if (
+            request.is_json
+            and request.json.get("userDefinedContext")
+            and request.json["userDefinedContext"].get("X-Goblet-Name")
+        ):
+            return "bqremotefunction"
         if (
             request.is_json
             and request.get_json(silent=True)
@@ -428,6 +446,7 @@ class Register_Handlers(DecoratorAPI):
             or len(self.handlers["schedule"].resources) > 0
             or self.handlers["http"].resources
             or self.handlers["pubsub"].is_http()
+            or len(self.handlers["bqremotefunction"].resources) > 0
         ):
             return True
         return False
