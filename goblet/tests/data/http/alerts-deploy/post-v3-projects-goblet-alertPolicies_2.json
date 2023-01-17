@@ -1,0 +1,35 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/alertPolicies/13258332252285807486",
+    "displayName": "alerts-test-error",
+    "combiner": "OR",
+    "creationRecord": {
+      "mutateTime": "2023-01-03T13:28:27.342929709Z",
+      "mutatedBy": "goblet@goblet.com"
+    },
+    "mutationRecord": {
+      "mutateTime": "2023-01-03T13:28:27.342929709Z",
+      "mutatedBy": "goblet@goblet.com"
+    },
+    "conditions": [
+      {
+        "displayName": "alerts-test-error",
+        "name": "projects/goblet/alertPolicies/13258332252285807486/conditions/13258332252285806631",
+        "conditionMatchedLog": {
+          "filter": "resource.type=\"cloud_function\"\nresource.labels.function_name=\"alerts-test\"\nseverity>=ERROR"
+        }
+      }
+    ],
+    "notificationChannels": [
+      "projects/goblet/notificationChannels/12567779892392936191"
+    ],
+    "enabled": true,
+    "alertStrategy": {
+      "notificationRateLimit": {
+        "period": "300s"
+      },
+      "autoClose": "604800s"
+    }
+  }
+}

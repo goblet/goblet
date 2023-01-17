@@ -20,6 +20,8 @@ from goblet.write_files import write_dockerfile
 class CloudRun(Backend):
     resource_type = "cloudrun"
     supported_versions = ["v2"]
+    monitoring_type = "cloud_run_revision"
+    monitoring_label_key = "service_name"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).run
@@ -103,7 +105,7 @@ class CloudRun(Backend):
             "steps": [
                 {
                     "name": "gcr.io/cloud-builders/docker",
-                    "args": ["build", "-t", registry, "."],
+                    "args": ["build", "--network=cloudbuild", "-t", registry, "."],
                 }
             ],
             "images": [registry],
@@ -181,6 +183,23 @@ class CloudRun(Backend):
     @property
     def http_endpoint(self):
         return get_cloudrun_url(self.client, self.name)
+
+    def set_iam_policy(self, service_account_id):
+        client = self.client
+        policy = {
+            "policy": {
+                "bindings": {
+                    "role": "roles/run.invoker",
+                    "members": [f"serviceAccount:{service_account_id}"],
+                }
+            }
+        }
+        client.execute(
+            "setIamPolicy",
+            params={"body": policy},
+            parent_key="resource",
+            parent_schema=self.run_name,
+        )
 
     def get_environment_vars(self):
         env_dict = {}

@@ -1,5 +1,6 @@
 from urllib import request
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
+from goblet.infrastructures.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
 import logging
 
 app = Goblet(function_name="goblet_example", region="us-central-1")
@@ -281,9 +282,24 @@ def job1_task2(id):
     app.log.info(f"different task for job...{id}")
     return "200"
 
+# Example BQ Remote Function
+# Called in BQ with the following sql: SELECT `PROJECT.DATASET.math_example_multiply(x,y,z)` from DATASET.table
+@app.bqremotefunction(dataset_id="DATASET")
+def multiply(x: int, y: int, z: int) -> int:
+    w = x * y * z
+    return w
 
 # Example Redis Instance
 app.redis("redis-test")
 
 # Example VPC Connector
 app.vpcconnector("vpc-conn-test")
+
+# Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
+app.alert("metric",conditions=[MetricCondition("test", metric="cloudfunctions.googleapis.com/function/execution_count", value=10)])
+
+# Example Log Match metric that will trigger an incendent off of any Error logs
+app.alert("error",conditions=[LogMatchCondition("error", "severity>=ERROR")])
+
+# Example Metric Alert that creates a custom metric for severe errors with http code in the 500's and creates an alert with a threshold of 10
+app.alert("custom",conditions=[CustomMetricCondition("custom", metric_filter='severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)', value=10)])

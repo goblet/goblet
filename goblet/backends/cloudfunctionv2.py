@@ -18,6 +18,8 @@ class CloudFunctionV2(Backend):
     resource_type = "cloudfunctionv2"
     supported_versions = ["v2alpha", "v2beta", "v2"]
     config_key = "cloudfunction"
+    monitoring_type = "cloud_function"
+    monitoring_label_key = "function_name"
 
     def __init__(self, app, config={}):
         self.client = VersionedClients(app.client_versions).cloudfunctions
@@ -105,6 +107,24 @@ class CloudFunctionV2(Backend):
     @property
     def http_endpoint(self):
         return get_cloudfunction_url(self.client, self.name)
+
+    def set_iam_policy(self, service_account_id):
+        client = self.client
+        resource_name = self.func_path
+        policy = {
+            "policy": {
+                "bindings": {
+                    "role": "roles/cloudfunctions.invoker",
+                    "members": [f"serviceAccount:{service_account_id}"],
+                }
+            }
+        }
+        client.execute(
+            "setIamPolicy",
+            params={"body": policy},
+            parent_key="resource",
+            parent_schema=resource_name,
+        )
 
     def get_environment_vars(self):
         return (

@@ -1,0 +1,18 @@
+{
+  "headers": {},
+  "body": {
+    "name": "alerts-test-custom",
+    "description": "Goblet generated custom metric for metric alerts-test-custom",
+    "filter": "resource.type=\"cloud_function\" resource.labels.function_name=\"alerts-test\" severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)",
+    "metricDescriptor": {
+      "name": "projects/<function get_default_project at 0x7fade4170040>/metricDescriptors/logging.googleapis.com/user/alerts-test-custom",
+      "metricKind": "DELTA",
+      "valueType": "INT64",
+      "unit": "1",
+      "description": "measure error rates in media-metadata-service cloudfunction",
+      "type": "logging.googleapis.com/user/alerts-test-custom"
+    },
+    "createTime": "2023-01-03T13:28:30.767954838Z",
+    "updateTime": "2023-01-03T13:28:30.767954838Z"
+  }
+}

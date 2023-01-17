@@ -1,0 +1,43 @@
+{
+  "headers": {},
+  "body": {
+    "alertPolicies": [
+      {
+        "name": "projects/goblet/alertPolicies/13258332252285807705",
+        "displayName": "alerts-test-metric",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2023-01-03T13:28:23.711640125Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2023-01-03T13:28:23.711640125Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "conditions": [
+          {
+            "conditionThreshold": {
+              "filter": "resource.type=\"cloud_function\" AND resource.labels.function_name=\"alerts-test\" AND metric.type = \"cloudfunctions.googleapis.com/function/execution_count\"",
+              "comparison": "COMPARISON_GT",
+              "thresholdValue": 10,
+              "duration": "60s",
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_MEAN"
+                }
+              ]
+            },
+            "displayName": "alerts-test-metric",
+            "name": "projects/goblet/alertPolicies/13258332252285807705/conditions/13258332252285806850"
+          }
+        ],
+        "notificationChannels": [
+          "projects/goblet/notificationChannels/12567779892392936191"
+        ],
+        "enabled": true
+      }
+    ],
+    "totalSize": 1
+  }
+}

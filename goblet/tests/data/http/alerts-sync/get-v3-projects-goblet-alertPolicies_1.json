@@ -1,0 +1,110 @@
+{
+  "headers": {},
+  "body": {
+    "alertPolicies": [
+      {
+        "name": "projects/goblet/alertPolicies/1105229816569605651",
+        "displayName": "alerts-test-error",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2023-01-03T14:09:01.723526478Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2023-01-03T14:09:01.723526478Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "conditions": [
+          {
+            "displayName": "alerts-test-error",
+            "name": "projects/goblet/alertPolicies/1105229816569605651/conditions/1105229816569603802",
+            "conditionMatchedLog": {
+              "filter": "resource.type=\"cloud_function\"\nresource.labels.function_name=\"alerts-test\"\nseverity>=ERROR"
+            }
+          }
+        ],
+        "notificationChannels": [
+          "projects/goblet/notificationChannels/12567779892392936191"
+        ],
+        "enabled": true,
+        "alertStrategy": {
+          "notificationRateLimit": {
+            "period": "300s"
+          },
+          "autoClose": "604800s"
+        }
+      },
+      {
+        "name": "projects/goblet/alertPolicies/14524942645536226218",
+        "displayName": "alerts-test-custom",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2023-01-03T14:03:13.804186806Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2023-01-03T14:09:07.326752339Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "conditions": [
+          {
+            "conditionThreshold": {
+              "filter": "resource.type=\"cloud_function\" AND resource.labels.function_name=\"alerts-test\" AND metric.type = \"logging.googleapis.com/user/custom\"",
+              "comparison": "COMPARISON_GT",
+              "thresholdValue": 10,
+              "duration": "60s",
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_MEAN"
+                }
+              ]
+            },
+            "displayName": "alerts-test-custom",
+            "name": "projects/goblet/alertPolicies/14524942645536226218/conditions/13110623759175338352"
+          }
+        ],
+        "notificationChannels": [
+          "projects/goblet/notificationChannels/12567779892392936191"
+        ],
+        "enabled": true
+      },
+      {
+        "name": "projects/goblet/alertPolicies/2050440303569353567",
+        "displayName": "alerts-test-metric",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2023-01-03T14:08:59.598989629Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2023-01-03T14:08:59.598989629Z",
+          "mutatedBy": "goblet@goblet.com"
+        },
+        "conditions": [
+          {
+            "conditionThreshold": {
+              "filter": "resource.type=\"cloud_function\" AND resource.labels.function_name=\"alerts-test\" AND metric.type = \"cloudfunctions.googleapis.com/function/execution_count\"",
+              "comparison": "COMPARISON_GT",
+              "thresholdValue": 10,
+              "duration": "60s",
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_MEAN"
+                }
+              ]
+            },
+            "displayName": "alerts-test-test",
+            "name": "projects/goblet/alertPolicies/2050440303569353567/conditions/2050440303569354186"
+          }
+        ],
+        "notificationChannels": [
+          "projects/goblet/notificationChannels/12567779892392936191"
+        ],
+        "enabled": true
+      }
+    ],
+    "totalSize": 3
+  }
+}

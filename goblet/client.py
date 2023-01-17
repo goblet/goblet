@@ -21,6 +21,8 @@ DEFAULT_CLIENT_VERSIONS = {
     "cloudscheduler": "v1",
     "redis": "v1",
     "vpcaccess": "v1",
+    "bigquery": "v2",
+    "bigqueryconnection": "v1",
 }
 
 
@@ -324,8 +326,13 @@ class VersionedClients:
         )
 
     @property
-    def gcloud(self):
-        return self.client_versions.get("gcloud")
+    def bigquery_connections(self):
+        return Client(
+            "bigqueryconnection",
+            self.client_versions.get("bigqueryconnection", "v1"),
+            calls="projects.locations.connections",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
 
     @property
     def run_uploader(self):
@@ -334,4 +341,31 @@ class VersionedClients:
             "v2beta",
             calls="projects.locations.functions",
             parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def bigquery_routines(self):
+        return Client(
+            "bigquery",
+            self.client_versions.get("bigquery", "v2"),
+            calls="routines",
+            parent_schema="{project_id}",
+        )
+
+    @property
+    def monitoring_alert(self):
+        return Client(
+            "monitoring",
+            self.client_versions.get("monitoring", "v3"),
+            calls="projects.alertPolicies",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def logging_metric(self):
+        return Client(
+            "logging",
+            self.client_versions.get("logging", "v2"),
+            calls="projects.metrics",
+            parent_schema="projects/{project_id}",
         )

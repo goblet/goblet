@@ -85,7 +85,7 @@ class TestJobs:
         jobs = Jobs(
             goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
         )
-        jobs.register_job("test", None, {"task_id": 0})
+        jobs.register("test", None, {"task_id": 0, "name": "test"})
         jobs._deploy()
 
         responses = get_responses("job-deploy")
@@ -126,7 +126,7 @@ class TestJobs:
 
         goblet_name = "test-job"
         jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name="test-job")))
-        jobs.register_job("test2", None, {"task_id": 0})
+        jobs.register("test2", None, {"task_id": 0, "name": "test"})
         jobs.sync()
 
         responses = get_responses("job-sync")
@@ -141,7 +141,7 @@ class TestJobs:
 
         goblet_name = "goblet-test"
         jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name=goblet_name)))
-        jobs.register_job("test", None, {"task_id": 0})
+        jobs.register("test", None, {"task_id": 0, "name": "test"})
         jobs.destroy()
 
         responses = get_responses("job-destroy")

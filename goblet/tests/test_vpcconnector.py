@@ -78,7 +78,7 @@ class TestVPCConnector:
         )
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register("", dummy_function, {})
 
         app.vpcconnector(name="vpc-test")
         # app.deploy(
@@ -112,7 +112,7 @@ class TestVPCConnector:
         )
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register("", dummy_function, {})
 
         app.vpcconnector(name="vpc-test")
         # app.deploy(
@@ -144,7 +144,7 @@ class TestVPCConnector:
         )
         setattr(app, "entrypoint", "app")
 
-        app.handlers["http"].register_http(dummy_function, {})
+        app.handlers["http"].register("", dummy_function, {})
 
         app.vpcconnector(name="vpc-test")
         # app.deploy(

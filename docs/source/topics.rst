@@ -771,6 +771,19 @@ For example the dev deployment will override the environment variable ``env`` wi
 You can view your current stages using ``goblet stage list``. To deploy or destroy a specific stage use the ``--stage`` or ``-s`` flag with the stage. You can also use the 
 environment variable ``STAGE``. For example ``goblet deploy -s dev``.
 
+You can limit what resources are deployed by stage by using the stage decorator. For example, the following will only
+be deployed and run when stage is dev. You can specify multiple stages with the stages argument. `stages=["dev","qa"]`.
+
+.. code:: python 
+
+    @app.route("/stage/dev")
+    @app.stage("dev")
+    def dev() -> str:
+        return "Only deployed and run when STAGE=dev"
+
+Note: You will need to set the STAGE as an environent variable on your backend as well. STAGE=dev in the above example. 
+
+Note: The stage will need to be specified as the bottom decorator for it to work properly. 
 
 API Gateway Backends
 ^^^^^^^^^^^^^^^^^^^^
