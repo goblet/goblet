@@ -10,7 +10,7 @@ Goblet is a framework for writing serverless rest apis in python in google cloud
 It provides:
 
 * A command line tool for creating, deploying, and managing your api
-* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, Cloudrun Jobs, Redis, Monitoring alerts and other GCP services.
+* A decorator based API for integrating with GCP API Gateway, Storage, Cloudfunctions, PubSub, Scheduler, Cloudrun Jobs, BQ remote functions, Redis, Monitoring alerts and other GCP services.
 * Local environment for testing and running your api endpoints
 * Dynamically generated openapispec
 * Support for multiple stages
@@ -90,6 +90,7 @@ $ curl https://api.uc.gateway.dev/home
 * storage
 * eventarc
 * cloudrun jobs
+* bq remote functions
 
 #### Infrastructure
 * vpc connector
@@ -285,8 +286,9 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [AlloyDB](https://cloud.google.com/alloydb/docs/overview) infrastructure \
  &#9744; [Cloudsql](https://cloud.google.com/sql) infrastructure \
  &#9744; [Spanner](https://cloud.google.com/spanner) infrastructure \
- &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot)
- &#9745; [Alerts](https://cloud.google.com/monitoring/alerts)
+ &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot) \
+ &#9745; [Alerts](https://cloud.google.com/monitoring/alerts) \
+ &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions)
 
 ## Want to Contribute
 
