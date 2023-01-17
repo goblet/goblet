@@ -90,6 +90,7 @@ $ curl https://api.uc.gateway.dev/home
 * storage
 * eventarc
 * cloudrun jobs
+* bq remote functions
 
 #### Infrastructure
 * vpc connector
@@ -285,8 +286,9 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [AlloyDB](https://cloud.google.com/alloydb/docs/overview) infrastructure \
  &#9744; [Cloudsql](https://cloud.google.com/sql) infrastructure \
  &#9744; [Spanner](https://cloud.google.com/spanner) infrastructure \
- &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot)
- &#9745; [Alerts](https://cloud.google.com/monitoring/alerts)
+ &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot) \
+ &#9745; [Alerts](https://cloud.google.com/monitoring/alerts) \
+ &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions)
 
 ## Want to Contribute
 
