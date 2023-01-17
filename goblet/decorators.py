@@ -412,12 +412,6 @@ class Register_Handlers(DecoratorAPI):
     def _register_infrastructure(self, handler_type, kwargs, options=None):
         getattr(self, "_register_%s" % handler_type)(kwargs=kwargs)
 
-    def deploy_infrastructure(self, config={}):
-        """Call deploy for each infrastructure"""
-        for k, v in self.infrastructure.items():
-            log.info(f"deploying {k}")
-            v.deploy(config=config)
-
     def get_infrastructure_config(self):
         configs = []
         for _, v in self.infrastructure.items():

@@ -316,7 +316,7 @@ Example usage:
 See the example `config.json <https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json>`__
 
 BigQuery Remote Functions
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To deploy BigQuery remote functions use ``@app.bqremotefunction(...)`` decorator.
 BigQuery remote functions documentation can be found `here <https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions>`_.
