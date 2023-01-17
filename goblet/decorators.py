@@ -233,9 +233,6 @@ class DecoratorAPI:
             kwargs["name"], kwargs=kwargs.get("kwargs", {})
         )
 
-    def _register_bqremotefunction(self, name, func, kwargs, options=None):
-        self.handlers["bqremotefunction"].register(name=name, func=func, kwargs=kwargs)
-
     def register_middleware(self, func, event_type="all", before_or_after="before"):
         middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
         middleware_list.append(func)
@@ -400,17 +397,6 @@ class Register_Handlers(DecoratorAPI):
             event = m(event)
 
         return event
-
-    def _register_handler(self, handler_type, name, func, kwargs, options=None):
-
-        getattr(self, "_register_%s" % handler_type)(
-            name,
-            func=func,
-            kwargs=kwargs,
-        )
-
-    def _register_infrastructure(self, handler_type, kwargs, options=None):
-        getattr(self, "_register_%s" % handler_type)(kwargs=kwargs)
 
     def get_infrastructure_config(self):
         configs = []
