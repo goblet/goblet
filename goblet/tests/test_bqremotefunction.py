@@ -1,11 +1,8 @@
 import json
 from unittest.mock import Mock
 from goblet import Goblet
-from goblet.test_utils import get_responses, dummy_function
-from resources.bq_remote_function import BigQueryRemoteFunction
-
-
-# from goblet.resources.bq_remote_function import get_hints
+from goblet.test_utils import get_responses
+from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 
 
 class TestBqRemoteFunction:
@@ -78,18 +75,10 @@ class TestBqRemoteFunction:
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
-        test_dataset_id = "blogs"
-        app.handlers["http"].register(
-            name="dummy_function", func=dummy_function, kwargs={}
-        )
 
         @app.bqremotefunction(dataset_id="blogs")
         def string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
-
-        app.bqremotefunction(
-            func=dummy_function, name=test_name, dataset_id=test_dataset_id
-        )
 
         app.deploy(force=True)
         responses = get_responses(test_deploy_name)
@@ -146,16 +135,11 @@ class TestBqRemoteFunction:
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
-        test_dataset_id = "blogs"
 
         @app.bqremotefunction(dataset_id="blogs")
         def string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
 
-        app.bqremotefunction(
-            func=dummy_function, name=test_name, dataset_id=test_dataset_id
-        )
-        # app.handlers["http"].register_http(dummy_function, {})
         app.destroy()
         responses = get_responses(test_deploy_name)
 

@@ -16,9 +16,14 @@
         "runtime": "python37"
       },
       "versionId": "1",
-      "updateTime": "2023-01-16T19:06:54Z",
+      "updateTime": "2023-01-16T19:07:30Z",
       "buildId": "4d0dc355-0ef2-410a-9e36-2fcc97923aae",
       "buildName": "projects/goblet/locations/us-central1/builds/4d0dc355-0ef2-410a-9e36-2fcc97923aae"
+    },
+    "done": true,
+    "error": {
+      "code": 3,
+      "message": "Build failed: missing main.py and GOOGLE_FUNCTION_SOURCE not specified. Either create the function in main.py or specify GOOGLE_FUNCTION_SOURCE to point to the file that contains the function; Error ID: 5c04ec9c"
     }
   }
 }
