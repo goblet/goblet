@@ -93,6 +93,8 @@ class BigQueryRemoteFunction(Handler):
         :param config: inherited from Handler
         :return:
         """
+        if not self.resources:
+            return
         log.info("Deploying bigquery remote functions")
         bq_query_connection = None
         try:

@@ -326,10 +326,6 @@ class VersionedClients:
         )
 
     @property
-    def gcloud(self):
-        return self.client_versions.get("gcloud")
-
-    @property
     def bigquery_connections(self):
         return Client(
             "bigqueryconnection",
