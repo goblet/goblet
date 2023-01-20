@@ -256,7 +256,7 @@ class CustomMetricCondition(MetricCondition):
 
         super().__init__(
             name=name,
-            metric=f"logging.googleapis.com/user/{name}",
+            metric=f"logging.googleapis.com/user/{{resource_name}}-{name}",
             value=value,
             **kwargs,
         )

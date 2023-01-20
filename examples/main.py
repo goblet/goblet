@@ -298,6 +298,25 @@ app.vpcconnector("vpc-conn-test")
 # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
 app.alert("metric",conditions=[MetricCondition("test", metric="cloudfunctions.googleapis.com/function/execution_count", value=10)])
 
+# Example Metric Alert for the cloudfunction metric execution_times with a Delta type with a threshold of 1000 ms
+app.alert(
+    "metric",
+    conditions=[
+        MetricCondition(
+            "test",
+            metric="cloudfunctions.googleapis.com/function/execution_times",
+            value=1000,
+            aggregations=[
+                {
+                    "alignmentPeriod": "300s",
+                    "crossSeriesReducer": "REDUCE_NONE",
+                    "perSeriesAligner": "ALIGN_PERCENTILE_50",
+                }
+            ],
+        )
+    ],
+)
+
 # Example Log Match metric that will trigger an incendent off of any Error logs
 app.alert("error",conditions=[LogMatchCondition("error", "severity>=ERROR")])
 
