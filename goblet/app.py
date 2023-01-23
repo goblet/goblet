@@ -123,9 +123,7 @@ def jsonify(*args, **kwargs):
     indent = None
     separators = (",", ":")
     headers = {"Content-Type": "application/json"}
-
-    if h := kwargs.pop("headers", {}):
-        headers.update(h)
+    headers.update(kwargs.pop("headers", {}))
 
     options = kwargs.pop("options", {})
 
