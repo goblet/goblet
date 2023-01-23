@@ -30,7 +30,7 @@ class TestJsonify:
 
     def test_options_failure(self):
         with pytest.raises(TypeError):
-            resp = jsonify({"a": "b", "c": datetime.now()})
+            jsonify({"a": "b", "c": datetime.now()})
 
     def test_options_success(self):
         time = datetime.now()
