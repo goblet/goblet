@@ -123,7 +123,11 @@ def jsonify(*args, **kwargs):
     indent = None
     separators = (",", ":")
     headers = {"Content-Type": "application/json"}
-    headers.update(kwargs.get("headers", {}))
+
+    if h := kwargs.pop("headers", {}):
+        headers.update(h)
+
+    options = kwargs.pop("options", {})
 
     if args and kwargs:
         raise TypeError("jsonify() behavior undefined when passed both args and kwargs")
@@ -133,7 +137,7 @@ def jsonify(*args, **kwargs):
         data = args or kwargs
 
     if not isinstance(data, (str, bytes)):
-        data = json.dumps(data, indent=indent, separators=separators, default=str)
+        data = json.dumps(data, indent=indent, separators=separators, **options)
     return (data, 200, headers)
 
 
