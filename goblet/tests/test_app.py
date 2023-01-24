@@ -1,6 +1,9 @@
-from goblet import jsonify, Response, Goblet
+from datetime import datetime
 from unittest.mock import Mock
+
 import pytest
+
+from goblet import Goblet, Response, jsonify
 
 # from goblet.client import DEFAULT_CLIENT_VERSIONS
 
@@ -19,6 +22,20 @@ class TestJsonify:
     def test_array(self):
         resp = jsonify([1, 2])
         assert resp == ("[1,2]", 200, self.headers)
+
+    def test_headers(self):
+        test_headers = {"Content-Type": "application/json", "X-Test": True}
+        resp = jsonify("hello", headers={"X-Test": True})
+        assert resp == ("hello", 200, test_headers)
+
+    def test_options_failure(self):
+        with pytest.raises(TypeError):
+            jsonify({"a": "b", "c": datetime.now()})
+
+    def test_options_success(self):
+        time = datetime.now()
+        resp = jsonify({"c": time}, options={"default": str})
+        assert resp == (f'{{"c":"{time}"}}', 200, self.headers)
 
 
 class TestResponse:

@@ -118,12 +118,14 @@ class Goblet(Register_Handlers):
 
 def jsonify(*args, **kwargs):
     """
-    Helper based on flask jsonify and helsp convert lists and dicts into valid reponses.
+    Helper based on flask jsonify and helps convert lists and dicts into valid reponses.
     """
     indent = None
     separators = (",", ":")
     headers = {"Content-Type": "application/json"}
-    headers.update(kwargs.get("headers", {}))
+    headers.update(kwargs.pop("headers", {}))
+
+    options = kwargs.pop("options", {})
 
     if args and kwargs:
         raise TypeError("jsonify() behavior undefined when passed both args and kwargs")
@@ -133,7 +135,7 @@ def jsonify(*args, **kwargs):
         data = args or kwargs
 
     if not isinstance(data, (str, bytes)):
-        data = json.dumps(data, indent=indent, separators=separators)
+        data = json.dumps(data, indent=indent, separators=separators, **options)
     return (data, 200, headers)
 
 
