@@ -18,7 +18,7 @@ class Backend:
 
     resource_type = ""
     version = ""
-    required_files = ["main.py", ".goblet/config.json"]
+    required_files = ["main.py"]
     config_key = ""
     monitoring_type = ""
     monitoring_label_key = ""
