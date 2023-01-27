@@ -146,11 +146,11 @@ class Backend:
         self.zipf.write(filename, arcname)
 
     def _zip_config(self):
-        self.zipf.write(
-            ".goblet/config.json",
-            ".goblet/config.json",
-            compress_type=zipfile.ZIP_DEFLATED,
-        )
+        config_path = ".goblet/config.json"
+        if os.path.exists(config_path):
+            self.zipf.write(
+                config_path, config_path, compress_type=zipfile.ZIP_DEFLATED
+            )
 
     def _zip_directory(self):
         exclusion_set = set(self.zip_config.get("exclude", []))
