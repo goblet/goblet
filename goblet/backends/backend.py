@@ -18,7 +18,7 @@ class Backend:
 
     resource_type = ""
     version = ""
-    required_files = ["main.py"]
+    required_files = ["main.py", ".goblet/config.json"]
     config_key = ""
     monitoring_type = ""
     monitoring_label_key = ""
@@ -34,7 +34,7 @@ class Backend:
 
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
-        include = ["*.py", ".goblet/*.py", ".goblet/*.json"]
+        include = ["*.py", ".goblet/*.py"]
         exclude = ["build", "docs", "examples", "test", "tests", "venv"]
 
         include.extend(custom_files.get("include", []))
@@ -134,6 +134,7 @@ class Backend:
             self._zip_file("requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
+        self._zip_file(".goblet/config.json")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._zip_directory()
