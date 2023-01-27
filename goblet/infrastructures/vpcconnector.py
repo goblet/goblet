@@ -15,7 +15,6 @@ class VPCConnector(Infrastructure):
         self.resource = {"name": name}
         vpcconnector_config = self.config.vpcconnector or {}
 
-        log.info(self.config.get_g_config())
         if not vpcconnector_config.get("ipCidrRange"):
             raise ValueError("ipCidrRange not specified in config")
 

@@ -34,7 +34,7 @@ class Backend:
 
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
-        include = ["*.py", ".goblet/*.py"]
+        include = ["*.py", ".goblet/*.py", ".goblet/*.json"]
         exclude = ["build", "docs", "examples", "test", "tests", "venv"]
 
         include.extend(custom_files.get("include", []))
