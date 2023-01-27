@@ -134,7 +134,7 @@ class Backend:
             self._zip_file("requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
-        self._zip_directory(".goblet")
+        self._zip_file(".goblet/config.json", ".goblet/config.json")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._zip_directory()
