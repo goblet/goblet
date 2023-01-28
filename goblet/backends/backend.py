@@ -128,6 +128,7 @@ class Backend:
 
     def zip(self):
         """Zips python files and any additional files based on config.custom_files"""
+        self._zip_config()
         if self.config.requirements_file:
             self._zip_file(self.config.requirements_file, "requirements.txt")
         else:
@@ -143,6 +144,13 @@ class Backend:
         if not os.path.exists(filename) and filename not in self.required_files:
             return
         self.zipf.write(filename, arcname)
+
+    def _zip_config(self):
+        config_path = ".goblet/config.json"
+        if os.path.exists(config_path):
+            self.zipf.write(
+                config_path, config_path, compress_type=zipfile.ZIP_DEFLATED
+            )
 
     def _zip_directory(self):
         exclusion_set = set(self.zip_config.get("exclude", []))
