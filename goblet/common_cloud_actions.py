@@ -305,8 +305,8 @@ def create_pubsub_subscription(client, sub_name, req_body):
             # Remove keys that cannot be updated
             keys.remove("name")
             keys.remove("topic")
-            keys.remove("filter")
-            keys.remove("enableMessageOrdering")
+            if "filter" in keys: keys.remove("filter")
+            if "enableMessageOrdering" in keys: keys.remove("enableMessageOrdering")
             updateMask = ",".join(keys)
             client.execute(
                 "patch",
