@@ -154,7 +154,8 @@ class Alerts(Infrastructure):
 class AlertCondition:
     """Base class for Alert Conditions. Only one of type threshold, absense, log_match, or MQL can be specified per condition.
     The method format_filter_or_query is used to inject values from the backend into the filters and conditions. These can be injected into
-    custom filters as well. Currently monitoring_type,resource_name, and monitoring_label_key are supported."""
+    custom filters as well. Currently monitoring_type,resource_name, and monitoring_label_key are supported.
+    """
 
     def __init__(
         self, name, threshold=None, absence=None, log_match=None, MQL=None
@@ -256,7 +257,7 @@ class CustomMetricCondition(MetricCondition):
 
         super().__init__(
             name=name,
-            metric=f"logging.googleapis.com/user/{name}",
+            metric=f"logging.googleapis.com/user/{{resource_name}}-{name}",
             value=value,
             **kwargs,
         )

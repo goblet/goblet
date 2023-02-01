@@ -23,6 +23,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "vpcaccess": "v1",
     "bigquery": "v2",
     "bigqueryconnection": "v1",
+    "secretmanager": "v1",
 }
 
 
@@ -367,5 +368,14 @@ class VersionedClients:
             "logging",
             self.client_versions.get("logging", "v2"),
             calls="projects.metrics",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def secretmanager(self):
+        return Client(
+            "secretmanager",
+            self.client_versions.get("secretmanager", "v1"),
+            calls="projects.secrets.versions",
             parent_schema="projects/{project_id}",
         )

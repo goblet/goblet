@@ -78,7 +78,8 @@ class DecoratorAPI:
 
     def middleware(self, event_type="all"):
         """Middleware functions that are called before events for preprocessing.
-        This is deprecated and will be removed in the future. Use before_request instead"""
+        This is deprecated and will be removed in the future. Use before_request instead
+        """
         warn(
             "Middleware method is deprecated. Use before_request instead",
             DeprecationWarning,
@@ -224,7 +225,6 @@ class DecoratorAPI:
         return _register_handler
 
     def _register_handler(self, handler_type, name, func, kwargs, options=None):
-
         name = kwargs.get("kwargs", {}).get("name") or name
         self.handlers[handler_type].register(name=name, func=func, kwargs=kwargs)
 

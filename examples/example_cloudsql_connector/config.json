@@ -1,0 +1,23 @@
+{
+    "cloudrun_revision": {
+        "serviceAccount": "SERVICE_ACCOUNT",
+        "volumes": [
+            {
+                "name": "NAME",
+                "cloudSqlInstance": {
+                    "instances": [
+                        "PROJECT:REGION:INSTANCE_NAME"
+                    ]
+                }
+            }
+        ]
+    },
+    "cloudrun_container": {
+        "volumeMounts": [
+            {
+                "name": "NAME",
+                "mountPath": "/cloudsql/INSTANCE_NAME"
+            }
+        ]
+    }
+}
