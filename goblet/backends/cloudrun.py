@@ -1,4 +1,5 @@
 import os
+import base64
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
@@ -204,6 +205,32 @@ class CloudRun(Backend):
     def get_environment_vars(self):
         env_dict = {}
         env = self.config.config.get("cloudrun_container", {}).get("env", [])
+        versioned_clients = VersionedClients(self.app.client_versions)
         for env_item in env:
-            env_dict[env_item["name"]] = env_item["value"]
+            # get secret
+            if env_item.get("valueSource"):
+                try:
+                    secret_name = env_item["valueSource"]["secretKeyRef"]["secret"]
+                    version = env_item["valueSource"]["secretKeyRef"].get(
+                        "version", "latest"
+                    )
+
+                    resp = versioned_clients.secretmanager.execute(
+                        "access",
+                        parent_key="name",
+                        parent_schema="projects/{project_id}/secrets/"
+                        + secret_name
+                        + "/versions/"
+                        + version,
+                    )
+
+                    env_dict[env_item["name"]] = base64.b64decode(
+                        resp["payload"]["data"]
+                    ).decode()
+                except Exception as e:
+                    self.log.info(
+                        f"Unable to get secret {env_item['name']} and set environment variable. Skipping..."
+                    )
+            else:
+                env_dict[env_item["name"]] = env_item["value"]
         return env_dict
