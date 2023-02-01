@@ -100,7 +100,6 @@ class TestDecoraters:
         ]
 
     def test_is_http(self):
-
         app1 = Goblet("test1")
         app2 = Goblet("test2")
         app3 = Goblet("test3")

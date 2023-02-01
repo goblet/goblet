@@ -26,6 +26,7 @@ jobs:
       - uses: psf/black@stable
         with:
           src: "./goblet"
+          version: "23.1.0"
 
   Test:
     runs-on: ubuntu-latest

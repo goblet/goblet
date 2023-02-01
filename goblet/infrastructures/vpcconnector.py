@@ -8,7 +8,6 @@ log.setLevel(logging.INFO)
 
 
 class VPCConnector(Infrastructure):
-
     resource_type = "vpcconnector"
 
     def register(self, name, kwargs):
