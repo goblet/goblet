@@ -138,9 +138,9 @@ class CloudFunctionV1(Backend):
                 env_dict[secret["key"]] = base64.b64decode(
                     resp["payload"]["data"]
                 ).decode()
-            except Exception:
+            except Exception as e:
                 self.log.info(
-                    f"Unable to get secret {secret['key']} and set environment variable. Skipping..."
+                    f"Unable to get secret {secret['key']} and set environment variable with error {str(e)}. Skipping..."
                 )
 
         return env_dict
