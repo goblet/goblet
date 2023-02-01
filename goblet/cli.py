@@ -343,7 +343,7 @@ def run_job(name, task_id, set_env, stage):
     Run a Cloudrun Job in local environment.
     """
     os.environ["CLOUD_RUN_TASK_INDEX"] = task_id
-    
+
     try:
         app = get_goblet_app(GConfig().main_file or "main.py")
         if stage:

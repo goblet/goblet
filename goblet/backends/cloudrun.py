@@ -227,7 +227,7 @@ class CloudRun(Backend):
                     env_dict[env_item["name"]] = base64.b64decode(
                         resp["payload"]["data"]
                     ).decode()
-                except Exception as e:
+                except Exception:
                     self.log.info(
                         f"Unable to get secret {env_item['name']} and set environment variable. Skipping..."
                     )
