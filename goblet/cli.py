@@ -337,7 +337,8 @@ def job():
 )
 @click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="0")
 @click.option("--set-env", "set_env", is_flag=True)
-def run_job(name, task_id, set_env):
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def run_job(name, task_id, set_env, stage):
     """
     Run a Cloudrun Job in local environment.
     """
@@ -345,6 +346,8 @@ def run_job(name, task_id, set_env):
     
     try:
         app = get_goblet_app(GConfig().main_file or "main.py")
+        if stage:
+            os.environ["STAGE"] = stage
         if set_env:
             env_dict = app.backend.get_environment_vars()
             for k, v in env_dict.items():
