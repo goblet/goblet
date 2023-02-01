@@ -70,15 +70,10 @@ class TestBackend:
         test_env = {
             "cloudfunction": {
                 "secretEnvironmentVariables": [
-                    {
-                        "name": "TESTSECRET",
-                        "valueSource": {
-                            "secretKeyRef": {"secret": "TESTSECRET", "version": "1"}
-                        },
-                    }
+                    {"key": "TESTSECRET", "secret": "TESTSECRET", "version": "1"},
                 ]
             }
         }
-        backend = CloudRun(Goblet(), config=test_env)
+        backend = CloudFunctionV1(Goblet(), config=test_env)
 
         assert backend.get_environment_vars() == {"TESTSECRET": "testtesttest"}
