@@ -336,13 +336,22 @@ def job():
     "name",
 )
 @click.argument("task_id", envvar="CLOUD_RUN_TASK_INDEX", default="0")
-def run_job(name, task_id):
+@click.option("--set-env", "set_env", is_flag=True)
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def run_job(name, task_id, set_env, stage):
     """
     Run a Cloudrun Job in local environment.
     """
     os.environ["CLOUD_RUN_TASK_INDEX"] = task_id
+
     try:
         app = get_goblet_app(GConfig().main_file or "main.py")
+        if stage:
+            os.environ["STAGE"] = stage
+        if set_env:
+            env_dict = app.backend.get_environment_vars()
+            for k, v in env_dict.items():
+                os.environ[k] = v
         app(name, int(task_id))
 
     except FileNotFoundError as not_found:

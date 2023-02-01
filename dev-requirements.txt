@@ -5,3 +5,4 @@ coverage
 flake8
 pytest
 requests-mock
+black==23.1.0

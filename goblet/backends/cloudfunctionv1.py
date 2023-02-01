@@ -1,5 +1,5 @@
 from requests import request
-
+import base64
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients, get_default_location, get_default_project
@@ -115,6 +115,32 @@ class CloudFunctionV1(Backend):
         )
 
     def get_environment_vars(self):
-        return self.config.config.get("cloudfunction", {}).get(
+        env_dict = self.config.config.get("cloudfunction", {}).get(
             "environmentVariables", {}
         )
+
+        versioned_clients = VersionedClients(self.app.client_versions)
+        for secret in self.config.config.get("cloudfunction", {}).get(
+            "secretEnvironmentVariables", []
+        ):
+            try:
+                secret_name = secret["secret"]
+                version = secret["version"]
+
+                resp = versioned_clients.secretmanager.execute(
+                    "access",
+                    parent_key="name",
+                    parent_schema="projects/{project_id}/secrets/"
+                    + secret_name
+                    + "/versions/"
+                    + version,
+                )
+                env_dict[secret["key"]] = base64.b64decode(
+                    resp["payload"]["data"]
+                ).decode()
+            except Exception as e:
+                self.log.info(
+                    f"Unable to get secret {secret['key']} and set environment variable with error {str(e)}. Skipping..."
+                )
+
+        return env_dict

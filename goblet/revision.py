@@ -57,7 +57,6 @@ class RevisionSpec:
             newPercent = math.ceil(traffics["percent"] * trafficQuotient)
 
             if traffics["type"] == "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST":
-
                 newTraffic = {
                     "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION",
                     "revision": serviceConfig["latestReadyRevision"].rpartition("/")[

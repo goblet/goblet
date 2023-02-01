@@ -232,7 +232,6 @@ class TestRoutes:
         assert gw.deploy() is None
 
     def test_deploy_routes_type_cloudrun_with_incorrect_backend(self, monkeypatch):
-
         ApiGateway(
             name="test",
             routes_type="cloudrun",
