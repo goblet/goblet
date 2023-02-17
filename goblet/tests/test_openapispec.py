@@ -12,6 +12,10 @@ class DummySchema(Schema):
     id = fields.Int()
     flt = fields.Float()
 
+class DummySchemaRequired(Schema):
+    id = fields.Int()
+    flt = fields.Float(required=True)
+
 
 class NestedModel(BaseModel):
     text: str
@@ -230,6 +234,32 @@ class TestOpenApiSpec:
             "type": "string",
             "required": True,
         }
+
+    def test_query_params_class(self):
+        route = RouteEntry(
+            dummy,
+            "route",
+            "/home",
+            "GET",
+            query_params=[DummySchemaRequired]
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        params2 = spec.spec["paths"]["/home"]["get"]["parameters"][1]
+        assert params == {
+            "in": "query",
+            "name": "test",
+            "type": "string",
+            "required": True,
+        }
+        assert params2 == {
+            "in": "query",
+            "name": "test2",
+            "type": "string",
+            "required": True,
+        }
+
 
     def test_custom_backend(self):
         route = RouteEntry(

@@ -73,7 +73,6 @@ def get_default_location():
 def get_credentials():
     """get user credentials and save them for future use"""
     DEFAULT_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
-
     if os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
         return google.auth.credentials.AnonymousCredentials()
 
