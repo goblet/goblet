@@ -1,6 +1,9 @@
+import pytest
+
 from goblet import Goblet
 from goblet.backends.backend import Backend
 from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
+from goblet.errors import GobletValidationError
 
 
 class TestBackend:
@@ -77,3 +80,12 @@ class TestBackend:
         backend = CloudFunctionV1(Goblet(), config=test_env)
 
         assert backend.get_environment_vars() == {"TESTSECRET": "testtesttest"}
+
+    def test_cloudrun_valid_name(self):
+        with pytest.raises(GobletValidationError):
+            backend = CloudRun(Goblet(function_name="INVALID"))
+
+        with pytest.raises(GobletValidationError):
+            backend = CloudRun(Goblet(function_name="in_valid"))
+
+        backend2 = CloudRun(Goblet(function_name="valid"))
