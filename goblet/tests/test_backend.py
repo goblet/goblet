@@ -83,9 +83,18 @@ class TestBackend:
 
     def test_cloudrun_valid_name(self):
         with pytest.raises(GobletValidationError):
-            backend = CloudRun(Goblet(function_name="INVALID"))
+            CloudRun(Goblet(function_name="INVALID"))
 
         with pytest.raises(GobletValidationError):
-            backend = CloudRun(Goblet(function_name="in_valid"))
+            CloudRun(Goblet(function_name="in_valid"))
 
-        backend2 = CloudRun(Goblet(function_name="valid"))
+        CloudRun(Goblet(function_name="valid"))
+
+    def test_cloudfunctionv2_valid_name(self):
+        with pytest.raises(GobletValidationError):
+            CloudFunctionV2(Goblet(function_name="INVALID"))
+
+        with pytest.raises(GobletValidationError):
+            CloudFunctionV2(Goblet(function_name="in_valid"))
+
+        CloudFunctionV2(Goblet(function_name="valid"))
