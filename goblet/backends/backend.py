@@ -45,6 +45,10 @@ class Backend:
         self.func_path = func_path
 
         self.client = client
+        self.validation_config()
+
+    def validation_config(self):
+        pass
 
     def deploy(self, force=False, config=None):
         raise NotImplementedError("destroy")
