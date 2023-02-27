@@ -416,6 +416,7 @@ class OpenApiSpec:
             for query in entry.query_params:
                 if isinstance(query, dict):
                     params.append({"in": "query", **query})
+            method_spec["parameters"] =entry.query_params
         if params:
             method_spec["parameters"] = params
 
