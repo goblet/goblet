@@ -17,7 +17,6 @@ DEFAULT_CLIENT_VERSIONS = {
     "bigquery": "v2",
     "bigqueryconnection": "v1",
     "secretmanager": "v1",
-    "jobs": "v2",
 }
 
 
@@ -66,9 +65,10 @@ class VersionedClients:
         """Only v1 is supported currently"""
         return Client(
             "run",
-            self.client_versions.get("jobs", "v2"),
-            calls="projects.locations.jobs",
-            parent_schema="projects/{project_id}/locations/{location_id}",
+            "v1",
+            calls="namespaces.jobs",
+            parent_schema="namespaces/{project_id}",
+            regional=True,
         )
 
     @property
