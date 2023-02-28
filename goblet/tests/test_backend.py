@@ -8,7 +8,7 @@ from goblet.errors import GobletValidationError
 
 class TestBackend:
     def test_custom_files(self, monkeypatch):
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_custom_files = {
             "custom_files": {"include": ["*.yaml"], "exclude": [".secret"]}
@@ -45,8 +45,8 @@ class TestBackend:
     def test_get_env_cloudrun_secret(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "get-secrets")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "get-secrets")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_env = {
             "cloudrun_container": {
@@ -67,8 +67,8 @@ class TestBackend:
     def test_get_env_cloudfunction_secret(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "get-secrets")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "get-secrets")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_env = {
             "cloudfunction": {

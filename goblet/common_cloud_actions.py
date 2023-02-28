@@ -6,11 +6,13 @@ from googleapiclient.errors import HttpError
 
 from goblet.config import GConfig
 from goblet.client import (
+    get_default_project_number,
+)
+from goblet_gcp_client.client import (
     Client,
-    get_default_project,
     get_default_location,
     get_credentials,
-    get_default_project_number,
+    get_default_project,
 )
 from goblet.errors import GobletError
 from goblet.utils import get_python_runtime

@@ -1,6 +1,7 @@
 import logging
 
-from goblet.client import VersionedClients, get_default_location, get_default_project
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_project, get_default_location
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)

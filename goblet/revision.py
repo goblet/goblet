@@ -2,9 +2,9 @@ import logging
 import math
 
 from goblet.client import (
-    get_default_location,
     get_default_project_number,
 )
+from goblet_gcp_client.client import get_default_location
 from goblet.common_cloud_actions import deploy_cloudrun, getCloudbuildArtifact
 from goblet.config import GConfig
 

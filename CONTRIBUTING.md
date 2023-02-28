@@ -17,11 +17,11 @@ If you are running into issues running tests make sure to set your pythonpath.
 ```python
 monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
 monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-monkeypatch.setenv("GOBLET_TEST_NAME", "job-destroy")
-monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+monkeypatch.setenv("G_TEST_NAME", "job-destroy")
+monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 ```
 
-When writing your own tests you will need to set `GOOGLE_PROJECT` to the project you are testing in. `GOBLET_TEST_NAME` should correspond to a new folder that you created under `/tests/data/http/NEW_FOLDER`. Finally you should change `GOBLET_HTTP_TEST` to `RECORD`. After running the test, make sure to reset envs.
+When writing your own tests you will need to set `GOOGLE_PROJECT` to the project you are testing in. `G_TEST_NAME` should correspond to a new folder that you created under `/tests/data/http/NEW_FOLDER`. Finally you should change `G_HTTP_TEST` to `RECORD`. After running the test, make sure to reset envs.
 
 * You can run tests by calling `make coverage`
 
