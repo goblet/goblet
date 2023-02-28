@@ -30,6 +30,7 @@ REQUIRED = [
     "pydantic",
     "ruamel.yaml",
     "google-cloud-logging",
+    "goblet-gcp-client",
     "protobuf"
 ]
 
