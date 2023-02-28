@@ -23,6 +23,15 @@ monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
 When writing your own tests you will need to set `GOOGLE_PROJECT` to the project you are testing in. `G_TEST_NAME` should correspond to a new folder that you created under `/tests/data/http/NEW_FOLDER`. Finally you should change `G_HTTP_TEST` to `RECORD`. After running the test, make sure to reset envs.
 
+Before running tests you should run 
+
+```
+export G_HTTP_TEST=REPLAY
+export G_TEST_DATA_DIR=$PWD/goblet/tests/data/http
+export G_MOCK_CREDENTIALS=True
+export G_TEST_PROJECT_ID="goblet"
+```
+
 * You can run tests by calling `make coverage`
 
 ## Lint
