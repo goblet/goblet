@@ -4,11 +4,12 @@ from goblet.resources.jobs import Jobs
 import pytest
 
 from goblet.test_utils import (
-    get_responses,
-    get_response,
     dummy_function,
     mock_dummy_function,
 )
+
+from goblet_gcp_client import get_responses, get_response
+
 
 from goblet.backends import CloudFunctionV1
 
@@ -78,8 +79,8 @@ class TestJobs:
     def test_deploy_job(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "test-job"
         jobs = Jobs(
@@ -95,8 +96,8 @@ class TestJobs:
     def test_deploy_job_schedule(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-deploy-schedule")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-deploy-schedule")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -121,8 +122,8 @@ class TestJobs:
     def test_sync_job(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-sync")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-sync")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "test-job"
         jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name="test-job")))
@@ -136,8 +137,8 @@ class TestJobs:
     def test_destroy_job(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet-test"
         jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name=goblet_name)))

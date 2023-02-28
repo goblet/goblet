@@ -109,7 +109,7 @@ class Backend:
                     headers=headers,
                 ).raise_for_status()
             except requests.exceptions.HTTPError as e:
-                if not os.environ.get("GOBLET_HTTP_TEST") == "REPLAY":
+                if not os.environ.get("G_HTTP_TEST") == "REPLAY":
                     raise e
 
         self.log.info("source code uploaded")

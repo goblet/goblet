@@ -6,8 +6,13 @@ from urllib.parse import quote_plus
 import google_auth_httplib2
 
 from goblet.backends.backend import Backend
-from goblet.client import Client, get_credentials
-from goblet.client import VersionedClients, get_default_project, get_default_location
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import (
+    get_default_project,
+    get_default_location,
+    Client,
+    get_credentials,
+)
 from goblet.common_cloud_actions import (
     create_cloudbuild,
     destroy_cloudrun,

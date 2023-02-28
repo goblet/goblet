@@ -1,9 +1,8 @@
 import logging
 
 from goblet.infrastructures.infrastructure import Infrastructure
-from goblet.client import (
-    get_default_project,
-)
+from goblet_gcp_client.client import get_default_project
+
 from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError

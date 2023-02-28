@@ -4,7 +4,8 @@ import os
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-from goblet.client import VersionedClients, get_default_location, get_default_project
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_location, get_default_project
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.resources.bq_remote_function import BigQueryRemoteFunction

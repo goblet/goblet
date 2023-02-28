@@ -5,7 +5,7 @@ from typing import get_type_hints
 from googleapiclient.errors import HttpError
 
 from goblet.resources.handler import Handler
-from goblet.client import get_default_project
+from goblet_gcp_client.client import get_default_project
 
 
 log = logging.getLogger("goblet.deployer")

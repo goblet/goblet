@@ -4,12 +4,11 @@ from goblet import Goblet, Response, jsonify
 from goblet.config import GConfig
 from goblet.resources.routes import ApiGateway, CORSConfig
 from goblet.test_utils import (
-    get_responses,
-    get_response,
     dummy_function,
     mock_dummy_function,
 )
 from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
+from goblet_gcp_client import get_response, get_responses
 
 
 class TestRoutes:
@@ -180,8 +179,8 @@ class TestRoutes:
     def test_deploy_routes(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "routes-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "routes-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -220,7 +219,7 @@ class TestRoutes:
     def test_deploy_routes_type_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         gw = ApiGateway(
             name="test",
@@ -244,8 +243,8 @@ class TestRoutes:
     def test_destroy_routes(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "routes-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "routes-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         apigw = ApiGateway(
             "goblet_routes",
