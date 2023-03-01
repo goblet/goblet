@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwX13Sv7sns=",
+    "bindings": [
+      {
+        "role": "roles/run.invoker",
+        "members": [
+          "serviceAccount:test@goblet."
+        ]
+      }
+    ]
+  }
+}

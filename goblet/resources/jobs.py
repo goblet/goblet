@@ -65,39 +65,33 @@ class Jobs(Handler):
             ]
 
             job_spec = {
-                "apiVersion": "run.googleapis.com/v1",
-                "kind": "Job",
-                "metadata": {
-                    "name": job_name,
-                    "annotations": {"run.googleapis.com/launch-stage": "BETA"},
-                    "labels": gconfig.labels,
-                },
-                "spec": {
+                "launchStage": "BETA",
+                "labels": gconfig.labels,
+                "template": {
+                    "annotations": annotations,
+                    "taskCount": len(job.keys()) - 1,
                     "template": {
-                        "metadata": {"annotations": annotations},
-                        "spec": {
-                            "taskCount": len(job.keys()) - 1,
-                            "template": {
-                                "spec": {
-                                    "containers": [container],
-                                    **(gconfig.job_spec or {}),
-                                }
-                            },
-                        },
-                        **job["execution_spec"],
-                    }
+                        "containers": [container],
+                        **(gconfig.job_spec or {}),
+                    },
+                    **job["execution_spec"],
                 },
             }
 
             self.deploy_job(job_name, job_spec)
+            service_account_ids = []
+            if job_sa := (gconfig.job_spec or {}).get("serviceAccount"):
+                service_account_ids.append(job_sa)
+            if scheduler_sa := (gconfig.scheduler or {}).get("serviceAccount"):
+                service_account_ids.append(scheduler_sa)
+            if len(service_account_ids) > 0:
+                self.set_iam_policy(job_name, service_account_ids)
 
     def _sync(self, dryrun=False):
-        jobs = self.versioned_clients.run_job.execute("list").get("items", [])
-        filtered_jobs = list(
-            filter(lambda job: self.name in job["metadata"]["name"], jobs)
-        )
+        jobs = self.versioned_clients.run_job.execute("list").get("jobs", [])
+        filtered_jobs = list(filter(lambda job: self.name in job["name"], jobs))
         for filtered_job in filtered_jobs:
-            filtered_name = filtered_job["metadata"]["name"]
+            filtered_name = filtered_job["name"].split("jobs/")[-1]
             if not self.resources.get(filtered_name):
                 log.info(f"Detected unused job in GCP {filtered_name}")
                 if not dryrun:
@@ -105,17 +99,22 @@ class Jobs(Handler):
 
     def deploy_job(self, job_name, job):
         try:
-            self.versioned_clients.run_job.execute("create", params={"body": job})
+            resp = self.versioned_clients.run_job.execute(
+                "create", params={"jobId": job_name, "body": job}
+            )
+            self.versioned_clients.run_job.wait_for_operation(resp["name"])
             log.info(f"created job: {job_name}")
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"updated job: {job_name}")
-                self.versioned_clients.run_job.execute(
-                    "replaceJob",
+                resp = self.versioned_clients.run_job.execute(
+                    "patch",
                     parent_key="name",
-                    parent_schema="namespaces/{project_id}/jobs/" + job_name,
+                    parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+                    + job_name,
                     params={"body": job},
                 )
+                self.versioned_clients.run_job.wait_for_operation(resp["name"])
+                log.info(f"updated job: {job_name}")
             else:
                 raise e
 
@@ -127,14 +126,36 @@ class Jobs(Handler):
 
     def _destroy_job(self, job_name):
         try:
-            self.versioned_clients.run_job.execute(
+            resp = self.versioned_clients.run_job.execute(
                 "delete",
                 parent_key="name",
-                parent_schema="namespaces/{project_id}/jobs/" + job_name,
+                parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+                + job_name,
             )
+            self.versioned_clients.run_job.wait_for_operation(resp["name"])
             log.info(f"Destroying job {job_name}......")
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("Jobs already destroyed")
             else:
                 raise e
+
+    def set_iam_policy(self, job_name, service_account_ids):
+        policy = {
+            "policy": {
+                "bindings": {
+                    "role": "roles/run.invoker",
+                    "members": [
+                        f"serviceAccount:{sa_id}" for sa_id in service_account_ids
+                    ],
+                }
+            }
+        }
+        self.versioned_clients.run_job.execute(
+            "setIamPolicy",
+            params={"body": policy},
+            parent_key="resource",
+            parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+            + job_name,
+        )
+        log.info(f"set iam policy for job {job_name}")

@@ -1,0 +1,229 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/build/goblet/YTcyMjJjZTMtMzczMC00NzU0LWEwOTAtMTE2NDZjYzcxYTI1",
+    "metadata": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
+      "build": {
+        "id": "a7222ce3-3730-4754-a090-11646cc71a25",
+        "status": "SUCCESS",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-central1",
+            "object": "260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip"
+          }
+        },
+        "createTime": "2023-03-01T18:27:39.005600953Z",
+        "startTime": "2023-03-01T18:27:39.735678542Z",
+        "finishTime": "2023-03-01T18:28:38.377923Z",
+        "results": {
+          "images": [
+            {
+              "name": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job",
+              "digest": "sha256:38a45ee15784eddb74f02ad74fdb817cbf6310329f034d6d28570a78bd9e7b00",
+              "pushTiming": {
+                "startTime": "2023-03-01T18:28:21.141728973Z",
+                "endTime": "2023-03-01T18:28:37.548045622Z"
+              }
+            },
+            {
+              "name": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job:latest",
+              "digest": "sha256:38a45ee15784eddb74f02ad74fdb817cbf6310329f034d6d28570a78bd9e7b00",
+              "pushTiming": {
+                "startTime": "2023-03-01T18:28:21.141728973Z",
+                "endTime": "2023-03-01T18:28:37.548045622Z"
+              }
+            }
+          ],
+          "buildStepImages": [
+            "sha256:ca1a503677332a84370413b0814a8b569c31ea65bbb59e2f302c183be7cdeda3"
+          ],
+          "buildStepOutputs": [
+            ""
+          ]
+        },
+        "steps": [
+          {
+            "name": "gcr.io/cloud-builders/docker",
+            "args": [
+              "build",
+              "--network=cloudbuild",
+              "-t",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job",
+              "."
+            ],
+            "timing": {
+              "startTime": "2023-03-01T18:27:50.760095259Z",
+              "endTime": "2023-03-01T18:28:21.113025405Z"
+            },
+            "status": "SUCCESS",
+            "pullTiming": {
+              "startTime": "2023-03-01T18:27:50.760095259Z",
+              "endTime": "2023-03-01T18:27:50.763045294Z"
+            }
+          }
+        ],
+        "timeout": "3600s",
+        "images": [
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job"
+        ],
+        "projectId": "goblet",
+        "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-central1",
+            "object": "260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip",
+            "generation": "1677695257465433"
+          },
+          "fileHashes": {
+            "gs://gcf-v2-uploads-123456789-us-central1/260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip#1677695257465433": {
+              "fileHash": [
+                {
+                  "type": "MD5",
+                  "value": "gaPZGzg4aw1xZqWKiEh04g=="
+                }
+              ]
+            }
+          }
+        },
+        "options": {
+          "logging": "LEGACY",
+          "pool": {}
+        },
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/a7222ce3-3730-4754-a090-11646cc71a25?project=123456789",
+        "timing": {
+          "FETCHSOURCE": {
+            "startTime": "2023-03-01T18:27:40.326084140Z",
+            "endTime": "2023-03-01T18:27:50.186653434Z"
+          },
+          "BUILD": {
+            "startTime": "2023-03-01T18:27:50.186730845Z",
+            "endTime": "2023-03-01T18:28:21.141643805Z"
+          },
+          "PUSH": {
+            "startTime": "2023-03-01T18:28:21.141727844Z",
+            "endTime": "2023-03-01T18:28:37.548092877Z"
+          }
+        },
+        "artifacts": {
+          "images": [
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job"
+          ]
+        },
+        "queueTtl": "3600s",
+        "name": "projects/goblet/locations/global/builds/a7222ce3-3730-4754-a090-11646cc71a25"
+      }
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.Build",
+      "id": "a7222ce3-3730-4754-a090-11646cc71a25",
+      "status": "SUCCESS",
+      "source": {
+        "storageSource": {
+          "bucket": "gcf-v2-uploads-123456789-us-central1",
+          "object": "260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip"
+        }
+      },
+      "createTime": "2023-03-01T18:27:39.005600953Z",
+      "startTime": "2023-03-01T18:27:39.735678542Z",
+      "finishTime": "2023-03-01T18:28:38.377923Z",
+      "results": {
+        "images": [
+          {
+            "name": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job",
+            "digest": "sha256:38a45ee15784eddb74f02ad74fdb817cbf6310329f034d6d28570a78bd9e7b00",
+            "pushTiming": {
+              "startTime": "2023-03-01T18:28:21.141728973Z",
+              "endTime": "2023-03-01T18:28:37.548045622Z"
+            }
+          },
+          {
+            "name": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job:latest",
+            "digest": "sha256:38a45ee15784eddb74f02ad74fdb817cbf6310329f034d6d28570a78bd9e7b00",
+            "pushTiming": {
+              "startTime": "2023-03-01T18:28:21.141728973Z",
+              "endTime": "2023-03-01T18:28:37.548045622Z"
+            }
+          }
+        ],
+        "buildStepImages": [
+          "sha256:ca1a503677332a84370413b0814a8b569c31ea65bbb59e2f302c183be7cdeda3"
+        ],
+        "buildStepOutputs": [
+          ""
+        ]
+      },
+      "steps": [
+        {
+          "name": "gcr.io/cloud-builders/docker",
+          "args": [
+            "build",
+            "--network=cloudbuild",
+            "-t",
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job",
+            "."
+          ],
+          "timing": {
+            "startTime": "2023-03-01T18:27:50.760095259Z",
+            "endTime": "2023-03-01T18:28:21.113025405Z"
+          },
+          "status": "SUCCESS",
+          "pullTiming": {
+            "startTime": "2023-03-01T18:27:50.760095259Z",
+            "endTime": "2023-03-01T18:27:50.763045294Z"
+          }
+        }
+      ],
+      "timeout": "3600s",
+      "images": [
+        "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job"
+      ],
+      "projectId": "goblet",
+      "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
+      "sourceProvenance": {
+        "resolvedStorageSource": {
+          "bucket": "gcf-v2-uploads-123456789-us-central1",
+          "object": "260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip",
+          "generation": "1677695257465433"
+        },
+        "fileHashes": {
+          "gs://gcf-v2-uploads-123456789-us-central1/260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip#1677695257465433": {
+            "fileHash": [
+              {
+                "type": "MD5",
+                "value": "gaPZGzg4aw1xZqWKiEh04g=="
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "logging": "LEGACY",
+        "pool": {}
+      },
+      "logUrl": "https://console.cloud.google.com/cloud-build/builds/a7222ce3-3730-4754-a090-11646cc71a25?project=123456789",
+      "timing": {
+        "FETCHSOURCE": {
+          "startTime": "2023-03-01T18:27:40.326084140Z",
+          "endTime": "2023-03-01T18:27:50.186653434Z"
+        },
+        "BUILD": {
+          "startTime": "2023-03-01T18:27:50.186730845Z",
+          "endTime": "2023-03-01T18:28:21.141643805Z"
+        },
+        "PUSH": {
+          "startTime": "2023-03-01T18:28:21.141727844Z",
+          "endTime": "2023-03-01T18:28:37.548092877Z"
+        }
+      },
+      "artifacts": {
+        "images": [
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job"
+        ]
+      },
+      "queueTtl": "3600s",
+      "name": "projects/goblet/locations/global/builds/a7222ce3-3730-4754-a090-11646cc71a25"
+    }
+  }
+}
