@@ -84,7 +84,7 @@ class Jobs(Handler):
                 service_account_ids.append(job_sa)
             if scheduler_sa := (gconfig.scheduler or {}).get("serviceAccount"):
                 service_account_ids.append(scheduler_sa)
-            if len(service_account_ids) > 0:
+            if service_account_ids:
                 self.set_iam_policy(job_name, service_account_ids)
 
     def _sync(self, dryrun=False):
