@@ -53,26 +53,29 @@ class CloudRun(Backend):
             "content-type": "application/zip",
         }
 
-        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
-            get_dir() + "/Procfile"
-        ):
+        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(get_dir() + "/Procfile"):
             self.log.info(
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
             write_dockerfile()
-        self._zip_file("Dockerfile")
 
-        source, changes = self._gcs_upload(
-            self.client,
-            put_headers,
-            upload_client=versioned_clients.run_uploader,
-            force=force,
-        )
+        artifact_tag = self.config.cloudbuild.get('artifact_tag', None)
+        if artifact_tag:
+            source, changes = None, False
+            self.log.info(f'skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found')
+        else:
+            self._zip_file("Dockerfile")
+            source, changes = self._gcs_upload(
+                self.client,
+                put_headers,
+                upload_client=versioned_clients.run_uploader,
+                force=force,
+            )
 
-        if not changes:
-            return None
+            if not changes:
+                return None
 
-        self.create_build(versioned_clients.cloudbuild, source, self.name)
+            self.create_build(versioned_clients.cloudbuild, source, self.name)
 
         if not self.skip_run_deployment():
             serviceRevision = RevisionSpec(config, versioned_clients, self.name)
@@ -102,8 +105,8 @@ class CloudRun(Backend):
         """Creates http cloudbuild"""
         build_configs = self.config.cloudbuild or {}
         registry = (
-            build_configs.get("artifact_registry")
-            or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
+                build_configs.get("artifact_registry")
+                or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
         )
         build_configs.pop("artifact_registry", None)
 
@@ -234,9 +237,9 @@ class CloudRun(Backend):
                         "access",
                         parent_key="name",
                         parent_schema="projects/{project_id}/secrets/"
-                        + secret_name
-                        + "/versions/"
-                        + version,
+                                      + secret_name
+                                      + "/versions/"
+                                      + version,
                     )
 
                     env_dict[env_item["name"]] = base64.b64decode(

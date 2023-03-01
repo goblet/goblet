@@ -26,7 +26,7 @@ class RevisionSpec:
             "--target=goblet_entrypoint",
         ]
         self.req_body = {}
-        self.latestArtifact = ""
+        self.artifactToDeploy = ""
         self.name = name
 
     def getServiceConfig(self):
@@ -100,9 +100,17 @@ class RevisionSpec:
         client = self.versioned_clients.run
         region = get_default_location()
         project = get_default_project_number()
-        self.latestArtifact = getCloudbuildArtifact(
-            self.versioned_clients.cloudbuild, self.name, config=self.config
-        )
+
+        docker_tag = self.config.cloudbuild.get('artifact_tag', None)
+        if docker_tag:
+            artifact_registry = self.config.cloudbuild.get('artifact_registry')
+            self.artifactToDeploy = artifact_registry + ("" if 'sha256' in docker_tag else ":") + docker_tag
+            log.info(self.artifactToDeploy)
+        else:
+            self.artifactToDeploy = getCloudbuildArtifact(
+                self.versioned_clients.cloudbuild, self.name, config=self.config
+            )
+
         self.req_body = {
             "template": {
                 **self.cloudrun_revision,
@@ -111,7 +119,7 @@ class RevisionSpec:
             **self.cloudrun_configs,
         }
         self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
-        self.req_body["template"]["containers"][0]["image"] = self.latestArtifact
+        self.req_body["template"]["containers"][0]["image"] = self.artifactToDeploy
 
         # check for traffic config
         if self.cloudrun_configs.get("traffic"):
