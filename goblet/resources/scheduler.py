@@ -148,8 +148,6 @@ class Scheduler(Handler):
 
     def deploy_job(self, job_name, job):
         try:
-            log.info(f"creating scheduled job: {job_name} for {self.name}")
-
             self.versioned_clients.cloudscheduler.execute(
                 "create", params={"body": job}
             )
