@@ -77,7 +77,7 @@ class Jobs(Handler):
             }
 
             self.deploy_job(job_name, job_spec)
-            self._set_iam_policy(job_name, gconfig)
+            self.set_iam_policy(job_name, gconfig)
 
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.run_job.execute("list").get("jobs", [])
@@ -132,7 +132,7 @@ class Jobs(Handler):
             else:
                 raise e
 
-    def _set_iam_policy(self, job_name: str, gconfig: GConfig):
+    def set_iam_policy(self, job_name: str, gconfig: GConfig):
         service_account_ids = []
         job_sa = (gconfig.job_spec or {}).get("serviceAccount")
         scheduler_sa = (gconfig.scheduler or {}).get("serviceAccount")
@@ -141,9 +141,9 @@ class Jobs(Handler):
         if scheduler_sa and scheduler_sa not in service_account_ids:
             service_account_ids.append(scheduler_sa)
         if service_account_ids:
-            self.set_iam_policy(job_name, service_account_ids)
+            self._set_iam_policy(job_name, service_account_ids)
 
-    def set_iam_policy(self, job_name, service_account_ids):
+    def _set_iam_policy(self, job_name, service_account_ids):
         policy = {
             "policy": {
                 "bindings": {
@@ -161,4 +161,3 @@ class Jobs(Handler):
             parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
             + job_name,
         )
-        log.info(f"set iam policy for job {job_name}")
