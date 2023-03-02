@@ -77,7 +77,6 @@ class Jobs(Handler):
             }
 
             self.deploy_job(job_name, job_spec)
-            self.set_iam_policy(job_name, gconfig)
 
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.run_job.execute("list").get("jobs", [])
@@ -131,33 +130,3 @@ class Jobs(Handler):
                 log.info("Jobs already destroyed")
             else:
                 raise e
-
-    def set_iam_policy(self, job_name: str, gconfig: GConfig):
-        service_account_ids = []
-        job_sa = (gconfig.job_spec or {}).get("serviceAccount")
-        scheduler_sa = (gconfig.scheduler or {}).get("serviceAccount")
-        if job_sa and job_sa not in service_account_ids:
-            service_account_ids.append(job_sa)
-        if scheduler_sa and scheduler_sa not in service_account_ids:
-            service_account_ids.append(scheduler_sa)
-        if service_account_ids:
-            self._set_iam_policy(job_name, service_account_ids)
-
-    def _set_iam_policy(self, job_name, service_account_ids):
-        policy = {
-            "policy": {
-                "bindings": {
-                    "role": "roles/run.invoker",
-                    "members": [
-                        f"serviceAccount:{sa_id}" for sa_id in service_account_ids
-                    ],
-                }
-            }
-        }
-        self.versioned_clients.run_job.execute(
-            "setIamPolicy",
-            params={"body": policy},
-            parent_key="resource",
-            parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
-            + job_name,
-        )
