@@ -1,6 +1,7 @@
 from goblet import Goblet
 from goblet.resources.http import HTTP
-from goblet.test_utils import get_responses, dummy_function, DATA_DIR_MAIN, get_response
+from goblet_gcp_client import get_responses, get_response
+from goblet.test_utils import dummy_function, DATA_DIR_MAIN
 from goblet.errors import GobletError
 import pytest
 
@@ -9,8 +10,8 @@ class TestDeployer:
     def test_deploy_http_function(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-function-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -27,8 +28,8 @@ class TestDeployer:
     def test_deploy_http_function_v2(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-deploy-v2")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-function-deploy-v2")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -50,8 +51,8 @@ class TestDeployer:
     def test_deploy_cloudrun(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-cloudrun-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -77,8 +78,8 @@ class TestDeployer:
     def test_deploy_cloudrun_build_failed(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-deploy-build-failed")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-cloudrun-deploy-build-failed")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -101,8 +102,8 @@ class TestDeployer:
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-cloudrun-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet", backend="cloudrun")
 
@@ -116,8 +117,8 @@ class TestDeployer:
     def test_destroy_http_function(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-function-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet_test_app")
 
@@ -134,8 +135,8 @@ class TestDeployer:
     def test_destroy_http_function_all(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-destroy-all")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-function-destroy-all")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet_example")
 
@@ -147,8 +148,8 @@ class TestDeployer:
     def test_set_iam_bindings(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-function-bindings")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-function-bindings")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -171,8 +172,8 @@ class TestDeployer:
     def test_cloudfunction_delta(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-east1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudfunction-delta")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-cloudfunction-delta")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri(
             "HEAD",
@@ -190,8 +191,8 @@ class TestDeployer:
     def test_cloudrun_custom_artifact(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "deployer-cloudrun-artifact")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-cloudrun-artifact")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 

@@ -1,10 +1,10 @@
 from goblet import Goblet
 from goblet.resources.eventarc import EventArc
 from goblet.test_utils import (
-    get_responses,
     dummy_function,
     mock_dummy_function,
 )
+from goblet_gcp_client import get_responses
 from goblet.backends.cloudrun import CloudRun
 
 from unittest.mock import Mock
@@ -83,8 +83,8 @@ class TestEventArc:
     def test_sync_eventarc(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "eventarc-sync")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "eventarc-sync")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         eventarc = EventArc(
             "test-eventarc",
@@ -121,8 +121,8 @@ class TestEventArc:
     def test_deploy_eventarc(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "eventarc-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "eventarc-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         eventarc = EventArc(
             "test-eventarc",
@@ -159,8 +159,8 @@ class TestEventArc:
     def test_update_eventarc(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "eventarc-update")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "eventarc-update")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         eventarc = EventArc(
             "test-eventarc",
@@ -198,8 +198,8 @@ class TestEventArc:
     def test_destroy_eventarc(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "eventarc-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "eventarc-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         eventarc = EventArc(
             "test-eventarc",

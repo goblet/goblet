@@ -7,7 +7,7 @@ from goblet.response import Response
 import logging
 
 from goblet.resources.handler import Handler
-from goblet.client import get_default_project, get_default_location
+from goblet_gcp_client.client import get_default_project, get_default_location
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)

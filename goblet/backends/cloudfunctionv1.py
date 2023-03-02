@@ -2,7 +2,8 @@ from requests import request
 import base64
 
 from goblet.backends.backend import Backend
-from goblet.client import VersionedClients, get_default_location, get_default_project
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_location, get_default_project
 from goblet.common_cloud_actions import (
     get_function_runtime,
     create_cloudfunctionv1,

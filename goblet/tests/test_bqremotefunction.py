@@ -1,7 +1,7 @@
 import json
 from unittest.mock import Mock
 from goblet import Goblet
-from goblet.test_utils import get_responses
+from goblet_gcp_client import get_responses
 from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 
 
@@ -71,8 +71,8 @@ class TestBqRemoteFunction:
         test_deploy_name = "bqremotefunction-deploy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
@@ -131,8 +131,8 @@ class TestBqRemoteFunction:
         test_deploy_name = "bqremotefunction-destroy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)
@@ -164,9 +164,9 @@ class TestBqRemoteFunction:
     #     # FOR REPLAY
     #     # monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
     #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-    #     monkeypatch.setenv("GOBLET_TEST_NAME", test_deploy_name)
+    #     monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
     #     # FOR REPLAY
-    #     # monke-ypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+    #     # monke-ypatch.setenv("G_HTTP_TEST", "REPLAY")
     #
     #     test_name = "bqremotefunction_test"
     #     app = Goblet(function_name=test_name)

@@ -2,12 +2,11 @@ from unittest.mock import Mock
 from goblet import Goblet
 from goblet.resources.scheduler import Scheduler
 from goblet.test_utils import (
-    get_responses,
-    get_response,
     mock_dummy_function,
     dummy_function,
 )
 from goblet.backends import CloudRun, CloudFunctionV1
+from goblet_gcp_client import get_responses, get_response
 
 
 class TestScheduler:
@@ -119,8 +118,8 @@ class TestScheduler:
     def test_deploy_schedule(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "schedule-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
         scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
@@ -145,8 +144,8 @@ class TestScheduler:
     def test_deploy_schedule_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "schedule-deploy-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         scheduler = Scheduler("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         cloudrun_url = "https://goblet-12345.a.run.app"
@@ -173,8 +172,8 @@ class TestScheduler:
     def test_deploy_multiple_schedule(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-deploy-multiple")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "schedule-deploy-multiple")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet-test-schedule"
         scheduler = Scheduler(
@@ -233,8 +232,8 @@ class TestScheduler:
     def test_destroy_schedule(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "schedule-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
         scheduler = Scheduler(
@@ -255,8 +254,8 @@ class TestScheduler:
     def test_sync_schedule(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "schedule-sync")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "schedule-sync")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet"
         scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))

@@ -5,8 +5,6 @@ import pytest
 
 from goblet import Goblet, Response, jsonify
 
-# from goblet.client import DEFAULT_CLIENT_VERSIONS
-
 
 class TestJsonify:
     headers = {"Content-Type": "application/json"}

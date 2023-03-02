@@ -1,12 +1,18 @@
 import os
+import re
 import base64
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
 
 from goblet.backends.backend import Backend
-from goblet.client import Client, get_credentials
-from goblet.client import VersionedClients, get_default_project, get_default_location
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import (
+    get_default_project,
+    get_default_location,
+    Client,
+    get_credentials,
+)
 from goblet.common_cloud_actions import (
     create_cloudbuild,
     destroy_cloudrun,
@@ -16,6 +22,7 @@ from goblet.common_cloud_actions import (
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
+from goblet.errors import GobletValidationError
 
 
 class CloudRun(Backend):
@@ -28,6 +35,14 @@ class CloudRun(Backend):
         self.client = VersionedClients(app.client_versions).run
         self.run_name = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{app.function_name}"
         super().__init__(app, self.client, self.run_name, config=config)
+
+    def validation_config(self):
+        name_pattern = r"^[a-z]([-a-z0-9]*[a-z0-9])?"
+        pattern = re.compile(name_pattern)
+        if not re.fullmatch(pattern, self.name):
+            raise GobletValidationError(
+                f"Invalid Cloudrun name {self.name}. Needs to follow regex of pattern {name_pattern}"
+            )
 
     def deploy(self, force=False, config=None):
         versioned_clients = VersionedClients(self.app.client_versions)

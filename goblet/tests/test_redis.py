@@ -1,6 +1,7 @@
 from goblet import Goblet
 from goblet.infrastructures.redis import Redis
-from goblet.test_utils import dummy_function, get_response, get_responses
+from goblet.test_utils import dummy_function
+from goblet_gcp_client import get_response, get_responses
 
 
 class TestRedis:
@@ -14,8 +15,8 @@ class TestRedis:
     def test_deploy_redis(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "redis-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet-example")
         app.redis(name="redis-test")
@@ -47,8 +48,8 @@ class TestRedis:
     def test_update_redis(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-update")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "redis-update")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet-example")
         app.redis(name="redis-test")
@@ -71,8 +72,8 @@ class TestRedis:
     def test_destroy_redis(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "redis-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         redis = Redis("goblet-redis", resource={"name": "redis-test"})
         redis.destroy()
@@ -86,8 +87,8 @@ class TestRedis:
     def test_deploy_cloudrun(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "redis-deploy-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri(
             "HEAD",
@@ -134,8 +135,8 @@ class TestRedis:
     def test_deploy_cloudfunction(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-function")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "redis-deploy-function")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri(
             "HEAD",
@@ -173,8 +174,8 @@ class TestRedis:
     def test_deploy_cloudfunctionv2(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "redis-deploy-functionv2")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "redis-deploy-functionv2")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri(
             "HEAD",
