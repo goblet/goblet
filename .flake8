@@ -5,4 +5,4 @@ ignore = E501, W503
 #W503 line break before binary operator
 ; exclude = .git,__pycache__,docs
 max-complexity = 15
-extend-ignore = 203
+extend-ignore = E203
