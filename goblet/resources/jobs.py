@@ -55,7 +55,6 @@ class Jobs(Handler):
         log.info("deploying cloudrun jobs......")
         for job_name, job in self.resources.items():
             container = {**(gconfig.job_container or {})}
-            annotations = {**(gconfig.job_annotations or {})}
             container["image"] = artifact
             container["command"] = [
                 "goblet",
@@ -68,7 +67,6 @@ class Jobs(Handler):
                 "launchStage": "BETA",
                 "labels": gconfig.labels,
                 "template": {
-                    "annotations": annotations,
                     "taskCount": len(job.keys()) - 1,
                     "template": {
                         "containers": [container],

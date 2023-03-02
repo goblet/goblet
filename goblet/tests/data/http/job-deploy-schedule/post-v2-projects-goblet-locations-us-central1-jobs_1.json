@@ -32,7 +32,7 @@
           ],
           "maxRetries": 3,
           "timeout": "600s",
-          "serviceAccount": "871545765989-compute@developer.gserviceaccount.com",
+          "serviceAccount": "123456789-compute@developer.gserviceaccount.com",
           "executionEnvironment": "EXECUTION_ENVIRONMENT_GEN2"
         }
       },
@@ -76,7 +76,7 @@
           ],
           "maxRetries": 3,
           "timeout": "600s",
-          "serviceAccount": "871545765989-compute@developer.gserviceaccount.com",
+          "serviceAccount": "123456789-compute@developer.gserviceaccount.com",
           "executionEnvironment": "EXECUTION_ENVIRONMENT_GEN2"
         }
       },

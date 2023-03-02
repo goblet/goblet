@@ -9,7 +9,7 @@
         "status": "QUEUED",
         "source": {
           "storageSource": {
-            "bucket": "gcf-v2-uploads-871545765989-us-central1",
+            "bucket": "gcf-v2-uploads-123456789-us-central1",
             "object": "c0bc7357-4073-4ddb-abdc-4380222e7010.zip"
           }
         },
@@ -31,10 +31,10 @@
           "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test"
         ],
         "projectId": "goblet",
-        "logsBucket": "gs://871545765989.cloudbuild-logs.googleusercontent.com",
+        "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
         "sourceProvenance": {
           "resolvedStorageSource": {
-            "bucket": "gcf-v2-uploads-871545765989-us-central1",
+            "bucket": "gcf-v2-uploads-123456789-us-central1",
             "object": "c0bc7357-4073-4ddb-abdc-4380222e7010.zip",
             "generation": "1677705083123302"
           }
@@ -43,7 +43,7 @@
           "logging": "LEGACY",
           "pool": {}
         },
-        "logUrl": "https://console.cloud.google.com/cloud-build/builds/34e05a7d-0702-47ed-9fd8-35b483172eea?project=871545765989",
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/34e05a7d-0702-47ed-9fd8-35b483172eea?project=123456789",
         "artifacts": {
           "images": [
             "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test"
