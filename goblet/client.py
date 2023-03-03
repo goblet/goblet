@@ -62,12 +62,11 @@ class VersionedClients:
 
     @property
     def run_job(self):
-        """Only v1 is supported currently"""
         return Client(
             "run",
-            "v1",
-            calls="namespaces.jobs",
-            parent_schema="namespaces/{project_id}",
+            self.client_versions.get("run", "v2"),
+            calls="projects.locations.jobs",
+            parent_schema="projects/{project_id}/locations/{location_id}",
             regional=True,
         )
 

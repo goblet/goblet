@@ -3,8 +3,8 @@
   "body": {
     "uploadUrl": "https://storage.googleapis.com/mock",
     "storageSource": {
-      "bucket": "gcf-v2-uploads-111111111-us-central1",
-      "object": "5fde77fc-e195-4bd2-b5ff-5fdd983f1258.zip"
+      "bucket": "gcf-v2-uploads-123456789-us-central1",
+      "object": "c0bc7357-4073-4ddb-abdc-4380222e7010.zip"
     }
   }
 }
