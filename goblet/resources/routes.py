@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from marshmallow.schema import Schema, SchemaMeta
+from marshmallow.schema import Schema
 from pydantic import BaseModel
 import base64
 import logging
@@ -338,8 +338,8 @@ class OpenApiSpec:
             title=self.app_name,
             version=self.version,
             openapi_version="2.0",
-            plugins=[marshmallow_plugin, pydantic_plugin],
-            options=self.options
+            plugins=[pydantic_plugin, marshmallow_plugin],
+            **self.options,
         )
         if marshmallow_attribute_function:
             marshmallow_plugin.converter.add_attribute_function(
@@ -408,15 +408,13 @@ class OpenApiSpec:
             params.append({"in": "formData", "name": "file", "type": "file"})
 
         if entry.query_params:
-            # if isinstance( entry.query_params, SchemaMeta):
-            #     test = self._extract_content( entry.query_params)
-            #     print(test)
-            
-            # else: 
+            method_spec["parameters"] = []
             for query in entry.query_params:
-                if isinstance(query, dict):
+                if not query.get("schema"):
                     params.append({"in": "query", **query})
-            method_spec["parameters"] =entry.query_params
+                else:
+                    params.append(query)
+            # method_spec["parameters"] =entry.query_params
         if params:
             method_spec["parameters"] = params
 
@@ -440,25 +438,25 @@ class OpenApiSpec:
         if entry.content_types:
             method_spec["consumes"] = entry.content_types
 
-
-# todo         # https://apispec.readthedocs.io/en/latest/quickstart.html add path
-        # 
-    #     self.spec.path(
-    #     path=entry.uri_pattern,
-    #     operations={
-    #         entry.method.lower():dict(
-    #             **method_spec,
-    #             responses={"200": {"content": {"application/json": {"schema": "Gist"}}}}
-    #         )
-    #     }
-    # )
-        self.component_spec.path(entry.uri_pattern, operations={
-            entry.method.lower():dict(
-                **method_spec,
-            )
-        })
-
-
+        # todo         # https://apispec.readthedocs.io/en/latest/quickstart.html add path
+        #
+        #     self.spec.path(
+        #     path=entry.uri_pattern,
+        #     operations={
+        #         entry.method.lower():dict(
+        #             **method_spec,
+        #             responses={"200": {"content": {"application/json": {"schema": "Gist"}}}}
+        #         )
+        #     }
+        # )
+        self.component_spec.path(
+            entry.uri_pattern,
+            operations={
+                entry.method.lower(): dict(
+                    **method_spec,
+                )
+            },
+        )
 
         # path_exists = self.spec["paths"].get(entry.uri_pattern)
         # if path_exists:

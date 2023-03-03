@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from marshmallow import Schema, fields
 from goblet.resources.routes import OpenApiSpec, RouteEntry
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ class DummySchema(Schema):
     id = fields.Int()
     flt = fields.Float()
 
+
 class DummySchemaRequired(Schema):
     id = fields.Int()
     flt = fields.Float(required=True)
@@ -19,6 +20,11 @@ class DummySchemaRequired(Schema):
 
 class NestedModel(BaseModel):
     text: str
+
+
+class PydanticModelSimple(BaseModel):
+    id: Optional[int]
+    flt: float
 
 
 class PydanticModel(BaseModel):
@@ -50,7 +56,8 @@ class TestOpenApiSpec:
                 }
             }
         }
-        assert spec.spec["paths"] == expected_json
+        spec_dict = spec.component_spec.to_dict()
+        assert spec_dict["paths"] == expected_json
 
     def test_custom_deadlines(self):
         route = RouteEntry(
@@ -63,10 +70,11 @@ class TestOpenApiSpec:
         spec = OpenApiSpec("test", "xyz.cloudfunction", deadline=10)
         spec.add_route(route)
         spec.add_route(route2)
+        spec_dict = spec.component_spec.to_dict()
 
-        assert spec.spec["paths"]["/home"]["get"]["x-google-backend"]["deadline"] == 10
+        assert spec_dict["paths"]["/home"]["get"]["x-google-backend"]["deadline"] == 10
         assert (
-            spec.spec["paths"]["/deadline"]["get"]["x-google-backend"]["deadline"] == 30
+            spec_dict["paths"]["/deadline"]["get"]["x-google-backend"]["deadline"] == 30
         )
 
     def test_add_route_post(self):
@@ -75,9 +83,10 @@ class TestOpenApiSpec:
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         spec.add_route(route_post)
+        spec_dict = spec.component_spec.to_dict()
 
-        assert spec.spec["paths"]["/home"].get("post")
-        assert spec.spec["paths"]["/home"].get("get")
+        assert spec_dict["paths"]["/home"].get("post")
+        assert spec_dict["paths"]["/home"].get("get")
 
     def test_security_definitions(self):
         security_def = {
@@ -92,8 +101,10 @@ class TestOpenApiSpec:
         spec = OpenApiSpec(
             "test", "xyz.cloudfunction", security_definitions=security_def
         )
-        assert spec.spec["securityDefinitions"] == security_def
-        assert spec.spec["security"] == [{"your_custom_auth_id": []}]
+        spec_dict = spec.component_spec.to_dict()
+
+        assert spec_dict["securityDefinitions"] == security_def
+        assert spec_dict["security"] == [{"your_custom_auth_id": []}]
 
     def test_security_config(self):
         security_def = {
@@ -111,8 +122,10 @@ class TestOpenApiSpec:
             security_definitions=security_def,
             security=[{"custom": []}],
         )
-        assert spec.spec["securityDefinitions"] == security_def
-        assert spec.spec["security"] == [{"custom": []}]
+        spec_dict = spec.component_spec.to_dict()
+
+        assert spec_dict["securityDefinitions"] == security_def
+        assert spec_dict["security"] == [{"custom": []}]
 
     def test_security_method(self):
         route = RouteEntry(
@@ -120,7 +133,9 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        assert spec.spec["paths"]["/home"]["post"]["security"] == [
+        spec_dict = spec.component_spec.to_dict()
+
+        assert spec_dict["paths"]["/home"]["post"]["security"] == [
             {"your_custom_auth_id": []}
         ]
 
@@ -131,7 +146,9 @@ class TestOpenApiSpec:
         route = RouteEntry(prim_typed, "route", "/home/{param}/{param2}", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        params = spec.spec["paths"]["/home/{param}/{param2}"]["get"]["parameters"]
+        spec_dict = spec.component_spec.to_dict()
+
+        params = spec_dict["paths"]["/home/{param}/{param2}"]["get"]["parameters"]
         assert len(params) == 2
         assert params[0] == {
             "in": "path",
@@ -145,7 +162,7 @@ class TestOpenApiSpec:
             "required": True,
             "type": "boolean",
         }
-        response_content = spec.spec["paths"]["/home/{param}/{param2}"]["get"][
+        response_content = spec_dict["paths"]["/home/{param}/{param2}"]["get"][
             "responses"
         ]["200"]["schema"]
         assert response_content == {"type": "integer"}
@@ -157,11 +174,13 @@ class TestOpenApiSpec:
         route = RouteEntry(schema_typed, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+        spec_dict = spec.component_spec.to_dict()
+
+        response_content = spec_dict["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
         assert response_content == {"$ref": "#/definitions/DummySchema"}
-        assert len(spec.spec["definitions"]["DummySchema"]["properties"]) == 2
+        assert len(spec_dict["definitions"]["DummySchema"]["properties"]) == 2
 
     def test_return_lists(self):
         def schema_typed_list() -> List[DummySchema]:
@@ -170,14 +189,16 @@ class TestOpenApiSpec:
         route = RouteEntry(schema_typed_list, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+        spec_dict = spec.component_spec.to_dict()
+
+        response_content = spec_dict["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
         assert response_content == {
             "type": "array",
             "items": {"$ref": "#/definitions/DummySchema"},
         }
-        assert len(spec.spec["definitions"]["DummySchema"]["properties"]) == 2
+        assert len(spec_dict["definitions"]["DummySchema"]["properties"]) == 2
 
         def prim_typed_list() -> List[str]:
             return []
@@ -185,11 +206,12 @@ class TestOpenApiSpec:
         route = RouteEntry(prim_typed_list, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+        spec_dict = spec.component_spec.to_dict()
+        response_content = spec_dict["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
         assert response_content == {"type": "array", "items": {"type": "string"}}
-        assert len(spec.spec["definitions"]) == 0
+        assert not spec_dict.get("definitions")
 
     def test_custom_response(self):
         route = RouteEntry(
@@ -197,14 +219,18 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response = spec.spec["paths"]["/home"]["get"]["responses"]
+        spec_dict = spec.component_spec.to_dict()
+
+        response = spec_dict["paths"]["/home"]["get"]["responses"]
         assert response["400"] == {"description": "400"}
 
     def test_form_data(self):
         route = RouteEntry(dummy, "route", "/home", "GET", form_data=True)
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        spec_dict = spec.component_spec.to_dict()
+
+        params = spec_dict["paths"]["/home"]["get"]["parameters"][0]
         assert params == {"in": "formData", "name": "file", "type": "file"}
 
     def test_query_params(self):
@@ -220,8 +246,10 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
-        params2 = spec.spec["paths"]["/home"]["get"]["parameters"][1]
+        spec_dict = spec.component_spec.to_dict()
+        params = spec_dict["paths"]["/home"]["get"]["parameters"][0]
+        params2 = spec_dict["paths"]["/home"]["get"]["parameters"][1]
+
         assert params == {
             "in": "query",
             "name": "test",
@@ -241,25 +269,38 @@ class TestOpenApiSpec:
             "route",
             "/home",
             "GET",
-            query_params=[DummySchemaRequired]
+            query_params=[
+                {"in": "query", "schema": "DummySchemaRequired"},
+                {
+                    "in": "query",
+                    "name": "test2",
+                    "type": "string",
+                    "required": True,
+                },
+            ],
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        params = spec.spec["paths"]["/home"]["get"]["parameters"][0]
-        params2 = spec.spec["paths"]["/home"]["get"]["parameters"][1]
-        assert params == {
+        spec_dict = spec.component_spec.to_dict()
+
+        assert {
             "in": "query",
-            "name": "test",
-            "type": "string",
+            "name": "flt",
+            "type": "number",
             "required": True,
-        }
-        assert params2 == {
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
+            "in": "query",
+            "name": "id",
+            "type": "integer",
+            "required": False,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
             "in": "query",
             "name": "test2",
             "type": "string",
             "required": True,
-        }
-
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
 
     def test_custom_backend(self):
         route = RouteEntry(
@@ -267,7 +308,9 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        entry = spec.spec["paths"]["/home"]["get"]
+        spec_dict = spec.component_spec.to_dict()
+
+        entry = spec_dict["paths"]["/home"]["get"]
         assert entry["x-google-backend"]["address"] == "CLOUDRUN/URL"
 
     def test_marshmallow_attribute_function(self):
@@ -288,34 +331,38 @@ class TestOpenApiSpec:
             marshmallow_attribute_function=dummyschema_to_properties,
         )
         spec.add_route(route)
-        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+        spec_dict = spec.component_spec.to_dict()
+
+        response_content = spec_dict["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
         assert response_content == {"$ref": "#/definitions/DummySchema"}
         assert (
-            spec.spec["definitions"]["DummySchema"]["properties"]["flt"]["type"]
+            spec_dict["definitions"]["DummySchema"]["properties"]["flt"]["type"]
             == "custom"
         )
         assert (
-            spec.spec["definitions"]["DummySchema"]["properties"]["id"]["type"]
+            spec_dict["definitions"]["DummySchema"]["properties"]["id"]["type"]
             == "custom"
         )
 
     # <------------------------------- Pydantic plugin tests ------------------------------->
 
-    def test_pydantic_reponse(self):
+    def test_reponse_pyndantic(self):
         def schema_typed() -> PydanticModel:
             return PydanticModel()
 
         route = RouteEntry(schema_typed, "route", "/home", "GET")
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        response_content = spec.spec["paths"]["/home"]["get"]["responses"]["200"][
+        spec_dict = spec.component_spec.to_dict()
+
+        response_content = spec_dict["paths"]["/home"]["get"]["responses"]["200"][
             "schema"
         ]
         assert response_content == {"$ref": "#/definitions/PydanticModel"}
 
-    def test_request_body(self):
+    def test_request_body_pyndantic(self):
         def schema_typed() -> PydanticModel:
             return PydanticModel()
 
@@ -324,8 +371,10 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
-        pydantic_definitions = spec.spec["definitions"]
+        spec_dict = spec.component_spec.to_dict()
+
+        request_content = spec_dict["paths"]["/home"]["get"]["parameters"][0]
+        pydantic_definitions = spec_dict["definitions"]
         assert request_content == {
             "in": "body",
             "name": "requestBody",
@@ -338,7 +387,7 @@ class TestOpenApiSpec:
             and "nested" in pydantic_definitions["PydanticModel"]["properties"]
         )
 
-    def test_request_body_list(self):
+    def test_request_body_list_pyndantic(self):
         def schema_typed() -> PydanticModel:
             return PydanticModel()
 
@@ -347,7 +396,9 @@ class TestOpenApiSpec:
         )
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
-        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        spec_dict = spec.component_spec.to_dict()
+
+        request_content = spec_dict["paths"]["/home"]["get"]["parameters"][0]
         assert request_content == {
             "in": "body",
             "name": "requestBody",
@@ -357,7 +408,7 @@ class TestOpenApiSpec:
             },
         }
 
-    def test_duplicate_nested(self):
+    def test_duplicate_nested_pydantic(self):
         def schema_typed() -> PydanticModel:
             return PydanticModel()
 
@@ -376,8 +427,9 @@ class TestOpenApiSpec:
         spec = OpenApiSpec("test", "xyz.cloudfunction")
         spec.add_route(route)
         spec.add_route(route2)
+        spec_dict = spec.component_spec.to_dict()
 
-        request_content = spec.spec["paths"]["/home"]["get"]["parameters"][0]
+        request_content = spec_dict["paths"]["/home"]["get"]["parameters"][0]
         assert request_content == {
             "in": "body",
             "name": "requestBody",
@@ -386,3 +438,42 @@ class TestOpenApiSpec:
                 "items": {"$ref": "#/definitions/PydanticModel"},
             },
         }
+
+    def test_query_params_class_pydantic(self):
+        route = RouteEntry(
+            dummy,
+            "route",
+            "/home",
+            "GET",
+            query_params=[
+                {"in": "query", "schema": "PydanticModelSimple"},
+                {
+                    "in": "query",
+                    "name": "test2",
+                    "type": "string",
+                    "required": True,
+                },
+            ],
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec_dict = spec.component_spec.to_dict()
+
+        assert {
+            "in": "query",
+            "name": "flt",
+            "type": "number",
+            "required": True,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
+            "in": "query",
+            "name": "id",
+            "type": "integer",
+            "required": False,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
+            "in": "query",
+            "name": "test2",
+            "type": "string",
+            "required": True,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
