@@ -129,6 +129,8 @@ class Scheduler(Handler):
             ] = service_account
 
             self.deploy_job(job_name, job["job_json"])
+            triggered_resource = f"{self.name}-{job_name.split('schedule-job-')[-1]}"
+            self.set_iam_policy(target, triggered_resource, service_account)
 
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
@@ -182,5 +184,33 @@ class Scheduler(Handler):
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("Scheduled jobs already destroyed")
+            else:
+                raise e
+
+    def set_iam_policy(self, target, triggered_resource, service_account):
+        """set iam policy for job to be triggered on schedule"""
+        try:
+            log.info(f"setting iam policy for {triggered_resource}")
+            policy = {
+                "policy": {
+                    "bindings": {
+                        "role": "roles/run.invoker",
+                        "members": [f"serviceAccount:{service_account}"],
+                    }
+                }
+            }
+            if "jobs/" in target:
+                self.versioned_clients.run_job.execute(
+                    "setIamPolicy",
+                    params={"body": policy},
+                    parent_key="resource",
+                    parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+                    + triggered_resource,
+                )
+        except HttpError as e:
+            if e.resp.status == 403:
+                log.error(
+                    f"unable to set iam policy for {triggered_resource} {e.error_details}"
+                )
             else:
                 raise e

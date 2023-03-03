@@ -1,19 +1,19 @@
 {
   "headers": {},
   "body": {
-    "name": "operations/build/goblet/MzRlMDVhN2QtMDcwMi00N2VkLTlmZDgtMzViNDgzMTcyZWVh",
+    "name": "operations/build/goblet/YTcyMjJjZTMtMzczMC00NzU0LWEwOTAtMTE2NDZjYzcxYTI1",
     "metadata": {
       "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
       "build": {
-        "id": "34e05a7d-0702-47ed-9fd8-35b483172eea",
+        "id": "a7222ce3-3730-4754-a090-11646cc71a25",
         "status": "QUEUED",
         "source": {
           "storageSource": {
             "bucket": "gcf-v2-uploads-123456789-us-central1",
-            "object": "c0bc7357-4073-4ddb-abdc-4380222e7010.zip"
+            "object": "260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip"
           }
         },
-        "createTime": "2023-03-01T21:11:24.553569477Z",
+        "createTime": "2023-03-01T18:27:39.005600953Z",
         "steps": [
           {
             "name": "gcr.io/cloud-builders/docker",
@@ -21,36 +21,36 @@
               "build",
               "--network=cloudbuild",
               "-t",
-              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job",
               "."
             ]
           }
         ],
         "timeout": "3600s",
         "images": [
-          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test"
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job"
         ],
         "projectId": "goblet",
         "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
         "sourceProvenance": {
           "resolvedStorageSource": {
             "bucket": "gcf-v2-uploads-123456789-us-central1",
-            "object": "c0bc7357-4073-4ddb-abdc-4380222e7010.zip",
-            "generation": "1677705083123302"
+            "object": "260e758c-1a4a-45ca-93ad-666cb9d75d8b.zip",
+            "generation": "1677695257465433"
           }
         },
         "options": {
           "logging": "LEGACY",
           "pool": {}
         },
-        "logUrl": "https://console.cloud.google.com/cloud-build/builds/34e05a7d-0702-47ed-9fd8-35b483172eea?project=123456789",
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/a7222ce3-3730-4754-a090-11646cc71a25?project=123456789",
         "artifacts": {
           "images": [
-            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test"
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/test-job"
           ]
         },
         "queueTtl": "3600s",
-        "name": "projects/goblet/locations/global/builds/34e05a7d-0702-47ed-9fd8-35b483172eea"
+        "name": "projects/goblet/locations/global/builds/a7222ce3-3730-4754-a090-11646cc71a25"
       }
     }
   }

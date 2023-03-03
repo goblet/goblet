@@ -1,5 +1,5 @@
 {
-    "function_name":"FUNCTION_NAME",
+    "function_name": "FUNCTION_NAME",
     "job_container": {
         "env": [
             {
@@ -14,17 +14,26 @@
             }
         }
     },
-    "job_spec":{
-        "serviceAccountName": "SA@PROJECT.iam.gserviceaccount.com",
-        "timeoutSeconds":"600s",
-        "maxRetries": 1
+    "job_spec": {
+        "volumes": [
+            {
+                "name": "sql_volume",
+                "cloudSqlInstance": {
+                    "instances": [
+                        "PROJECT:LOCATION:SQL_INSTANCE_NAME"
+                    ]
+                }
+            }
+        ],
+        "serviceAccount": "SA@PROJECT.iam.gserviceaccount.com",
+        "timeout": "600s",
+        "maxRetries": 1,
+        "vpcAccess": {
+            "connector": "projects/PROJECT/locations/LOCATION/connectors/CONNECTION_NAME",
+            "egress": "PRIVATE_RANGES_ONLY"
+        }
     },
-    "job_annotations":{
-        "run.googleapis.com/vpc-access-connector": "projects/PROJECT/locations/LOCATION/connectors/CONNECTION_NAME",
-        "run.googleapis.com/cloudsql-instances": "projects/PROJECT/locations/LOCATION/connectors/SQL_CONNECTION",
-        "run.googleapis.com/vpc-access-egress": "private-ranges-only"
-    },
-    "scheduler":{
+    "scheduler": {
         "serviceAccount": "SA_SCHEDULER@PROJECT.iam.gserviceaccount.com"
     }
 }
