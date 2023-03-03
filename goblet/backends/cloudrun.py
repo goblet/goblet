@@ -18,6 +18,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudrun,
     destroy_cloudfunction_artifacts,
     get_cloudrun_url,
+    getDefaultRegistry
 )
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
@@ -105,8 +106,8 @@ class CloudRun(Backend):
         """Creates http cloudbuild"""
         build_configs = self.config.cloudbuild or {}
         registry = (
-                build_configs.get("artifact_registry")
-                or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
+            build_configs.get("artifact_registry")
+            or getDefaultRegistry(name)
         )
         build_configs.pop("artifact_registry", None)
 
@@ -237,9 +238,9 @@ class CloudRun(Backend):
                         "access",
                         parent_key="name",
                         parent_schema="projects/{project_id}/secrets/"
-                                      + secret_name
-                                      + "/versions/"
-                                      + version,
+                        + secret_name
+                        + "/versions/"
+                        + version,
                     )
 
                     env_dict[env_item["name"]] = base64.b64decode(

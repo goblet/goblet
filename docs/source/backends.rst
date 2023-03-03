@@ -119,7 +119,7 @@ To install packages from Artifact Registry ensure `roles/artifactregistry.reader
     RUN pip install keyrings.google-artifactregistry-auth==1.1.1
 
 
-To use a previously built artifact, use the `artifact_tag` configuration. When using the `artifact_tag`, cloudbuild will not be called with the source code. `artifact_tag` can be any existing tag or digist in the default registry or the configured `artifact_registry`.
+To use a previously built artifact, use the `artifact_tag` configuration. When using the `artifact_tag`, cloudbuild will not be called with the source code. `artifact_tag` can be any existing tag or digest in the default registry or the configured `artifact_registry`.
 
 .. code:: json
 
