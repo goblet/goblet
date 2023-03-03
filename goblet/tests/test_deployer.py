@@ -227,9 +227,9 @@ class TestDeployer:
     def test_cloudrun_artifact_tag(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        GOBLET_TEST_NAME = "single-registry"
-        monkeypatch.setenv("GOBLET_TEST_NAME", GOBLET_TEST_NAME)
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        G_TEST_NAME = "single-registry"
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_TEST_TEST", "REPLAY")
 
         app = Goblet(function_name="goblet", backend="cloudrun")
         setattr(app, "entrypoint", "app")
@@ -254,7 +254,7 @@ class TestDeployer:
         )
 
         response = get_response(
-            GOBLET_TEST_NAME, "post-v2-projects-goblet-locations-us-central1-services_1.json"
+            G_TEST_NAME, "post-v2-projects-goblet-locations-us-central1-services_1.json"
         )
 
         assert (
