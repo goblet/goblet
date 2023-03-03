@@ -101,7 +101,7 @@ Pass in environment variables here. Secrets will also be passed in as environmen
 
 For `Cloud Build configurations <https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds>`__, pass values into `cloudbuild`
 
-In order to set a custom artifact registry, use the "artifact_registry" configuration. If you would like to use an artifact registry from a different project, a service account with storage permissions in the current project's bucket and read + write in the other project's artifact registry will be necessary.
+In order to set a custom artifact registry, use the `artifact_registry` configuration. If you would like to use an artifact registry from a different project, a service account with storage permissions in the current project's bucket and read + write in the other project's artifact registry will be necessary.
 
 .. code:: json 
 
@@ -117,3 +117,27 @@ To install packages from Artifact Registry ensure `roles/artifactregistry.reader
 .. code:: python
     
     RUN pip install keyrings.google-artifactregistry-auth==1.1.1
+
+
+To use a previously built artifact, use the `artifact_tag` configuration. When using the `artifact_tag`, cloudbuild will not be called with the source code. `artifact_tag` can be any existing tag or digist in the default registry or the configured `artifact_registry`.
+
+.. code:: json
+
+    {
+        "cloudbuild":{
+            "artifact_tag": "latest",
+            "serviceAccount": "service-account@project.iam.gserviceaccount.com"
+        }
+    }
+
+To deploy an artifact from `project_a` into a CloudRun Revision on `project_b` (with `project_b_id`) additional roles have to be granted in `project_a`.
+
+The Google managed service account service-project_b_id@serverless-robot-prod.iam.gserviceaccount.com must have `roles/artifactregistry.reader` in `project_a`
+
+This can be done by running:
+
+.. code:: bash
+
+    gcloud projects add-iam-policy-binding project_a \
+    --member="serviceAccount:service-project_b_id@serverless-robot-prod.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.reader"

@@ -4,8 +4,7 @@ import math
 from goblet.client import (
     get_default_project_number,
 )
-from goblet_gcp_client.client import get_default_location
-from goblet.common_cloud_actions import deploy_cloudrun, getCloudbuildArtifact
+from goblet.common_cloud_actions import deploy_cloudrun, getCloudbuildArtifact, getDefaultRegistry
 from goblet.config import GConfig
 
 log = logging.getLogger("goblet.deployer")
@@ -101,11 +100,12 @@ class RevisionSpec:
         region = get_default_location()
         project = get_default_project_number()
 
-        docker_tag = self.config.cloudbuild.get('artifact_tag', None)
-        if docker_tag:
-            artifact_registry = self.config.cloudbuild.get('artifact_registry')
-            self.artifactToDeploy = artifact_registry + ("" if 'sha256' in docker_tag else ":") + docker_tag
-            log.info(self.artifactToDeploy)
+        artifact_tag = self.config.cloudbuild.get('artifact_tag', None)
+        if artifact_tag:
+            artifact_registry = (
+                self.config.cloudbuild.get('artifact_registry', None) or getDefaultRegistry(self.name)
+            )
+            self.artifactToDeploy = artifact_registry + ("@" if 'sha256' in artifact_tag else ":") + artifact_tag
         else:
             self.artifactToDeploy = getCloudbuildArtifact(
                 self.versioned_clients.cloudbuild, self.name, config=self.config
