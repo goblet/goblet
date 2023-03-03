@@ -338,6 +338,7 @@ class OpenApiSpec:
             title=self.app_name,
             version=self.version,
             openapi_version="2.0",
+            # Pydantic plugin needs to go first
             plugins=[pydantic_plugin, marshmallow_plugin],
             **self.options,
         )
@@ -414,7 +415,6 @@ class OpenApiSpec:
                     params.append({"in": "query", **query})
                 else:
                     params.append(query)
-            # method_spec["parameters"] =entry.query_params
         if params:
             method_spec["parameters"] = params
 
@@ -438,17 +438,6 @@ class OpenApiSpec:
         if entry.content_types:
             method_spec["consumes"] = entry.content_types
 
-        # todo         # https://apispec.readthedocs.io/en/latest/quickstart.html add path
-        #
-        #     self.spec.path(
-        #     path=entry.uri_pattern,
-        #     operations={
-        #         entry.method.lower():dict(
-        #             **method_spec,
-        #             responses={"200": {"content": {"application/json": {"schema": "Gist"}}}}
-        #         )
-        #     }
-        # )
         self.component_spec.path(
             entry.uri_pattern,
             operations={
@@ -457,16 +446,6 @@ class OpenApiSpec:
                 )
             },
         )
-
-        # path_exists = self.spec["paths"].get(entry.uri_pattern)
-        # if path_exists:
-        #     self.spec["paths"][entry.uri_pattern][entry.method.lower()] = dict(
-        #         method_spec
-        #     )
-        # else:
-        #     self.spec["paths"][entry.uri_pattern] = {
-        #         entry.method.lower(): dict(method_spec)
-        #     }
 
     def _extract_content(self, return_type):
         """

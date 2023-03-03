@@ -446,7 +446,7 @@ class TestOpenApiSpec:
             "/home",
             "GET",
             query_params=[
-                {"in": "query", "schema": "PydanticModelSimple"},
+                {"in": "query", "schema": PydanticModelSimple},
                 {
                     "in": "query",
                     "name": "test2",
