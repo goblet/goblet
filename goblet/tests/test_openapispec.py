@@ -25,6 +25,7 @@ class NestedModel(BaseModel):
 class PydanticModelSimple(BaseModel):
     id: Optional[int]
     flt: float
+    idlist: Optional[List[int]]
 
 
 class PydanticModelSimpleOptional(BaseModel):
@@ -474,6 +475,13 @@ class TestOpenApiSpec:
             "in": "query",
             "name": "id",
             "type": "integer",
+            "required": False,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
+            "in": "query",
+            "name": "idlist",
+            "type": "array",
+            "items": {"type": "integer"},
             "required": False,
         } in spec_dict["paths"]["/home"]["get"]["parameters"]
         assert {

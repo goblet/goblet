@@ -17,10 +17,10 @@ from goblet.resources.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 
-import ruamel.yaml
+# import ruamel.yaml
 
-# ignore aliases when dumping
-ruamel.yaml.representer.RoundTripRepresenter.ignore_aliases = lambda x, y: True
+# # ignore aliases when dumping
+# ruamel.yaml.representer.RoundTripRepresenter.ignore_aliases = lambda x, y: True
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -466,9 +466,10 @@ class OpenApiSpec:
             return {"schema": {**param_type}}
 
     def write(self, file):
-        yaml = ruamel.yaml
-        yaml.Representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
-        yaml.YAML().dump(self.component_spec.to_dict(), file)
+        # yaml = ruamel.yaml
+        # yaml.Representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
+        # yaml.YAML().dump(self.component_spec.to_dict(), file)
+        file.write(self.component_spec.to_yaml())
 
 
 _PARAMS = re.compile(r"{\w+}")

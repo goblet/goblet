@@ -76,12 +76,13 @@ class PydanticPlugin(BasePlugin):
         schema = model.schema()
         params = []
         for key, value in schema["properties"].items():
-            params.append(
-                {
-                    "in": "query",
-                    "name": key,
-                    "type": value["type"],
-                    "required": key in schema.get("required", []),
-                }
-            )
+            param = {
+                "in": "query",
+                "name": key,
+                "type": value["type"],
+                "required": key in schema.get("required", []),
+            }
+            if value["type"] == "array":
+                param["items"] = value["items"]
+            params.append(param)
         return params
