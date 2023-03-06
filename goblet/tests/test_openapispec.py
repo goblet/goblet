@@ -27,6 +27,11 @@ class PydanticModelSimple(BaseModel):
     flt: float
 
 
+class PydanticModelSimpleOptional(BaseModel):
+    id: Optional[int]
+    flt: Optional[float]
+
+
 class PydanticModel(BaseModel):
     id: int
     nested: NestedModel
@@ -464,6 +469,45 @@ class TestOpenApiSpec:
             "name": "flt",
             "type": "number",
             "required": True,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
+            "in": "query",
+            "name": "id",
+            "type": "integer",
+            "required": False,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+        assert {
+            "in": "query",
+            "name": "test2",
+            "type": "string",
+            "required": True,
+        } in spec_dict["paths"]["/home"]["get"]["parameters"]
+
+    def test_query_params_class_pydantic_optional(self):
+        route = RouteEntry(
+            dummy,
+            "route",
+            "/home",
+            "GET",
+            query_params=[
+                {"in": "query", "schema": PydanticModelSimpleOptional},
+                {
+                    "in": "query",
+                    "name": "test2",
+                    "type": "string",
+                    "required": True,
+                },
+            ],
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec_dict = spec.component_spec.to_dict()
+
+        assert {
+            "in": "query",
+            "name": "flt",
+            "type": "number",
+            "required": False,
         } in spec_dict["paths"]["/home"]["get"]["parameters"]
         assert {
             "in": "query",

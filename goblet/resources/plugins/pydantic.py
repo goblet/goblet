@@ -81,7 +81,7 @@ class PydanticPlugin(BasePlugin):
                     "in": "query",
                     "name": key,
                     "type": value["type"],
-                    "required": key in schema["required"],
+                    "required": key in schema.get("required", []),
                 }
             )
         return params
