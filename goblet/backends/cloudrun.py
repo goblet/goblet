@@ -18,7 +18,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudrun,
     destroy_cloudfunction_artifacts,
     get_cloudrun_url,
-    getDefaultRegistry
+    getDefaultRegistry,
 )
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
@@ -54,16 +54,24 @@ class CloudRun(Backend):
             "content-type": "application/zip",
         }
 
-        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(get_dir() + "/Procfile"):
+        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
+            get_dir() + "/Procfile"
+        ):
             self.log.info(
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
             write_dockerfile()
 
-        artifact_tag = self.config.cloudbuild.get('artifact_tag', None) if self.config.cloudbuild else None
+        artifact_tag = (
+            self.config.cloudbuild.get("artifact_tag", None)
+            if self.config.cloudbuild
+            else None
+        )
         if artifact_tag:
             source, changes = None, False
-            self.log.info(f'skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found')
+            self.log.info(
+                f"skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found"
+            )
         else:
             self._zip_file("Dockerfile")
             source, changes = self._gcs_upload(
@@ -105,10 +113,7 @@ class CloudRun(Backend):
     def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
         build_configs = self.config.cloudbuild or {}
-        registry = (
-            build_configs.get("artifact_registry")
-            or getDefaultRegistry(name)
-        )
+        registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
         build_configs.pop("artifact_registry", None)
 
         if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):

@@ -236,19 +236,19 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP("name", app, resources=[{}])
 
-        artifact_tag = 'sha256:478c9c7b9b86d8ef6ae12998ef2ff6a0171c2163cf055c87969f0b886c6d67d7'
+        artifact_tag = (
+            "sha256:478c9c7b9b86d8ef6ae12998ef2ff6a0171c2163cf055c87969f0b886c6d67d7"
+        )
         app.deploy(
             skip_resources=True,
             skip_infra=True,
             force=True,
             config={
-                "cloudrun_revision": {
-                    "serviceAccount": "service-accont@goblet.com"
-                },
+                "cloudrun_revision": {"serviceAccount": "service-accont@goblet.com"},
                 "cloudbuild": {
                     "artifact_registry": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/single-registry",
                     "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com",
-                    "artifact_tag": artifact_tag
+                    "artifact_tag": artifact_tag,
                 },
             },
         )
@@ -259,5 +259,5 @@ class TestDeployer:
 
         assert (
             artifact_tag
-            in response['body']['response']['template']['containers'][0]['image']
+            in response["body"]["response"]["template"]["containers"][0]["image"]
         )
