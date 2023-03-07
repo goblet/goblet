@@ -60,7 +60,7 @@ class CloudRun(Backend):
             )
             write_dockerfile()
 
-        artifact_tag = self.config.cloudbuild.get('artifact_tag', None)
+        artifact_tag = self.config.cloudbuild.get('artifact_tag', None) if self.config.cloudbuild else None
         if artifact_tag:
             source, changes = None, False
             self.log.info(f'skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found')

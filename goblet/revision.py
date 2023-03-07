@@ -102,7 +102,7 @@ class RevisionSpec:
         region = get_default_location()
         project = get_default_project_number()
 
-        artifact_tag = self.config.cloudbuild.get('artifact_tag', None)
+        artifact_tag = self.config.cloudbuild.get('artifact_tag', None) if self.config.cloudbuild else None
         if artifact_tag:
             artifact_registry = (
                 self.config.cloudbuild.get('artifact_registry', None) or getDefaultRegistry(self.name)
