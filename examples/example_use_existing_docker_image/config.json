@@ -1,0 +1,35 @@
+{
+  "stages": {
+    "dev": {
+      "cloudrun_revision": {
+        "serviceAccount": "SERVICE_ACCOUNT"
+      },
+      "cloudbuild": {
+        "serviceAccount": "projects/PROJECT/serviceAccounts/SERVICE_ACCOUNT",
+        "logsBucket": "NAME"
+      }
+    },
+    "qa": {
+      "cloudrun_revision": {
+        "serviceAccount": "SERVICE_ACCOUNT"
+      },
+      "cloudbuild": {
+        "serviceAccount": "projects/PROJECT/serviceAccounts/SERVICE_ACCOUNT",
+        "logsBucket": "NAME",
+        "artifact_registry": "us-central1-docker.pkg.dev/PROJECT/cloud-run-source-deploy/NAME",
+        "artifact_tag": "latest"
+      }
+    },
+    "prod": {
+      "cloudrun_revision": {
+        "serviceAccount": "SERVICE_ACCOUNT"
+      },
+      "cloudbuild": {
+        "serviceAccount": "projects/PROJECT/serviceAccounts/SERVICE_ACCOUNT",
+        "logsBucket": "NAME",
+        "artifact_registry": "us-central1-docker.pkg.dev/PROJECT/cloud-run-source-deploy/NAME",
+        "artifact_tag": "sha256:FIXED_DOCKER_IMAGE_SHA256_DIGEST"
+      }
+    }
+  }
+}

@@ -2,7 +2,8 @@ Sphinx
 sphinx-rtd-theme
 twine
 coverage
-flake8
+flake8==3.8.4
 pytest
 requests-mock
 black==23.1.0
+importlib-metadata==4.13.0
