@@ -244,10 +244,7 @@ class CloudRun(Backend):
                     ).decode()
                 except Exception as e:
                     self.log.info(
-                        f"Error retrieving secret {env_item['name']} with error {str(e)}"
-                    )
-                    self.log.info(
-                        f"Unable to get secret {env_item['name']} and set environment variable. Skipping..."
+                        f"Unable to get secret {env_item['name']} and set environment variable with error {str(e)}. Skipping..."
                     )
             else:
                 env_dict[env_item["name"]] = env_item["value"]
