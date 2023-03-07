@@ -28,7 +28,7 @@ REQUIRED = [
     "functions-framework",
     "marshmallow",
     "pydantic",
-    "ruamel.yaml",
+    "PyYAML",
     "google-cloud-logging",
     "goblet-gcp-client",
     "protobuf",
