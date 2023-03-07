@@ -1,0 +1,19 @@
+{
+  "headers": {},
+  "body": {
+    "projectNumber": "963616447866",
+    "projectId": "goblet",
+    "lifecycleState": "ACTIVE",
+    "name": "goblet",
+    "labels": {
+      "env": "dev",
+      "owner": "data-platform",
+      "firebase": "enabled"
+    },
+    "createTime": "2021-05-25T13:28:28.613Z",
+    "parent": {
+      "type": "folder",
+      "id": "659763236376"
+    }
+  }
+}
