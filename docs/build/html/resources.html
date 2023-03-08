@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Resources &mdash; goblet 0.10.2 documentation</title>
+  <title>Resources &mdash; goblet 0.10.3 documentation</title>
   
 
   
@@ -422,9 +422,8 @@ on possible values.</p>
 <p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
 you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations such as a schedule should be added to the <cite>task_id=0</cite>. Jobs can be further configured
 by setting various configs in <cite>config.json.</cite></p>
-<p><cite>jobs_annotations</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v1/ObjectMeta">Cloudrun Jobs Metadata</a></p>
-<p><cite>job_spec</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v1/TaskSpec">Cloudrun Jobs Spec</a></p>
-<p><cite>job_container</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v1/Container">Cloudrun Jobs Container</a></p>
+<p><cite>job_spec</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/TaskTemplate">Cloudrun Jobs Spec</a></p>
+<p><cite>job_container</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/Container">Cloudrun Jobs Container</a></p>
 <p>You can schedule executions by passing in a cron <cite>schedule</cite> to the first task. Each job task function takes in the task id.</p>
 <p>To test a job locally you can run <cite>goblet job run APP_NAME-JOB_NAME TASK_ID</cite></p>
 <p>Example usage:</p>
