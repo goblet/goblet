@@ -6,7 +6,7 @@ from goblet.infrastructures.alerts import (
 )
 from goblet.backends import CloudFunctionV1
 
-from goblet.test_utils import get_responses, get_response
+from goblet_gcp_client import get_responses, get_response
 
 
 class TestAlerts:
@@ -58,8 +58,8 @@ class TestAlerts:
     def test_deploy_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "alerts-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "alerts-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="alerts-test")
 
@@ -116,8 +116,8 @@ class TestAlerts:
     def test_destroy_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "alerts-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "alerts-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="alerts-test")
 
@@ -152,8 +152,8 @@ class TestAlerts:
     def test_sync_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "alerts-sync")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "alerts-sync")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(function_name="alerts-test")
 

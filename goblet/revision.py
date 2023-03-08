@@ -2,10 +2,15 @@ import logging
 import math
 
 from goblet.client import (
-    get_default_location,
     get_default_project_number,
 )
-from goblet.common_cloud_actions import deploy_cloudrun, getCloudbuildArtifact
+
+from goblet_gcp_client.client import get_default_location
+from goblet.common_cloud_actions import (
+    deploy_cloudrun,
+    getCloudbuildArtifact,
+    getDefaultRegistry,
+)
 from goblet.config import GConfig
 
 log = logging.getLogger("goblet.deployer")
@@ -26,7 +31,7 @@ class RevisionSpec:
             "--target=goblet_entrypoint",
         ]
         self.req_body = {}
-        self.latestArtifact = ""
+        self.artifactToDeploy = ""
         self.name = name
 
     def getServiceConfig(self):
@@ -100,9 +105,26 @@ class RevisionSpec:
         client = self.versioned_clients.run
         region = get_default_location()
         project = get_default_project_number()
-        self.latestArtifact = getCloudbuildArtifact(
-            self.versioned_clients.cloudbuild, self.name, config=self.config
+
+        artifact_tag = (
+            self.config.cloudbuild.get("artifact_tag", None)
+            if self.config.cloudbuild
+            else None
         )
+        if artifact_tag:
+            artifact_registry = self.config.cloudbuild.get(
+                "artifact_registry", None
+            ) or getDefaultRegistry(self.name)
+            self.artifactToDeploy = (
+                artifact_registry
+                + ("@" if "sha256" in artifact_tag else ":")
+                + artifact_tag
+            )
+        else:
+            self.artifactToDeploy = getCloudbuildArtifact(
+                self.versioned_clients.cloudbuild, self.name, config=self.config
+            )
+
         self.req_body = {
             "template": {
                 **self.cloudrun_revision,
@@ -111,7 +133,7 @@ class RevisionSpec:
             **self.cloudrun_configs,
         }
         self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
-        self.req_body["template"]["containers"][0]["image"] = self.latestArtifact
+        self.req_body["template"]["containers"][0]["image"] = self.artifactToDeploy
 
         # check for traffic config
         if self.cloudrun_configs.get("traffic"):

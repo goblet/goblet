@@ -12,7 +12,7 @@ from goblet.config import GConfig
 import logging
 
 from goblet.resources.handler import Handler
-from goblet.client import get_default_project
+from goblet_gcp_client.client import get_default_project
 from goblet.utils import attributes_to_filter
 
 log = logging.getLogger("goblet.deployer")

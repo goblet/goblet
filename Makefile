@@ -13,7 +13,10 @@ lint:
 	flake8 goblet
 
 coverage:
-	export GOBLET_HTTP_TEST=REPLAY
+	export G_HTTP_TEST=REPLAY
+	export G_TEST_DATA_DIR=$PWD/goblet/tests/data/http
+	export G_MOCK_CREDENTIALS=True
+	export G_TEST_PROJECT_ID="goblet"
 	coverage run -m pytest goblet/tests;
 	coverage report -m --include="goblet/*" --omit="goblet/tests/*";
 

@@ -1,8 +1,9 @@
 from requests import request
-
+import re
 
 from goblet.backends.backend import Backend
-from goblet.client import VersionedClients, get_default_project, get_default_location
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_location, get_default_project
 from goblet.common_cloud_actions import (
     get_function_runtime,
     create_cloudfunctionv2,
@@ -10,6 +11,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     get_cloudfunction_url,
 )
+from goblet.errors import GobletValidationError
 
 
 class CloudFunctionV2(Backend):
@@ -25,6 +27,14 @@ class CloudFunctionV2(Backend):
         self.client = VersionedClients(app.client_versions).cloudfunctions
         self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{app.function_name}"
         super().__init__(app, self.client, self.func_path, config=config)
+
+    def validation_config(self):
+        name_pattern = r"^[a-z0-9-]+$"
+        pattern = re.compile(name_pattern)
+        if not re.fullmatch(pattern, self.name):
+            raise GobletValidationError(
+                f"Invalid Cloudfunction name {self.name}. Needs to follow regex of pattern {name_pattern}"
+            )
 
     def deploy(self, force=False, config=None):
         if config:

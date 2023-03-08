@@ -1,0 +1,99 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/operations/56b1aec7-837b-4c08-a7c2-4f57a396a247",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.run.v2.Job",
+      "name": "projects/goblet/locations/us-central1/jobs/goblet-test-test",
+      "uid": "e269f7bd-af4d-4723-beb7-8c8ff5cfa9f8",
+      "generation": "1",
+      "createTime": "2023-03-01T21:12:29.088093Z",
+      "updateTime": "2023-03-01T21:12:29.088093Z",
+      "launchStage": "BETA",
+      "template": {
+        "taskCount": 1,
+        "template": {
+          "containers": [
+            {
+              "image": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test@sha256:90857a120a8160dee6149f6f2b9217c40f3e9d5b4060147a3149595505e03710",
+              "command": [
+                "goblet",
+                "job",
+                "run",
+                "goblet-test-test"
+              ],
+              "resources": {
+                "limits": {
+                  "memory": "512Mi",
+                  "cpu": "1000m"
+                }
+              }
+            }
+          ],
+          "maxRetries": 3,
+          "timeout": "600s",
+          "serviceAccount": "123456789-compute@developer.gserviceaccount.com",
+          "executionEnvironment": "EXECUTION_ENVIRONMENT_GEN2"
+        }
+      },
+      "observedGeneration": "1",
+      "terminalCondition": {
+        "type": "Ready",
+        "state": "CONDITION_SUCCEEDED",
+        "lastTransitionTime": "2023-03-01T21:12:29.699303Z"
+      },
+      "latestCreatedExecution": {
+        "createTime": "1970-01-01T00:00:00Z",
+        "completionTime": "1970-01-01T00:00:00Z"
+      },
+      "etag": "\"CL3__p8GEMjigCo/cHJvamVjdHMvcHJlbWlzZS1nb3Zlcm5hbmNlLXJkL2xvY2F0aW9ucy91cy1jZW50cmFsMS9qb2JzL2dvYmxldC10ZXN0LXRlc3Q\""
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.run.v2.Job",
+      "name": "projects/goblet/locations/us-central1/jobs/goblet-test-test",
+      "uid": "e269f7bd-af4d-4723-beb7-8c8ff5cfa9f8",
+      "generation": "1",
+      "createTime": "2023-03-01T21:12:29.088093Z",
+      "updateTime": "2023-03-01T21:12:29.088093Z",
+      "launchStage": "BETA",
+      "template": {
+        "taskCount": 1,
+        "template": {
+          "containers": [
+            {
+              "image": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-test@sha256:90857a120a8160dee6149f6f2b9217c40f3e9d5b4060147a3149595505e03710",
+              "command": [
+                "goblet",
+                "job",
+                "run",
+                "goblet-test-test"
+              ],
+              "resources": {
+                "limits": {
+                  "memory": "512Mi",
+                  "cpu": "1000m"
+                }
+              }
+            }
+          ],
+          "maxRetries": 3,
+          "timeout": "600s",
+          "serviceAccount": "123456789-compute@developer.gserviceaccount.com",
+          "executionEnvironment": "EXECUTION_ENVIRONMENT_GEN2"
+        }
+      },
+      "observedGeneration": "1",
+      "terminalCondition": {
+        "type": "Ready",
+        "state": "CONDITION_SUCCEEDED",
+        "lastTransitionTime": "2023-03-01T21:12:29.699303Z"
+      },
+      "latestCreatedExecution": {
+        "createTime": "1970-01-01T00:00:00Z",
+        "completionTime": "1970-01-01T00:00:00Z"
+      },
+      "etag": "\"CL3__p8GEMjigCo/cHJvamVjdHMvcHJlbWlzZS1nb3Zlcm5hbmNlLXJkL2xvY2F0aW9ucy91cy1jZW50cmFsMS9qb2JzL2dvYmxldC10ZXN0LXRlc3Q\""
+    }
+  }
+}

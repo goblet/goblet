@@ -1,21 +1,29 @@
 import os
+import re
 import base64
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
 
 from goblet.backends.backend import Backend
-from goblet.client import Client, get_credentials
-from goblet.client import VersionedClients, get_default_project, get_default_location
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import (
+    get_default_project,
+    get_default_location,
+    Client,
+    get_credentials,
+)
 from goblet.common_cloud_actions import (
     create_cloudbuild,
     destroy_cloudrun,
     destroy_cloudfunction_artifacts,
     get_cloudrun_url,
+    getDefaultRegistry,
 )
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
+from goblet.errors import GobletValidationError
 
 
 class CloudRun(Backend):
@@ -28,6 +36,14 @@ class CloudRun(Backend):
         self.client = VersionedClients(app.client_versions).run
         self.run_name = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{app.function_name}"
         super().__init__(app, self.client, self.run_name, config=config)
+
+    def validation_config(self):
+        name_pattern = r"^[a-z]([-a-z0-9]*[a-z0-9])?"
+        pattern = re.compile(name_pattern)
+        if not re.fullmatch(pattern, self.name):
+            raise GobletValidationError(
+                f"Invalid Cloudrun name {self.name}. Needs to follow regex of pattern {name_pattern}"
+            )
 
     def deploy(self, force=False, config=None):
         versioned_clients = VersionedClients(self.app.client_versions)
@@ -45,19 +61,30 @@ class CloudRun(Backend):
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
             write_dockerfile()
-        self._zip_file("Dockerfile")
 
-        source, changes = self._gcs_upload(
-            self.client,
-            put_headers,
-            upload_client=versioned_clients.run_uploader,
-            force=force,
+        artifact_tag = (
+            self.config.cloudbuild.get("artifact_tag", None)
+            if self.config.cloudbuild
+            else None
         )
+        if artifact_tag:
+            source, changes = None, False
+            self.log.info(
+                f"skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found"
+            )
+        else:
+            self._zip_file("Dockerfile")
+            source, changes = self._gcs_upload(
+                self.client,
+                put_headers,
+                upload_client=versioned_clients.run_uploader,
+                force=force,
+            )
 
-        if not changes:
-            return None
+            if not changes:
+                return None
 
-        self.create_build(versioned_clients.cloudbuild, source, self.name)
+            self.create_build(versioned_clients.cloudbuild, source, self.name)
 
         if not self.skip_run_deployment():
             serviceRevision = RevisionSpec(config, versioned_clients, self.name)
@@ -86,10 +113,7 @@ class CloudRun(Backend):
     def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
         build_configs = self.config.cloudbuild or {}
-        registry = (
-            build_configs.get("artifact_registry")
-            or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{name}"
-        )
+        registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
         build_configs.pop("artifact_registry", None)
 
         if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):
@@ -229,10 +253,7 @@ class CloudRun(Backend):
                     ).decode()
                 except Exception as e:
                     self.log.info(
-                        f"Error retrieving secret {env_item['name']} with error {str(e)}"
-                    )
-                    self.log.info(
-                        f"Unable to get secret {env_item['name']} and set environment variable. Skipping..."
+                        f"Unable to get secret {env_item['name']} and set environment variable with error {str(e)}. Skipping..."
                     )
             else:
                 env_dict[env_item["name"]] = env_item["value"]

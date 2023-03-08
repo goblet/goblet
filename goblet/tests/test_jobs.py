@@ -4,13 +4,14 @@ from goblet.resources.jobs import Jobs
 import pytest
 
 from goblet.test_utils import (
-    get_responses,
-    get_response,
     dummy_function,
     mock_dummy_function,
 )
 
-from goblet.backends import CloudFunctionV1
+from goblet_gcp_client import get_responses, get_response
+
+
+from goblet.backends import CloudRun
 
 
 class TestJobs:
@@ -78,25 +79,22 @@ class TestJobs:
     def test_deploy_job(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        goblet_name = "test-job"
-        jobs = Jobs(
-            goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
-        )
-        jobs.register("test", None, {"task_id": 0, "name": "test"})
-        jobs._deploy()
+        app = Goblet(function_name="test-job", backend="cloudrun")
+        app.job("test")(dummy_function)
+        app.deploy(force=True)
 
         responses = get_responses("job-deploy")
-        assert len(responses) == 3
-        assert responses[2]["body"]["metadata"]["name"] == "test-job-test"
+        assert len(responses) == 6
+        assert "test-job-test" in responses[4]["body"]["metadata"]["name"]
 
     def test_deploy_job_schedule(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-deploy-schedule")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-deploy-schedule")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -114,36 +112,42 @@ class TestJobs:
         )
         job = get_response(
             "job-deploy-schedule",
-            "post-apis-run.googleapis.com-v1-namespaces-goblet-jobs_1.json",
+            "post-v2-projects-goblet-locations-us-central1-jobs_1.json",
         )
-        assert job["body"]["metadata"]["name"] == "goblet-test-test"
+        assert "goblet-test-test" in job["body"]["metadata"]["name"]
+
+        iam = get_response(
+            "job-deploy-schedule",
+            "post-v2-projects-goblet-locations-us-central1-jobs-goblet-test-test-setIamPolicy_1.json",
+        )
+        assert "test@goblet." in iam["body"]["bindings"][0]["members"][0]
 
     def test_sync_job(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-sync")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-sync")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "test-job"
-        jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name="test-job")))
+        jobs = Jobs(goblet_name, CloudRun(Goblet(function_name="test-job")))
         jobs.register("test2", None, {"task_id": 0, "name": "test"})
         jobs.sync()
 
         responses = get_responses("job-sync")
-        assert len(responses) == 2
-        assert responses[0]["body"]["details"]["name"] != "test-job-test2"
+        assert len(responses) == 3
+        assert "test-job-test2" not in responses[0]["body"]["metadata"]["name"]
 
     def test_destroy_job(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "job-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "job-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet-test"
-        jobs = Jobs(goblet_name, CloudFunctionV1(Goblet(function_name=goblet_name)))
+        jobs = Jobs(goblet_name, CloudRun(Goblet(function_name=goblet_name)))
         jobs.register("test", None, {"task_id": 0, "name": "test"})
         jobs.destroy()
 
         responses = get_responses("job-destroy")
-        assert len(responses) == 1
-        assert responses[0]["body"]["details"]["name"] == "goblet-test-test"
+        assert len(responses) == 2
+        assert "goblet-test-test" in responses[0]["body"]["metadata"]["name"]

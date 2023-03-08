@@ -5,21 +5,24 @@ from goblet.utils import get_g_dir, get_dir
 from goblet.__version__ import __version__
 
 
-def create_goblet_dir(name):
+def create_goblet_dir(name, backend):
     """Creates a new goblet directory with a sample main.py, requirements.txt, and config.json"""
     try:
         os.mkdir(get_g_dir())
     except FileExistsError:
         pass
     with open(f"{get_g_dir()}/config.json", "w") as f:
-        f.write(json.dumps({"cloudfunction": {}}, indent=4))
+        if backend == "cloudrun":
+            f.write(json.dumps({"cloudrun": {}}, indent=4))
+        else:
+            f.write(json.dumps({"cloudfunction": {}}, indent=4))
     with open("requirements.txt", "w") as f:
         f.write(f"goblet-gcp=={__version__}")
     with open("main.py", "w") as f:
         f.write(
             f"""from goblet import Goblet, jsonify,goblet_entrypoint
 
-app = Goblet(function_name="goblet-{name}")
+app = Goblet(function_name="goblet-{name}", backend="{backend}")
 goblet_entrypoint(app)
 
 @app.http()

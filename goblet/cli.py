@@ -9,10 +9,12 @@ import sys
 
 from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
-from goblet.client import get_default_project
+from goblet_gcp_client.client import get_default_project
 from goblet.__version__ import __version__
 
 logging.basicConfig()
+
+SUPPORTED_BACKENDS = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
 
 
 @click.group()
@@ -276,13 +278,18 @@ def package(stage):
         sys.exit(1)
 
 
-@click.argument(
-    "name",
+@click.argument("name")
+@click.option(
+    "-b",
+    "--backend",
+    "backend",
+    default="cloudfunction",
+    type=click.Choice(SUPPORTED_BACKENDS),
 )
 @main.command()
-def init(name):
+def init(name, backend):
     """Create new goblet app with files main.py, requirements.txt, and directory .goblet"""
-    create_goblet_dir(name)
+    create_goblet_dir(name, backend)
     click.echo("created .goblet/config.json")
     click.echo("created requirements.txt")
     click.echo("created main.py")

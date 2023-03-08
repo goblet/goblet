@@ -6,11 +6,13 @@ from googleapiclient.errors import HttpError
 
 from goblet.config import GConfig
 from goblet.client import (
+    get_default_project_number,
+)
+from goblet_gcp_client.client import (
     Client,
-    get_default_project,
     get_default_location,
     get_credentials,
-    get_default_project_number,
+    get_default_project,
 )
 from goblet.errors import GobletError
 from goblet.utils import get_python_runtime
@@ -177,6 +179,10 @@ class MissingArtifact(Exception):
         self.missing = missing
 
 
+def getDefaultRegistry(artifactName):
+    return f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{artifactName}"
+
+
 # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
 def getCloudbuildArtifact(client, artifactName, config):
     defaultProject = get_default_project()
@@ -187,9 +193,8 @@ def getCloudbuildArtifact(client, artifactName, config):
     # search for latest build with artifactName
     latestArtifact = None
     build_configs = config.cloudbuild or {}
-    registry = (
-        build_configs.get("artifact_registry")
-        or f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{artifactName}"
+    registry = build_configs.get("artifact_registry") or getDefaultRegistry(
+        artifactName
     )
 
     for build in resp["builds"]:

@@ -1,6 +1,7 @@
 main.py
 other.py
 .vscode
+.idea
 .pytest_cache
 .goblet
 _build 

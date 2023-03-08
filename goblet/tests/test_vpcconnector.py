@@ -1,6 +1,7 @@
 from goblet import Goblet
-from goblet.test_utils import get_response, get_responses, dummy_function
+from goblet.test_utils import dummy_function
 from pytest import raises
+from goblet_gcp_client import get_response, get_responses
 
 # from goblet.infrastructures.vpcconnector import VPCConnector
 # from goblet.resources.http import HTTP
@@ -27,8 +28,8 @@ class TestVPCConnector:
     def test_deploy_vpcconnector(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "vpcconnector-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
             function_name="goblet-example",
@@ -53,8 +54,8 @@ class TestVPCConnector:
     def test_destroy_vpcconnector(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "vpcconnector-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         # vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test"))
         # vpc.destroy()
@@ -68,8 +69,8 @@ class TestVPCConnector:
     def test_deploy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "vpcconnector-deploy-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
             function_name="goblet-example-vpc",
@@ -102,8 +103,8 @@ class TestVPCConnector:
     def test_deploy_cloudfunction(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-function")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "vpcconnector-deploy-function")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
             function_name="goblet-example-vpc",
@@ -134,8 +135,8 @@ class TestVPCConnector:
     def test_deploy_cloudfunctionv2(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "vpcconnector-deploy-functionv2")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "vpcconnector-deploy-functionv2")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
             function_name="goblet-example-vpc",

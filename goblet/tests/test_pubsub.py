@@ -6,12 +6,11 @@ import pytest
 from goblet import Goblet, Response
 from goblet.resources.pubsub import PubSub
 from goblet.test_utils import (
-    get_responses,
     dummy_function,
-    get_response,
     mock_dummy_function,
 )
 from goblet.backends import CloudRun, CloudFunctionV1
+from goblet_gcp_client import get_responses, get_response
 
 
 class TestPubSub:
@@ -199,8 +198,8 @@ class TestPubSub:
     def test_deploy_pubsub(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
@@ -229,8 +228,8 @@ class TestPubSub:
     def test_deploy_pubsub_cross_project(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cross-project")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-cross-project")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
@@ -255,8 +254,8 @@ class TestPubSub:
     def test_deploy_pubsub_subscription_with_filter(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-subscription-filter")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-filter")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
         app = Goblet(function_name="goblet-topic-subscription-filter")
@@ -284,8 +283,8 @@ class TestPubSub:
     def test_destroy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub(
             "goblet_topic",
@@ -307,8 +306,8 @@ class TestPubSub:
     def test_deploy_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         pubsub.register("test", None, kwargs={"topic": "test", "kwargs": {}})
@@ -335,8 +334,8 @@ class TestPubSub:
     def test_destroy_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-destroy-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-destroy-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub(
             "goblet",
@@ -353,8 +352,8 @@ class TestPubSub:
     def test_update_pubsub_subscription(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-update-subscription")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-update-subscription")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub(
             "test-cross-project",
@@ -381,8 +380,8 @@ class TestPubSub:
     def test_sync_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-sync-cloudrun")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-sync-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
         pubsub.sync(dryrun=True)
@@ -397,8 +396,8 @@ class TestPubSub:
     def test_deploy_pubsub_subscription_with_config(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("GOBLET_TEST_NAME", "pubsub-deploy-subscription-config")
-        monkeypatch.setenv("GOBLET_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-config")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
         app = Goblet(function_name="goblet-topic-subscription-config")

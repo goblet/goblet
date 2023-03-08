@@ -7,7 +7,7 @@ from goblet.infrastructures.alerts import (
 )
 import logging
 
-app = Goblet(function_name="goblet_example", region="us-central-1")
+app = Goblet(function_name="goblet-example", region="us-central-1")
 app.log.setLevel(logging.INFO)  # configure goblet logger level
 goblet_entrypoint(app)
 
