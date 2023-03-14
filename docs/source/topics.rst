@@ -854,14 +854,15 @@ Could have the goblet `.config`
             "func1": {
                 "function_name": "func1",
                 "dockerfile": "func1.dockerfile",
-                "main_file" : "func1",
+                "main_file" : "func1.py",
                 "requirements_file": "func1_requirements.txt"
             },
             "func2": {
                 "function_name": "func2",
                 "dockerfile": "func2.dockerfile",
-                "main_file" : "func2",
+                "main_file" : "func2.py",
                 "requirements_file": "func2_requirements.txt"
+            }
         }
     }
 
