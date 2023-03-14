@@ -837,6 +837,8 @@ This allows for multiple functions to be deploying using similar code bases.
 
 Similarly, you can also define `requirements_file` to override the `requirements.txt`, in case your functions have different dependencies. 
 
+Additionally for cloudrun you can deine a `dockerfile` as well. 
+
 For example with the following files which each contain a function and share code in `shared.py`
 
 `func1.py`
@@ -851,11 +853,13 @@ Could have the goblet `.config`
         "stages": {
             "func1": {
                 "function_name": "func1",
+                "dockerfile": "func1.dockerfile",
                 "main_file" : "func1",
                 "requirements_file": "func1_requirements.txt"
             },
             "func2": {
                 "function_name": "func2",
+                "dockerfile": "func2.dockerfile",
                 "main_file" : "func2",
                 "requirements_file": "func2_requirements.txt"
         }
