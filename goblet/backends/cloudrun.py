@@ -54,9 +54,9 @@ class CloudRun(Backend):
             "content-type": "application/zip",
         }
 
-        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
-            get_dir() + "/Procfile"
-        ):
+        if not os.path.exists(
+            get_dir() + f"/{self.config.dockerfile or 'Dockerfile'}"
+        ) and not os.path.exists(get_dir() + "/Procfile"):
             self.log.info(
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
@@ -73,7 +73,7 @@ class CloudRun(Backend):
                 f"skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found"
             )
         else:
-            self._zip_file("Dockerfile")
+            self._zip_file(self.config.dockerfile or "Dockerfile", "Dockerfile")
             source, changes = self._gcs_upload(
                 self.client,
                 put_headers,
