@@ -54,9 +54,9 @@ class CloudRun(Backend):
             "content-type": "application/zip",
         }
 
-        if not os.path.exists(get_dir() + f"/{self.config.dockerfile or 'Dockerfile'}") and not os.path.exists(
-            get_dir() + "/Procfile"
-        ):
+        if not os.path.exists(
+            get_dir() + f"/{self.config.dockerfile or 'Dockerfile'}"
+        ) and not os.path.exists(get_dir() + "/Procfile"):
             self.log.info(
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
