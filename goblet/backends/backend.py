@@ -137,8 +137,6 @@ class Backend:
             self._zip_file(self.config.requirements_file, "requirements.txt")
         else:
             self._zip_file("requirements.txt")
-        if self.config.dockerfile:
-            self._zip_file(self.config.dockerfile, "Dockerfile")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
         with warnings.catch_warnings():
