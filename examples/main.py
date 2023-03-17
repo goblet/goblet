@@ -346,3 +346,32 @@ app.alert(
         )
     ],
 )
+
+
+# Example CloudTask Queue + CloudTask HTTP Target
+client = app.cloudtaskqueue("queue", config={
+    "rateLimits": {
+        "maxDispatchesPerSecond": 500,
+        "maxBurstSize": 100,
+        "maxConcurrentDispatches": 1000
+    },
+    "retryConfig": {
+        "maxAttempts": 10,
+        "minBackoff": "0.100s",
+        "maxBackoff": "3600s",
+        "maxDoublings": 16
+    }
+})
+
+@app.cloudtasktarget(name="target")
+def my_target_handler(request):
+    ''' handle request '''
+    return {}
+
+
+@app.route("/enqueue", methods=["GET"])
+def enqueue():
+    payload = {"message": {"title": "enqueue"}}
+    client.enqueue(target="target", payload=payload)
+    return {}
+

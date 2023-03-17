@@ -1,0 +1,23 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/queues/cloudtaskqueue/tasks/12655554887976790471",
+    "httpRequest": {
+      "url": "https://us-central1-goblet.cloudfunctions.net/goblet_example",
+      "httpMethod": "POST",
+      "headers": {
+        "User-Agent": "Google-Cloud-Tasks",
+        "Content-Type": "application/json",
+        "X-Goblet-CloudTask-Target": "target"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "service-account@goblet.com",
+        "audience": "https://us-central1-goblet.cloudfunctions.net/goblet_example"
+      }
+    },
+    "scheduleTime": "2023-03-21T23:24:16.627381Z",
+    "createTime": "2023-03-21T23:24:16Z",
+    "dispatchDeadline": "600s",
+    "view": "BASIC"
+  }
+}
