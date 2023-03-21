@@ -243,6 +243,8 @@ class DecoratorAPI:
 class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
+    app_list = []
+
     def __init__(
         self,
         function_name,
@@ -318,6 +320,12 @@ class Register_Handlers(DecoratorAPI):
         """Goblet entrypoint"""
         self.current_request = request
         self.request_context = context
+
+        # set var's for added apps
+        for added_app in self.app_list:
+            added_app.current_request = request
+            added_app.request_context = context
+
         event_type = self.get_event_type(request, context)
         # call before request middleware
         request = self._call_middleware(request, event_type, before_or_after="before")
@@ -350,6 +358,7 @@ class Register_Handlers(DecoratorAPI):
         return response
 
     def __add__(self, other):
+        self.app_list.append(other)
         for handler in self.handlers:
             self.handlers[handler] += other.handlers[handler]
         return self
