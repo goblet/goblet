@@ -3,7 +3,6 @@ import importlib.util
 import collections.abc
 from contextlib import contextmanager
 import sys
-import inspect
 
 
 @contextmanager
@@ -32,11 +31,7 @@ def get_app_from_module(m):
     from goblet import Goblet
 
     for obj in dir(m):
-        if (
-            isinstance(getattr(m, obj), Goblet)
-            and not inspect.isclass(getattr(m, obj))
-            and not getattr(m, obj).is_sub_app
-        ):
+        if isinstance(getattr(m, obj), Goblet) and not getattr(m, obj).is_sub_app:
             return getattr(m, obj), obj
 
 
