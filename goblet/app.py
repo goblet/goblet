@@ -32,6 +32,7 @@ class Goblet(Register_Handlers):
         config={},
         log_level=logging.INFO,
         labels={},
+        is_sub_app=False
     ):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         self.client_versions.update(client_versions or {})
@@ -41,7 +42,8 @@ class Goblet(Register_Handlers):
         self.function_name = GConfig(config).function_name or function_name
         self.labels = labels
         self.backend = self.backend_class(self, config=config)
-
+        self.is_sub_app = is_sub_app
+        
         super(Goblet, self).__init__(
             function_name=self.function_name,
             backend=self.backend,

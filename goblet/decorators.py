@@ -243,7 +243,7 @@ class DecoratorAPI:
 class Register_Handlers(DecoratorAPI):
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
-    app_list = []
+   
 
     def __init__(
         self,
@@ -254,6 +254,7 @@ class Register_Handlers(DecoratorAPI):
         routes_type="apigateway",
         config={},
     ):
+        self.app_list = []
         self.client_versions = client_versions
 
         versioned_clients = VersionedClients(client_versions or {})

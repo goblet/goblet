@@ -701,13 +701,15 @@ Multiple Files
 It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
 them in the main.py folder under your main app. You can do this with simple addition notation or with the ``Goblet.combine`` function
 
+Note: For all additional apps outside of `main.py` set the the `is_sub_app` flag when creating the Goblet app
+
 other.py 
 
 .. code:: python
 
     from goblet import Goblet
 
-    otherapp = Goblet()
+    otherapp = Goblet(is_sub_app=True)
 
     @otherapp.route('/other')
     def other():
