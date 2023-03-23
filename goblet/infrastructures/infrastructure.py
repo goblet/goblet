@@ -39,4 +39,4 @@ class Infrastructure:
         pass
 
     def get_config(self, config={}):
-        raise NotImplementedError("get_config")
+        return None

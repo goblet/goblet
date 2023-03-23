@@ -1,32 +1,30 @@
 from collections import OrderedDict
 from marshmallow.schema import Schema
 from pydantic import BaseModel
-import base64
 import logging
 import re
 from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
-from googleapiclient.errors import HttpError
 
 import goblet
 
 from goblet.resources.handler import Handler
-from goblet.client import get_default_project
 from goblet.resources.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
+from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-class ApiGateway(Handler):
-    """Api Gateway instance, which includes api, api config, api gateway instances
+class Routes(Handler):
+    """Either cloudrun routes type or Api Gateway instance, which includes api, api config, api gateway instances
     https://cloud.google.com/api-gateway
     """
 
-    resource_type = "apigateway"
+    resource_type = "routes"
     valid_backends = ["cloudfunction", "cloudrun", "cloudfunctionv2"]
 
     def __init__(
@@ -38,7 +36,7 @@ class ApiGateway(Handler):
         resources=None,
         routes_type="apigateway",
     ):
-        super(ApiGateway, self).__init__(
+        super(Routes, self).__init__(
             name=name,
             versioned_clients=versioned_clients,
             resources=resources,
@@ -120,153 +118,18 @@ class ApiGateway(Handler):
         log.info("deploying api......")
         base_url = self.backend.http_endpoint
         self.generate_openapi_spec(base_url)
-        try:
-            resp = self.versioned_clients.apigateway_api.execute(
-                "create",
-                params={"apiId": self.name, "body": {"labels": gconfig.labels}},
-            )
-            self.versioned_clients.apigateway_api.wait_for_operation(resp["name"])
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info("api already deployed")
-            else:
-                raise e
-        config = {
-            "openapiDocuments": [
-                {
-                    "document": {
-                        "path": f"{get_g_dir()}/{self.name}_openapi_spec.yml",
-                        "contents": base64.b64encode(
-                            open(
-                                f"{get_g_dir()}/{self.name}_openapi_spec.yml", "rb"
-                            ).read()
-                        ).decode("utf-8"),
-                    }
-                }
-            ],
-            "labels": gconfig.labels,
-            **(gconfig.apiConfig or {}),
-        }
-        try:
-            config_version_name = self.name
-            self.versioned_clients.apigateway_configs.execute(
-                "create",
-                params={"apiConfigId": self.name, "body": config},
-                parent_schema="projects/{project_id}/locations/global/apis/"
-                + self.name,
-            )
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info("updating api endpoints")
-                configs = self.versioned_clients.apigateway_configs.execute(
-                    "list",
-                    parent_schema="projects/{project_id}/locations/global/apis/"
-                    + self.name,
-                )
-                # TODO: use hash
-                version = len(configs["apiConfigs"])
-                config_version_name = f"{self.name}-v{version}"
-                self.versioned_clients.apigateway_configs.execute(
-                    "create",
-                    parent_schema="projects/{project_id}/locations/global/apis/"
-                    + self.name,
-                    params={"apiConfigId": config_version_name, "body": config},
-                )
-            else:
-                raise e
-        gateway = {
-            "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{self.name}/configs/{config_version_name}",
-            "labels": gconfig.labels,
-        }
-        try:
-            gateway_resp = self.versioned_clients.apigateway.execute(
-                "create", params={"gatewayId": self.name, "body": gateway}
-            )
-        except HttpError as e:
-            if e.resp.status == 409:
-                log.info("updating gateway")
-                gateway_resp = self.versioned_clients.apigateway.execute(
-                    "patch",
-                    parent_key="name",
-                    parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
-                    + self.name,
-                    params={"updateMask": "apiConfig", "body": gateway},
-                )
-            else:
-                raise e
-        if gateway_resp:
-            self.versioned_clients.apigateway.wait_for_operation(gateway_resp["name"])
-        log.info("api successfully deployed...")
-        gateway_resp = self.versioned_clients.apigateway.execute(
-            "get",
-            parent_key="name",
-            parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
-            + self.name,
+        deploy_apigateway(
+            self.name,
+            gconfig,
+            self.versioned_clients,
+            f"{get_g_dir()}/{self.name}_openapi_spec.yml",
         )
-        log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
         return
 
     def destroy(self):
         if len(self.resources) == 0 or self.routes_type != "apigateway":
             return
-        # destroy api gateway
-        try:
-            resp = self.versioned_clients.apigateway.execute(
-                "delete",
-                parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
-                + self.name,
-                parent_key="name",
-            )
-            log.info("destroying api gateway......")
-            self.versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
-        except HttpError as e:
-            if e.resp.status == 404:
-                log.info("api gateway already destroyed")
-            else:
-                raise e
-        # destroy api config
-        try:
-            configs = self.versioned_clients.apigateway_configs.execute(
-                "list",
-                parent_schema="projects/{project_id}/locations/global/apis/"
-                + self.name,
-            )
-            resp = {}
-            log.info("api configs destroying....")
-            for c in configs.get("apiConfigs", []):
-                resp = self.versioned_clients.apigateway_configs.execute(
-                    "delete",
-                    parent_key="name",
-                    parent_schema="projects/{project_id}/locations/global/apis/"
-                    + self.name
-                    + "/configs/"
-                    + c["displayName"],
-                )
-                if resp:
-                    self.versioned_clients.apigateway_configs.wait_for_operation(
-                        resp["name"]
-                    )
-        except HttpError as e:
-            if e.resp.status == 404:
-                log.info("api configs already destroyed")
-            else:
-                raise e
-
-        # destroy api
-        try:
-            resp = self.versioned_clients.apigateway_api.execute(
-                "delete",
-                parent_key="name",
-                parent_schema="projects/{project_id}/locations/global/apis/"
-                + self.name,
-            )
-            self.versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
-            log.info("apis successfully destroyed......")
-        except HttpError as e:
-            if e.resp.status == 404:
-                log.info("api already destroyed")
-            else:
-                raise e
+        destroy_apigateway(self.name, self.versioned_clients)
 
     def generate_openapi_spec(self, cloudfunction):
         config = GConfig()
@@ -313,6 +176,7 @@ class OpenApiSpec:
         security=None,
         marshmallow_attribute_function=None,
         deadline=15,
+        existing_spec=None,
     ):
         self.options = OrderedDict()
         self.app_name = app_name
@@ -329,14 +193,25 @@ class OpenApiSpec:
         self.options["produces"] = ["application/json"]
         marshmallow_plugin = MarshmallowPlugin()
         pydantic_plugin = PydanticPlugin()
-        self.component_spec = APISpec(
-            title=self.app_name,
-            version=self.version,
-            openapi_version="2.0",
-            # Pydantic plugin needs to go first
-            plugins=[pydantic_plugin, marshmallow_plugin],
-            **self.options,
-        )
+        # Support existing spec. Needs to be version "2.0"
+        if existing_spec:
+            if not existing_spec.get("swagger") == "2.0":
+                raise ValueError("API Gateway only supports swagger 2.0")
+            self.component_spec = APISpec(
+                title=self.app_name,
+                version=self.version,
+                openapi_version="2.0",
+                **existing_spec,
+            )
+        else:
+            self.component_spec = APISpec(
+                title=self.app_name,
+                version=self.version,
+                openapi_version="2.0",
+                # Pydantic plugin needs to go first
+                plugins=[pydantic_plugin, marshmallow_plugin],
+                **self.options,
+            )
         if marshmallow_attribute_function:
             marshmallow_plugin.converter.add_attribute_function(
                 marshmallow_attribute_function
@@ -460,6 +335,17 @@ class OpenApiSpec:
             param_type = self.get_param_type(return_type)
             return {"schema": {**param_type}}
 
+    def add_x_google_backend(self):
+        """Add x-google-backend section to custom openapi specs"""
+        for path in self.component_spec.options.get("paths", {}).values():
+            for method_options in path.values():
+                method_options["x-google-backend"] = {
+                    "address": self.cloudfunction,
+                    "deadline": self.deadline,
+                    "path_translation": "APPEND_PATH_TO_ADDRESS",
+                    "protocol": "h2",
+                }
+
     def write(self, file):
         file.write(self.component_spec.to_yaml())
 
@@ -523,7 +409,6 @@ class RouteEntry:
         return args
 
     def __call__(self, request):
-        # TODO: pass in args and kwargs and options
         args = self._extract_view_args(request.path)
         resp = self.route_function(**args)
         return self._apply_cors(resp)

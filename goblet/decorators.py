@@ -1,28 +1,31 @@
 from __future__ import annotations
 import os
+import yaml
+from warnings import warn
+import logging
+from googleapiclient.errors import HttpError
+
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_location, get_default_project
 
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-from goblet.client import VersionedClients
-from goblet_gcp_client.client import get_default_location, get_default_project
-from goblet.infrastructures.redis import Redis
-from goblet.infrastructures.vpcconnector import VPCConnector
+
 from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
-from goblet.resources.routes import ApiGateway
+from goblet.resources.routes import Routes
 from goblet.resources.scheduler import Scheduler
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
 from goblet.resources.jobs import Jobs
+
+from goblet.infrastructures.redis import Redis
+from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.alerts import Alerts
+from goblet.infrastructures.apigateway import ApiGateway
 
-from googleapiclient.errors import HttpError
-
-from warnings import warn
-
-import logging
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -182,6 +185,32 @@ class DecoratorAPI:
             registration_kwargs={"name": name, "task_id": task_id, "kwargs": kwargs},
         )
 
+    def apigateway(self, name, backend_url, filename=None, openapi_dict=None, **kwargs):
+        """Api Gateway Infrastructure with an existing openapi spec.
+        Requires either a filename or openapi_dict"""
+        if not filename and not openapi_dict:
+            raise ValueError(
+                "Either a filename or the openapi_dict needs to be provided"
+            )
+        if filename and openapi_dict:
+            raise ValueError(
+                "Only one of either a filename or the openapi_dict needs to be provided"
+            )
+        if filename:
+            with open(filename) as f:
+                openapi_dict = yaml.safe_load(f.read())
+        return self._register_infrastructure(
+            handler_type="apigateway",
+            kwargs={
+                "name": name,
+                "kwargs": {
+                    "backend_url": backend_url,
+                    "openapi_dict": openapi_dict,
+                    **kwargs,
+                },
+            },
+        )
+
     def alert(self, name, conditions, **kwargs):
         """Alert Resource"""
         kwargs["conditions"] = conditions
@@ -258,7 +287,7 @@ class Register_Handlers(DecoratorAPI):
         versioned_clients = VersionedClients(client_versions or {})
 
         self.handlers = {
-            "route": ApiGateway(
+            "route": Routes(
                 function_name,
                 cors=cors,
                 backend=backend,
@@ -302,6 +331,12 @@ class Register_Handlers(DecoratorAPI):
                 config=config,
             ),
             "alerts": Alerts(
+                function_name,
+                backend=backend,
+                versioned_clients=versioned_clients,
+                config=config,
+            ),
+            "apigateway": ApiGateway(
                 function_name,
                 backend=backend,
                 versioned_clients=versioned_clients,
