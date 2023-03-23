@@ -31,7 +31,7 @@ def get_app_from_module(m):
     from goblet import Goblet
 
     for obj in dir(m):
-        if isinstance(getattr(m, obj), Goblet):
+        if isinstance(getattr(m, obj), Goblet) and not getattr(m, obj).is_sub_app:
             return getattr(m, obj), obj
 
 
