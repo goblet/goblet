@@ -1,13 +1,12 @@
 from unittest.mock import Mock
 import pytest
 from goblet import Goblet, Response, jsonify
-from goblet.config import GConfig
 from goblet.resources.routes import Routes, CORSConfig
 from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
 )
-from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
+from goblet.backends import CloudFunctionV1, CloudRun
 from goblet_gcp_client import get_response, get_responses
 
 
