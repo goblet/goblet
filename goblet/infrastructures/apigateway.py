@@ -32,7 +32,7 @@ class ApiGateway(Infrastructure):
             existing_spec=self.resource["openapi_dict"],
         )
         goblet_spec.add_x_google_backend()
-        updated_filename = f"{get_g_dir()}/{self.name}_openapi_spec.yml"
+        updated_filename = f"{get_g_dir()}/{self.resource['name']}_openapi_spec.yml"
         with open(updated_filename, "w") as f:
             goblet_spec.write(f)
         deploy_apigateway(
@@ -40,4 +40,6 @@ class ApiGateway(Infrastructure):
         )
 
     def destroy(self):
+        if not self.resource:
+            return
         destroy_apigateway(self.resource["name"], self.client)
