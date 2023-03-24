@@ -5,6 +5,7 @@ from goblet.resources.routes import Routes
 
 from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
 from goblet_gcp_client import get_replay_count
+from goblet_gcp_client.http_files import reset_replay_count
 
 
 class TestApiGatewayConfig:
@@ -62,6 +63,7 @@ class TestApiGatewayExisting:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+        reset_replay_count()
 
         openapi_dict = {
             "swagger": "2.0",
