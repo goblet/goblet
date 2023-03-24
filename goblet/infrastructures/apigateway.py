@@ -33,7 +33,7 @@ class ApiGateway(Infrastructure):
         )
         goblet_spec.add_x_google_backend()
         updated_filename = f"{get_g_dir()}/{self.resource['name']}_openapi_spec.yml"
-        with open(updated_filename, "w+") as f:
+        with open(updated_filename, "a+") as f:
             goblet_spec.write(f)
         deploy_apigateway(
             self.resource["name"], self.config, self.client, updated_filename
