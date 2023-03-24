@@ -1,9 +1,10 @@
 import logging
+import os
 
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 from goblet.infrastructures.infrastructure import Infrastructure
 from goblet.resources.routes import OpenApiSpec
-from goblet.utils import get_g_dir
+from goblet.utils import get_g_dir, get_dir
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -32,8 +33,13 @@ class ApiGateway(Infrastructure):
             existing_spec=self.resource["openapi_dict"],
         )
         goblet_spec.add_x_google_backend()
+
+        # create .goblet if doesnt exist
+        if not os.path.isdir(f"{get_dir()}/.goblet"):
+            os.mkdir(f"{get_dir()}/.goblet")
+
         updated_filename = f"{get_g_dir()}/{self.resource['name']}_openapi_spec.yml"
-        with open(updated_filename, "a+") as f:
+        with open(updated_filename, "w") as f:
             goblet_spec.write(f)
         deploy_apigateway(
             self.resource["name"], self.config, self.client, updated_filename
