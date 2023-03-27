@@ -292,8 +292,9 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [Redis](https://cloud.google.com/memorystore) infrastructure \
  &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot) \
  &#9745; [Alerts](https://cloud.google.com/monitoring/alerts) \
- &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions)
- &#9745; Deploy API Gateway from existing openapi spec
+ &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions) \
+ &#9745; Deploy API Gateway from existing openapi spec \
+ &#9745; Deploy arbitrary Dockerfile to Cloudrun 
 
 ## Want to Contribute
 

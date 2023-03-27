@@ -929,3 +929,42 @@ config.json
             }
         }
     }
+
+Deploying Arbitrary Services
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to use goblet to deploy GCP resources without deploying a goblet application. It is even possible 
+to deploy non-python based services using Goblet.
+
+The first method to deploy GCP resources without deploying a goblet application is to deploy :ref:`infrastructure <infrastructure>` resources such 
+as :ref:`redis <redis>` or an :ref:`api gateway <apigateway>`.
+
+.. code:: python 
+
+   app =Goblet()
+
+   app.redis()
+   app.apigateway("openapi-existing", "BACKEND_URL", filename=filename)
+
+and then deploy using `goblet deploy -p PROJECT -l LOCATION --skip-backend --skip-resources`
+
+You can deploy a non-python application to Cloud Run by specifying the `force_deploy_cloudrun` key in `config.json` and passing in a custom Dockerfile.
+Further fields can be customized in `config.json`. See the example `example_non_python_cloudrun` for more details on how to setup.
+
+An example `config.json` can be found below.
+
+.. code:: json 
+    
+    {
+        "custom_files":{
+            "include":["package.json", ".dockerignore", "package-lock.json", "server.js"]
+        },
+        "force_deploy_cloudrun": true,
+        "cloudrun_container": {
+            "command": ["node", "server.js"],
+            "ports":[{
+                "name":"http1",
+                "containerPort":8000
+            }]
+        }
+    }
