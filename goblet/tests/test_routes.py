@@ -1,13 +1,12 @@
 from unittest.mock import Mock
 import pytest
 from goblet import Goblet, Response, jsonify
-from goblet.config import GConfig
-from goblet.resources.routes import ApiGateway, CORSConfig
+from goblet.resources.routes import Routes, CORSConfig
 from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
 )
-from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
+from goblet.backends import CloudFunctionV1, CloudRun
 from goblet_gcp_client import get_response, get_responses
 
 
@@ -221,7 +220,7 @@ class TestRoutes:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        gw = ApiGateway(
+        gw = Routes(
             name="test",
             routes_type="cloudrun",
             resources=[{}, {}],
@@ -231,14 +230,14 @@ class TestRoutes:
         assert gw.deploy() is None
 
     def test_deploy_routes_type_cloudrun_with_incorrect_backend(self, monkeypatch):
-        ApiGateway(
+        Routes(
             name="test",
             routes_type="cloudrun",
             resources=[{}, {}],
             backend=CloudRun(Goblet(function_name="test", backend="cloudrun")),
         )
         with pytest.raises(Exception):
-            ApiGateway.deploy()
+            Routes.deploy()
 
     def test_destroy_routes(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -246,7 +245,7 @@ class TestRoutes:
         monkeypatch.setenv("G_TEST_NAME", "routes-destroy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        apigw = ApiGateway(
+        apigw = Routes(
             "goblet_routes",
             resources=["not_empty"],
             backend=CloudFunctionV1(Goblet(function_name="goblet_routes")),
@@ -261,41 +260,3 @@ class TestRoutes:
         assert responses[1]["body"]["metadata"]["target"].endswith("goblet-routes")
         assert responses[2]["body"]["metadata"]["verb"] == "delete"
         assert responses[2]["body"]["metadata"]["target"].endswith("goblet-routes")
-
-
-class TestApiGateway:
-    def test_path_param_matching(self):
-        gw = ApiGateway("test", backend=CloudFunctionV1(Goblet()))
-        assert gw._matched_path("/home/{home_id}", "/home/5")
-        assert not gw._matched_path("/home/{home_id}", "/home/5/fail")
-
-    def test_deadline(self):
-        gw = ApiGateway("test", backend=CloudRun(Goblet(backend="cloudrun")))
-        assert gw.get_timeout(GConfig({"cloudrun_revision": {"timeout": 300}})) == 300
-        assert gw.get_timeout(GConfig()) == 15
-
-        gw = ApiGateway("test", backend=CloudFunctionV1(Goblet()))
-        assert gw.get_timeout(GConfig({"cloudfunction": {"timeout": 300}})) == 300
-        assert gw.get_timeout(GConfig()) == 15
-
-        gw = ApiGateway("test", backend=CloudFunctionV2(Goblet()))
-        assert (
-            gw.get_timeout(
-                GConfig({"cloudfunction": {"serviceConfig": {"timeoutSeconds": 300}}})
-            )
-            == 300
-        )
-        assert gw.get_timeout(GConfig()) == 15
-
-        gw = ApiGateway("test", backend=CloudFunctionV1(Goblet()))
-        assert (
-            gw.get_timeout(
-                GConfig(
-                    {
-                        "cloudfunction": {"timeout": 300},
-                        "api_gateway": {"deadline": 200},
-                    }
-                )
-            )
-            == 200
-        )

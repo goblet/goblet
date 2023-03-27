@@ -217,7 +217,7 @@ def openapi(cloudfunction, stage, version):
         response = requests.post(
             "https://converter.swagger.io/api/convert", headers=headers, data=data
         )
-        with open(f"{get_g_dir()}/{app.function_name}_openapi_spec_3.yml", "w") as f:
+        with open(f"{get_g_dir()}/{app.function_name}_openapi_spec_3.yml", "w+") as f:
             f.write(response.text)
 
 

@@ -109,8 +109,8 @@ instance itself. The routes work the same as with an apigateway, but you would a
 Scheduled Jobs
 ^^^^^^^^^^^^^^
 
-To deploy scheduled jobs using a cron schedule use the ``@app.schedule(...)`` decorator. The cron schedule follows the unix-cron format. 
-More information on the cron format can be found `here`_. Make sure `Cloud Scheduler`_ is enabled in your account if you want to deploy
+To deploy scheduled jobs using a cron schedule use the `@app.schedule(...)` decorator. The cron schedule follows the unix-cron format. 
+More information on the cron format can be found in the `gcp docs <https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules>`_. Make sure `Cloud Scheduler <https://cloud.google.com/scheduler>`_ is enabled in your account if you want to deploy
 scheduled jobs.
 
 Example usage:
@@ -157,9 +157,6 @@ For example:
 
     "X-Goblet-Type": "schedule",
     "X-Goblet-Name": FUNCTION_NAME
-
-.. _HERE: https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules
-.. _CLOUD SCHEDULER: https://cloud.google.com/scheduler
 
 PubSub
 ^^^^^^

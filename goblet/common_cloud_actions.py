@@ -2,6 +2,7 @@ import google_auth_httplib2
 import logging
 import json
 from urllib.parse import quote_plus
+import base64
 from googleapiclient.errors import HttpError
 
 from goblet.config import GConfig
@@ -21,6 +22,7 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
+####### Cloud Functions #######
 def create_cloudfunctionv1(client: Client, params: dict, config=None):
     create_cloudfunction(
         client, params, config, parent_key="location", operations_calls="operations"
@@ -93,23 +95,6 @@ def destroy_cloudfunction(client, name):
             raise e
 
 
-def destroy_cloudrun(client, name):
-    """Destroys cloudrun"""
-    try:
-        client.execute(
-            "delete",
-            parent_schema="projects/{project_id}/locations/{location_id}/services/"
-            + name,
-            parent_key="name",
-        )
-        log.info(f"deleting cloudrun {name}......")
-    except HttpError as e:
-        if e.resp.status == 404:
-            log.info(f"cloudrun {name} already destroyed")
-        else:
-            raise e
-
-
 def destroy_cloudfunction_artifacts(name):
     """Destroys all images stored in cloud storage that are related to the function."""
     client = Client("cloudresourcemanager", "v1", calls="projects")
@@ -135,6 +120,119 @@ def destroy_cloudfunction_artifacts(name):
             f"https://storage.googleapis.com/storage/v1/b/{bucket_name}/o/{quote_plus(storage['name'])}",
             method="DELETE",
         )
+
+
+def get_cloudfunction_url(client, name):
+    """Get the cloudrun url"""
+    if client.version == "v1":
+        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{name}"
+    try:
+        resp = client.execute(
+            "get",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/{location_id}/functions/"
+            + name,
+        )
+        # handle both cases: first for gcf v1 and second for v2
+        try:
+            target = resp["httpsTrigger"]["url"]
+        except KeyError:
+            target = resp["serviceConfig"]["uri"]
+        return target
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"cloudfunction {name} not found")
+        else:
+            raise e
+
+
+def get_function_runtime(client, config=None):
+    """
+    Returns the proper runtime to be used in cloudfunctions
+    """
+    runtime = config.runtime or get_python_runtime()
+    required_runtime = "python37" if client.version == "v1" else "python38"
+    if int(runtime.split("python")[-1]) < int(required_runtime.split("python")[-1]):
+        raise ValueError(
+            f"Your current python runtime is {runtime}. Your backend requires a minimum of {required_runtime}"
+            f". Either upgrade python on your machine or set the 'runtime' field in config.json."
+        )
+    return runtime
+
+
+####### Cloud Run #######
+
+
+def destroy_cloudrun(client, name):
+    """Destroys cloudrun"""
+    try:
+        client.execute(
+            "delete",
+            parent_schema="projects/{project_id}/locations/{location_id}/services/"
+            + name,
+            parent_key="name",
+        )
+        log.info(f"deleting cloudrun {name}......")
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"cloudrun {name} already destroyed")
+        else:
+            raise e
+
+
+def deploy_cloudrun(client, req_body, name):
+    """Deploys cloud build to cloudrun"""
+    try:
+        params = {"body": req_body, "serviceId": name}
+        resp = client.execute(
+            "create",
+            parent_key="parent",
+            parent_schema="projects/"
+            + get_default_project_number()
+            + "/locations/{location_id}",
+            params=params,
+        )
+        log.info("creating cloudrun")
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info("updating cloudrun")
+            resp = client.execute(
+                "patch",
+                parent_key="name",
+                parent_schema="projects/"
+                + get_default_project_number()
+                + "/locations/{location_id}/services/"
+                + name,
+                params={"body": req_body},
+            )
+        else:
+            raise e
+    client.wait_for_operation(resp["name"], calls="projects.locations.operations")
+
+
+def get_cloudrun_url(client, name):
+    """Get the cloudrun url"""
+    try:
+        resp = client.execute(
+            "get",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/{location_id}/services/"
+            + name,
+        )
+        # Handle both cases: cloudrun v1 and v2
+        try:
+            target = resp["status"]["url"]
+        except KeyError:
+            target = resp["uri"]
+        return target
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info(f"cloudrun {name} not found")
+        else:
+            raise e
+
+
+####### Cloud Build #######
 
 
 def create_cloudbuild(client, req_body):
@@ -216,80 +314,7 @@ def getCloudbuildArtifact(client, artifactName, config):
     return latestArtifact
 
 
-def deploy_cloudrun(client, req_body, name):
-    """Deploys cloud build to cloudrun"""
-    try:
-        params = {"body": req_body, "serviceId": name}
-        resp = client.execute(
-            "create",
-            parent_key="parent",
-            parent_schema="projects/"
-            + get_default_project_number()
-            + "/locations/{location_id}",
-            params=params,
-        )
-        log.info("creating cloudrun")
-    except HttpError as e:
-        if e.resp.status == 409:
-            log.info("updating cloudrun")
-            resp = client.execute(
-                "patch",
-                parent_key="name",
-                parent_schema="projects/"
-                + get_default_project_number()
-                + "/locations/{location_id}/services/"
-                + name,
-                params={"body": req_body},
-            )
-        else:
-            raise e
-    client.wait_for_operation(resp["name"], calls="projects.locations.operations")
-
-
-def get_cloudrun_url(client, name):
-    """Get the cloudrun url"""
-    try:
-        resp = client.execute(
-            "get",
-            parent_key="name",
-            parent_schema="projects/{project_id}/locations/{location_id}/services/"
-            + name,
-        )
-        # Handle both cases: cloudrun v1 and v2
-        try:
-            target = resp["status"]["url"]
-        except KeyError:
-            target = resp["uri"]
-        return target
-    except HttpError as e:
-        if e.resp.status == 404:
-            log.info(f"cloudrun {name} not found")
-        else:
-            raise e
-
-
-def get_cloudfunction_url(client, name):
-    """Get the cloudrun url"""
-    if client.version == "v1":
-        return f"https://{get_default_location()}-{get_default_project()}.cloudfunctions.net/{name}"
-    try:
-        resp = client.execute(
-            "get",
-            parent_key="name",
-            parent_schema="projects/{project_id}/locations/{location_id}/functions/"
-            + name,
-        )
-        # handle both cases: first for gcf v1 and second for v2
-        try:
-            target = resp["httpsTrigger"]["url"]
-        except KeyError:
-            target = resp["serviceConfig"]["uri"]
-        return target
-    except HttpError as e:
-        if e.resp.status == 404:
-            log.info(f"cloudfunction {name} not found")
-        else:
-            raise e
+####### Pub Sub #######
 
 
 def create_pubsub_subscription(client, sub_name, req_body):
@@ -339,6 +364,9 @@ def destroy_pubsub_subscription(client, name):
             log.info(f"pubsub subscription {name} already destroyed")
         else:
             raise e
+
+
+####### Event Arc #######
 
 
 def create_eventarc_trigger(client, trigger_name, region, req_body):
@@ -392,15 +420,143 @@ def destroy_eventarc_trigger(client, trigger_name, region):
             raise e
 
 
-def get_function_runtime(client, config=None):
-    """
-    Returns the proper runtime to be used in cloudfunctions
-    """
-    runtime = config.runtime or get_python_runtime()
-    required_runtime = "python37" if client.version == "v1" else "python38"
-    if int(runtime.split("python")[-1]) < int(required_runtime.split("python")[-1]):
-        raise ValueError(
-            f"Your current python runtime is {runtime}. Your backend requires a minimum of {required_runtime}"
-            f". Either upgrade python on your machine or set the 'runtime' field in config.json."
+####### Api Gateway #######
+
+
+def deploy_apigateway(name, gconfig, versioned_clients, spec_path):
+    "Deploy an Api, Api Gateway, & Api Config"
+    try:
+        resp = versioned_clients.apigateway_api.execute(
+            "create",
+            params={"apiId": name, "body": {"labels": gconfig.labels}},
         )
-    return runtime
+        versioned_clients.apigateway_api.wait_for_operation(resp["name"])
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info("api already deployed")
+        else:
+            raise e
+    config = {
+        "openapiDocuments": [
+            {
+                "document": {
+                    "path": spec_path,
+                    "contents": base64.b64encode(open(spec_path, "rb").read()).decode(
+                        "utf-8"
+                    ),
+                }
+            }
+        ],
+        "labels": gconfig.labels,
+        **(gconfig.apiConfig or {}),
+    }
+    try:
+        config_version_name = name
+        versioned_clients.apigateway_configs.execute(
+            "create",
+            params={"apiConfigId": name, "body": config},
+            parent_schema="projects/{project_id}/locations/global/apis/" + name,
+        )
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info("updating api endpoints")
+            configs = versioned_clients.apigateway_configs.execute(
+                "list",
+                parent_schema="projects/{project_id}/locations/global/apis/" + name,
+            )
+            # TODO: use hash
+            version = len(configs["apiConfigs"])
+            config_version_name = f"{name}-v{version}"
+            versioned_clients.apigateway_configs.execute(
+                "create",
+                parent_schema="projects/{project_id}/locations/global/apis/" + name,
+                params={"apiConfigId": config_version_name, "body": config},
+            )
+        else:
+            raise e
+    gateway = {
+        "apiConfig": f"projects/{get_default_project()}/locations/global/apis/{name}/configs/{config_version_name}",
+        "labels": gconfig.labels,
+    }
+    try:
+        gateway_resp = versioned_clients.apigateway.execute(
+            "create", params={"gatewayId": name, "body": gateway}
+        )
+    except HttpError as e:
+        if e.resp.status == 409:
+            log.info("updating gateway")
+            gateway_resp = versioned_clients.apigateway.execute(
+                "patch",
+                parent_key="name",
+                parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
+                + name,
+                params={"updateMask": "apiConfig", "body": gateway},
+            )
+        else:
+            raise e
+    if gateway_resp:
+        versioned_clients.apigateway.wait_for_operation(gateway_resp["name"])
+    log.info("api successfully deployed...")
+    gateway_resp = versioned_clients.apigateway.execute(
+        "get",
+        parent_key="name",
+        parent_schema="projects/{project_id}/locations/{location_id}/gateways/" + name,
+    )
+    log.info(f"api endpoint is {gateway_resp['defaultHostname']}")
+
+
+def destroy_apigateway(name, versioned_clients):
+    """Destroy api gateway"""
+    try:
+        resp = versioned_clients.apigateway.execute(
+            "delete",
+            parent_schema="projects/{project_id}/locations/{location_id}/gateways/"
+            + name,
+            parent_key="name",
+        )
+        log.info("destroying api gateway......")
+        versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info("api gateway already destroyed")
+        else:
+            raise e
+    # destroy api config
+    try:
+        configs = versioned_clients.apigateway_configs.execute(
+            "list",
+            parent_schema="projects/{project_id}/locations/global/apis/" + name,
+        )
+        resp = {}
+        log.info("api configs destroying....")
+        for c in configs.get("apiConfigs", []):
+            resp = versioned_clients.apigateway_configs.execute(
+                "delete",
+                parent_key="name",
+                parent_schema="projects/{project_id}/locations/global/apis/"
+                + name
+                + "/configs/"
+                + c["displayName"],
+            )
+            if resp:
+                versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info("api configs already destroyed")
+        else:
+            raise e
+
+    # destroy api
+    try:
+        resp = versioned_clients.apigateway_api.execute(
+            "delete",
+            parent_key="name",
+            parent_schema="projects/{project_id}/locations/global/apis/" + name,
+        )
+        versioned_clients.apigateway_configs.wait_for_operation(resp["name"])
+        log.info("apis successfully destroyed......")
+    except HttpError as e:
+        if e.resp.status == 404:
+            log.info("api already destroyed")
+        else:
+            raise e
