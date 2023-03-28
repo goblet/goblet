@@ -91,12 +91,14 @@ $ curl https://api.uc.gateway.dev/home
 * eventarc
 * cloudrun jobs
 * bq remote functions
+* cloudtasktarget
 
 #### Infrastructure
 * vpc connector
 * redis
 * alerts
 * api gateway
+* cloudtaskqueue
 
 ## Data Typing Frameworks Supported
 
@@ -294,6 +296,8 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [Alerts](https://cloud.google.com/monitoring/alerts) \
  &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions)
  &#9745; Deploy API Gateway from existing openapi spec
+ &#9745; [CloudTask and CloudTask Queues](https://cloud.google.com/tasks/docs/dual-overview)
+
 
 ## Want to Contribute
 
