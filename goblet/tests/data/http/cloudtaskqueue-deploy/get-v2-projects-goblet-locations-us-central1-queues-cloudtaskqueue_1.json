@@ -1,0 +1,18 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/queues/cloudtaskqueue",
+    "rateLimits": {
+      "maxDispatchesPerSecond": 500,
+      "maxBurstSize": 100,
+      "maxConcurrentDispatches": 1000
+    },
+    "retryConfig": {
+      "maxAttempts": 100,
+      "minBackoff": "0.100s",
+      "maxBackoff": "3600s",
+      "maxDoublings": 16
+    },
+    "state": "RUNNING"
+  }
+}
