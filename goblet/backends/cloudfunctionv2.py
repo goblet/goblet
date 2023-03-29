@@ -100,7 +100,7 @@ class CloudFunctionV2(Backend):
                     "vpcConnector": infra_config["values"]["name"],
                     "vpcConnectorEgressSettings": infra_config["values"]["egress"],
                 }
-            elif resource_type in ("redis"):
+            elif resource_type in ("redis", "cloudtaskqueue"):
                 config_updates[self.config_key]["serviceConfig"] = {
                     **config_updates[self.config_key].get("serviceConfig", {}),
                     "environmentVariables": {
@@ -110,6 +110,7 @@ class CloudFunctionV2(Backend):
                         **infra_config.get("values"),
                     },
                 }
+
         self.config.update_g_config(
             values=config_updates, write_config=write_config, stage=stage
         )

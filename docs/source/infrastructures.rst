@@ -105,3 +105,22 @@ By default there is a timeout on Api Gateway of 15 seconds. This can be override
 .. note::
     
     * API Gateway only supports swagger 2.0. 
+
+CloudTask Queue
+^^^^^^^^^^^^^^^
+.. code:: python
+
+    app = Goblet()
+    config = { ... }
+    client = app.cloudtaskqueue("queue", config=config)
+
+To further configure your CloudTaskQueue within Goblet, provide the config parameter base on the documentation. `CloudTask Queue Resource <https://cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues#Queue>`_.
+The configuration can be provided inline when declaring the queue, or in your config.json under the **cloudtaskqueue** key.
+
+.. code::
+
+    {
+        "cloudtaskqueue": {
+            "queue": { ... }
+        }
+    }

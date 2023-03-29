@@ -387,3 +387,60 @@ When deploying a BigQuery remote function, Goblet creates the resources in GCP: 
 `BigQuery connection <https://cloud.google.com/bigquery/docs/reference/bigqueryconnection>`_,
 a `BigQuery routine <https://cloud.google.com/bigquery/docs/reference/rest/v2/routines>`_ and
 a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).
+
+
+CloudTask Target
+^^^^^^^^^^^^^^^^
+
+You can handle http requests from a CloudTask by using the ``@app.cloudtasktarget(name="target")`` decorator.
+For Goblet to route a request to a function decorated with ``cloudtasktarget(name="target")``, the request must include
+the following headers:
+
+.. code::
+
+    "User-Agent": "Google-Cloud-Tasks",
+    "X-Goblet-CloudTask-Target": "target"
+
+.. note::
+    * Goblet uses the `User-Agent` headers to route the request to the CloudTaskTarget instance. The CloudTask Queue adds this headers.
+    * The `X-Goblet-CloudTask-Target` routes the request to the expected function.
+
+
+The next example shows the function that would serve a request with the headers shown above.
+
+.. code:: python
+
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="cloudtask_example")
+    goblet_entrypoint(app)
+
+    @app.cloudtasktarget(name="target")
+    def my_target_handler(request):
+        ''' handle request '''
+        return
+
+
+
+Another example using ``app.cloudtaskqueue`` to queue and handle tasks in the same instance.
+
+.. code:: python
+
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="cloudtask_example")
+    goblet_entrypoint(app)
+
+    client = app.cloudtaskqueue("queue")
+    @app.cloudtasktarget(name="target")
+    def my_target_handler(request):
+        ''' handle request '''
+        return {}
+
+
+    @app.route("/enqueue", methods=["GET"])
+    def enqueue():
+        payload = {"message": {"title": "enqueue"}}
+        client.enqueue(target="target", payload=payload)
+        return {}
+

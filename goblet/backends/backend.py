@@ -10,7 +10,7 @@ import requests
 from googleapiclient.errors import HttpError
 
 from goblet.config import GConfig
-from goblet.utils import get_g_dir, checksum
+from goblet.utils import get_g_dir, checksum, build_stage_config
 
 
 class Backend:
@@ -155,10 +155,19 @@ class Backend:
 
     def _zip_config(self):
         config_path = ".goblet/config.json"
+        stage_config_file = None
         if os.path.exists(config_path):
+            if self.config.stage:
+                stage_config_file = build_stage_config(
+                    config_path=config_path, stage=self.config.stage
+                )
+                config_path = stage_config_file.name
             self.zipf.write(
-                config_path, config_path, compress_type=zipfile.ZIP_DEFLATED
+                config_path, ".goblet/config.json", compress_type=zipfile.ZIP_DEFLATED
             )
+
+        if stage_config_file:
+            stage_config_file.close()
 
     def _zip_directory(self):
         exclusion_set = set(self.zip_config.get("exclude", []))

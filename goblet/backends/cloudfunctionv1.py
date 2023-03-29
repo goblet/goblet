@@ -82,7 +82,7 @@ class CloudFunctionV1(Backend):
                     "vpcConnectorEgressSettings": infra_config["values"]["egress"],
                 }
 
-            elif resource_type in ("redis"):
+            elif resource_type in ("redis", "cloudtaskqueue"):
                 config_updates[self.config_key]["environmentVariables"] = {
                     **config_updates[self.config_key].get("environmentVariables", {}),
                     **infra_config.get("values"),

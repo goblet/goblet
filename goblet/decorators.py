@@ -4,19 +4,18 @@ import yaml
 from warnings import warn
 import logging
 from googleapiclient.errors import HttpError
-
-from goblet.client import VersionedClients
-from goblet_gcp_client.client import get_default_location, get_default_project
-
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_location, get_default_project
+from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.resources.bq_remote_function import BigQueryRemoteFunction
 from goblet.resources.eventarc import EventArc
 from goblet.resources.pubsub import PubSub
 from goblet.resources.routes import Routes
 from goblet.resources.scheduler import Scheduler
+from goblet.resources.cloudtasktarget import CloudTaskTarget
 from goblet.resources.storage import Storage
 from goblet.resources.http import HTTP
 from goblet.resources.jobs import Jobs
@@ -25,7 +24,6 @@ from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
-
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -40,6 +38,7 @@ EVENT_TYPES = [
     "eventarc",
     "job",
     "bqremotefunction",
+    "cloudtasktarget",
 ]
 
 SUPPORTED_BACKENDS = {
@@ -48,7 +47,11 @@ SUPPORTED_BACKENDS = {
     "cloudrun": CloudRun,
 }
 
-SUPPORTED_INFRASTRUCTURES = {"redis": Redis, "vpcconnector": VPCConnector}
+SUPPORTED_INFRASTRUCTURES = {
+    "redis": Redis,
+    "vpcconnector": VPCConnector,
+    "cloudtaskqueue": CloudTaskQueue,
+}
 
 
 class DecoratorAPI:
@@ -127,6 +130,14 @@ class DecoratorAPI:
         return self._create_registration_function(
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},
+        )
+
+    def cloudtasktarget(self, name, **kwargs):
+        """CloudTask trigger"""
+        kwargs["name"] = name
+        return self._create_registration_function(
+            handler_type="cloudtasktarget",
+            registration_kwargs={"name": name, "kwargs": kwargs},
         )
 
     def storage(self, bucket, event_type, name=None):
@@ -219,6 +230,14 @@ class DecoratorAPI:
             kwargs={"name": name, "kwargs": kwargs},
         )
 
+    def cloudtaskqueue(self, name, config=None, **kwargs):
+        """CloudTask Queue Infrastructure"""
+        kwargs["config"] = config
+        return self._register_infrastructure(
+            handler_type="cloudtaskqueue",
+            kwargs={"name": name, "config": config, "kwargs": kwargs},
+        )
+
     def redis(self, name, **kwargs):
         """Redis Infrastructure"""
         return self._register_infrastructure(
@@ -259,7 +278,7 @@ class DecoratorAPI:
         self.handlers[handler_type].register(name=name, func=func, kwargs=kwargs)
 
     def _register_infrastructure(self, handler_type, kwargs, options=None):
-        self.infrastructure[handler_type].register(
+        return self.infrastructure[handler_type].register(
             kwargs["name"], kwargs=kwargs.get("kwargs", {})
         )
 
@@ -287,6 +306,9 @@ class Register_Handlers(DecoratorAPI):
         versioned_clients = VersionedClients(client_versions or {})
 
         self.handlers = {
+            "cloudtasktarget": CloudTaskTarget(
+                function_name, backend=backend, versioned_clients=versioned_clients
+            ),
             "route": Routes(
                 function_name,
                 cors=cors,
@@ -318,6 +340,12 @@ class Register_Handlers(DecoratorAPI):
         }
 
         self.infrastructure = {
+            "cloudtaskqueue": CloudTaskQueue(
+                function_name,
+                backend=backend,
+                versioned_clients=versioned_clients,
+                config=config,
+            ),
             "redis": Redis(
                 function_name,
                 backend=backend,
@@ -386,6 +414,8 @@ class Register_Handlers(DecoratorAPI):
             response = self.handlers["eventarc"](request)
         if event_type == "bqremotefunction":
             response = self.handlers["bqremotefunction"](request)
+        if event_type == "cloudtasktarget":
+            response = self.handlers["cloudtasktarget"](request)
 
         # call after request middleware
         response = self._call_middleware(response, event_type, before_or_after="after")
@@ -408,6 +438,8 @@ class Register_Handlers(DecoratorAPI):
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.headers.get("User-Agent") == "Google-Cloud-Tasks":
+            return "cloudtasktarget"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
             return "eventarc"
         if (
@@ -491,6 +523,7 @@ class Register_Handlers(DecoratorAPI):
             or self.handlers["http"].resources
             or self.handlers["pubsub"].is_http()
             or len(self.handlers["bqremotefunction"].resources) > 0
+            or len(self.handlers["cloudtasktarget"].resources) > 0
         ):
             return True
         return False
