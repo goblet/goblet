@@ -34,7 +34,7 @@ class Backend:
 
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
-        include = ["*.py", ".goblet/*.py"]
+        include = ["*.py", ".goblet/*.py", "requirements.txt"]
         exclude = ["build", "docs", "examples", "test", "tests", "venv"]
 
         include.extend(custom_files.get("include", []))
@@ -130,8 +130,8 @@ class Backend:
     def http_endpoint(self):
         raise NotImplementedError("http_endpoint")
 
-    def zip(self):
-        """Zips python files and any additional files based on config.custom_files"""
+    def zip_required_files(self):
+        """Zip required files for the specified backend"""
         self._zip_config()
         if self.config.requirements_file:
             self._zip_file(self.config.requirements_file, "requirements.txt")
@@ -139,6 +139,10 @@ class Backend:
             self._zip_file("requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
+
+    def zip(self):
+        """Zips python files and any additional files based on config.custom_files"""
+        self.zip_required_files()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._zip_directory()

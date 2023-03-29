@@ -1,0 +1,13 @@
+{
+    "custom_files":{
+        "include":["package.json", ".dockerignore", "package-lock.json", "server.js"]
+    },
+    "force_deploy_cloudrun": true,
+    "cloudrun_container": {
+        "command": ["node", "server.js"],
+        "ports":[{
+            "name":"http1",
+            "containerPort":8000
+        }]
+    }
+}

@@ -1,3 +1,5 @@
+.. _infrastructure:
+
 ================
 Infrastructure
 ================
@@ -29,8 +31,11 @@ creates an alert using that metric.
     # Example Metric Alert that creates a custom metric for severe errors with http code in the 500's and creates an alert with a threshold of 10
     app.alert("custom",conditions=[CustomMetricCondition("custom", metric_filter='severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)', value=10)])
 
+.. _redis:
+
 Redis
 ^^^^^
+
 .. code:: python
 
     app = Goblet()
@@ -54,8 +59,11 @@ You can reference `Connector Resource <https://cloud.google.com/vpc/docs/referen
 .. note::
     * In order to ensure proper configuration of the VPC Connector, the `ipCidrRange` key is required to be set within `vpcconnector` of your `config.json`.
 
+.. _apigateway:
+
 Api Gateway
 ^^^^^^^^^^^^^
+
 .. code:: python
 
     app = Goblet(function_name="openapi-existing")
