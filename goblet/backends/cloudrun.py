@@ -54,9 +54,9 @@ class CloudRun(Backend):
             "content-type": "application/zip",
         }
 
-        if not os.path.exists(get_dir() + "/Dockerfile") and not os.path.exists(
-            get_dir() + "/Procfile"
-        ):
+        if not os.path.exists(
+            get_dir() + f"/{self.config.dockerfile or 'Dockerfile'}"
+        ) and not os.path.exists(get_dir() + "/Procfile"):
             self.log.info(
                 "No Dockerfile or Procfile found for cloudrun backend. Writing default Dockerfile"
             )
@@ -73,7 +73,7 @@ class CloudRun(Backend):
                 f"skipping zip/upload/build... cloudbuild.artifact {artifact_tag} found"
             )
         else:
-            self._zip_file("Dockerfile")
+            self._zip_file(self.config.dockerfile or "Dockerfile", "Dockerfile")
             source, changes = self._gcs_upload(
                 self.client,
                 put_headers,
@@ -130,7 +130,15 @@ class CloudRun(Backend):
             "steps": [
                 {
                     "name": "gcr.io/cloud-builders/docker",
-                    "args": ["build", "--network=cloudbuild", "-t", registry, "."],
+                    "args": [
+                        "build",
+                        "--network=cloudbuild",
+                        "-t",
+                        registry,
+                        "--cache-from",
+                        registry,
+                        ".",
+                    ],
                 }
             ],
             "images": [registry],
@@ -150,6 +158,9 @@ class CloudRun(Backend):
                 for schedule_name in handler.resources.keys():
                     if not schedule_name.startswith("schedule-job-"):
                         skip = False
+        # Forces the deployment of cloud run
+        if self.config.force_deploy_cloudrun:
+            return False
         return skip
 
     def _checksum(self):
@@ -258,3 +269,11 @@ class CloudRun(Backend):
             else:
                 env_dict[env_item["name"]] = env_item["value"]
         return env_dict
+
+    def zip_required_files(self):
+        """Zip required files for cloudrun. Requirements.txt is not required."""
+        self._zip_config()
+        if self.config.requirements_file:
+            self._zip_file(self.config.requirements_file, "requirements.txt")
+        if self.config.main_file:
+            self._zip_file(self.config.main_file, "main.py")

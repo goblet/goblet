@@ -91,11 +91,14 @@ $ curl https://api.uc.gateway.dev/home
 * eventarc
 * cloudrun jobs
 * bq remote functions
+* cloudtasktarget
 
 #### Infrastructure
 * vpc connector
 * redis
 * alerts
+* api gateway
+* cloudtaskqueue
 
 ## Data Typing Frameworks Supported
 
@@ -285,16 +288,15 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [Cloudrun Jobs](https://cloud.google.com/run/docs/quickstarts/jobs/create-execute) trigger \
  &#9744; [Firestore]( https://cloud.google.com/functions/docs/calling/cloud-firestore) trigger \
  &#9744; [Firebase](https://cloud.google.com/functions/docs/calling/realtime-database) trigger \
- &#9744; [Cloud Tasks](https://cloud.google.com/tasks/docs/creating-http-target-tasks) trigger \
+ &#9745; [CloudTask and CloudTask Queues](https://cloud.google.com/tasks/docs/dual-overview) \
  &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger \
  &#9745; [EventArc](https://cloud.google.com/eventarc/docs) trigger \
  &#9745; [Redis](https://cloud.google.com/memorystore) infrastructure \
- &#9744; [AlloyDB](https://cloud.google.com/alloydb/docs/overview) infrastructure \
- &#9744; [Cloudsql](https://cloud.google.com/sql) infrastructure \
- &#9744; [Spanner](https://cloud.google.com/spanner) infrastructure \
  &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot) \
- &#9745; [Alerts](https://cloud.google.com/monitoring/alerts) \
- &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions)
+ &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions) \
+ &#9745; Deploy API Gateway from existing openapi spec \
+ &#9745; Deploy arbitrary Dockerfile to Cloudrun 
+
 
 ## Want to Contribute
 

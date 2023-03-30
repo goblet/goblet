@@ -75,6 +75,24 @@ class TestDecoraters:
             "dummy_function2",
         ]
 
+    def test_add_current_request(self):
+        app1 = Goblet("test")
+        app2 = Goblet("test")
+
+        @app2.route("/app2")
+        def dummy_function():
+            return app2.current_request.json["test"]
+
+        app1 + app2
+
+        mock_request = Mock()
+        mock_request.path = "/app2"
+        mock_request.method = "GET"
+        mock_request.headers = {}
+        mock_request.json = {"test": "value"}
+
+        assert app1(mock_request, {}) == "value"
+
     def test_combine(self):
         app1 = Goblet("test")
         app2 = Goblet("test")

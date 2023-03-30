@@ -47,9 +47,6 @@ class Alerts(Infrastructure):
                 self._gcp_deployed_alerts[alert["displayName"]] = alert
         return self._gcp_deployed_alerts
 
-    def get_config(self):
-        return None
-
     def deploy(self, source=None, entrypoint=None, config={}):
         if not self.resource:
             return

@@ -17,6 +17,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "bigquery": "v2",
     "bigqueryconnection": "v1",
     "secretmanager": "v1",
+    "cloudtasks": "v2",
 }
 
 
@@ -112,6 +113,24 @@ class VersionedClients:
             "cloudscheduler",
             self.client_versions.get("cloudscheduler", "v1"),
             calls="projects.locations.jobs",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def cloudtask(self):
+        return Client(
+            "cloudtasks",
+            self.client_versions.get("cloudtasks", "v2"),
+            calls="projects.locations.queues.tasks",
+            parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def cloudtask_queue(self):
+        return Client(
+            "cloudtasks",
+            self.client_versions.get("cloudtasks", "v2"),
+            calls="projects.locations.queues",
             parent_schema="projects/{project_id}/locations/{location_id}",
         )
 

@@ -1,0 +1,20 @@
+{
+  "cloudtask": {
+    "serviceAccount": "service-account@goblet.com"
+  },
+  "cloudtaskqueue": {
+    "queue_name": {
+      "rateLimits": {
+        "maxDispatchesPerSecond": 500,
+        "maxBurstSize": 100,
+        "maxConcurrentDispatches": 1000
+      },
+      "retryConfig": {
+        "maxAttempts": 101,
+        "minBackoff": "0.100s",
+        "maxBackoff": "3600s",
+        "maxDoublings": 16
+      }
+    }
+  }
+}

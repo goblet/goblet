@@ -3,6 +3,8 @@ import importlib.util
 import collections.abc
 from contextlib import contextmanager
 import sys
+import json
+import tempfile
 
 
 @contextmanager
@@ -31,7 +33,7 @@ def get_app_from_module(m):
     from goblet import Goblet
 
     for obj in dir(m):
-        if isinstance(getattr(m, obj), Goblet):
+        if isinstance(getattr(m, obj), Goblet) and not getattr(m, obj).is_sub_app:
             return getattr(m, obj), obj
 
 
@@ -54,6 +56,20 @@ def get_g_dir():
 
 def get_dir():
     return os.path.realpath(".")
+
+
+def build_stage_config(config_path, stage):
+    with open(config_path) as f:
+        config = json.load(f)
+        stage_config = config["stages"][stage]
+        del config["stages"]
+        config = nested_update(config, stage_config)
+
+    config_file = tempfile.NamedTemporaryFile(mode="w")
+    f = open(config_file.name, "w")
+    f.write(json.dumps(config, indent=4))
+    f.flush()
+    return config_file
 
 
 def nested_update(d, u):

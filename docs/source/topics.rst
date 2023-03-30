@@ -701,13 +701,15 @@ Multiple Files
 It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
 them in the main.py folder under your main app. You can do this with simple addition notation or with the ``Goblet.combine`` function
 
+Note: For all additional apps outside of `main.py` set the `is_sub_app` flag when creating the Goblet app
+
 other.py 
 
 .. code:: python
 
     from goblet import Goblet
 
-    otherapp = Goblet()
+    otherapp = Goblet(is_sub_app=True)
 
     @otherapp.route('/other')
     def other():
@@ -837,6 +839,8 @@ This allows for multiple functions to be deploying using similar code bases.
 
 Similarly, you can also define `requirements_file` to override the `requirements.txt`, in case your functions have different dependencies. 
 
+Additionally for cloudrun you can deine a `dockerfile` as well. 
+
 For example with the following files which each contain a function and share code in `shared.py`
 
 `func1.py`
@@ -851,13 +855,16 @@ Could have the goblet `.config`
         "stages": {
             "func1": {
                 "function_name": "func1",
-                "main_file" : "func1",
+                "dockerfile": "func1.dockerfile",
+                "main_file" : "func1.py",
                 "requirements_file": "func1_requirements.txt"
             },
             "func2": {
                 "function_name": "func2",
-                "main_file" : "func2",
+                "dockerfile": "func2.dockerfile",
+                "main_file" : "func2.py",
                 "requirements_file": "func2_requirements.txt"
+            }
         }
     }
 
@@ -920,5 +927,44 @@ config.json
                     "sample_label_stage":"staged"
                 }
             }
+        }
+    }
+
+Deploying Arbitrary Services
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to use goblet to deploy GCP resources without deploying a goblet application. It is even possible 
+to deploy non-python based services using Goblet.
+
+The first method to deploy GCP resources without deploying a goblet application is to deploy :ref:`infrastructure <infrastructure>` resources such 
+as :ref:`redis <redis>` or an :ref:`api gateway <apigateway>`.
+
+.. code:: python 
+
+   app =Goblet()
+
+   app.redis()
+   app.apigateway("openapi-existing", "BACKEND_URL", filename=filename)
+
+and then deploy using `goblet deploy -p PROJECT -l LOCATION --skip-backend --skip-resources`
+
+You can deploy a non-python application to Cloud Run by specifying the `force_deploy_cloudrun` key in `config.json` and passing in a custom Dockerfile.
+Further fields can be customized in `config.json`. See the example `example_non_python_cloudrun` for more details on how to setup.
+
+An example `config.json` can be found below.
+
+.. code:: json 
+    
+    {
+        "custom_files":{
+            "include":["package.json", ".dockerignore", "package-lock.json", "server.js"]
+        },
+        "force_deploy_cloudrun": true,
+        "cloudrun_container": {
+            "command": ["node", "server.js"],
+            "ports":[{
+                "name":"http1",
+                "containerPort":8000
+            }]
         }
     }
