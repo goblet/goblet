@@ -1,70 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Resources &mdash; goblet 0.10.3 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Resources &mdash; goblet 0.10.4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Backends" href="backends.html" />
     <link rel="prev" title="Topics" href="topics.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> goblet
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -72,18 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 </ul>
@@ -100,6 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#eventarc">Eventarc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#jobs">Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bigquery-remote-functions">BigQuery Remote Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cloudtask-target">CloudTask Target</a></li>
 </ul>
 </li>
 </ul>
@@ -122,74 +76,33 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">goblet</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Resources</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/resources.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="resources">
+             
+  <section id="resources">
 <h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="http">
+<section id="http">
 <h2>Http<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
 <p>You can have a http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
 only deploy a cloudfunction. The function takes in a flask request object</p>
@@ -220,8 +133,8 @@ triggered.</p>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on pr&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="routes">
+</section>
+<section id="routes">
 <h2>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h2>
 <p>The Goblet.route() method is used to construct which routes you want to create for your API.
 Behind the scenese goblet will configure an Api Config and Api Gateway on gcp.</p>
@@ -272,11 +185,11 @@ instance itself. The routes work the same as with an apigateway, but you would a
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudrun-routing&quot;</span><span class="p">,</span> <span class="n">routes_type</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="scheduled-jobs">
+</section>
+<section id="scheduled-jobs">
 <h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this headline">¶</a></h2>
-<p>To deploy scheduled jobs using a cron schedule use the <code class="docutils literal notranslate"><span class="pre">&#64;app.schedule(...)</span></code> decorator. The cron schedule follows the unix-cron format.
-More information on the cron format can be found <a href="#id2"><span class="problematic" id="id3">`here`_</span></a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
+<p>To deploy scheduled jobs using a cron schedule use the <cite>&#64;app.schedule(…)</cite> decorator. The cron schedule follows the unix-cron format.
+More information on the cron format can be found in the <a class="reference external" href="https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules">gcp docs</a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
 scheduled jobs.</p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">)</span>
@@ -311,8 +224,8 @@ with the name of your scheduled function.</p>
 <span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="n">FUNCTION_NAME</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="pubsub">
+</section>
+<section id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
 provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
@@ -350,8 +263,8 @@ For additional information on configuration values available see <a class="refer
     <span class="k">return</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="storage">
+</section>
+<section id="storage">
 <h2>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger functions from storage events using the <code class="docutils literal notranslate"><span class="pre">&#64;app.storage(BUCKET,</span> <span class="pre">EVENT)</span></code> decorator. It is required to pass in the bucket name and the event_type.
 The following events are supported by GCP</p>
@@ -375,8 +288,8 @@ The following events are supported by GCP</p>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="eventarc">
+</section>
+<section id="eventarc">
 <h2>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this headline">¶</a></h2>
 <p>You can trigger functions from evenarc events using the <cite>&#64;app.eventarc(topic=None, event_filters=[])</cite> decorator. Specifying a topic will create a trigger on a custom pubsub topic. For
 all other events, specify the event attribute  and event value in the <cite>event_filters</cite> list. See <a class="reference external" href="https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud">Creating Triggers</a> for more information
@@ -416,8 +329,8 @@ on possible values.</p>
     <span class="k">return</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="jobs">
+</section>
+<section id="jobs">
 <h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this headline">¶</a></h2>
 <p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
 you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations such as a schedule should be added to the <cite>task_id=0</cite>. Jobs can be further configured
@@ -444,8 +357,8 @@ by setting various configs in <cite>config.json.</cite></p>
 </pre></div>
 </div>
 <p>See the example <a class="reference external" href="https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json">config.json</a></p>
-</div>
-<div class="section" id="bigquery-remote-functions">
+</section>
+<section id="bigquery-remote-functions">
 <h2>BigQuery Remote Functions<a class="headerlink" href="#bigquery-remote-functions" title="Permalink to this headline">¶</a></h2>
 <p>To deploy BigQuery remote functions use <code class="docutils literal notranslate"><span class="pre">&#64;app.bqremotefunction(...)</span></code> decorator.
 BigQuery remote functions documentation can be found <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions">here</a>.</p>
@@ -474,7 +387,7 @@ will be “my_dataset_id”.</p>
 <p>The dataset_id reference a dataset in BigQuery already created in the same
 location and project in GCP.</p>
 <p>To call a routine from BigQuery just use</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">my_functions_my_routine</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span> <span class="k">from</span> <span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span><span class="w"> </span><span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">my_functions_my_routine</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will apply my_functions_my_routine to every tuple present in table
@@ -494,7 +407,7 @@ exist in the table.</p>
 </pre></div>
 </div>
 <p>Should be called this way:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">math_example_multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span> <span class="k">from</span> <span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span><span class="w"> </span><span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">math_example_multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span><span class="w"></span>
 </pre></div>
 </div>
 <p>And will return an integer resulting from the multiplication from the three fields
@@ -503,55 +416,87 @@ x,y,z in table my_dataset_id.table for every tuple in the table.</p>
 <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/bigqueryconnection">BigQuery connection</a>,
 a <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/rest/v2/routines">BigQuery routine</a> and
 a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).</p>
+</section>
+<section id="cloudtask-target">
+<h2>CloudTask Target<a class="headerlink" href="#cloudtask-target" title="Permalink to this headline">¶</a></h2>
+<p>You can handle http requests from a CloudTask by using the <code class="docutils literal notranslate"><span class="pre">&#64;app.cloudtasktarget(name=&quot;target&quot;)</span></code> decorator.
+For Goblet to route a request to a function decorated with <code class="docutils literal notranslate"><span class="pre">cloudtasktarget(name=&quot;target&quot;)</span></code>, the request must include
+the following headers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;Google-Cloud-Tasks&quot;</span><span class="p">,</span>
+<span class="s2">&quot;X-Goblet-CloudTask-Target&quot;</span><span class="p">:</span> <span class="s2">&quot;target&quot;</span>
+</pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Goblet uses the <cite>User-Agent</cite> headers to route the request to the CloudTaskTarget instance. The CloudTask Queue adds this headers.</p></li>
+<li><p>The <cite>X-Goblet-CloudTask-Target</cite> routes the request to the expected function.</p></li>
+</ul>
 </div>
+<p>The next example shows the function that would serve a request with the headers shown above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudtask_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">cloudtasktarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_target_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; handle request &#39;&#39;&#39;</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>Another example using <code class="docutils literal notranslate"><span class="pre">app.cloudtaskqueue</span></code> to queue and handle tasks in the same instance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudtask_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">cloudtaskqueue</span><span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">cloudtasktarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_target_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; handle request &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">{}</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/enqueue&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">enqueue</span><span class="p">():</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;enqueue&quot;</span><span class="p">}}</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="backends.html" class="btn btn-neutral float-right" title="Backends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backends.html" class="btn btn-neutral float-right" title="Backends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, austen novis.
-
-    </p>
+    <p>&#169; Copyright 2020, austen novis.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
