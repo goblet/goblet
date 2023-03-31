@@ -447,6 +447,7 @@ class Register_Handlers(DecoratorAPI):
             return "eventarc"
         if (
             request.is_json
+            and isinstance(request.json, dict)
             and request.json.get("userDefinedContext")
             and request.json["userDefinedContext"].get("X-Goblet-Name")
         ):
@@ -454,6 +455,7 @@ class Register_Handlers(DecoratorAPI):
         if (
             request.is_json
             and request.get_json(silent=True)
+            and isinstance(request.json, dict)
             and request.json.get("subscription")
             and request.json.get("message")
         ):

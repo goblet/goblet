@@ -105,6 +105,21 @@ class TestRoutes:
         assert mock.call_count == 1
         mock_param.assert_called_once_with("param")
 
+    def test_call_route_list_request_body(self):
+        app = Goblet(function_name="goblet_example")
+        mock = Mock()
+
+        app.route("/test", methods=["POST"])(mock_dummy_function(mock))
+
+        mock_event1 = Mock()
+        mock_event1.path = "/test"
+        mock_event1.method = "POST"
+        mock_event1.headers = {}
+        mock_event1.json = [{"field": "value"}, {"field": "value"}]
+
+        app(mock_event1, None)
+        assert mock.call_count == 1
+
     def test_cors(self):
         app = Goblet(function_name="goblet_cors")
         app2 = Goblet(
