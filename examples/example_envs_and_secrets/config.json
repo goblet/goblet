@@ -1,0 +1,111 @@
+{
+    "stages": {
+        "cloudfunction_example": {
+            "secretEnvironmentVariables": [
+                {
+                    "key": "ENV_NAME",
+                    "secret": "SECRET_NAME",
+                    "version": "VERSION"
+                }
+            ],
+            "environmentVariables": {
+                "ENV_NAME": "ENV_VALUE"
+            },
+            "secretVolumes": [
+                {
+                    "mountPath": "MOUNT_PATH",
+                    "projectId": "PROJECT_ID",
+                    "secret": "SECRET_NAME",
+                    "versions": [
+                        {
+                            "version": "VERSION",
+                            "path": "RELATIVE_TO_MOUNT_PATH"
+                        }
+                    ]
+                }
+            ]
+        },
+        "cloudrun_example": {
+            "cloudrun_container": {
+                "env": [
+                    {
+                        "name": "ENV_NAME",
+                        "value": "ENV_VALUE"
+                    },
+                    {
+                        "name": "ENV_NAME",
+                        "valueSource": {
+                            "secretKeyRef": {
+                                "secret": "SECRET_NAME",
+                                "version": "VERSION"
+                            }
+                        }
+                    }
+                ],
+                "volumeMounts": [
+                    {
+                        "name": "NAME",
+                        "mountPath": "MOUNT_PATH"
+                    }
+                ]
+            },
+            "cloudrun_revision": {
+                "volumes": [
+                    {
+                        "name": "NAME",
+                        "secret": {
+                            "secret": "NAME",
+                            "items": [
+                                {
+                                    "version": "VERSION",
+                                    "path": "RELATIVE_TO_MOUNT_PATH"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "cloudrun_job": {
+            "job_container": {
+                "env": [
+                    {
+                        "name": "ENV_NAME",
+                        "value": "ENV_VALUE"
+                    },
+                    {
+                        "name": "ENV_NAME",
+                        "valueSource": {
+                            "secretKeyRef": {
+                                "secret": "SECRET_NAME",
+                                "version": "VERSION"
+                            }
+                        }
+                    }
+                ],
+                "volumeMounts": [
+                    {
+                        "name": "NAME",
+                        "mountPath": "MOUNT_PATH"
+                    }
+                ]
+            },
+            "job_revision": {
+                "volumes": [
+                    {
+                        "name": "NAME",
+                        "secret": {
+                            "secret": "NAME",
+                            "items": [
+                                {
+                                    "version": "VERSION",
+                                    "path": "RELATIVE_TO_MOUNT_PATH"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
