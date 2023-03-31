@@ -9,8 +9,8 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 
 import goblet
 
-from goblet.resources.handler import Handler
-from goblet.resources.plugins.pydantic import PydanticPlugin
+from goblet.handlers.handler import Handler
+from goblet.handlers.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway

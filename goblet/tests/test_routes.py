@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 import pytest
 from goblet import Goblet, Response, jsonify
-from goblet.resources.routes import Routes, CORSConfig
+from goblet.handlers.routes import Routes, CORSConfig
 from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
