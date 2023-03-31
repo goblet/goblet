@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from goblet import Goblet, Response
-from goblet.resources.pubsub import PubSub
+from goblet.handlers.pubsub import PubSub
 from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,

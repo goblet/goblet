@@ -2,7 +2,7 @@ import json
 from unittest.mock import Mock
 from goblet import Goblet
 from goblet_gcp_client import get_responses
-from goblet.resources.bq_remote_function import BigQueryRemoteFunction
+from goblet.handlers.bq_remote_function import BigQueryRemoteFunction
 
 
 class TestBqRemoteFunction:

@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 from goblet import Goblet
-from goblet.resources.jobs import Jobs
+from goblet.handlers.jobs import Jobs
 import pytest
 
 from goblet.test_utils import (

@@ -75,6 +75,13 @@ $ curl https://api.uc.gateway.dev/home
 
 ## Resources Supported
 
+#### Infrastructure
+* vpc connector
+* redis
+* alerts
+* api gateway
+* cloudtaskqueue
+
 #### Backends
 * cloudfunction
 * cloudfunction V2
@@ -84,7 +91,7 @@ $ curl https://api.uc.gateway.dev/home
 * api gateway
 * http
 
-#### Triggering
+#### Handlers
 * pubsub
 * scheduler
 * storage
@@ -92,13 +99,6 @@ $ curl https://api.uc.gateway.dev/home
 * cloudrun jobs
 * bq remote functions
 * cloudtasktarget
-
-#### Infrastructure
-* vpc connector
-* redis
-* alerts
-* api gateway
-* cloudtaskqueue
 
 ## Data Typing Frameworks Supported
 

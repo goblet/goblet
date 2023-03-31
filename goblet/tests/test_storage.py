@@ -1,5 +1,5 @@
 from goblet import Goblet
-from goblet.resources.storage import Storage
+from goblet.handlers.storage import Storage
 from goblet_gcp_client import get_responses
 from goblet.test_utils import dummy_function, mock_dummy_function
 from goblet.backends import CloudFunctionV1

@@ -1,4 +1,4 @@
-from goblet.resources.handler import Handler
+from goblet.handlers.handler import Handler
 
 
 class HTTP(Handler):

@@ -3,7 +3,7 @@ import os
 
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 from goblet.infrastructures.infrastructure import Infrastructure
-from goblet.resources.routes import OpenApiSpec
+from goblet.handlers.routes import OpenApiSpec
 from goblet.utils import get_g_dir, get_dir
 
 log = logging.getLogger("goblet.deployer")

@@ -1,6 +1,6 @@
-=========
-Resources
-=========
+========
+Handlers
+========
 
 Http
 ^^^^
@@ -443,4 +443,3 @@ Another example using ``app.cloudtaskqueue`` to queue and handle tasks in the sa
         payload = {"message": {"title": "enqueue"}}
         client.enqueue(target="target", payload=payload)
         return {}
-

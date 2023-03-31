@@ -11,7 +11,7 @@ from goblet.common_cloud_actions import (
 from goblet.config import GConfig
 import logging
 
-from goblet.resources.handler import Handler
+from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project
 from goblet.utils import attributes_to_filter
 
