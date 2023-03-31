@@ -4,26 +4,29 @@ import yaml
 from warnings import warn
 import logging
 from googleapiclient.errors import HttpError
+
+from goblet.client import VersionedClients
+from goblet_gcp_client.client import get_default_location, get_default_project
+
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-from goblet.client import VersionedClients
-from goblet_gcp_client.client import get_default_location, get_default_project
-from goblet.infrastructures.cloudtask import CloudTaskQueue
-from goblet.resources.bq_remote_function import BigQueryRemoteFunction
-from goblet.resources.eventarc import EventArc
-from goblet.resources.pubsub import PubSub
-from goblet.resources.routes import Routes
-from goblet.resources.scheduler import Scheduler
-from goblet.resources.cloudtasktarget import CloudTaskTarget
-from goblet.resources.storage import Storage
-from goblet.resources.http import HTTP
-from goblet.resources.jobs import Jobs
+
+from goblet.handlers.bq_remote_function import BigQueryRemoteFunction
+from goblet.handlers.eventarc import EventArc
+from goblet.handlers.pubsub import PubSub
+from goblet.handlers.routes import Routes
+from goblet.handlers.scheduler import Scheduler
+from goblet.handlers.cloudtasktarget import CloudTaskTarget
+from goblet.handlers.storage import Storage
+from goblet.handlers.http import HTTP
+from goblet.handlers.jobs import Jobs
 
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
+from goblet.infrastructures.cloudtask import CloudTaskQueue
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)

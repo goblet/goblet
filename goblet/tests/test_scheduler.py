@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 from goblet import Goblet
-from goblet.resources.scheduler import Scheduler
+from goblet.handlers.scheduler import Scheduler
 from goblet.test_utils import (
     mock_dummy_function,
     dummy_function,

@@ -87,13 +87,13 @@ Topics
 
    topics
 
-Resources
-----------
+Handlers
+--------
 
 .. toctree::
    :maxdepth: 2
 
-   resources
+   handlers
 
 Backends
 ----------
@@ -142,4 +142,3 @@ Examples
    :maxdepth: 2
 
    examples
-

@@ -1,6 +1,6 @@
 import logging
 
-from goblet.resources.handler import Handler
+from goblet.handlers.handler import Handler
 from goblet.common_cloud_actions import getCloudbuildArtifact
 from goblet.config import GConfig
 

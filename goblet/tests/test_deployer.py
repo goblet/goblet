@@ -1,5 +1,5 @@
 from goblet import Goblet
-from goblet.resources.http import HTTP
+from goblet.handlers.http import HTTP
 from goblet_gcp_client import get_responses, get_response
 from goblet.test_utils import dummy_function, DATA_DIR_MAIN
 from goblet.errors import GobletError

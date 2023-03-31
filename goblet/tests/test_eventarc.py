@@ -1,5 +1,5 @@
 from goblet import Goblet
-from goblet.resources.eventarc import EventArc
+from goblet.handlers.eventarc import EventArc
 from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
