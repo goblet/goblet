@@ -138,8 +138,8 @@ class Scheduler(Handler):
             filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
         )
         for filtered_job in filtered_jobs:
-            split_name = filtered_job["name"].split("/")[-1].split("-")
-            filtered_name = split_name[1]
+            split_name = filtered_job["name"].split("/")[-1].split(f"{self.name}-")
+            filtered_name = split_name[-1]
             if not self.resources.get(filtered_name):
                 log.info(f'Detected unused job in GCP {filtered_job["name"]}')
                 if not dryrun:
