@@ -19,11 +19,14 @@ class TestBqRemoteFunction:
 
         resources = app.handlers["bqremotefunction"].resources
 
-        input, output = BigQueryRemoteFunction._get_hints(string_test_blogs_1)
+        input, output = BigQueryRemoteFunction(
+            "bqremotefunction_test", "cloudrun"
+        )._get_hints(string_test_blogs_1)
 
         expected_resources = {
             "routine_name": "bqremotefunction_test_string_test_blogs_1",
             "dataset_id": test_dataset_id,
+            "vectorized_func": False,
             "inputs": input,
             "output": output,
             "func": string_test_blogs_1,
