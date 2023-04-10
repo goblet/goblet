@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from goblet import Goblet
 from goblet_gcp_client import get_responses
 from goblet.handlers.bq_remote_function import BigQueryRemoteFunction
+from typing import List
 
 
 class TestBqRemoteFunction:
@@ -43,6 +44,33 @@ class TestBqRemoteFunction:
                 resource["output"]
             )
             assert expected_resources["func"] == resource["func"]
+
+    def test_call_bqremotefunction_vectorize(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+
+        test_name = "bqremotefunction_test"
+        app = Goblet(function_name=test_name)
+
+        @app.bqremotefunction(dataset_id="blogs", vectorize_func=True)
+        def function_test(x: List[int], y: List[str]) -> List[str]:
+            return [f"{x[0]}{y[0]}", f"{x[1]}{y[1]}"]
+
+        body = {
+            "userDefinedContext": {
+                "X-Goblet-Name": "bqremotefunction_test_function_test"
+            },
+            "calls": [[2, "a"], [3, "b"]],
+        }
+
+        mock_request = Mock()
+        mock_request.json = body
+        mock_request.headers = {}
+
+        result = json.loads(app(mock_request, None))
+
+        assert result["replies"][0] == "2a"
+        assert result["replies"][1] == "3b"
 
     def test_call_bqremotefunction(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
