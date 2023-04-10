@@ -44,6 +44,8 @@ class BigQueryRemoteFunction(Handler):
         :param kwargs:
         :return:
         """
+        dataset_id = kwargs["dataset_id"]
+        vectorize_func = kwargs["vectorize_func"]
         kwargs = kwargs.pop("kwargs")
         _input, _output = BigQueryRemoteFunction._get_hints(func)
         # Routine names must contain only letters, numbers, and underscores, and be at most 256 characters long.
@@ -51,7 +53,8 @@ class BigQueryRemoteFunction(Handler):
         routine_name = routine_name.replace("-", "_")
         self.resources[routine_name] = {
             "routine_name": routine_name,
-            "dataset_id": kwargs["dataset_id"],
+            "dataset_id": dataset_id,
+            "vectorize_func": vectorize_func,
             "inputs": _input,
             "output": _output,
             "func": func,
@@ -77,9 +80,13 @@ class BigQueryRemoteFunction(Handler):
         if not cloud_method:
             raise ValueError(f"Method {func_name} not found")
         bq_tuples = request.json["calls"]
-        tuples_replies = []
-        for _tuple in bq_tuples:
-            tuples_replies.append(cloud_method["func"](*_tuple))
+        if self.resources["vectorize_func"]:
+            unzipped_list = list(map(list, zip(*bq_tuples)))
+            tuples_replies = cloud_method["func"](*unzipped_list)
+        else:
+            tuples_replies = []
+            for _tuple in bq_tuples:
+                tuples_replies.append(cloud_method["func"](*_tuple))
         reply = {"replies": tuples_replies}
         return json.dumps(reply)
 
@@ -264,7 +271,15 @@ class BigQueryRemoteFunction(Handler):
                 )
                 raise exception
 
-    def _get_hints(func):
+    @staticmethod
+    def _get_composite_hint(hint):
+        try:
+            inner = hint.__args__
+        except AttributeError:
+            raise AttributeError(f"Expected a composite hint, got {str(hint.__name__)}")
+        return inner[0]
+
+    def _get_hints(self, func):
         """
         Inspect hint in function func and creates an array for input and output with SQL Datatypes
         according to https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types
@@ -280,6 +295,8 @@ class BigQueryRemoteFunction(Handler):
         outputs = []
 
         for var_name, var_type in type_hints.items():
+            if self.resources["vectorize_func"]:
+                var_type = self._get_composite_hint(var_type)
             if var_name == "return":
                 outputs.append(BIGQUERY_DATATYPES[var_type])
             else:

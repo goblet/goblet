@@ -123,9 +123,19 @@ class DecoratorAPI:
             },
         )
 
-    def bqremotefunction(self, **kwargs):
+    def bqremotefunction(self, dataset_id, vectorize_func = False, **kwargs):
+        """
+        BigQuery remote function trigger
+        dataset_id: Where the function will be registered
+        vectorize_func: If True, ensure every argument of your function is a list, and returns a list
+        """
         return self._create_registration_function(
-            handler_type="bqremotefunction", registration_kwargs={"kwargs": kwargs}
+            handler_type="bqremotefunction",
+            registration_kwargs={
+                "dataset_id": dataset_id,
+                "vectorize_func": vectorize_func,
+                "kwargs": kwargs
+            }
         )
 
     def topic(self, topic, **kwargs):
