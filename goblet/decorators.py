@@ -123,7 +123,7 @@ class DecoratorAPI:
             },
         )
 
-    def bqremotefunction(self, dataset_id, vectorize_func = False, **kwargs):
+    def bqremotefunction(self, dataset_id, vectorize_func=False, **kwargs):
         """
         BigQuery remote function trigger
         dataset_id: Where the function will be registered
@@ -134,8 +134,8 @@ class DecoratorAPI:
             registration_kwargs={
                 "dataset_id": dataset_id,
                 "vectorize_func": vectorize_func,
-                "kwargs": kwargs
-            }
+                "kwargs": kwargs,
+            },
         )
 
     def topic(self, topic, **kwargs):

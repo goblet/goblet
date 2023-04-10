@@ -279,7 +279,7 @@ class BigQueryRemoteFunction(Handler):
             raise AttributeError(f"Expected a composite hint, got {str(hint.__name__)}")
         return inner[0]
 
-    def _get_hints(self, func, vectorize_func = False):
+    def _get_hints(self, func, vectorize_func=False):
         """
         Inspect hint in function func and creates an array for input and output with SQL Datatypes
         according to https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types
