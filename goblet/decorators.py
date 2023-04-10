@@ -123,17 +123,21 @@ class DecoratorAPI:
             },
         )
 
-    def bqremotefunction(self, dataset_id, vectorize_func=False, **kwargs):
+    def bqremotefunction(
+        self, dataset_id, vectorize_func=False, max_batching_rows=0, **kwargs
+    ):
         """
         BigQuery remote function trigger
         dataset_id: Where the function will be registered
         vectorize_func: If True, ensure every argument of your function is a list, and returns a list
+        max_batching_rows: Max number of rows in each batch sent to the remote service. 0 for dynamic
         """
         return self._create_registration_function(
             handler_type="bqremotefunction",
             registration_kwargs={
                 "dataset_id": dataset_id,
                 "vectorize_func": vectorize_func,
+                "max_batching_rows": max_batching_rows,
                 "kwargs": kwargs,
             },
         )

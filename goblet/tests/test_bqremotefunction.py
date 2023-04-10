@@ -27,6 +27,7 @@ class TestBqRemoteFunction:
             "routine_name": "bqremotefunction_test_string_test_blogs_1",
             "dataset_id": test_dataset_id,
             "vectorized_func": False,
+            "max_batching_rows": 0,
             "inputs": input,
             "output": output,
             "func": string_test_blogs_1,

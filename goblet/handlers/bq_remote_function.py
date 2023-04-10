@@ -46,6 +46,7 @@ class BigQueryRemoteFunction(Handler):
         """
         dataset_id = kwargs["dataset_id"]
         vectorize_func = kwargs["vectorize_func"]
+        max_batching_rows = kwargs["max_batching_rows"]
         kwargs = kwargs.pop("kwargs")
         _input, _output = self._get_hints(func, vectorize_func)
         # Routine names must contain only letters, numbers, and underscores, and be at most 256 characters long.
@@ -55,6 +56,7 @@ class BigQueryRemoteFunction(Handler):
             "routine_name": routine_name,
             "dataset_id": dataset_id,
             "vectorize_func": vectorize_func,
+            "max_batching_rows": max_batching_rows,
             "inputs": _input,
             "output": _output,
             "func": func,
@@ -319,6 +321,7 @@ class BigQueryRemoteFunction(Handler):
             "endpoint": self.backend.http_endpoint,
             "connection": connection["name"],
             "userDefinedContext": {"X-Goblet-Name": resource["routine_name"]},
+            "maxBatchingRows": str(resource["max_batching_rows"]),
         }
         routine_reference = {
             "projectId": get_default_project(),
