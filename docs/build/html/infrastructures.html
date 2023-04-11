@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Infrastructure &mdash; goblet 0.10.4 documentation</title>
@@ -12,9 +12,8 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,11 +26,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> goblet
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            goblet
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -85,8 +88,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Infrastructure</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Infrastructure</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/infrastructures.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -97,10 +100,10 @@
            <div itemprop="articleBody">
              
   <section id="infrastructure">
-<span id="id1"></span><h1>Infrastructure<a class="headerlink" href="#infrastructure" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Infrastructure<a class="headerlink" href="#infrastructure" title="Permalink to this heading">¶</a></h1>
 <p>You can now provision infrastructure within your Goblet code.</p>
 <section id="alerts">
-<h2>Alerts<a class="headerlink" href="#alerts" title="Permalink to this headline">¶</a></h2>
+<h2>Alerts<a class="headerlink" href="#alerts" title="Permalink to this heading">¶</a></h2>
 <p>You can deploy alerts related to your application by using the alert method. Each alert takes a name and a list of conditions. Notification channels
 can be added to the <cite>alerts.notification_channel</cite> key in <cite>config.json</cite> or explicity in the alert. The base <cite>AlertCondition</cite> class allows you to
 fully customize your alert based on the fields privided by the <a class="reference external" href="https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#conditionhttps://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#condition">GCP Alert Resource</a></p>
@@ -122,7 +125,7 @@ creates an alert using that metric.</p>
 </div>
 </section>
 <section id="redis">
-<span id="id2"></span><h2>Redis<a class="headerlink" href="#redis" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>Redis<a class="headerlink" href="#redis" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
 <span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="p">(</span><span class="s2">&quot;redis-example&quot;</span><span class="p">)</span>
 </pre></div>
@@ -132,7 +135,7 @@ To further configure your Redis Instance within Goblet, specify the <strong>`red
 You can reference <a class="reference external" href="https://cloud.google.com/memorystore/docs/redis/reference/rest/v1/projects.locations.instances#Instance">Redis Instance Resource</a> for more information on available fields.</p>
 </section>
 <section id="vpc-connector">
-<h2>VPC Connector<a class="headerlink" href="#vpc-connector" title="Permalink to this headline">¶</a></h2>
+<h2>VPC Connector<a class="headerlink" href="#vpc-connector" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
 <span class="n">app</span><span class="o">.</span><span class="n">vpcconnector</span><span class="p">(</span><span class="s2">&quot;vpcconnector&quot;</span><span class="p">)</span>
 </pre></div>
@@ -148,7 +151,7 @@ You can reference <a class="reference external" href="https://cloud.google.com/v
 </div>
 </section>
 <section id="api-gateway">
-<span id="apigateway"></span><h2>Api Gateway<a class="headerlink" href="#api-gateway" title="Permalink to this headline">¶</a></h2>
+<span id="apigateway"></span><h2>Api Gateway<a class="headerlink" href="#api-gateway" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;openapi-existing&quot;</span><span class="p">)</span>
 
 <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;openapi_spec.yml&quot;</span>
@@ -191,7 +194,7 @@ spec as a dictionary. If you dont need to deploy any other Goblet resources you 
 </div>
 </section>
 <section id="cloudtask-queue">
-<h2>CloudTask Queue<a class="headerlink" href="#cloudtask-queue" title="Permalink to this headline">¶</a></h2>
+<h2>CloudTask Queue<a class="headerlink" href="#cloudtask-queue" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
 <span class="n">config</span> <span class="o">=</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">cloudtaskqueue</span><span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>

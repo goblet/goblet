@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quickstart &mdash; goblet 0.10.4 documentation</title>
@@ -12,9 +12,8 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,11 +26,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> goblet
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            goblet
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -86,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Quickstart</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quickstart</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,9 +101,9 @@
            <div itemprop="articleBody">
              
   <section id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
 <section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h2>
 <p>In this tutorial, you’ll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.7. You can find the latest versions of python on the Python download page.</p>
 <p>To install Goblet, we’ll first create and activate a virtual environment in python3.7:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 --version
@@ -121,12 +124,12 @@ Usage: goblet [OPTIONS] COMMAND [ARGS]...
 </div>
 </section>
 <section id="credentials">
-<h2>Credentials<a class="headerlink" href="#credentials" title="Permalink to this headline">¶</a></h2>
+<h2>Credentials<a class="headerlink" href="#credentials" title="Permalink to this heading">¶</a></h2>
 <p>Before you can deploy an application, be sure you have credentials configured. You should run <code class="docutils literal notranslate"><span class="pre">gcloud</span> <span class="pre">auth</span> <span class="pre">application-default</span> <span class="pre">login</span></code> and sign in to the desired project.</p>
 <p>When setting the defaut location note that api-gateway is only available in <code class="docutils literal notranslate"><span class="pre">asia-east1</span></code>, <code class="docutils literal notranslate"><span class="pre">europe-west1</span></code>, and <code class="docutils literal notranslate"><span class="pre">us-central1</span></code>.</p>
 </section>
 <section id="creating-your-project">
-<h2>Creating Your Project<a class="headerlink" href="#creating-your-project" title="Permalink to this headline">¶</a></h2>
+<h2>Creating Your Project<a class="headerlink" href="#creating-your-project" title="Permalink to this heading">¶</a></h2>
 <p>create your project directory, which should include an main.py and a requirements.txt. Make sure requirements.txt includes <code class="docutils literal notranslate"><span class="pre">goblet-gcp</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls -la
 drwxr-xr-x   .goblet
@@ -149,7 +152,7 @@ drwxr-xr-x   .goblet
 <p>This app with deploy an api with endpoint <code class="docutils literal notranslate"><span class="pre">/home</span></code>.</p>
 </section>
 <section id="running-locally">
-<h2>Running Locally<a class="headerlink" href="#running-locally" title="Permalink to this headline">¶</a></h2>
+<h2>Running Locally<a class="headerlink" href="#running-locally" title="Permalink to this heading">¶</a></h2>
 <p>Running your functions locally for testing and debugging is easy to do with goblet.</p>
 <p>Simply run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span></code>.</p>
 <p>You can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code> ar your defined routes.</p>
@@ -162,7 +165,7 @@ with the name of your scheduled function.</p>
 </div>
 </section>
 <section id="deploying">
-<h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
+<h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this heading">¶</a></h2>
 <p>Let’s deploy this app. Make sure you’re in the app directory and run goblet deploy making sure to specify the desired location:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ goblet deploy -l us-central1
 INFO:goblet.deployer:zipping function......
@@ -183,15 +186,15 @@ INFO:goblet.deployer:api endpoint is goblet-example-yol8sbt.uc.gateway.dev
 <p>Try making a change to the returned dictionary from the home() function. You can then redeploy your changes by running <code class="docutils literal notranslate"><span class="pre">golet</span> <span class="pre">deploy</span></code>.</p>
 </section>
 <section id="cleanup">
-<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this heading">¶</a></h2>
 <p>You’ve now created your first app using goblet. You can make modifications to your main.py file and rerun goblet deploy to redeploy your changes.</p>
 <p>If you’re done experimenting with Goblet and you’d like to cleanup, you can use the <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">destroy</span></code> command making sure to specify the desired location, and Goblet will delete all the resources it created when running the goblet deploy command.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ goblet destroy -l us-central1
-INFO:goblet.deployer:destroying api gateway......
-INFO:goblet.deployer:api configs destroying....
-INFO:goblet.deployer:apis successfully destroyed......
-INFO:goblet.deployer:deleting google cloudfunction......
-INFO:goblet.deployer:deleting storage bucket......
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>goblet<span class="w"> </span>destroy<span class="w"> </span>-l<span class="w"> </span>us-central1
+INFO:goblet.deployer:destroying<span class="w"> </span>api<span class="w"> </span>gateway......
+INFO:goblet.deployer:api<span class="w"> </span>configs<span class="w"> </span>destroying....
+INFO:goblet.deployer:apis<span class="w"> </span>successfully<span class="w"> </span>destroyed......
+INFO:goblet.deployer:deleting<span class="w"> </span>google<span class="w"> </span>cloudfunction......
+INFO:goblet.deployer:deleting<span class="w"> </span>storage<span class="w"> </span>bucket......
 </pre></div>
 </div>
 </section>

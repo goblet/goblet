@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Topics &mdash; goblet 0.10.4 documentation</title>
@@ -12,9 +12,8 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,11 +26,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> goblet
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            goblet
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -100,8 +103,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Topics</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Topics</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/topics.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -112,9 +115,9 @@
            <div itemprop="articleBody">
              
   <section id="topics">
-<h1>Topics<a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h1>
+<h1>Topics<a class="headerlink" href="#topics" title="Permalink to this heading">¶</a></h1>
 <section id="routing">
-<h2>Routing<a class="headerlink" href="#routing" title="Permalink to this headline">¶</a></h2>
+<h2>Routing<a class="headerlink" href="#routing" title="Permalink to this heading">¶</a></h2>
 <p>The Goblet.route() method is used to construct which routes you want to create for your API.
 The concept is the same mechanism used by Flask. You decorate a function with &#64;app.route(…),
 and whenever a user requests that URL, the function you’ve decorated is called. For example,
@@ -153,7 +156,7 @@ The argument names for the view function must match the name of the captured arg
 </div>
 </section>
 <section id="config">
-<h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<h2>Config<a class="headerlink" href="#config" title="Permalink to this heading">¶</a></h2>
 <p>You can provide custom configurations for your cloudfunction or cloudrun goblet deployments by using the config.json file which should be
 located in the .goblet folder. If one doesn’t exist then you should add one.</p>
 <p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <code class="docutils literal notranslate"><span class="pre">cloudfunction</span></code> key. See below for example.</p>
@@ -165,14 +168,14 @@ located in the .goblet folder. If one doesn’t exist then you should add one.</
 <li><p>timeout</p></li>
 </ul>
 <p>Example config.json:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;env1&quot;</span><span class="p">:</span><span class="s2">&quot;var1&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;label1&quot;</span><span class="p">:</span><span class="s2">&quot;val1&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;availableMemoryMb&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30s&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;env1&quot;</span><span class="p">:</span><span class="s2">&quot;var1&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;label1&quot;</span><span class="p">:</span><span class="s2">&quot;val1&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;availableMemoryMb&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30s&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>see the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#CloudFunction">cloudfunction</a> docs for more details on the fields.</p>
@@ -184,61 +187,61 @@ located in the .goblet folder. If one doesn’t exist then you should add one.</
 <p>For <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/projects.locations.services#RevisionTemplate">Cloudrun revisions</a>, use the <code class="docutils literal notranslate"><span class="pre">cloudrun_revision</span></code> key
 For <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/Container">Container configurations</a>, use the <code class="docutils literal notranslate"><span class="pre">cloudrun_container</span></code> key
 For <a class="reference external" href="https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds">Cloud Build configurations</a>, use the <code class="docutils literal notranslate"><span class="pre">cloudbuild</span></code> key</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;traffic&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudrun_revision&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudbuild&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;artifact_registry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;location-docker.pkg.dev/gcp_project/artifact/image&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-value&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;valueSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                    </span><span class="nt">&quot;secretKeyRef&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-name&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-version&quot;</span><span class="w"></span>
-<span class="w">                    </span><span class="p">}</span><span class="w"></span>
-<span class="w">                </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudrun&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;traffic&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;cloudrun_revision&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nt">&quot;cloudbuild&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;artifact_registry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;location-docker.pkg.dev/gcp_project/artifact/image&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-value&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;valueSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;secretKeyRef&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-name&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-version&quot;</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>By default goblet includes all python files located in the directory. To include other files use the <code class="docutils literal notranslate"><span class="pre">custom_files</span></code> key
 which takes in a list of python <a class="reference external" href="https://docs.python.org/3/library/glob.html">glob</a> formatted strings.</p>
 <p>Example config.json:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;custom_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;include&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*.yaml&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;exclude&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*.secret&quot;</span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;custom_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;include&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*.yaml&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;exclude&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*.secret&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>You can also set environent variables for your goblet deployment by using the <cite>deploy</cite> key with the <cite>environmentVariables</cite> object. This is
 useful if you want to set stage specific variables during your depoyment.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;dev&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;deploy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                    </span><span class="nt">&quot;PUBSUB_TOPIC&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEV_TOPIC&quot;</span><span class="w"></span>
-<span class="w">                </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;dev&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;deploy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;PUBSUB_TOPIC&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEV_TOPIC&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>then your goblet code could be like</p>
@@ -254,64 +257,64 @@ useful if you want to set stage specific variables during your depoyment.</p>
 <li><p>labels</p></li>
 <li><p>displayName</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;apiConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;gatewayServiceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;projects/-/serviceAccounts/ServiceAccount@PROJECT&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;label1&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value1&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;apiConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;gatewayServiceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;projects/-/serviceAccounts/ServiceAccount@PROJECT&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;label1&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value1&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="private-python-libraries">
-<h2>Private Python Libraries<a class="headerlink" href="#private-python-libraries" title="Permalink to this headline">¶</a></h2>
+<h2>Private Python Libraries<a class="headerlink" href="#private-python-libraries" title="Permalink to this heading">¶</a></h2>
 <p>You can install private libraries in your cloudfunctions by passing in a <cite>GIT_TOKEN</cite> to your <cite>buildEnvironmentVariables</cite>.
 For example in your <cite>requirementx.txt</cite> you would include <cite>git+https://${GIT_TOKEN}&#64;github.com/mygithubuser/myrepo</cite> and your <cite>config.json</cite>
 would look as follows</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;buildEnvironmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;GIT_TOKEN&quot;</span><span class="p">:</span><span class="s2">&quot;YOURGITHUBTOKEN&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;buildEnvironmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;GIT_TOKEN&quot;</span><span class="p">:</span><span class="s2">&quot;YOURGITHUBTOKEN&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="iam-bindings">
-<h2>Iam Bindings<a class="headerlink" href="#iam-bindings" title="Permalink to this headline">¶</a></h2>
+<h2>Iam Bindings<a class="headerlink" href="#iam-bindings" title="Permalink to this heading">¶</a></h2>
 <p>You can add Iam bindings to your cloudfunctions by adding a <cite>binding</cite> section to your <cite>congig.json</cite> file.
 The bindings should be in the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/Policy">GCP Policy format</a></p>
 <p>For example to allow unauthenticated (public) access to your cloudfunctions you would add the <cite>roles/cloudfunctions.invoker</cite> to
 member <cite>allUsers</cite></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;members&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                </span><span class="s2">&quot;allUsers&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">]</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">]</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;members&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;allUsers&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>To remove bindings once they are deploy you should update your <cite>bindings</cite> in <cite>config.json</cite> and change the <cite>members</cite> to be an empty list</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;members&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">]</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;members&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="run-locally">
-<h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this headline">¶</a></h2>
+<h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this heading">¶</a></h2>
 <p>Running your functions locally for testing and debugging is easy to do with the goblet command <cite>goblet local</cite>.
 You can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
 <p>You can have a custom local name by seting the local param in the goblet class</p>
@@ -322,139 +325,139 @@ You can hit your functions endpoint at <code class="docutils literal notranslate
 </div>
 <p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code></p>
 <p>Note: If you have both <cite>http()</cite> and <cite>route(“/”)</cite> in order to test the route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">&#64;http()</span></code></p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl localhost:8080/endpoint
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>localhost:8080/endpoint
 </pre></div>
 </div>
 <p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
 <code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>X-Goblet-Type:schedule<span class="w"> </span>-H<span class="w"> </span>X-Goblet-Name:FUNCTION_NAME<span class="w"> </span>localhost:8080
 </pre></div>
 </div>
 <p>The goblet app will run on port 8080 by default. You can specify a custom port with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet <span class="nb">local</span> -p <span class="m">6000</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet<span class="w"> </span><span class="nb">local</span><span class="w"> </span>-p<span class="w"> </span><span class="m">6000</span>
 </pre></div>
 </div>
 <p>You can set environment variables defined in your <cite>config.json</cite> locally by passing in the <cite>–set-env</cite> flag. Note that
 this will pass through environment variables set in a stage as well if you specify the <cite>–stage</cite> flag.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet <span class="nb">local</span> --set-env --stage dev
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet<span class="w"> </span><span class="nb">local</span><span class="w"> </span>--set-env<span class="w"> </span>--stage<span class="w"> </span>dev
 </pre></div>
 </div>
 </section>
 <section id="debugging-with-vscode">
-<h2>Debugging with VScode<a class="headerlink" href="#debugging-with-vscode" title="Permalink to this headline">¶</a></h2>
+<h2>Debugging with VScode<a class="headerlink" href="#debugging-with-vscode" title="Permalink to this heading">¶</a></h2>
 <p>To debug your functions locally with Vscode you can use the following configuration. Replace LOCAL_NAME with the name you
 passed into <code class="docutils literal notranslate"><span class="pre">goblet(NAME,</span> <span class="pre">local=LOCAL_NAME)</span></code>. Make sure that there are no naming collisions with any function names used in your app.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Module&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;functions_framework&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                </span><span class="s2">&quot;--target&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="s2">&quot;LOCAL_NAME&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="s2">&quot;--debug&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">]</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">]</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Module&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;functions_framework&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;--target&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;LOCAL_NAME&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;--debug&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="secrets">
-<h2>Secrets<a class="headerlink" href="#secrets" title="Permalink to this headline">¶</a></h2>
+<h2>Secrets<a class="headerlink" href="#secrets" title="Permalink to this heading">¶</a></h2>
 <p><cite>cloudfunctions</cite> (v1) and <cite>cloudrun</cite> backends support direct integration with <a class="reference external" href="https://cloud.google.com/secret-manager">GCP’s Secret Manager</a>.
 You can pass in secrets by specifying a list of environment variable names or volume paths along with the secret key and version for the secret located in Secret Manager.
 For example with the follow configuration for cloudfunctions you would be able to access your api_keys using <cite>os.environ[“API_KEY_1”]</cite> which will return the value of
 the <cite>api_key1</cite> secret in Secret Manager.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;secretEnvironmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API_KEY_1&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key1&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API_KEY_2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key_2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;secretEnvironmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API_KEY_1&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key1&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API_KEY_2&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key_2&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>cloudfunction also supports secret volumes</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;secretVolumes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;mountPath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MOUNT_PATH&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;projectId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PROJECT_ID&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key_2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;versions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                    </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="w"></span>
-<span class="w">                    </span><span class="p">}</span><span class="w"></span>
-<span class="w">                </span><span class="p">]</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;secretVolumes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;mountPath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MOUNT_PATH&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;projectId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PROJECT_ID&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key_2&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;versions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">]</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>For the cloudrun backend you can specificy the list of secrets as environment variables or volumes. For example with the following configuration you would be able to access
 your api_keys using <cite>os.environ[“env-variable-name”]</cite> which will return the value of the <cite>secret-name</cite> in Secret Manager.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;valueSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                    </span><span class="nt">&quot;secretKeyRef&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-name&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                        </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-version&quot;</span><span class="w"></span>
-<span class="w">                    </span><span class="p">}</span><span class="w"></span>
-<span class="w">                </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;env-variable-name&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;valueSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;secretKeyRef&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-name&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret-version&quot;</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="authentication">
-<h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
+<h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this heading">¶</a></h2>
 <p>API gateway supports several authentication options including, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-jwt">jwt</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-firebase">firebase</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-auth0">auth0</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-okta">Okta</a>, <a class="reference external" href="https://cloud.google.com/api-gateway/docs/authenticating-users-googleid">google_id</a>,</p>
 <p>To configure authentication with goblet simply add the desired configuration in the <code class="docutils literal notranslate"><span class="pre">securityDefinitions</span></code> option in config.json. See the
 API gateway docs linked above for more details on how to set up the configuration.</p>
 <p>An api using JWT authentication would require the following in <code class="docutils literal notranslate"><span class="pre">config.json</span></code></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;your_custom_auth_id&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;authorizationUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;flow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;implicit&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oauth2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;x-google-issuer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;issuer of the token&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;x-google-jwks_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url to the public key&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;your_custom_auth_id&quot;</span><span class="p">:{</span>
+<span class="w">            </span><span class="nt">&quot;authorizationUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;flow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;implicit&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oauth2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;x-google-issuer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;issuer of the token&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;x-google-jwks_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url to the public key&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>This generates a <a class="reference external" href="https://swagger.io/docs/specification/2-0/authentication/">security section</a> in the openapi
 spec with empty scopes. If you would like to customize the security section and add custom scopes use the <cite>security</cite>
 section in <cite>config.json</cite></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;security&quot;</span><span class="p">:[</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;OAuth2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">]</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">]</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;security&quot;</span><span class="p">:[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;OAuth2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>If you would like to apply security at the method level then you can add security policy in the route decorator.</p>
@@ -463,18 +466,18 @@ section in <cite>config.json</cite></p>
 </div>
 <p>Another common use case is to authenticate via a service account, which requires the follow secuirty definition. You can specify
 multiple service accounts by adding additional entries to the <cite>securityDefinitions</cite> dictionary.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;SERVICE_ACCOUNT_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;authorizationUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;flow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;implicit&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oauth2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;x-google-audiences&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVICE_ACCOUNT_EMAIL&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;x-google-issuer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVICE_ACCOUNT_EMAIL&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;x-google-jwks_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://www.googleapis.com/service_accounts/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;securityDefinitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;SERVICE_ACCOUNT_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;authorizationUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;flow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;implicit&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oauth2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;x-google-audiences&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVICE_ACCOUNT_EMAIL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;x-google-issuer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVICE_ACCOUNT_EMAIL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;x-google-jwks_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://www.googleapis.com/service_accounts/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Now to access your api endpoint you can use the following python script to generate a jwt token and add it as a bearer token to your request.</p>
@@ -486,7 +489,7 @@ multiple service accounts by adding additional entries to the <cite>securityDefi
 <span class="kn">from</span> <span class="nn">googleapiclient</span> <span class="kn">import</span> <span class="n">discovery</span>
 
 <span class="k">def</span> <span class="nf">generate_jwt_payload</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates jwt payload&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates jwt payload&quot;&quot;&quot;</span>
     <span class="n">now</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;iat&#39;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
@@ -499,7 +502,7 @@ multiple service accounts by adding additional entries to the <cite>securityDefi
     <span class="k">return</span> <span class="n">payload</span>
 
 <span class="k">def</span> <span class="nf">get_jwt</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate a signed JSON Web Token using a Google API Service Account.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a signed JSON Web Token using a Google API Service Account.&quot;&quot;&quot;</span>
 
     <span class="n">credentials</span> <span class="o">=</span> <span class="n">GoogleCredentials</span><span class="o">.</span><span class="n">get_application_default</span><span class="p">()</span>
     <span class="n">service</span> <span class="o">=</span> <span class="n">discovery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;iamcredentials&#39;</span><span class="p">,</span> <span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">)</span>
@@ -512,7 +515,7 @@ multiple service accounts by adding additional entries to the <cite>securityDefi
 
 
 <span class="k">def</span> <span class="nf">make_jwt_request</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Makes an authorized request to the endpoint&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Makes an authorized request to the endpoint&quot;&quot;&quot;</span>
     <span class="n">signed_jwt</span> <span class="o">=</span> <span class="n">get_jwt</span><span class="p">(</span><span class="n">service_account_email</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">signed_jwt</span><span class="p">),</span>
@@ -528,7 +531,7 @@ multiple service accounts by adding additional entries to the <cite>securityDefi
 </div>
 </section>
 <section id="request">
-<h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
+<h2>Request<a class="headerlink" href="#request" title="Permalink to this heading">¶</a></h2>
 <p>The route path can only contain [a-zA-Z0-9._-] chars and curly braces for parts of the URL you want to capture.
 To access other parts of the request including headers, query strings, and post data you can use <code class="docutils literal notranslate"><span class="pre">app.current_request</span></code> to get
 the request object. To see all fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">request</a>
@@ -559,7 +562,7 @@ Here’s an example for accessing query string data in a view function:</p>
 </div>
 </section>
 <section id="response">
-<h2>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h2>
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this heading">¶</a></h2>
 <p>Goblet http function response should be of the form a flask <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">response</a>. See more at the <a class="reference external" href="https://cloud.google.com/functions/docs/writing/http">cloudfunctions</a> documentation</p>
 <p>To see the full list of available fields see <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response">response</a></p>
 <p>You can use goblet’s <code class="docutils literal notranslate"><span class="pre">Response</span></code> class to make it easier to pass in custom headers and response codes.</p>
@@ -593,16 +596,16 @@ multiple keyword arguments into a dict. This means that both jsonify(1,2,3) and 
 </pre></div>
 </div>
 <p>This will send a JSON response like this to the browser:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin@localhost&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin@localhost&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="openapi-spec">
-<h2>OpenApi Spec<a class="headerlink" href="#openapi-spec" title="Permalink to this headline">¶</a></h2>
+<h2>OpenApi Spec<a class="headerlink" href="#openapi-spec" title="Permalink to this heading">¶</a></h2>
 <p>Goblet generates an <a class="reference external" href="https://swagger.io/specification/">OpenApi</a> spec from your route endpoints in order to create the api gateway. The open api spec is written to the
 <code class="docutils literal notranslate"><span class="pre">.goblet</span></code> folder and can be used for other tools. To generate just the open api spec you can run the command <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">openapi</span> <span class="pre">FUNCTION_NAME</span></code>.
 Note that gcp <a class="reference external" href="https://cloud.google.com/api-gateway/docs/openapi-overview">gateway</a> only supports openapi spec 2.0. You can additionally generate a 3.0.1 version of the spec by running <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">openapi</span> <span class="pre">FUNCTION_NAME</span> <span class="pre">-v</span> <span class="pre">3</span></code>.</p>
@@ -653,7 +656,7 @@ You can specify custom param and response types using python typing and pass in 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="k">def</span> <span class="nf">enum_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add an OpenAPI extension for marshmallow_enum.EnumField instances</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">EnumField</span><span class="p">):</span>
@@ -690,7 +693,7 @@ You can specify custom param and response types using python typing and pass in 
 </div>
 </section>
 <section id="multiple-files">
-<h2>Multiple Files<a class="headerlink" href="#multiple-files" title="Permalink to this headline">¶</a></h2>
+<h2>Multiple Files<a class="headerlink" href="#multiple-files" title="Permalink to this heading">¶</a></h2>
 <p>It is common to split out your api routes into different sub folders. You can do this by creating seperate goblet instances and combining
 them in the main.py folder under your main app. You can do this with simple addition notation or with the <code class="docutils literal notranslate"><span class="pre">Goblet.combine</span></code> function</p>
 <p>Note: For all additional apps outside of <cite>main.py</cite> set the <cite>is_sub_app</cite> flag when creating the Goblet app</p>
@@ -721,36 +724,36 @@ them in the main.py folder under your main app. You can do this with simple addi
 </div>
 </section>
 <section id="stages">
-<h2>Stages<a class="headerlink" href="#stages" title="Permalink to this headline">¶</a></h2>
+<h2>Stages<a class="headerlink" href="#stages" title="Permalink to this heading">¶</a></h2>
 <p>You can create different deployments of your api (for example dev and prod) using stages. You can create a new stage from the cli using <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">stage</span> <span class="pre">create</span> <span class="pre">STAGE</span></code> or by
 manually adding an entry in config.json under stages. A stage will require a unique function_name which is used to create resources in gcp. Any fields in your stage will
 override those in the general config file.</p>
 <p>For example the dev deployment will override the environment variable <code class="docutils literal notranslate"><span class="pre">env</span></code> with <code class="docutils literal notranslate"><span class="pre">dev</span></code> and the prod deployment will yield <code class="docutils literal notranslate"><span class="pre">prod</span></code></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;dev&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;goblet-dev&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="w"></span>
-<span class="w">                </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;prod&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;goblet-prod&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prod&quot;</span><span class="w"></span>
-<span class="w">                </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;dev&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;goblet-dev&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;prod&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;goblet-prod&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;environmentVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prod&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>You can view your current stages using <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">stage</span> <span class="pre">list</span></code>. To deploy or destroy a specific stage use the <code class="docutils literal notranslate"><span class="pre">--stage</span></code> or <code class="docutils literal notranslate"><span class="pre">-s</span></code> flag with the stage. You can also use the
@@ -767,7 +770,7 @@ be deployed and run when stage is dev. You can specify multiple stages with the 
 <p>Note: The stage will need to be specified as the bottom decorator for it to work properly.</p>
 </section>
 <section id="api-gateway-backends">
-<h2>API Gateway Backends<a class="headerlink" href="#api-gateway-backends" title="Permalink to this headline">¶</a></h2>
+<h2>API Gateway Backends<a class="headerlink" href="#api-gateway-backends" title="Permalink to this heading">¶</a></h2>
 <p>Api Gateway supports all available backend services including app engine, GKE, GCE, cloudrun, and cloudfunctions. To add an endpoint to a backend service other than the deployed
 cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite>route</cite>. Note that the function will not be invoked since the request will be routed to a different backend.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_backend&#39;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>
@@ -777,14 +780,14 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
 </div>
 </section>
 <section id="cors">
-<h2>Cors<a class="headerlink" href="#cors" title="Permalink to this headline">¶</a></h2>
+<h2>Cors<a class="headerlink" href="#cors" title="Permalink to this heading">¶</a></h2>
 <p>Cors can be set on the route level or on the Goblet application level. Setting <cite>cors=True</cite> uses the default cors setting</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;headers&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;Access-Control-Allow-Headers&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Authorization&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;headers&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Access-Control-Allow-Headers&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Authorization&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_backend&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -803,7 +806,7 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
 <p>Setting cors on an endpoint or the application will automatically add an OPTIONS method to support preflighting requests.</p>
 </section>
 <section id="multiple-cloudfunctions">
-<h2>Multiple Cloudfunctions<a class="headerlink" href="#multiple-cloudfunctions" title="Permalink to this headline">¶</a></h2>
+<h2>Multiple Cloudfunctions<a class="headerlink" href="#multiple-cloudfunctions" title="Permalink to this heading">¶</a></h2>
 <p>Using the field <cite>main_file</cite> in <cite>config.json</cite> allows you to set any file as the entrypoint <cite>main.py</cite> file, which is required by cloudfunctions.
 This allows for multiple functions to be deploying using similar code bases.</p>
 <p>Similarly, you can also define <cite>requirements_file</cite> to override the <cite>requirements.txt</cite>, in case your functions have different dependencies.</p>
@@ -812,22 +815,22 @@ This allows for multiple functions to be deploying using similar code bases.</p>
 <p><cite>func1.py</cite></p>
 <p><cite>func2.py</cite></p>
 <p>Could have the goblet <cite>.config</cite></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;func1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;dockerfile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1.dockerfile&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;main_file&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1.py&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;requirements_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1_requirements.txt&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;func2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;dockerfile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2.dockerfile&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;main_file&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2.py&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;requirements_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2_requirements.txt&quot;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;func1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;dockerfile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1.dockerfile&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;main_file&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1.py&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;requirements_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func1_requirements.txt&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;func2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;function_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;dockerfile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2.dockerfile&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;main_file&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2.py&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;requirements_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;func2_requirements.txt&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>To test each function locally you can simply run <cite>goblet local -s func1</cite> and to deploy <cite>goblet local -s func1 -p Project -l Region</cite></p>
@@ -837,42 +840,42 @@ in the packaged zipfile.</p>
 shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct <cite>main.py</cite></p>
 </section>
 <section id="syncing-state">
-<h2>Syncing State<a class="headerlink" href="#syncing-state" title="Permalink to this headline">¶</a></h2>
+<h2>Syncing State<a class="headerlink" href="#syncing-state" title="Permalink to this heading">¶</a></h2>
 <p>The cli command <cite>goblet sync</cite> will sync resources that are deployed in GCP based on the current goblet app configuration. This command will delete resources based on naming
 convention that are no longer in the app configuration. For example schuduled jobs start with the function_name prefix so if the function_name is goblet_function
 the sync command will flag any scheduled jobs that start with the prefix <cite>goblet_function</cite> that are not in the current app config. Note this may cause some resources
 that are named similar to be deleted so make sure to run the command with <cite>–dryrun</cite> flag to see what resources are flagged for deletion.</p>
 </section>
 <section id="middleware">
-<h2>Middleware<a class="headerlink" href="#middleware" title="Permalink to this headline">¶</a></h2>
+<h2>Middleware<a class="headerlink" href="#middleware" title="Permalink to this heading">¶</a></h2>
 <p>You can trigger custom middlware using the <cite>before_request</cite> and <cite>after_request</cite> decorators. These allow you to trigger custom functions before a request is passed to your request
 handler or do post prosessing on your responses.</p>
 <p>You can have your middleware trigger only on certain event types using the <cite>event_type</cite> argument. Default is <cite>all</cite>. Possible
 event types are <cite>[“all”, “http”, “schedule”, “pubsub”, “storage”, “route”]</cite></p>
 </section>
 <section id="labels">
-<h2>Labels<a class="headerlink" href="#labels" title="Permalink to this headline">¶</a></h2>
+<h2>Labels<a class="headerlink" href="#labels" title="Permalink to this heading">¶</a></h2>
 <p>Labels can be added to all resources that support labels by passing in a labels dictionary to <cite>Goblet</cite> app. You can also
 specify labels in <cite>config.json</cite> under the key label.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;example-job&quot;</span><span class="p">,</span>  <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sample_label&quot;</span><span class="p">:</span><span class="s2">&quot;sample_value&quot;</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>config.json</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;labels&quot;</span><span class="p">:{</span><span class="nt">&quot;sample_label_2&quot;</span><span class="p">:</span><span class="s2">&quot;2&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;test&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="nt">&quot;sample_label_stage&quot;</span><span class="p">:</span><span class="s2">&quot;staged&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;labels&quot;</span><span class="p">:{</span><span class="nt">&quot;sample_label_2&quot;</span><span class="p">:</span><span class="s2">&quot;2&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;test&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;sample_label_stage&quot;</span><span class="p">:</span><span class="s2">&quot;staged&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="deploying-arbitrary-services">
-<h2>Deploying Arbitrary Services<a class="headerlink" href="#deploying-arbitrary-services" title="Permalink to this headline">¶</a></h2>
+<h2>Deploying Arbitrary Services<a class="headerlink" href="#deploying-arbitrary-services" title="Permalink to this heading">¶</a></h2>
 <p>It is possible to use goblet to deploy GCP resources without deploying a goblet application. It is even possible
 to deploy non-python based services using Goblet.</p>
 <p>The first method to deploy GCP resources without deploying a goblet application is to deploy <a class="reference internal" href="infrastructures.html#infrastructure"><span class="std std-ref">infrastructure</span></a> resources such
@@ -887,19 +890,19 @@ as <a class="reference internal" href="infrastructures.html#redis"><span class="
 <p>You can deploy a non-python application to Cloud Run by specifying the <cite>force_deploy_cloudrun</cite> key in <cite>config.json</cite> and passing in a custom Dockerfile.
 Further fields can be customized in <cite>config.json</cite>. See the example <cite>example_non_python_cloudrun</cite> for more details on how to setup.</p>
 <p>An example <cite>config.json</cite> can be found below.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;custom_files&quot;</span><span class="p">:{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;include&quot;</span><span class="p">:[</span><span class="s2">&quot;package.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.dockerignore&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;package-lock.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;server.js&quot;</span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;force_deploy_cloudrun&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;server.js&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;ports&quot;</span><span class="p">:[{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;http1&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;containerPort&quot;</span><span class="p">:</span><span class="mi">8000</span><span class="w"></span>
-<span class="w">        </span><span class="p">}]</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;custom_files&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;include&quot;</span><span class="p">:[</span><span class="s2">&quot;package.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.dockerignore&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;package-lock.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;server.js&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;force_deploy_cloudrun&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cloudrun_container&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;server.js&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;ports&quot;</span><span class="p">:[{</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;http1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;containerPort&quot;</span><span class="p">:</span><span class="mi">8000</span>
+<span class="w">        </span><span class="p">}]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
