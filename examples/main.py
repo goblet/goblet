@@ -5,6 +5,7 @@ from goblet.infrastructures.alerts import (
     LogMatchCondition,
     CustomMetricCondition,
 )
+import asyncio
 import logging
 
 app = Goblet(function_name="goblet-example", region="us-central-1")
@@ -293,6 +294,18 @@ def job1_task2(id):
 def multiply(x: int, y: int, z: int) -> int:
     w = x * y * z
     return w
+
+# Totally contrived example of an async function (a real one would use aiohttp or similar)
+async def async_multiply(x: int, y: int) -> int:
+    w = x * y
+    return w
+
+# Example BQ Remote Function with vectorized function
+# For network-bound BQ Remote Functions, this approach using async will yield significantly better performance
+@app.bqremotefunction(dataset_id="blogs",vectorize_func=True)
+def function_test(x: List[int], y: List[int]) -> List[int]:
+     results = [asyncio.run(async_multiply(elem_x, elem_y)) for elem_x, elem_y in zip(x, y)]
+     return results
 
 
 # Example Redis Instance
