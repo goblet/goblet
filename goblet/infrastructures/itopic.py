@@ -20,7 +20,7 @@ class PubSubClient:
         return self.versioned_clients.pubsub_topic.execute(
             "publish",
             parent_key="topic",
-            parent_schema=f"{self.versioned_clients.pubsub_topic.parent}/topics/{self.topic}",
+            parent_schema=self.topic,
             params={
                 "body": {
                     "messages": [
