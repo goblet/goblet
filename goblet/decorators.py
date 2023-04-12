@@ -27,6 +27,7 @@ from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
+from goblet.infrastructures.itopic import ITopic
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -142,6 +143,7 @@ class DecoratorAPI:
             },
         )
 
+
     def topic(self, topic, **kwargs):
         """Pubsub topic trigger"""
         return self._create_registration_function(
@@ -255,6 +257,14 @@ class DecoratorAPI:
             kwargs={"name": name, "config": config, "kwargs": kwargs},
         )
 
+    def itopic(self, name, config=None, **kwargs):
+        kwargs["config"] = config
+        return self._register_infrastructure(
+            handler_type="itopic",
+            kwargs={"name": name, "config": config, "kwargs": kwargs},
+        )
+
+
     def redis(self, name, **kwargs):
         """Redis Infrastructure"""
         return self._register_infrastructure(
@@ -357,6 +367,12 @@ class Register_Handlers(DecoratorAPI):
         }
 
         self.infrastructure = {
+            "itopic": ITopic(
+                function_name,
+                backend=backend,
+                versioned_clients=versioned_clients,
+                config=config,
+            ),
             "cloudtaskqueue": CloudTaskQueue(
                 function_name,
                 backend=backend,

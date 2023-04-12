@@ -81,6 +81,15 @@ class VersionedClients:
         )
 
     @property
+    def pubsub_topic(self):
+        return Client(
+            "pubsub",
+            self.client_versions.get("pubsub", "v1"),
+            calls="projects.topics",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
     def apigateway(self):
         return Client(
             "apigateway",
