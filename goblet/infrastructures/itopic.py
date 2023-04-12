@@ -9,8 +9,29 @@ from google.protobuf import duration_pb2, timestamp_pb2
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
+
 class PubSubClient:
-    pass
+    def __init__(self, topic, versioned_clients):
+        self.topic = topic
+        self.versioned_clients = versioned_clients
+
+    def publish(self, message):
+        message = json.dumps(message)
+        return self.versioned_clients.pubsub_topic.execute(
+            "publish",
+            parent_key="topic",
+            parent_schema=f"{self.versioned_clients.pubsub_topic.parent}/topics/{self.topic}",
+            params={
+                "body": {
+                    "messages": [
+                        {
+                            "data": b64encode(message.encode()).decode("utf8")
+                        }
+                    ]
+                }
+            }
+        )
+
 
 class ITopic(Infrastructure):
     resource_type = "itopic"
@@ -24,7 +45,10 @@ class ITopic(Infrastructure):
             "name": f"{self.client.pubsub_topic.parent}/topics/{name}",
             "config": topic_config
         }
-        return PubSubClient()
+        return PubSubClient(
+            versioned_clients=self.client,
+            topic=self.resource[resource_id]["name"]
+        )
 
     def deploy(self, config={}):
         if not self.resource:
