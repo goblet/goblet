@@ -33,8 +33,8 @@ class PubSubClient:
         )
 
 
-class ITopic(Infrastructure):
-    resource_type = "itopic"
+class PubSubTopic(Infrastructure):
+    resource_type = "pubsub_topic"
 
     def register(self, name, kwargs):
         resource_id = name

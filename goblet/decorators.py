@@ -27,7 +27,7 @@ from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
-from goblet.infrastructures.itopic import ITopic
+from goblet.infrastructures.pubsub import PubSubTopic
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -143,13 +143,15 @@ class DecoratorAPI:
             },
         )
 
-
-    def topic(self, topic, **kwargs):
+    def pubsub_subscription(self, topic, **kwargs):
         """Pubsub topic trigger"""
         return self._create_registration_function(
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},
         )
+    def topic(self, topic, **kwargs):
+        warn('This method is deprecated, use @app.pubsub_subscription', DeprecationWarning, stacklevel=2)
+        return self.pubsub_subscription(topic, **kwargs)
 
     def cloudtasktarget(self, name, **kwargs):
         """CloudTask trigger"""
@@ -257,10 +259,10 @@ class DecoratorAPI:
             kwargs={"name": name, "config": config, "kwargs": kwargs},
         )
 
-    def itopic(self, name, config=None, **kwargs):
+    def pubsub_topic(self, name, config=None, **kwargs):
         kwargs["config"] = config
         return self._register_infrastructure(
-            handler_type="itopic",
+            handler_type="pubsub_topic",
             kwargs={"name": name, "config": config, "kwargs": kwargs},
         )
 
@@ -367,7 +369,7 @@ class Register_Handlers(DecoratorAPI):
         }
 
         self.infrastructure = {
-            "itopic": ITopic(
+            "pubsub_topic": PubSubTopic(
                 function_name,
                 backend=backend,
                 versioned_clients=versioned_clients,
