@@ -114,7 +114,7 @@ class Goblet(Register_Handlers):
                 log.info(f"destroying {k}")
                 v.destroy()
 
-    def services(self, enable=False):
+    def check_or_enable_services(self, enable=False):
         self.backend.check_or_enable_service(enable)
         for _, v in self.handlers.items():
             v.check_or_enable_service(enable)

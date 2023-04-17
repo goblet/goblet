@@ -390,7 +390,7 @@ def check_gcp_services(project, stage):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        app.services()
+        app.check_or_enable_services()
     except FileNotFoundError as not_found:
         click.echo(
             f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
@@ -414,7 +414,7 @@ def enable_gcp_services(project, stage):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        app.services(enable=True)
+        app.check_or_enable_services(enable=True)
 
     except FileNotFoundError as not_found:
         click.echo(

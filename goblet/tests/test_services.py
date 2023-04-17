@@ -10,7 +10,7 @@ class TestServices:
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
-        app.services(enable=False)
+        app.check_or_enable_services()
 
         resp = get_response(
             "services-check",
@@ -27,7 +27,7 @@ class TestServices:
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
-        app.services(enable=True)
+        app.check_or_enable_services(enable=True)
 
         resp = get_response(
             "services-enable",

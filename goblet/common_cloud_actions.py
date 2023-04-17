@@ -23,7 +23,7 @@ log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def check_or_enable_service(resources: list[str], enable: bool = False):
+def check_or_enable_service(resources, enable=False):
     client = VersionedClients().service_usage
     if enable:
         resp = client.execute(
@@ -43,7 +43,7 @@ def check_or_enable_service(resources: list[str], enable: bool = False):
         for resource in resources:
             log.info(f"{resource} enabled")
     else:
-        resp = client.service_usage.execute(
+        resp = client.execute(
             "batchGet",
             parent_key="parent",
             parent_schema="projects/{project_id}",
