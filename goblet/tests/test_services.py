@@ -1,6 +1,6 @@
-from unittest.mock import Mock
+from goblet_gcp_client import get_response
+
 from goblet import Goblet
-from goblet_gcp_client import get_responses, get_response
 
 
 class TestServices:

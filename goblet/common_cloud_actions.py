@@ -24,9 +24,9 @@ log.setLevel(logging.INFO)
 
 
 def check_or_enable_service(resources: list[str], enable: bool = False):
-    versioned_clients = VersionedClients()
+    client = VersionedClients().service_usage
     if enable:
-        resp = versioned_clients.service_usage.execute(
+        resp = client.execute(
             "batchEnable",
             parent_key="parent",
             parent_schema="projects/{project_id}",
@@ -39,13 +39,11 @@ def check_or_enable_service(resources: list[str], enable: bool = False):
             },
         )
         if not resp.get("done"):
-            versioned_clients.service_usage.wait_for_operation(
-                resp["name"], calls="operations"
-            )
+            client.wait_for_operation(resp["name"], calls="operations")
         for resource in resources:
             log.info(f"{resource} enabled")
     else:
-        resp = versioned_clients.service_usage.execute(
+        resp = client.service_usage.execute(
             "batchGet",
             parent_key="parent",
             parent_schema="projects/{project_id}",
