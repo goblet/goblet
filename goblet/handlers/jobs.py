@@ -18,6 +18,7 @@ class Jobs(Handler):
     resource_type = "job"
     valid_backends = ["cloudrun"]
     can_sync = True
+    required_apis = ["cloudbuild", "run"]
 
     def register(self, name, func, kwargs):
         task_id = kwargs["task_id"]

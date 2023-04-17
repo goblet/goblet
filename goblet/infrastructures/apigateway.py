@@ -14,6 +14,7 @@ class ApiGateway(Infrastructure):
     """Api Gateway that is deployed with an existing openapi spec"""
 
     resource_type = "apigateway"
+    required_apis = ["apigateway"]
 
     def register(self, name, **kwargs):
         kwargs = kwargs["kwargs"]

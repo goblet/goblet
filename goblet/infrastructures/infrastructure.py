@@ -1,5 +1,6 @@
 from goblet.client import VersionedClients
 from goblet.config import GConfig
+from goblet.common_cloud_actions import check_or_enable_service
 
 
 class Infrastructure:
@@ -7,6 +8,7 @@ class Infrastructure:
 
     resource_type = ""
     can_sync = False
+    required_apis = []
 
     def __init__(
         self,
@@ -40,3 +42,8 @@ class Infrastructure:
 
     def get_config(self, config={}):
         return None
+
+    def check_or_enable_service(self, enable=False):
+        if not self.resource:
+            return
+        return check_or_enable_service(self.required_apis, enable)

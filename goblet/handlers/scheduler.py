@@ -20,6 +20,7 @@ class Scheduler(Handler):
     resource_type = "scheduler"
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
+    required_apis = ["cloudscheduler"]
 
     def register(self, name, func, kwargs):
         schedule = kwargs["schedule"]

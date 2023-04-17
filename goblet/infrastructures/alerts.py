@@ -20,6 +20,7 @@ class Alerts(Infrastructure):
     resource_type = "alerts"
     can_sync = True
     _gcp_deployed_alerts = {}
+    required_apis = ["logging"]
 
     def register(self, name, **kwargs):
         kwargs = kwargs.get("kwargs", {})

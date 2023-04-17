@@ -7,6 +7,7 @@ from googleapiclient.errors import HttpError
 
 from goblet.config import GConfig
 from goblet.client import (
+    VersionedClients,
     get_default_project_number,
 )
 from goblet_gcp_client.client import (
@@ -20,6 +21,44 @@ from goblet.utils import get_python_runtime
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
+
+
+def check_or_enable_service(resources: list[str], enable: bool = False):
+    versioned_clients = VersionedClients()
+    if enable:
+        resp = versioned_clients.service_usage.execute(
+            "batchEnable",
+            parent_key="parent",
+            parent_schema="projects/{project_id}",
+            params={
+                "body": {
+                    "serviceIds": [
+                        f"{resource}.googleapis.com" for resource in resources
+                    ]
+                }
+            },
+        )
+        if not resp.get("done"):
+            versioned_clients.service_usage.wait_for_operation(
+                resp["name"], calls="operations"
+            )
+        for resource in resources:
+            log.info(f"{resource} enabled")
+    else:
+        resp = versioned_clients.service_usage.execute(
+            "batchGet",
+            parent_key="parent",
+            parent_schema="projects/{project_id}",
+            params={
+                "names": [
+                    f"projects/{get_default_project()}/services/{resource}.googleapis.com"
+                    for resource in resources
+                ]
+            },
+        )
+        for service in resp["services"]:
+            log.info(f"{service['config']['name']} {service['state']}")
+    return None
 
 
 ####### Cloud Functions #######

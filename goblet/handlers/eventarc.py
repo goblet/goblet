@@ -24,6 +24,7 @@ class EventArc(Handler):
     # Partial implementation can be found here: https://github.com/samdevo/goblet/blob/eventarc-changes/goblet/resources/eventarc.py
     valid_backends = ["cloudrun"]
     can_sync = True
+    required_apis = ["eventarc"]
 
     def __init__(self, name, backend, versioned_clients=None, resources=None):
         super(EventArc, self).__init__(

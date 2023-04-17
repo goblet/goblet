@@ -9,6 +9,7 @@ log.setLevel(logging.INFO)
 class Redis(Infrastructure):
     resource_type = "redis"
     update_keys = ["displayName", "labels", "memorySizeGb", "replicaCount"]
+    required_apis = ["redis"]
 
     def register(self, name, kwargs):
         self.resource = {"name": name}

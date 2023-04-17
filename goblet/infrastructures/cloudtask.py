@@ -77,6 +77,7 @@ class CloudTaskClient:
 
 class CloudTaskQueue(Infrastructure):
     resource_type = "cloudtaskqueue"
+    required_apis = ["cloudtasks"]
 
     # https://cloud.google.com/apis/design/resource_names
     def register(self, name, kwargs):

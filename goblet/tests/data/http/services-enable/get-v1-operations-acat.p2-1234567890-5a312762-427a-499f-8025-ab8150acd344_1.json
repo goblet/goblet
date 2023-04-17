@@ -1,0 +1,243 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/acat.p2-1234567890-5a312762-427a-499f-8025-ab8150acd344",
+    "metadata": {
+      "@type": "type.googleapis.com/google.protobuf.Empty"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.api.serviceusage.v1.BatchEnableServicesResponse",
+      "services": [
+        {
+          "name": "projects/goblet/services/cloudfunctions.googleapis.com",
+          "config": {
+            "name": "cloudfunctions.googleapis.com",
+            "title": "Cloud Functions API",
+            "documentation": {
+              "summary": "Manages lightweight user-provided functions executed in response to events."
+            },
+            "quota": {},
+            "authentication": {},
+            "usage": {
+              "requirements": [
+                "serviceusage.googleapis.com/tos/cloud"
+              ]
+            },
+            "monitoredResources": [
+              {
+                "type": "cloudfunctions.googleapis.com/function",
+                "labels": [
+                  {
+                    "key": "cloud.googleapis.com/location"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/uid"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/project"
+                  },
+                  {
+                    "key": "cloudfunctions.googleapis.com/function_name"
+                  }
+                ]
+              },
+              {
+                "type": "cloud_function",
+                "labels": [
+                  {
+                    "key": "cloudfunctions.googleapis.com/function_name"
+                  },
+                  {
+                    "key": "cloudfunctions.googleapis.com/region"
+                  }
+                ]
+              },
+              {
+                "type": "serviceruntime.googleapis.com/api",
+                "labels": [
+                  {
+                    "key": "cloud.googleapis.com/location"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/uid"
+                  },
+                  {
+                    "key": "serviceruntime.googleapis.com/api_version"
+                  },
+                  {
+                    "key": "serviceruntime.googleapis.com/api_method"
+                  },
+                  {
+                    "key": "serviceruntime.googleapis.com/consumer_project"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/project"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/service"
+                  }
+                ]
+              },
+              {
+                "type": "serviceruntime.googleapis.com/consumer_quota",
+                "labels": [
+                  {
+                    "key": "cloud.googleapis.com/location"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/uid"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/service"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/resource_id"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/resource_node"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/quota_metric"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/quota_location"
+                  }
+                ]
+              },
+              {
+                "type": "serviceruntime.googleapis.com/producer_quota",
+                "labels": [
+                  {
+                    "key": "cloud.googleapis.com/location"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/uid"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/service"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/resource_id"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/resource_node"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/consumer_resource_node"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/quota_metric"
+                  },
+                  {
+                    "key": "cloud.googleapis.com/quota_location"
+                  }
+                ]
+              }
+            ],
+            "monitoring": {
+              "consumerDestinations": [
+                {
+                  "monitoredResource": "cloudfunctions.googleapis.com/function",
+                  "metrics": [
+                    "cloudfunctions.googleapis.com/function/execution_times",
+                    "cloudfunctions.googleapis.com/function/execution_count",
+                    "cloudfunctions.googleapis.com/function/user_memory_bytes",
+                    "cloudfunctions.googleapis.com/function/network_egress",
+                    "cloudfunctions.googleapis.com/function/active_instances",
+                    "cloudfunctions.googleapis.com/function/execution_delays",
+                    "cloudfunctions.googleapis.com/function/execution_count_internal",
+                    "cloudfunctions.googleapis.com/function/supervisor_gcu_times",
+                    "cloudfunctions.googleapis.com/function/supervisor_memory_bytes",
+                    "cloudfunctions.googleapis.com/function/user_gcu_times",
+                    "cloudfunctions.googleapis.com/function/supervisor_chemist_rpc_error_count",
+                    "cloudfunctions.googleapis.com/function/supervisor_controlled_death_count",
+                    "cloudfunctions.googleapis.com/function/supervisor_report_count",
+                    "cloudfunctions.googleapis.com/function/supervisor_report_latencies",
+                    "cloudfunctions.googleapis.com/function/supervisor_phase_latencies"
+                  ]
+                },
+                {
+                  "monitoredResource": "serviceruntime.googleapis.com/api",
+                  "metrics": [
+                    "serviceruntime.googleapis.com/api/consumer/request_count",
+                    "serviceruntime.googleapis.com/api/consumer/error_count",
+                    "serviceruntime.googleapis.com/api/consumer/quota_used_count",
+                    "serviceruntime.googleapis.com/api/consumer/quota_refund_count",
+                    "serviceruntime.googleapis.com/api/consumer/total_latencies",
+                    "serviceruntime.googleapis.com/api/consumer/request_overhead_latencies",
+                    "serviceruntime.googleapis.com/api/consumer/backend_latencies",
+                    "serviceruntime.googleapis.com/api/consumer/request_sizes",
+                    "serviceruntime.googleapis.com/api/consumer/response_sizes",
+                    "serviceruntime.googleapis.com/api/consumer/top_request_count_by_end_user",
+                    "serviceruntime.googleapis.com/api/consumer/top_request_count_by_end_user_country",
+                    "serviceruntime.googleapis.com/api/consumer/top_request_count_by_referer",
+                    "serviceruntime.googleapis.com/quota/used",
+                    "serviceruntime.googleapis.com/quota/limit",
+                    "serviceruntime.googleapis.com/quota/exceeded",
+                    "serviceruntime.googleapis.com/allocation/consumer/quota_used_count"
+                  ]
+                },
+                {
+                  "monitoredResource": "serviceruntime.googleapis.com/consumer_quota",
+                  "metrics": [
+                    "serviceruntime.googleapis.com/quota/rate/consumer/used_count",
+                    "serviceruntime.googleapis.com/quota/rate/consumer/refund_count",
+                    "serviceruntime.googleapis.com/quota/allocation/consumer/usage",
+                    "serviceruntime.googleapis.com/quota/consumer/limit",
+                    "serviceruntime.googleapis.com/quota/consumer/exceeded"
+                  ]
+                }
+              ]
+            }
+          },
+          "state": "ENABLED",
+          "parent": "projects/1234567890"
+        },
+        {
+          "name": "projects/goblet/services/secretmanager.googleapis.com",
+          "config": {
+            "name": "secretmanager.googleapis.com",
+            "title": "Secret Manager API",
+            "documentation": {
+              "summary": "Stores sensitive data such as API keys, passwords, and certificates. Provides convenience while improving security.\n"
+            },
+            "quota": {},
+            "authentication": {},
+            "usage": {
+              "requirements": [
+                "serviceusage.googleapis.com/tos/cloud",
+                "serviceusage.googleapis.com/billing-enabled"
+              ]
+            },
+            "monitoredResources": [
+              {
+                "type": "secretmanager.googleapis.com/Secret",
+                "displayName": "Secret Manager Secret",
+                "description": "A logical secret whose value and versions can be accessed.",
+                "labels": [
+                  {
+                    "key": "resource_container",
+                    "description": "The identifier of the GCP project associated with this resource."
+                  },
+                  {
+                    "key": "location",
+                    "description": "Location of secret metadata. Always global."
+                  },
+                  {
+                    "key": "secret_id",
+                    "description": "The name given to this secret."
+                  }
+                ],
+                "launchStage": "BETA"
+              }
+            ],
+            "monitoring": {}
+          },
+          "state": "ENABLED",
+          "parent": "projects/1234567890"
+        }
+      ]
+    }
+  }
+}
