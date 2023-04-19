@@ -18,12 +18,15 @@ from goblet_gcp_client.client import (
 )
 from goblet.errors import GobletError
 from goblet.utils import get_python_runtime
+from typing import List
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
-def check_or_enable_service(resources, enable=False):
+def check_or_enable_service(resources: List[str], enable: bool = False):
+    if len(resources) == 0:
+        return
     client = VersionedClients().service_usage
     if enable:
         resp = client.execute(

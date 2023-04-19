@@ -27,7 +27,7 @@ class PubSub(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
-    required_apis = ["pubsub", "cloudfunctions", "apigateway"]
+    required_apis = ["pubsub", "cloudfunctions"]
 
     def register(self, name, func, kwargs):
         topic = kwargs["topic"]

@@ -65,7 +65,7 @@ class Handler:
             self.resources.update(other.resources)
         return self
 
-    def check_or_enable_service(self, enable=False):
+    def _check_or_enable_service(self, enable=False):
         if not self.resources:
             return
-        return check_or_enable_service(self.client.resource, enable)
+        return check_or_enable_service(self.required_apis, enable)

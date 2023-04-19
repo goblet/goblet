@@ -43,7 +43,7 @@ class Infrastructure:
     def get_config(self, config={}):
         return None
 
-    def check_or_enable_service(self, enable=False):
+    def _check_or_enable_service(self, enable=False):
         if not self.resource:
             return
         return check_or_enable_service(self.required_apis, enable)

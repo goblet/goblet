@@ -183,5 +183,5 @@ class Backend:
     def get_environment_vars(self):
         raise NotImplementedError("get_environment_vars")
 
-    def check_or_enable_service(self, enable=False):
+    def _check_or_enable_service(self, enable=False):
         return check_or_enable_service(self.required_apis, enable)
