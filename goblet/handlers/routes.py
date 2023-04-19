@@ -26,6 +26,7 @@ class Routes(Handler):
 
     resource_type = "routes"
     valid_backends = ["cloudfunction", "cloudrun", "cloudfunctionv2"]
+    required_apis = ["cloudfunctions", "apigateway"]
 
     def __init__(
         self,

@@ -35,6 +35,7 @@ class BigQueryRemoteFunction(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = False
     resource_type = "bqremotefunction"
+    required_apis = ["bigquery", "bigqueryconnection"]
 
     def register(self, name, func, kwargs):
         """

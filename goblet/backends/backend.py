@@ -11,6 +11,7 @@ from googleapiclient.errors import HttpError
 
 from goblet.config import GConfig
 from goblet.utils import get_g_dir, checksum, build_stage_config
+from goblet.common_cloud_actions import check_or_enable_service
 
 
 class Backend:
@@ -22,6 +23,7 @@ class Backend:
     config_key = ""
     monitoring_type = ""
     monitoring_label_key = ""
+    required_apis = []
 
     def __init__(self, app, client, func_path, config={}):
         self.app = app
@@ -180,3 +182,6 @@ class Backend:
 
     def get_environment_vars(self):
         raise NotImplementedError("get_environment_vars")
+
+    def _check_or_enable_service(self, enable=False):
+        return check_or_enable_service(self.required_apis, enable)

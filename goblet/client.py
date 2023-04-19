@@ -18,6 +18,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "bigqueryconnection": "v1",
     "secretmanager": "v1",
     "cloudtasks": "v2",
+    "serviceusage": "v1",
 }
 
 
@@ -212,5 +213,14 @@ class VersionedClients:
             "secretmanager",
             self.client_versions.get("secretmanager", "v1"),
             calls="projects.secrets.versions",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def service_usage(self):
+        return Client(
+            "serviceusage",
+            self.client_versions.get("serviceusage", "v1"),
+            calls="services",
             parent_schema="projects/{project_id}",
         )

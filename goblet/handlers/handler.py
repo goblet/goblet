@@ -2,6 +2,7 @@ import logging
 
 from goblet.client import VersionedClients
 from goblet_gcp_client.client import get_default_project, get_default_location
+from goblet.common_cloud_actions import check_or_enable_service
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -14,6 +15,7 @@ class Handler:
     resources = None
     resource_type = ""
     can_sync = False
+    required_apis = []
 
     def __init__(
         self,
@@ -62,3 +64,8 @@ class Handler:
         if other.resources:
             self.resources.update(other.resources)
         return self
+
+    def _check_or_enable_service(self, enable=False):
+        if not self.resources:
+            return
+        return check_or_enable_service(self.required_apis, enable)

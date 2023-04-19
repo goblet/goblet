@@ -1,0 +1,2702 @@
+{
+  "headers": {},
+  "body": {
+    "services": [
+      {
+        "name": "projects/goblet/services/cloudfunctions.googleapis.com",
+        "config": {
+          "name": "cloudfunctions.googleapis.com",
+          "title": "Cloud Functions API",
+          "apis": [
+            {
+              "name": "google.longrunning.Operations",
+              "methods": [
+                {
+                  "name": "ListOperations"
+                },
+                {
+                  "name": "GetOperation"
+                },
+                {
+                  "name": "DeleteOperation"
+                },
+                {
+                  "name": "CancelOperation"
+                },
+                {
+                  "name": "WaitOperation"
+                }
+              ],
+              "version": "v1"
+            },
+            {
+              "name": "google.cloud.functions.v2alpha.FunctionService",
+              "methods": [
+                {
+                  "name": "GetFunction"
+                },
+                {
+                  "name": "ListFunctions"
+                },
+                {
+                  "name": "CreateFunction"
+                },
+                {
+                  "name": "UpdateFunction"
+                },
+                {
+                  "name": "SetupFunctionUpgradeConfig"
+                },
+                {
+                  "name": "AbortFunctionUpgrade"
+                },
+                {
+                  "name": "RedirectFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "RollbackFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "CommitFunctionUpgrade"
+                },
+                {
+                  "name": "DeleteFunction"
+                },
+                {
+                  "name": "GenerateUploadUrl"
+                },
+                {
+                  "name": "GenerateDownloadUrl"
+                },
+                {
+                  "name": "ListRuntimes"
+                }
+              ],
+              "version": "v2alpha"
+            },
+            {
+              "name": "google.iam.v1.IAMPolicy",
+              "methods": [
+                {
+                  "name": "SetIamPolicy"
+                },
+                {
+                  "name": "GetIamPolicy"
+                },
+                {
+                  "name": "TestIamPermissions"
+                }
+              ],
+              "version": "v1"
+            },
+            {
+              "name": "google.cloud.functions.v2beta.FunctionService",
+              "methods": [
+                {
+                  "name": "GetFunction"
+                },
+                {
+                  "name": "ListFunctions"
+                },
+                {
+                  "name": "CreateFunction"
+                },
+                {
+                  "name": "UpdateFunction"
+                },
+                {
+                  "name": "SetupFunctionUpgradeConfig"
+                },
+                {
+                  "name": "AbortFunctionUpgrade"
+                },
+                {
+                  "name": "RedirectFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "RollbackFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "CommitFunctionUpgrade"
+                },
+                {
+                  "name": "DeleteFunction"
+                },
+                {
+                  "name": "GenerateUploadUrl"
+                },
+                {
+                  "name": "GenerateDownloadUrl"
+                },
+                {
+                  "name": "ListRuntimes"
+                }
+              ],
+              "version": "v2beta"
+            },
+            {
+              "name": "google.cloud.functions.v2.FunctionService",
+              "methods": [
+                {
+                  "name": "GetFunction"
+                },
+                {
+                  "name": "ListFunctions"
+                },
+                {
+                  "name": "CreateFunction"
+                },
+                {
+                  "name": "UpdateFunction"
+                },
+                {
+                  "name": "SetupFunctionUpgradeConfig"
+                },
+                {
+                  "name": "AbortFunctionUpgrade"
+                },
+                {
+                  "name": "RedirectFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "RollbackFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "CommitFunctionUpgrade"
+                },
+                {
+                  "name": "DeleteFunction"
+                },
+                {
+                  "name": "GenerateUploadUrl"
+                },
+                {
+                  "name": "GenerateDownloadUrl"
+                },
+                {
+                  "name": "ListRuntimes"
+                }
+              ],
+              "version": "v2"
+            },
+            {
+              "name": "google.cloud.functions.v2main.FunctionService",
+              "methods": [
+                {
+                  "name": "GetFunction"
+                },
+                {
+                  "name": "ListFunctions"
+                },
+                {
+                  "name": "CreateFunction"
+                },
+                {
+                  "name": "UpdateFunction"
+                },
+                {
+                  "name": "SetupFunctionUpgradeConfig"
+                },
+                {
+                  "name": "AbortFunctionUpgrade"
+                },
+                {
+                  "name": "RedirectFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "RollbackFunctionUpgradeTraffic"
+                },
+                {
+                  "name": "CommitFunctionUpgrade"
+                },
+                {
+                  "name": "DeleteFunction"
+                },
+                {
+                  "name": "GenerateUploadUrl"
+                },
+                {
+                  "name": "GenerateDownloadUrl"
+                },
+                {
+                  "name": "ListRuntimes"
+                }
+              ],
+              "version": "v2main"
+            },
+            {
+              "name": "google.cloud.functions.v1.CloudFunctionsService",
+              "methods": [
+                {
+                  "name": "ListFunctions"
+                },
+                {
+                  "name": "GetFunction"
+                },
+                {
+                  "name": "CreateFunction"
+                },
+                {
+                  "name": "UpdateFunction"
+                },
+                {
+                  "name": "DeleteFunction"
+                },
+                {
+                  "name": "CallFunction"
+                },
+                {
+                  "name": "GenerateUploadUrl"
+                },
+                {
+                  "name": "GenerateDownloadUrl"
+                },
+                {
+                  "name": "SetIamPolicy"
+                },
+                {
+                  "name": "GetIamPolicy"
+                },
+                {
+                  "name": "TestIamPermissions"
+                }
+              ],
+              "version": "v1"
+            },
+            {
+              "name": "google.cloud.location.Locations",
+              "methods": [
+                {
+                  "name": "ListLocations"
+                },
+                {
+                  "name": "GetLocation"
+                }
+              ],
+              "version": "v1"
+            },
+            {
+              "name": "google.discovery.Discovery",
+              "methods": [
+                {
+                  "name": "GetDiscovery"
+                },
+                {
+                  "name": "GetDiscoveryRest"
+                }
+              ],
+              "version": "v1"
+            }
+          ],
+          "documentation": {
+            "summary": "Manages lightweight user-provided functions executed in response to events."
+          },
+          "quota": {
+            "limits": [
+              {
+                "name": "ReadRequestsPerMinutePerProject",
+                "metric": "cloudfunctions.googleapis.com/read_requests",
+                "unit": "1/min/{project}",
+                "values": {
+                  "STANDARD": "300",
+                  "STANDARD/{billable=true}": "3000"
+                }
+              },
+              {
+                "name": "WriteRequestsPerMinutePerProject",
+                "metric": "cloudfunctions.googleapis.com/write_requests",
+                "unit": "1/min/{project}",
+                "values": {
+                  "STANDARD": "15",
+                  "STANDARD/{billable=true}": "50"
+                }
+              },
+              {
+                "name": "TestCallRequestsPerMinutePerProject",
+                "metric": "cloudfunctions.googleapis.com/test_call_requests",
+                "unit": "1/min/{project}",
+                "values": {
+                  "STANDARD": "5",
+                  "STANDARD/{billable=true}": "10"
+                }
+              },
+              {
+                "name": "BuildTimePerDayPerProject",
+                "metric": "cloudfunctions.googleapis.com/build_time",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "12000",
+                  "STANDARD/{billable=true}": "300000"
+                }
+              },
+              {
+                "name": "V2WriteRequestsPerMinutePerProjectPerRegion",
+                "metric": "cloudfunctions.googleapis.com/v2_write_requests_regional",
+                "unit": "1/min/{project}/{region}",
+                "values": {
+                  "STANDARD": "60",
+                  "STANDARD/{billable=true}": "60"
+                }
+              },
+              {
+                "name": "V2ReadRequestsPerMinutePerProjectPerRegion",
+                "metric": "cloudfunctions.googleapis.com/v2_read_requests_regional",
+                "unit": "1/min/{project}/{region}",
+                "values": {
+                  "STANDARD": "1200",
+                  "STANDARD/{billable=true}": "1200"
+                }
+              },
+              {
+                "description": "API requests for listing and reading entities (deprecated)",
+                "maxLimit": "5000",
+                "name": "USER-100s",
+                "metric": "Read",
+                "unit": "1/100s/{project}/{user}",
+                "values": {
+                  "STANDARD": "5000"
+                }
+              },
+              {
+                "description": "API requests for listing and reading entities",
+                "maxLimit": "5000",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "Read",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "5000"
+                }
+              },
+              {
+                "description": "API requests for creating, modifying or deleting functions (deprecated)",
+                "maxLimit": "80",
+                "name": "USER-100s",
+                "metric": "Write",
+                "unit": "1/100s/{project}/{user}",
+                "values": {
+                  "STANDARD": "80"
+                }
+              },
+              {
+                "description": "API requests for creating, modifying or deleting functions",
+                "maxLimit": "80",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "Write",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "80"
+                }
+              },
+              {
+                "description": "API requests for performing a test function invocation (deprecated)",
+                "maxLimit": "16",
+                "name": "USER-100s",
+                "metric": "TestCall",
+                "unit": "1/100s/{project}/{user}",
+                "values": {
+                  "STANDARD": "16"
+                }
+              },
+              {
+                "description": "API requests for performing a test function invocation",
+                "maxLimit": "16",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "TestCall",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "16"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "CPUMilliSecondsDaily",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to resolve a domain name (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "DNSResolutions",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "72000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "BuildTime",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "72000"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-us-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-us-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-us-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-us-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-us-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-us-east4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-us-east4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-us-east4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-us-east4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-us-east4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-us-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-us-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-us-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-us-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-us-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-us-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-us-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-us-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-us-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-us-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-us-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-us-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-us-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-us-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-us-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-europe-west1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-europe-west1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-europe-west1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-europe-west1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-europe-west1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-europe-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-europe-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-europe-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-europe-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-europe-west2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-europe-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-europe-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-europe-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-europe-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-europe-west3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-europe-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-europe-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-europe-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-europe-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-europe-west4",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-europe-west6",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-europe-west6",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-europe-west6",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-europe-west6",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-europe-west6",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-east2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-east2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-east2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-east2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-east2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-northeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-northeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-northeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-northeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-northeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-south1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-northeast3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-northeast3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-northeast3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-northeast3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-northeast3",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-south1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-south1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-south1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-south1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-northamerica-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-northamerica-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-northamerica-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-northamerica-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-northamerica-northeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-southamerica-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-southamerica-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-southamerica-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-southamerica-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-southamerica-east1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-australia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-australia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-australia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-australia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-australia-southeast1",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "Memory allocation for the quota is measured in MB-milliseconds\n",
+                "maxLimit": "-1",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "MiByMilliSeconds",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "-1"
+                }
+              },
+              {
+                "maxLimit": "-1",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "HttpRequestData",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "-1"
+                }
+              },
+              {
+                "maxLimit": "-1",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "HttpResponseData",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "-1"
+                }
+              },
+              {
+                "description": "API requests for listing and reading entities",
+                "maxLimit": "10000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "ReadNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "10000"
+                }
+              },
+              {
+                "description": "API requests for listing and reading entities (deprecated)",
+                "maxLimit": "500",
+                "name": "USER-100s",
+                "metric": "ReadNonbillable",
+                "unit": "1/100s/{project}/{user}",
+                "values": {
+                  "STANDARD": "500"
+                }
+              },
+              {
+                "description": "API requests for listing and reading entities",
+                "maxLimit": "500",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "ReadNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "500"
+                }
+              },
+              {
+                "description": "API requests for creating, modifying or deleting functions",
+                "maxLimit": "1000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "WriteNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1000"
+                }
+              },
+              {
+                "description": "API requests for creating, modifying or deleting functions (deprecated)",
+                "maxLimit": "20",
+                "name": "USER-100s",
+                "metric": "WriteNonbillable",
+                "unit": "1/100s/{project}/{user}",
+                "values": {
+                  "STANDARD": "20"
+                }
+              },
+              {
+                "description": "API requests for creating, modifying or deleting functions",
+                "maxLimit": "20",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "WriteNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "20"
+                }
+              },
+              {
+                "description": "API requests for performing a test function invocation",
+                "maxLimit": "1000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "TestCallNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1000"
+                }
+              },
+              {
+                "description": "API requests for performing a test function invocation (deprecated)",
+                "maxLimit": "10",
+                "name": "USER-100s",
+                "metric": "TestCallNonbillable",
+                "unit": "1/100s/{project}/{user}",
+                "values": {
+                  "STANDARD": "10"
+                }
+              },
+              {
+                "description": "API requests for performing a test function invocation",
+                "maxLimit": "10",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "TestCallNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "10"
+                }
+              },
+              {
+                "maxLimit": "5000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "FunctionCallsNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "5000"
+                }
+              },
+              {
+                "maxLimit": "50",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCallsNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "50"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds",
+                "maxLimit": "1500000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "CPUMilliSecondsNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1500000"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds",
+                "maxLimit": "100000",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSecondsNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "100000"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds",
+                "maxLimit": "1500000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "CPUMilliSecondsDailyNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1500000"
+                }
+              },
+              {
+                "maxLimit": "1073741824",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "NetworkIngressNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1073741824"
+                }
+              },
+              {
+                "maxLimit": "20971520",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngressNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "20971520"
+                }
+              },
+              {
+                "maxLimit": "1073741824",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "NetworkEgressNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1073741824"
+                }
+              },
+              {
+                "maxLimit": "20971520",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgressNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "20971520"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection",
+                "maxLimit": "5000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "SocketConnectNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "5000"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection",
+                "maxLimit": "50",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnectNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "50"
+                }
+              },
+              {
+                "description": "The number of attempts to resolve a domain name",
+                "maxLimit": "5000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "DNSResolutionsNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "5000"
+                }
+              },
+              {
+                "description": "The number of attempts to resolve a domain name",
+                "maxLimit": "50",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "DNSResolutionsNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "50"
+                }
+              },
+              {
+                "maxLimit": "12000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "BuildTimeNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "12000"
+                }
+              },
+              {
+                "description": "Memory allocation for the quota is measured in MB-milliseconds\n",
+                "maxLimit": "1536000000",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "MiByMilliSecondsNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1536000000"
+                }
+              },
+              {
+                "description": "Memory allocation for the quota is measured in MB-milliseconds\n",
+                "maxLimit": "102400000",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "MiByMilliSecondsNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "102400000"
+                }
+              },
+              {
+                "maxLimit": "1073741824",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "HttpRequestDataNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1073741824"
+                }
+              },
+              {
+                "maxLimit": "20971520",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "HttpRequestDataNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "20971520"
+                }
+              },
+              {
+                "maxLimit": "1073741824",
+                "name": "CLIENT_PROJECT-1d",
+                "metric": "HttpResponseDataNonbillable",
+                "unit": "1/d/{project}",
+                "values": {
+                  "STANDARD": "1073741824"
+                }
+              },
+              {
+                "maxLimit": "20971520",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "HttpResponseDataNonbillable",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "20971520"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "FunctionCalls-asia-southeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "CPU allocation for the quota is measured in MHz-seconds (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "CPUMilliSeconds-asia-southeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkIngress-asia-southeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "NetworkEgress-asia-southeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              },
+              {
+                "description": "The number of attempts to establish a TCP connection (deprecated)",
+                "maxLimit": "9223372036854775807",
+                "name": "CLIENT_PROJECT-100s",
+                "metric": "SocketConnect-asia-southeast2",
+                "unit": "1/100s/{project}",
+                "values": {
+                  "STANDARD": "9223372036854775807"
+                }
+              }
+            ]
+          },
+          "authentication": {
+            "rules": [
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform,"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloudfunctions,\nhttps://www.googleapis.com/auth/cloud-platform"
+                }
+              }
+            ]
+          },
+          "usage": {
+            "requirements": [
+              "serviceusage.googleapis.com/tos/cloud"
+            ]
+          },
+          "endpoints": [
+            {
+              "name": "cloudfunctions.googleapis.com"
+            },
+            {
+              "name": "cloudfunctions.clients6.google.com"
+            },
+            {
+              "name": "content-cloudfunctions.googleapis.com"
+            },
+            {
+              "name": "cloudfunctions.mtls.googleapis.com"
+            },
+            {
+              "name": "cloudfunctions.mtls.clients6.google.com"
+            },
+            {
+              "name": "content-cloudfunctions.mtls.googleapis.com"
+            }
+          ],
+          "monitoredResources": [
+            {
+              "type": "cloudfunctions.googleapis.com/function",
+              "labels": [
+                {
+                  "key": "cloud.googleapis.com/location"
+                },
+                {
+                  "key": "cloud.googleapis.com/uid"
+                },
+                {
+                  "key": "cloud.googleapis.com/project"
+                },
+                {
+                  "key": "cloudfunctions.googleapis.com/function_name"
+                }
+              ]
+            },
+            {
+              "type": "serviceruntime.googleapis.com/api",
+              "labels": [
+                {
+                  "key": "cloud.googleapis.com/location"
+                },
+                {
+                  "key": "cloud.googleapis.com/uid"
+                },
+                {
+                  "key": "serviceruntime.googleapis.com/api_version"
+                },
+                {
+                  "key": "serviceruntime.googleapis.com/api_method"
+                },
+                {
+                  "key": "serviceruntime.googleapis.com/consumer_project"
+                },
+                {
+                  "key": "cloud.googleapis.com/project"
+                },
+                {
+                  "key": "cloud.googleapis.com/service"
+                }
+              ]
+            },
+            {
+              "type": "serviceruntime.googleapis.com/consumer_quota",
+              "labels": [
+                {
+                  "key": "cloud.googleapis.com/location"
+                },
+                {
+                  "key": "cloud.googleapis.com/uid"
+                },
+                {
+                  "key": "cloud.googleapis.com/service"
+                },
+                {
+                  "key": "cloud.googleapis.com/resource_id"
+                },
+                {
+                  "key": "cloud.googleapis.com/resource_node"
+                },
+                {
+                  "key": "cloud.googleapis.com/quota_metric"
+                },
+                {
+                  "key": "cloud.googleapis.com/quota_location"
+                }
+              ]
+            },
+            {
+              "type": "serviceruntime.googleapis.com/producer_quota",
+              "labels": [
+                {
+                  "key": "cloud.googleapis.com/location"
+                },
+                {
+                  "key": "cloud.googleapis.com/uid"
+                },
+                {
+                  "key": "cloud.googleapis.com/service"
+                },
+                {
+                  "key": "cloud.googleapis.com/resource_id"
+                },
+                {
+                  "key": "cloud.googleapis.com/resource_node"
+                },
+                {
+                  "key": "cloud.googleapis.com/consumer_resource_node"
+                },
+                {
+                  "key": "cloud.googleapis.com/quota_metric"
+                },
+                {
+                  "key": "cloud.googleapis.com/quota_location"
+                }
+              ]
+            }
+          ],
+          "monitoring": {
+            "consumerDestinations": [
+              {
+                "monitoredResource": "cloudfunctions.googleapis.com/function",
+                "metrics": [
+                  "cloudfunctions.googleapis.com/function/execution_times",
+                  "cloudfunctions.googleapis.com/function/execution_count",
+                  "cloudfunctions.googleapis.com/function/user_memory_bytes",
+                  "cloudfunctions.googleapis.com/function/network_egress",
+                  "cloudfunctions.googleapis.com/function/active_instances",
+                  "cloudfunctions.googleapis.com/function/execution_delays",
+                  "cloudfunctions.googleapis.com/function/execution_count_internal",
+                  "cloudfunctions.googleapis.com/function/supervisor_gcu_times",
+                  "cloudfunctions.googleapis.com/function/supervisor_memory_bytes",
+                  "cloudfunctions.googleapis.com/function/user_gcu_times",
+                  "cloudfunctions.googleapis.com/function/supervisor_chemist_rpc_error_count",
+                  "cloudfunctions.googleapis.com/function/supervisor_controlled_death_count",
+                  "cloudfunctions.googleapis.com/function/supervisor_report_count",
+                  "cloudfunctions.googleapis.com/function/supervisor_report_latencies",
+                  "cloudfunctions.googleapis.com/function/supervisor_phase_latencies"
+                ]
+              },
+              {
+                "monitoredResource": "serviceruntime.googleapis.com/api",
+                "metrics": [
+                  "serviceruntime.googleapis.com/api/consumer/request_count",
+                  "serviceruntime.googleapis.com/api/consumer/error_count",
+                  "serviceruntime.googleapis.com/api/consumer/quota_used_count",
+                  "serviceruntime.googleapis.com/api/consumer/quota_refund_count",
+                  "serviceruntime.googleapis.com/api/consumer/total_latencies",
+                  "serviceruntime.googleapis.com/api/consumer/request_overhead_latencies",
+                  "serviceruntime.googleapis.com/api/consumer/backend_latencies",
+                  "serviceruntime.googleapis.com/api/consumer/request_sizes",
+                  "serviceruntime.googleapis.com/api/consumer/response_sizes",
+                  "serviceruntime.googleapis.com/api/consumer/top_request_count_by_end_user",
+                  "serviceruntime.googleapis.com/api/consumer/top_request_count_by_end_user_country",
+                  "serviceruntime.googleapis.com/api/consumer/top_request_count_by_referer",
+                  "serviceruntime.googleapis.com/quota/used",
+                  "serviceruntime.googleapis.com/quota/limit",
+                  "serviceruntime.googleapis.com/quota/exceeded",
+                  "serviceruntime.googleapis.com/allocation/consumer/quota_used_count"
+                ]
+              },
+              {
+                "monitoredResource": "serviceruntime.googleapis.com/consumer_quota",
+                "metrics": [
+                  "serviceruntime.googleapis.com/quota/rate/consumer/used_count",
+                  "serviceruntime.googleapis.com/quota/rate/consumer/refund_count",
+                  "serviceruntime.googleapis.com/quota/allocation/consumer/usage",
+                  "serviceruntime.googleapis.com/quota/consumer/limit",
+                  "serviceruntime.googleapis.com/quota/consumer/exceeded"
+                ]
+              }
+            ]
+          }
+        },
+        "state": "ENABLED",
+        "parent": "projects/1234567890"
+      },
+      {
+        "name": "projects/goblet/services/secretmanager.googleapis.com",
+        "config": {
+          "name": "secretmanager.googleapis.com",
+          "title": "Secret Manager API",
+          "apis": [
+            {
+              "name": "google.cloud.location.Locations",
+              "methods": [
+                {
+                  "name": "ListLocations"
+                },
+                {
+                  "name": "GetLocation"
+                }
+              ],
+              "version": "v1"
+            },
+            {
+              "name": "google.cloud.secretmanager.v1.SecretManagerService",
+              "methods": [
+                {
+                  "name": "ListSecrets"
+                },
+                {
+                  "name": "CreateSecret"
+                },
+                {
+                  "name": "AddSecretVersion"
+                },
+                {
+                  "name": "GetSecret"
+                },
+                {
+                  "name": "UpdateSecret"
+                },
+                {
+                  "name": "DeleteSecret"
+                },
+                {
+                  "name": "ListSecretVersions"
+                },
+                {
+                  "name": "GetSecretVersion"
+                },
+                {
+                  "name": "AccessSecretVersion"
+                },
+                {
+                  "name": "DisableSecretVersion"
+                },
+                {
+                  "name": "EnableSecretVersion"
+                },
+                {
+                  "name": "DestroySecretVersion"
+                },
+                {
+                  "name": "SetIamPolicy"
+                },
+                {
+                  "name": "GetIamPolicy"
+                },
+                {
+                  "name": "TestIamPermissions"
+                }
+              ],
+              "version": "v1"
+            },
+            {
+              "name": "google.cloud.secrets.v1beta1.SecretManagerService",
+              "methods": [
+                {
+                  "name": "ListSecrets"
+                },
+                {
+                  "name": "CreateSecret"
+                },
+                {
+                  "name": "AddSecretVersion"
+                },
+                {
+                  "name": "GetSecret"
+                },
+                {
+                  "name": "UpdateSecret"
+                },
+                {
+                  "name": "DeleteSecret"
+                },
+                {
+                  "name": "ListSecretVersions"
+                },
+                {
+                  "name": "GetSecretVersion"
+                },
+                {
+                  "name": "AccessSecretVersion"
+                },
+                {
+                  "name": "DisableSecretVersion"
+                },
+                {
+                  "name": "EnableSecretVersion"
+                },
+                {
+                  "name": "DestroySecretVersion"
+                },
+                {
+                  "name": "SetIamPolicy"
+                },
+                {
+                  "name": "GetIamPolicy"
+                },
+                {
+                  "name": "TestIamPermissions"
+                }
+              ],
+              "version": "v1beta1"
+            },
+            {
+              "name": "google.discovery.Discovery",
+              "methods": [
+                {
+                  "name": "GetDiscovery"
+                },
+                {
+                  "name": "GetDiscoveryRest"
+                }
+              ],
+              "version": "v1"
+            }
+          ],
+          "documentation": {
+            "summary": "Stores sensitive data such as API keys, passwords, and certificates. Provides convenience while improving security.\n"
+          },
+          "quota": {
+            "limits": [
+              {
+                "name": "ReadRequestsPerMinutePerProject",
+                "metric": "secretmanager.googleapis.com/read_requests",
+                "unit": "1/min/{project}",
+                "values": {
+                  "STANDARD": "600",
+                  "HIGH": "6000",
+                  "VERY_HIGH": "60000"
+                }
+              },
+              {
+                "name": "AccessRequestsPerMinutePerProject",
+                "metric": "secretmanager.googleapis.com/access_requests",
+                "unit": "1/min/{project}",
+                "values": {
+                  "STANDARD": "90000",
+                  "HIGH": "180000",
+                  "VERY_HIGH": "360000"
+                }
+              },
+              {
+                "name": "WriteRequestsPerMinutePerProject",
+                "metric": "secretmanager.googleapis.com/write_requests",
+                "unit": "1/min/{project}",
+                "values": {
+                  "STANDARD": "600",
+                  "HIGH": "1200",
+                  "VERY_HIGH": "2400"
+                }
+              }
+            ]
+          },
+          "authentication": {
+            "rules": [
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              },
+              {
+                "oauth": {
+                  "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+                }
+              }
+            ]
+          },
+          "usage": {
+            "requirements": [
+              "serviceusage.googleapis.com/tos/cloud",
+              "serviceusage.googleapis.com/billing-enabled"
+            ]
+          },
+          "endpoints": [
+            {
+              "name": "secretmanager.googleapis.com"
+            },
+            {
+              "name": "secretmanager.clients6.google.com"
+            },
+            {
+              "name": "content-secretmanager.googleapis.com"
+            },
+            {
+              "name": "secretmanager.mtls.googleapis.com"
+            },
+            {
+              "name": "secretmanager.mtls.clients6.google.com"
+            },
+            {
+              "name": "content-secretmanager.mtls.googleapis.com"
+            }
+          ],
+          "monitoring": {}
+        },
+        "state": "ENABLED",
+        "parent": "projects/1234567890"
+      }
+    ]
+  }
+}

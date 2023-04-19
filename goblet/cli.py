@@ -368,5 +368,60 @@ def run_job(name, task_id, set_env, stage):
         sys.exit(1)
 
 
+@main.group()
+def services():
+    """check and enable gcp service apis for your gcp project"""
+    pass
+
+
+@services.command(name="check")
+@click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def check_gcp_services(project, stage):
+    """check status of gcp service apis"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
+    try:
+        _project = project or get_default_project()
+        if not _project:
+            click.echo(
+                "Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT"
+            )
+        os.environ["GOOGLE_PROJECT"] = _project
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        app.check_or_enable_services()
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
+
+
+@services.command(name="enable")
+@click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def enable_gcp_services(project, stage):
+    """enable gcp service apis"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
+    try:
+        _project = project or get_default_project()
+        if not _project:
+            click.echo(
+                "Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT"
+            )
+        os.environ["GOOGLE_PROJECT"] = _project
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        app.check_or_enable_services(enable=True)
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     main()  # pylint: disable=no-value-for-parameter

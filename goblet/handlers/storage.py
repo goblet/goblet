@@ -26,6 +26,7 @@ class Storage(Handler):
 
     resource_type = "storage"
     valid_backends = ["cloudfunction", "cloudfunctionv2"]
+    required_apis = ["cloudfunctions"]
 
     def __init__(self, name, backend, versioned_clients=None, resources=None):
         super(Storage, self).__init__(

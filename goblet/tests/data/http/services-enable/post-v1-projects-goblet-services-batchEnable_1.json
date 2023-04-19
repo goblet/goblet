@@ -1,0 +1,13 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/acat.p2-1234567890-5a312762-427a-499f-8025-ab8150acd344",
+    "metadata": {
+      "@type": "type.googleapis.com/google.api.serviceusage.v1.OperationMetadata",
+      "resourceNames": [
+        "services/cloudfunctions.googleapis.com/projectSettings/1234567890",
+        "services/secretmanager.googleapis.com/projectSettings/1234567890"
+      ]
+    }
+  }
+}

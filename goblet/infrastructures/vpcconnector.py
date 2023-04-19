@@ -9,6 +9,7 @@ log.setLevel(logging.INFO)
 
 class VPCConnector(Infrastructure):
     resource_type = "vpcconnector"
+    required_apis = ["vpcaccess"]
 
     def register(self, name, kwargs):
         self.resource = {"name": name}
