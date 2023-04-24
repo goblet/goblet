@@ -263,6 +263,10 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [GCP Alerts the Easy Way: Alerting for Cloudfunctions and Cloudrun using Goblet](https://engineering.premise.com/gcp-alerts-the-easy-way-alerting-for-cloudfunctions-and-cloudrun-using-goblet-62bdf2126ef6)
 
+[Tutorial: Deploy CloudTaskQueues, enqueue CloudTasks and handle CloudTasks](https://engineering.premise.com/deploy-and-handle-gcp-cloudtasks-with-goblet-in-minutes-ee138e9dd2c5)
+
+[Tutorial: Low Usage Alerting On Slack for Google Cloud Platform](https://engineering.premise.com/tutorial-low-usage-alerting-on-slack-for-google-cloud-platform-gcp-cc68ac8ca4d)
+
 ## Examples
 
 [Goblet Examples](https://github.com/goblet/goblet/blob/main/examples/main.py)
