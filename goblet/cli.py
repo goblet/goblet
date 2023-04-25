@@ -270,6 +270,7 @@ def package(stage):
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
         app.package()
+        app.backend.zipf.close()
 
     except FileNotFoundError as not_found:
         click.echo(
