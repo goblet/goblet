@@ -5,7 +5,10 @@ import os
 
 from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
-from goblet.decorators import Register_Handlers
+import goblet.globals as g
+from goblet.decorators import Goblet_Decorators
+from goblet.resource_manager import Register_Manager
+
 from google.cloud.logging.handlers import StructuredLogHandler
 from google.cloud.logging_v2.handlers import setup_logging
 
@@ -15,7 +18,7 @@ log = logging.getLogger("goblet.app")
 log.setLevel(logging.INFO)
 
 
-class Goblet(Register_Handlers):
+class Goblet(Goblet_Decorators, Register_Manager):
     """
     Main class which inherits most of its logic from the Register_Handlers class. Local param is used
     to set the entrypoint for running goblet locally
@@ -39,7 +42,9 @@ class Goblet(Register_Handlers):
         self.backend_class = self.get_backend_and_check_versions(
             backend, client_versions or {}
         )
-        self.function_name = GConfig(config).function_name or function_name
+        g.config = GConfig(config)
+        self.config = g.config
+        self.function_name = self.config.function_name or function_name
         self.labels = labels
         self.backend = self.backend_class(self, config=config)
         self.is_sub_app = is_sub_app
@@ -50,7 +55,6 @@ class Goblet(Register_Handlers):
             cors=cors,
             client_versions=self.client_versions,
             routes_type=routes_type,
-            config=config,
         )
         self.log = logging.getLogger(__name__)
         self.headers = {}

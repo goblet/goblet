@@ -7,13 +7,15 @@ from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
-import goblet
+from goblet import Response
+import goblet.globals as g
 
 from goblet.handlers.handler import Handler
 from goblet.handlers.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.config import GConfig
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
+
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -104,8 +106,8 @@ class Routes(Handler):
                 return False
         return True
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
-        gconfig = GConfig(config)
+    def _deploy(self, source=None, entrypoint=None):
+        gconfig = g.config
         if (
             self.routes_type != "apigateway"
             and self.backend.resource_type.startswith("cloudfunction")
@@ -133,13 +135,12 @@ class Routes(Handler):
         destroy_apigateway(self.name, self.versioned_clients)
 
     def generate_openapi_spec(self, cloudfunction):
-        config = GConfig()
-        deadline = self.get_timeout(config)
+        deadline = self.get_timeout(g.config)
         spec = OpenApiSpec(
             self.name,
             cloudfunction,
-            security_definitions=config.securityDefinitions,
-            security=config.security,
+            security_definitions=g.config.securityDefinitions,
+            security=g.config.security,
             marshmallow_attribute_function=self.marshmallow_attribute_function,
             deadline=deadline,
         )
@@ -430,12 +431,12 @@ class RouteEntry:
         if not self.cors:
             return resp
         # Apply to Response Obj
-        if isinstance(resp, goblet.Response):
+        if isinstance(resp, Response):
             resp.headers.update(self.cors.get_access_control_headers())
         if isinstance(resp, tuple):
             resp[2].update(self.cors.get_access_control_headers())
         if isinstance(resp, str):
-            resp = goblet.Response(resp, headers=self.cors.get_access_control_headers())
+            resp = Response(resp, headers=self.cors.get_access_control_headers())
         return resp
 
 
