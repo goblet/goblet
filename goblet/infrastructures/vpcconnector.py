@@ -18,10 +18,9 @@ class VPCConnector(Infrastructure):
         if not vpcconnector_config.get("ipCidrRange"):
             raise ValueError("ipCidrRange not specified in config")
 
-    def deploy(self, config={}):
+    def deploy(self):
         if not self.resource:
             return
-        self.config.update_g_config(values=config)
         vpcconnector_config = self.config.vpcconnector or {}
 
         # either min/max throughput or instances needs to be set
@@ -36,11 +35,11 @@ class VPCConnector(Infrastructure):
         }
 
         try:
-            resp = self.client.vpcconnector.execute(
+            resp = self.versioned_clients.vpcconnector.execute(
                 "create",
                 params={"connectorId": self.resource["name"], "body": req_body},
             )
-            self.client.vpcconnector.wait_for_operation(resp["name"])
+            self.versioned_clients.vpcconnector.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(
@@ -53,7 +52,7 @@ class VPCConnector(Infrastructure):
     def get(self):
         if not self.resource:
             return
-        resp = self.client.vpcconnector.execute(
+        resp = self.versioned_clients.vpcconnector.execute(
             "get",
             parent_key="name",
             parent_schema="projects/{project_id}/locations/{location_id}/connectors/"
@@ -65,13 +64,13 @@ class VPCConnector(Infrastructure):
         if not self.resource:
             return
         try:
-            resp = self.client.vpcconnector.execute(
+            resp = self.versioned_clients.vpcconnector.execute(
                 "delete",
                 parent_key="name",
                 parent_schema="projects/{project_id}/locations/{location_id}/connectors/"
                 + self.resource["name"],
             )
-            self.client.vpcconnector.wait_for_operation(resp["name"])
+            self.versioned_clients.vpcconnector.wait_for_operation(resp["name"])
             log.info("destroying vpc connector")
         except HttpError as e:
             if e.resp.status == 404:

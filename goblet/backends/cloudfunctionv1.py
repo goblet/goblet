@@ -21,15 +21,12 @@ class CloudFunctionV1(Backend):
     monitoring_label_key = "function_name"
     required_apis = ["cloudfunctions", "secretmanager"]
 
-    def __init__(self, app, config={}):
-        self.client = VersionedClients(app.client_versions).cloudfunctions
+    def __init__(self, app):
+        self.client = VersionedClients().cloudfunctions
         self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{app.function_name}"
-        super().__init__(app, self.client, self.func_path, config=config)
+        super().__init__(app, self.client, self.func_path)
 
-    def deploy(self, force=False, config=None):
-        if config:
-            self.config.update_g_config(values=config)
-        config = self.config
+    def deploy(self, force=False):
         put_headers = {
             "content-type": "application/zip",
             "x-goog-content-length-range": "0,104857600",
@@ -40,7 +37,7 @@ class CloudFunctionV1(Backend):
 
         if self.app.is_http():
             client, params = self._get_upload_params(source)
-            create_cloudfunctionv1(client, params, config=config)
+            create_cloudfunctionv1(client, params, config=self.config)
 
         return source
 
@@ -121,7 +118,7 @@ class CloudFunctionV1(Backend):
             "environmentVariables", {}
         )
 
-        versioned_clients = VersionedClients(self.app.client_versions)
+        versioned_clients = VersionedClients()
         for secret in self.config.config.get("cloudfunction", {}).get(
             "secretEnvironmentVariables", []
         ):

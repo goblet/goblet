@@ -14,10 +14,9 @@ class Redis(Infrastructure):
     def register(self, name, kwargs):
         self.resource = {"name": name}
 
-    def deploy(self, config={}):
+    def deploy(self):
         if not self.resource:
             return
-        self.config.update_g_config(values=config)
         redis_config = self.config.redis or {}
         req_body = {
             "tier": redis_config.get("tier", "BASIC"),
@@ -26,24 +25,24 @@ class Redis(Infrastructure):
             **redis_config,
         }
         try:
-            resp = self.client.redis.execute(
+            resp = self.versioned_clients.redis.execute(
                 "create",
                 params={"instanceId": self.resource["name"], "body": req_body},
             )
-            self.client.redis.wait_for_operation(resp["name"])
+            self.versioned_clients.redis.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
                 log.info(f"updating redis {self.resource['name']}")
                 if req_body.get("tier") == "BASIC":
                     self.update_keys.remove("replicaCount")
-                resp = self.client.redis.execute(
+                resp = self.versioned_clients.redis.execute(
                     "patch",
                     parent_key="name",
                     parent_schema="projects/{project_id}/locations/{location_id}/instances/"
                     + self.resource["name"],
                     params={"updateMask": ",".join(self.update_keys), "body": req_body},
                 )
-                self.client.redis.wait_for_operation(resp["name"])
+                self.versioned_clients.redis.wait_for_operation(resp["name"])
             else:
                 raise e
 
@@ -51,13 +50,13 @@ class Redis(Infrastructure):
         try:
             if not self.resource:
                 return
-            resp = self.client.redis.execute(
+            resp = self.versioned_clients.redis.execute(
                 "delete",
                 parent_key="name",
                 parent_schema="projects/{project_id}/locations/{location_id}/instances/"
                 + self.resource["name"],
             )
-            self.client.redis.wait_for_operation(resp["name"])
+            self.versioned_clients.redis.wait_for_operation(resp["name"])
             log.info(f"destroying redis {self.resource['name']}")
         except HttpError as e:
             if e.resp.status == 404:
@@ -68,7 +67,7 @@ class Redis(Infrastructure):
     def get(self):
         if not self.resource:
             return
-        resp = self.client.redis.execute(
+        resp = self.versioned_clients.redis.execute(
             "get",
             parent_key="name",
             parent_schema="projects/{project_id}/locations/{location_id}/instances/"

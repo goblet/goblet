@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 import base64
 from googleapiclient.errors import HttpError
 
-from goblet.config import GConfig
+import goblet.globals as g
 from goblet.client import (
     VersionedClients,
     get_default_project_number,
@@ -69,11 +69,10 @@ def create_cloudfunctionv1(client: Client, params: dict, config=None):
     )
 
 
-def create_cloudfunctionv2(client: Client, params: dict, config=None):
+def create_cloudfunctionv2(client: Client, params: dict):
     create_cloudfunction(
         client,
         params,
-        config,
         parent_key="parent",
         operations_calls="projects.locations.operations",
     )
@@ -82,7 +81,6 @@ def create_cloudfunctionv2(client: Client, params: dict, config=None):
 def create_cloudfunction(
     client: Client,
     params: dict,
-    config=None,
     parent_key="location",
     operations_calls="operations",
 ):
@@ -106,10 +104,9 @@ def create_cloudfunction(
     client.wait_for_operation(resp["name"], calls=operations_calls)
 
     # Set IAM Bindings
-    config = config or GConfig(config=config)
-    if config.bindings:
+    if g.config.bindings:
         log.info(f"adding IAM bindings for cloudfunction {function_name}")
-        policy_bindings = {"policy": {"bindings": config.bindings}}
+        policy_bindings = {"policy": {"bindings": g.config.bindings}}
         resp = client.execute(
             "setIamPolicy",
             parent_key="resource",
@@ -292,7 +289,7 @@ def create_cloudbuild(client, req_body):
         log.info("creating cloudbuild")
     except HttpError as e:
         raise e
-    cloudbuild_config = GConfig().cloudbuild or {}
+    cloudbuild_config = g.config.cloudbuild or {}
     timeout_seconds = cloudbuild_config.get("timeout", "600s")
     if "s" not in timeout_seconds:
         log.info(

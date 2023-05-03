@@ -93,7 +93,7 @@ class BigQueryRemoteFunction(Handler):
         reply = {"replies": tuples_replies}
         return json.dumps(reply)
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         """
         Get a connection resource for Handler.name and set cloudfunction
         invoker IAM role to the service account assigned to the connection

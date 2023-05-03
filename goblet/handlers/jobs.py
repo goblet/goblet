@@ -2,7 +2,6 @@ import logging
 
 from goblet.handlers.handler import Handler
 from goblet.common_cloud_actions import getCloudbuildArtifact
-from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError
 
@@ -44,18 +43,17 @@ class Jobs(Handler):
 
         return job["func"](task_id)
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         if not self.resources:
             return
 
-        gconfig = GConfig(config=config)
         artifact = getCloudbuildArtifact(
-            self.versioned_clients.cloudbuild, self.name, config=gconfig
+            self.versioned_clients.cloudbuild, self.name, config=self.config
         )
 
         log.info("deploying cloudrun jobs......")
         for job_name, job in self.resources.items():
-            container = {**(gconfig.job_container or {})}
+            container = {**(self.config.job_container or {})}
             container["image"] = artifact
             container["command"] = [
                 "goblet",
@@ -66,12 +64,12 @@ class Jobs(Handler):
 
             job_spec = {
                 "launchStage": "BETA",
-                "labels": gconfig.labels,
+                "labels": self.config.labels,
                 "template": {
                     "taskCount": len(job.keys()) - 1,
                     "template": {
                         "containers": [container],
-                        **(gconfig.job_spec or {}),
+                        **(self.config.job_spec or {}),
                     },
                     **job["execution_spec"],
                 },

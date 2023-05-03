@@ -35,7 +35,11 @@ def get_default_project_number():
 class VersionedClients:
     def __init__(self):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
-        if g.config.client_versions and isinstance(g.config.client_versions, dict):
+        if (
+            g.config
+            and g.config.client_versions
+            and isinstance(g.config.client_versions, dict)
+        ):
             self.client_versions.update(g.config.client_versions)
 
     @property

@@ -62,74 +62,42 @@ class Register_Manager:
         function_name,
         backend,
         cors=None,
-        client_versions=None,
         routes_type="apigateway",
     ):
         self.app_list = []
-        self.client_versions = client_versions
-
-        versioned_clients = VersionedClients(client_versions or {})
 
         self.handlers = {
-            "cloudtasktarget": CloudTaskTarget(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
+            "cloudtasktarget": CloudTaskTarget(function_name, backend=backend),
             "route": Routes(
                 function_name,
                 cors=cors,
                 backend=backend,
-                versioned_clients=versioned_clients,
                 routes_type=routes_type,
             ),
-            "pubsub": PubSub(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "storage": Storage(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "eventarc": EventArc(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "http": HTTP(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "jobs": Jobs(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "schedule": Scheduler(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "bqremotefunction": BigQueryRemoteFunction(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
+            "pubsub": PubSub(function_name, backend=backend),
+            "storage": Storage(function_name, backend=backend),
+            "eventarc": EventArc(function_name, backend=backend),
+            "http": HTTP(function_name, backend=backend),
+            "jobs": Jobs(function_name, backend=backend),
+            "schedule": Scheduler(function_name, backend=backend),
+            "bqremotefunction": BigQueryRemoteFunction(function_name, backend=backend),
         }
 
         self.infrastructure = {
             "cloudtaskqueue": CloudTaskQueue(
                 function_name,
                 backend=backend,
-                versioned_clients=versioned_clients,
             ),
             "redis": Redis(
                 function_name,
                 backend=backend,
-                versioned_clients=versioned_clients,
             ),
             "vpcconnector": VPCConnector(
                 function_name,
                 backend=backend,
-                versioned_clients=versioned_clients,
             ),
-            "alerts": Alerts(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-            ),
-            "apigateway": ApiGateway(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-            ),
+            "alerts": Alerts(function_name, backend=backend),
+            "apigateway": ApiGateway(function_name, backend=backend),
         }
 
         self.middleware_handlers = {
@@ -243,17 +211,17 @@ class Register_Manager:
                 configs.append(config)
         return configs
 
-    def deploy_handlers(self, source, config={}):
+    def deploy_handlers(self, source):
         """Call each handlers deploy method"""
         for k, v in self.handlers.items():
             log.info(f"deploying {k}")
-            v.deploy(source, entrypoint="goblet_entrypoint", config=config)
+            v.deploy(source, entrypoint="goblet_entrypoint")
 
-    def deploy_infrastructure(self, config={}):
+    def deploy_infrastructure(self):
         """Call deploy for each infrastructure"""
         for k, v in self.infrastructure.items():
             log.info(f"deploying {k}")
-            v.deploy(config=config)
+            v.deploy()
 
     def sync(self, dryrun=False):
         """Call each handlers sync method"""
@@ -290,7 +258,8 @@ class Register_Manager:
             return True
         return False
 
-    def get_backend_and_check_versions(self, backend: str, client_versions: dict):
+    def get_backend_and_check_versions(self, backend: str):
+        client_versions = VersionedClients().client_versions
         try:
             backend_class = SUPPORTED_BACKENDS[backend]
         except KeyError:
@@ -303,11 +272,11 @@ class Register_Manager:
         if specified_version:
             if specified_version not in backend_class.supported_versions:
                 raise ValueError(
-                    f"{version_key} version {self.client_versions[version_key]} "
+                    f"{version_key} version {client_versions[version_key]} "
                     f"not supported. Valid version(s): {', '.join(backend_class.supported_versions)}."
                 )
         else:
             # if not set, set to last in list of supported versions (most recent)
-            self.client_versions[version_key] = backend_class.supported_versions[-1]
+            client_versions[version_key] = backend_class.supported_versions[-1]
 
         return backend_class

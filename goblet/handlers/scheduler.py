@@ -80,7 +80,7 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         if not self.resources:
             return
 
@@ -100,16 +100,15 @@ class Scheduler(Handler):
         if self.backend.resource_type == "cloudrun":
             # dont get target in scheduler is needed only for jobs
             cloudrun_target = None
-            config = GConfig(config=config)
-            if config.cloudrun and config.cloudrun.get("service-account"):
-                service_account = config.cloudrun.get("service-account")
-            elif config.scheduler and config.scheduler.get("serviceAccount"):
-                service_account = config.scheduler.get("serviceAccount")
-            elif config.job and config.job.get("serviceAccount"):
-                service_account = config.job.get("serviceAccount")
+            if self.config.cloudrun and self.config.cloudrun.get("service-account"):
+                service_account = self.config.cloudrun.get("service-account")
+            elif self.config.scheduler and self.config.scheduler.get("serviceAccount"):
+                service_account = self.config.scheduler.get("serviceAccount")
+            elif self.config.job and self.config.job.get("serviceAccount"):
+                service_account = self.config.job.get("serviceAccount")
             else:
                 raise ValueError(
-                    "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
+                    "Service account not found in cloudrun. You can set `serviceAccount` field in self.config.json under `scheduler`"
                 )
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
