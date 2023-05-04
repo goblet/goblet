@@ -3,10 +3,7 @@ from goblet.test_utils import dummy_function
 from pytest import raises
 from goblet_gcp_client import get_response, get_responses
 
-# from goblet.infrastructures.vpcconnector import VPCConnector
-# from goblet.resources.http import HTTP
-
-# TODO revisit VPC Connector deploy once Discovery Document is updated
+from goblet.infrastructures.vpcconnector import VPCConnector
 
 
 class TestVPCConnector:
@@ -37,11 +34,11 @@ class TestVPCConnector:
         )
         app.vpcconnector(name="vpc-test")
 
-        # app.deploy(
-        #     force=True,
-        #     skip_backend=True,
-        #     skip_resources=True,
-        # )
+        app.deploy(
+            force=True,
+            skip_backend=True,
+            skip_resources=True,
+        )
 
         vpc_conn = get_response(
             "vpcconnector-deploy",
@@ -57,8 +54,8 @@ class TestVPCConnector:
         monkeypatch.setenv("G_TEST_NAME", "vpcconnector-destroy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        # vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test"))
-        # vpc.destroy()
+        vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test"})
+        vpc.destroy()
 
         responses = get_responses("vpcconnector-destroy")
         assert len(responses) == 2
@@ -82,13 +79,13 @@ class TestVPCConnector:
         app.handlers["http"].register("", dummy_function, {})
 
         app.vpcconnector(name="vpc-test")
-        # app.deploy(
-        #     skip_infra=True,
-        #     skip_resources=True,
-        #     force=True,
-        # )
+        app.deploy(
+            skip_infra=True,
+            skip_resources=True,
+            force=True,
+        )
 
-        # app.destroy(skip_infra=True)
+        app.destroy(skip_infra=True)
         response = get_response(
             "vpcconnector-deploy-cloudrun",
             "post-v2-projects-goblet-locations-us-central1-services_1.json",
@@ -116,13 +113,13 @@ class TestVPCConnector:
         app.handlers["http"].register("", dummy_function, {})
 
         app.vpcconnector(name="vpc-test")
-        # app.deploy(
-        #     skip_resources=True,
-        #     skip_infra=True,
-        #     force=True,
-        # )
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            force=True,
+        )
 
-        # app.destroy(skip_infra=True)
+        app.destroy(skip_infra=True)
         response = get_response(
             "vpcconnector-deploy-function",
             "post-v1-projects-goblet-locations-us-central1-functions_1.json",
@@ -148,13 +145,13 @@ class TestVPCConnector:
         app.handlers["http"].register("", dummy_function, {})
 
         app.vpcconnector(name="vpc-test")
-        # app.deploy(
-        #     skip_resources=True,
-        #     skip_infra=True,
-        #     force=True,
-        # )
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            force=True,
+        )
 
-        # app.destroy(skip_infra=True)
+        app.destroy(skip_infra=True)
         response = get_response(
             "vpcconnector-deploy-functionv2",
             "get-v2-projects-goblet-locations-us-central1-operations-operation-1664907376650-5ea3974c4e78a-ad732159-2582b07a_1.json",
