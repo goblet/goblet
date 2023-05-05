@@ -107,7 +107,7 @@ class Scheduler(Handler):
                 service_account = self.config.job.get("serviceAccount")
             else:
                 raise ValueError(
-                    "Service account not found in cloudrun. You can set `serviceAccount` field in self.config.json under `scheduler`"
+                    "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
                 )
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
