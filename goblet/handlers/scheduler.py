@@ -4,7 +4,6 @@ from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project, get_default_location
 
 from goblet.common_cloud_actions import get_cloudrun_url
-from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError
 

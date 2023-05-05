@@ -3,7 +3,6 @@ import logging
 import sys
 import os
 
-from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
 import goblet.globals as g
 from goblet.decorators import Goblet_Decorators

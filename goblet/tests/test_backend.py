@@ -4,8 +4,6 @@ from goblet import Goblet
 from goblet.backends.backend import Backend
 from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
 from goblet.errors import GobletValidationError
-from goblet.config import GConfig
-import goblet.globals as g
 
 
 class TestBackend:
