@@ -6,7 +6,7 @@ import os
 from goblet.config import GConfig
 import goblet.globals as g
 from goblet.decorators import Goblet_Decorators
-from goblet.resource_manager import Register_Manager
+from goblet.resource_manager import Resource_Manager
 
 from google.cloud.logging.handlers import StructuredLogHandler
 from google.cloud.logging_v2.handlers import setup_logging
@@ -17,7 +17,7 @@ log = logging.getLogger("goblet.app")
 log.setLevel(logging.INFO)
 
 
-class Goblet(Goblet_Decorators, Register_Manager):
+class Goblet(Goblet_Decorators, Resource_Manager):
     """
     Main class which inherits most of its logic from the Register_Handlers class. Local param is used
     to set the entrypoint for running goblet locally

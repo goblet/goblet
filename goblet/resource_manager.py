@@ -56,7 +56,7 @@ SUPPORTED_INFRASTRUCTURES = {
 }
 
 
-class Register_Manager:
+class Resource_Manager:
     """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
 
     def __init__(
