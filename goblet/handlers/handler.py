@@ -43,7 +43,7 @@ class Handler:
             return
         if not self.resources:
             return
-        self._deploy(source, entrypoint, config=self.config)
+        self._deploy(source, entrypoint)
 
     def _deploy(self, source=None, entrypoint=None):
         raise NotImplementedError("deploy")

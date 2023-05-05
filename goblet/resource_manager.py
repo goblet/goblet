@@ -25,6 +25,8 @@ from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 
+import goblet.globals as g
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
@@ -268,7 +270,14 @@ class Register_Manager:
         version_key = (
             "cloudfunctions" if backend.startswith("cloudfunction") else backend
         )
-        specified_version = client_versions.get(version_key)
+        # User selected version
+        specified_version = None
+        if (
+            g.config
+            and g.config.client_versions
+            and isinstance(g.config.client_versions, dict)
+        ):
+            specified_version = g.config.client_versions.get(version_key)
         if specified_version:
             if specified_version not in backend_class.supported_versions:
                 raise ValueError(

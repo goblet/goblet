@@ -147,15 +147,24 @@ class TestScheduler:
         monkeypatch.setenv("G_TEST_NAME", "schedule-deploy-cloudrun")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        scheduler = Scheduler("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
-        cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        scheduler = Scheduler(
+            "goblet",
+            backend=CloudRun(
+                Goblet(
+                    backend="cloudrun",
+                    config={"scheduler": {"serviceAccount": service_account}},
+                )
+            ),
+        )
+        cloudrun_url = "https://goblet-12345.a.run.app"
         scheduler.register(
             "test-job",
             None,
             kwargs={"schedule": "* * * * *", "timezone": "UTC", "kwargs": {}},
         )
-        scheduler._deploy(config={"scheduler": {"serviceAccount": service_account}})
+        scheduler._deploy()
 
         responses = get_responses("schedule-deploy-cloudrun")
 

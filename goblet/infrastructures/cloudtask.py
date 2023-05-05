@@ -96,7 +96,6 @@ class CloudTaskQueue(Infrastructure):
         }
 
         return CloudTaskClient(
-            versioned_clients=self.versioned_clients,
             service_account=self.config.cloudtask.get("serviceAccount", None),
             queue=self.resource[resource_id]["name"],
             backend=self.backend,
@@ -112,7 +111,9 @@ class CloudTaskQueue(Infrastructure):
                 params = {**params, **resource["config"]}
 
             try:
-                self.versioned_clients.cloudtask_queue.execute("create", params={"body": params})
+                self.versioned_clients.cloudtask_queue.execute(
+                    "create", params={"body": params}
+                )
                 log.info(f'CloudTask Queue [{resource["id"]}] deployed')
 
             except HttpError as e:

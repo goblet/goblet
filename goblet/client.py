@@ -33,7 +33,7 @@ def get_default_project_number():
 
 # Clients
 class VersionedClients:
-    def __init__(self):
+    def __init__(self, client_versions=None):
         self.client_versions = DEFAULT_CLIENT_VERSIONS
         if (
             g.config
@@ -41,6 +41,8 @@ class VersionedClients:
             and isinstance(g.config.client_versions, dict)
         ):
             self.client_versions.update(g.config.client_versions)
+        if client_versions:
+            self.client_versions.update(client_versions)
 
     @property
     def cloudfunctions(self):

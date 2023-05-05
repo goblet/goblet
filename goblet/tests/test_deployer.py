@@ -33,17 +33,16 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet-test-http-v2", backend="cloudfunctionv2")
+        app = Goblet(
+            function_name="goblet-test-http-v2",
+            backend="cloudfunctionv2",
+            config={"runtime": "python38"},
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"].register("", dummy_function, {})
 
-        app.deploy(
-            skip_resources=True,
-            skip_infra=True,
-            force=True,
-            config={"runtime": "python38"},
-        )
+        app.deploy(skip_resources=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-function-deploy-v2")
         assert len(responses) == 3
@@ -56,21 +55,20 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet", backend="cloudrun")
-        setattr(app, "entrypoint", "app")
-
-        app.handlers["http"] = HTTP("name", app)
-
-        app.deploy(
-            skip_resources=True,
-            skip_infra=True,
-            force=True,
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
             config={
                 "cloudrun_revision": {
                     "serviceAccount": "test-746@goblet.iam.gserviceaccount.com"
                 }
             },
         )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app)
+
+        app.deploy(skip_resources=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-cloudrun-deploy")
         assert len(responses) == 9
@@ -83,21 +81,20 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet", backend="cloudrun")
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
+            config={
+                "cloudrun_revision": {
+                    "serviceAccount": "test-746@goblet.iam.gserviceaccount.com"
+                }
+            },
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"] = HTTP("name", app)
         with pytest.raises(GobletError):
-            app.deploy(
-                skip_resources=True,
-                skip_infra=True,
-                force=True,
-                config={
-                    "cloudrun_revision": {
-                        "serviceAccount": "test-746@goblet.iam.gserviceaccount.com"
-                    }
-                },
-            )
+            app.deploy(skip_resources=True, skip_infra=True, force=True)
 
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -153,15 +150,18 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet_bindings")
+        bindings = [{"role": "roles/cloudfunctions.invoker", "members": ["allUsers"]}]
+
+        app = Goblet(
+            function_name="goblet_bindings",
+            config={"bindings": bindings},
+        )
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"] = HTTP("name", app)
-        bindings = [{"role": "roles/cloudfunctions.invoker", "members": ["allUsers"]}]
         app.deploy(
             skip_resources=True,
             skip_infra=True,
-            config={"bindings": bindings},
             force=True,
         )
 
@@ -196,15 +196,9 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet", backend="cloudrun")
-        setattr(app, "entrypoint", "app")
-
-        app.handlers["http"] = HTTP("name", app)
-
-        app.deploy(
-            skip_resources=True,
-            skip_infra=True,
-            force=True,
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
             config={
                 "cloudrun_revision": {
                     "serviceAccount": "test@goblet.iam.gserviceaccount.com"
@@ -214,6 +208,15 @@ class TestDeployer:
                     "serviceAccount": "projects/goblet/serviceAccounts/test@goblet.iam.gserviceaccount.com",
                 },
             },
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app)
+
+        app.deploy(
+            skip_resources=True,
+            skip_infra=True,
+            force=True,
         )
 
         response = get_response(
@@ -231,18 +234,13 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet", backend="cloudrun")
-        setattr(app, "entrypoint", "app")
-
-        app.handlers["http"] = HTTP("name", app, resources=[{}])
-
         artifact_tag = (
             "sha256:478c9c7b9b86d8ef6ae12998ef2ff6a0171c2163cf055c87969f0b886c6d67d7"
         )
-        app.deploy(
-            skip_resources=True,
-            skip_infra=True,
-            force=True,
+
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
             config={
                 "cloudrun_revision": {"serviceAccount": "service-accont@goblet.com"},
                 "cloudbuild": {
@@ -252,6 +250,11 @@ class TestDeployer:
                 },
             },
         )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_resources=True, skip_infra=True, force=True)
 
         response = get_response(
             G_TEST_NAME, "post-v2-projects-goblet-locations-us-central1-services_1.json"

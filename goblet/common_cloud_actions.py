@@ -65,7 +65,7 @@ def check_or_enable_service(resources: List[str], enable: bool = False):
 ####### Cloud Functions #######
 def create_cloudfunctionv1(client: Client, params: dict, config=None):
     create_cloudfunction(
-        client, params, config, parent_key="location", operations_calls="operations"
+        client, params, parent_key="location", operations_calls="operations"
     )
 
 

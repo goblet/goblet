@@ -137,7 +137,7 @@ class Routes(Handler):
             self.name,
             cloudfunction,
             security_definitions=self.config.securityDefinitions,
-            security=self.config.config.security,
+            security=self.config.security,
             marshmallow_attribute_function=self.marshmallow_attribute_function,
             deadline=deadline,
         )

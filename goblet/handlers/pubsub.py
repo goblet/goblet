@@ -105,9 +105,7 @@ class PubSub(Handler):
                 )
             # Deploy subscriptions
             for _, topic_info in self.resources[topic_name]["subscription"].items():
-                self._deploy_subscription(
-                    config=self.config, topic_name=topic_name, topic=topic_info
-                )
+                self._deploy_subscription(topic_name=topic_name, topic=topic_info)
 
     def _deploy_subscription(self, topic_name, topic):
         sub_name = f"{self.name}-{topic_name}"
@@ -126,7 +124,6 @@ class PubSub(Handler):
         elif (
             self.backend.resource_type.startswith("cloudfunction")
             and self.config.cloudfunction
-            and self.config.pubsub.get("serviceAccountEmail")
         ):
             service_account = self.config.pubsub.get("serviceAccountEmail")
         else:

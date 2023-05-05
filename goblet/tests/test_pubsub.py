@@ -234,14 +234,15 @@ class TestPubSub:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet-topic-cross-project")
+        app = Goblet(
+            function_name="goblet-topic-cross-project",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.topic("test", project="goblet-cross-project")(dummy_function)
 
-        app.deploy(
-            force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
-        )
+        app.deploy(force=True)
 
         put_subscription = get_response(
             "pubsub-deploy-cross-project",
@@ -258,19 +259,17 @@ class TestPubSub:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        app = Goblet(function_name="goblet-topic-subscription-filter")
+        app = Goblet(
+            function_name="goblet-topic-subscription-filter",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.topic("test", use_subscription=True, filter='attributes.test = "1"')(
             dummy_function
         )
 
-        app.deploy(
-            force=True,
-            skip_backend=True,
-            skip_infra=True,
-            config={"pubsub": {"serviceAccountEmail": service_account}},
-        )
+        app.deploy(force=True, skip_backend=True, skip_infra=True)
 
         put_subscription = get_response(
             "pubsub-deploy-subscription-filter",
@@ -309,13 +308,21 @@ class TestPubSub:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-cloudrun")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
-        pubsub.register("test", None, kwargs={"topic": "test", "kwargs": {}})
-
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        pubsub._deploy(config={"pubsub": {"serviceAccountEmail": service_account}})
+        pubsub = PubSub(
+            "goblet",
+            backend=CloudRun(
+                Goblet(
+                    backend="cloudrun",
+                    config={"pubsub": {"serviceAccountEmail": service_account}},
+                )
+            ),
+        )
+        pubsub.register("test", None, kwargs={"topic": "test", "kwargs": {}})
+
+        pubsub._deploy()
 
         responses = get_responses("pubsub-deploy-cloudrun")
 
@@ -355,9 +362,13 @@ class TestPubSub:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-update-subscription")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
+        new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
+
         pubsub = PubSub(
             "test-cross-project",
-            backend=CloudFunctionV1(Goblet()),
+            backend=CloudFunctionV1(
+                Goblet(config={"pubsub": {"serviceAccountEmail": new_service_account}})
+            ),
         )
         pubsub.register(
             "test",
@@ -365,8 +376,7 @@ class TestPubSub:
             kwargs={"topic": "test", "kwargs": {"project": "goblet-cross-project"}},
         )
 
-        new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
-        pubsub._deploy(config={"pubsub": {"serviceAccountEmail": new_service_account}})
+        pubsub._deploy()
 
         responses = get_responses("pubsub-update-subscription")
 
@@ -400,19 +410,17 @@ class TestPubSub:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        app = Goblet(function_name="goblet-topic-subscription-config")
+        app = Goblet(
+            function_name="goblet-topic-subscription-config",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.topic(
             "test", use_subscription=True, config={"enableExactlyOnceDelivery": True}
         )(dummy_function)
 
-        app.deploy(
-            force=True,
-            skip_backend=True,
-            skip_infra=True,
-            config={"pubsub": {"serviceAccountEmail": service_account}},
-        )
+        app.deploy(force=True, skip_backend=True, skip_infra=True)
 
         put_subscription = get_response(
             "pubsub-deploy-subscription-config",

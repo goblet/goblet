@@ -31,12 +31,12 @@ class Goblet(Goblet_Decorators, Register_Manager):
         local="local",
         cors=None,
         routes_type="apigateway",
-        config={},
+        config=None,
         log_level=logging.INFO,
         labels={},
         is_sub_app=False,
     ):
-        g.config = GConfig(config)
+        g.config = GConfig(config or {})
         self.config = g.config
         self.function_name = self.config.function_name or function_name
         self.labels = labels
@@ -80,12 +80,11 @@ class Goblet(Goblet_Decorators, Register_Manager):
         skip_resources=False,
         skip_backend=False,
         skip_infra=False,
-        config={},
         force=False,
         write_config=False,
         stage=None,
     ):
-        config.update({"labels": self.labels})
+        g.config.update_g_config(values={"labels": self.labels})
         source = None
         backend = self.backend
         if not skip_infra:

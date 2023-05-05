@@ -25,7 +25,7 @@ class CloudFunctionV2(Backend):
     required_apis = ["cloudfunctions"]
 
     def __init__(self, app):
-        self.client = VersionedClients().cloudfunctions
+        self.client = VersionedClients({"cloudfunctions": "v2"}).cloudfunctions
         self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{app.function_name}"
         super().__init__(app, self.client, self.func_path)
 
