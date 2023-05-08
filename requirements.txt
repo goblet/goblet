@@ -5,8 +5,6 @@ marshmallow==3.15.0
 pydantic==1.10.2
 PyYAML==6.0
 markupsafe==2.0.1
-google-cloud-logging==3.5.0
-google-api-python-client==2.86.0
-# goblet-gcp-client==0.1.4
+google-cloud-logging==3.1.2
 protobuf==3.20.3
 git+https://github.com/qua-jones/goblet_gcp_client@update-api-client
