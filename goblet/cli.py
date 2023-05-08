@@ -11,6 +11,7 @@ from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
 from goblet_gcp_client.client import get_default_project
 from goblet.__version__ import __version__
+import goblet.globals as g
 
 logging.basicConfig()
 
@@ -91,11 +92,16 @@ def deploy(
                 os.environ[key] = value
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
+
+        # update config
+        g.config.update_g_config(
+            values=imported_config, write_config=write_config, stage=stage
+        )
+
         app.deploy(
             skip_resources,
             skip_backend,
             skip_infra,
-            config=goblet_config.config,
             force=force,
             stage=stage,
             write_config=write_config,
