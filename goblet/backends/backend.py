@@ -9,7 +9,7 @@ from pathlib import Path
 import requests
 from googleapiclient.errors import HttpError
 
-from goblet.config import GConfig
+import goblet.globals as g
 from goblet.utils import get_g_dir, checksum, build_stage_config
 from goblet.common_cloud_actions import check_or_enable_service
 
@@ -25,14 +25,14 @@ class Backend:
     monitoring_label_key = ""
     required_apis = []
 
-    def __init__(self, app, client, func_path, config={}):
+    def __init__(self, app, client, func_path):
         self.app = app
         self.name = app.function_name
         self.log = logging.getLogger("goblet.backend")
         self.log.setLevel(logging.INFO)
         self.zip_path = get_g_dir() + f"/{self.name}.zip"
         self._zipf = None
-        self.config = GConfig(config=config)
+        self.config = g.config
 
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
@@ -52,7 +52,7 @@ class Backend:
     def validation_config(self):
         pass
 
-    def deploy(self, force=False, config=None):
+    def deploy(self, force=False):
         raise NotImplementedError("destroy")
 
     def destroy(self, all=False):

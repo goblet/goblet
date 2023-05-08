@@ -8,7 +8,6 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction,
 )
 
-from goblet.config import GConfig
 import logging
 
 from goblet.handlers.handler import Handler
@@ -95,7 +94,7 @@ class PubSub(Handler):
                 response = info["func"](data)
         return response or "success"
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         if not self.resources:
             return
         for topic_name in self.resources:
@@ -106,31 +105,27 @@ class PubSub(Handler):
                 )
             # Deploy subscriptions
             for _, topic_info in self.resources[topic_name]["subscription"].items():
-                self._deploy_subscription(
-                    config=config, topic_name=topic_name, topic=topic_info
-                )
+                self._deploy_subscription(topic_name=topic_name, topic=topic_info)
 
-    def _deploy_subscription(self, topic_name, topic, config={}):
+    def _deploy_subscription(self, topic_name, topic):
         sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
 
         push_url = self.backend.http_endpoint
 
-        gconfig = GConfig(config=config)
-        if gconfig.pubsub and gconfig.pubsub.get("serviceAccountEmail"):
-            service_account = gconfig.pubsub.get("serviceAccountEmail")
+        if self.config.pubsub and self.config.pubsub.get("serviceAccountEmail"):
+            service_account = self.config.pubsub.get("serviceAccountEmail")
         elif (
             self.backend.resource_type == "cloudrun"
-            and gconfig.cloudrun_revision
-            and gconfig.cloudrun_revision.get("serviceAccount")
+            and self.config.cloudrun_revision
+            and self.config.cloudrun_revision.get("serviceAccount")
         ):
-            service_account = gconfig.cloudrun_revision.get("serviceAccount")
+            service_account = self.config.cloudrun_revision.get("serviceAccount")
         elif (
             self.backend.resource_type.startswith("cloudfunction")
-            and gconfig.cloudfunction
-            and gconfig.pubsub.get("serviceAccountEmail")
+            and self.config.cloudfunction
         ):
-            service_account = gconfig.pubsub.get("serviceAccountEmail")
+            service_account = self.config.pubsub.get("serviceAccountEmail")
         else:
             raise ValueError(
                 "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
@@ -148,7 +143,7 @@ class PubSub(Handler):
                     "audience": push_url,
                 },
             },
-            "labels": gconfig.labels,
+            "labels": self.config.labels,
             **topic["config"],
         }
         create_pubsub_subscription(
@@ -160,12 +155,11 @@ class PubSub(Handler):
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
-        gconfig = GConfig()
-        user_configs = gconfig.cloudfunction or {}
+        user_configs = self.config.cloudfunction or {}
         if self.versioned_clients.cloudfunctions.version == "v1":
             req_body = {
                 "name": function_name,
-                "description": gconfig.description or "created by goblet",
+                "description": self.config.description or "created by goblet",
                 "entryPoint": entrypoint,
                 "sourceUploadUrl": source["uploadUrl"],
                 "eventTrigger": {
@@ -173,9 +167,9 @@ class PubSub(Handler):
                     "resource": f"projects/{get_default_project()}/topics/{topic_name}",
                 },
                 "runtime": get_function_runtime(
-                    self.versioned_clients.cloudfunctions, gconfig
+                    self.versioned_clients.cloudfunctions, self.config
                 ),
-                "labels": gconfig.labels,
+                "labels": self.config.labels,
                 **user_configs,
             }
             create_cloudfunctionv1(
@@ -186,10 +180,10 @@ class PubSub(Handler):
                 "body": {
                     "name": function_name,
                     "environment": "GEN_2",
-                    "description": gconfig.description or "created by goblet",
+                    "description": self.config.description or "created by goblet",
                     "buildConfig": {
                         "runtime": get_function_runtime(
-                            self.versioned_clients.cloudfunctions, gconfig
+                            self.versioned_clients.cloudfunctions, self.config
                         ),
                         "entryPoint": entrypoint,
                         "source": {"storageSource": source["storageSource"]},
@@ -198,7 +192,7 @@ class PubSub(Handler):
                         "eventType": "google.cloud.pubsub.topic.v1.messagePublished",
                         "pubsubTopic": f"projects/{get_default_project()}/topics/{topic_name}",
                     },
-                    "labels": gconfig.labels,
+                    "labels": self.config.labels,
                     **user_configs,
                 },
                 "functionId": function_name.split("/")[-1],

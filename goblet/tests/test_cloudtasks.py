@@ -117,9 +117,7 @@ class TestCloudTasks:
     def test_build_task(self):
         backend = Mock()
         backend.http_endpoint = "http_endpoint"
-        client = CloudTaskClient(
-            "versioned_clients", "service_account", "queue", backend
-        )
+        client = CloudTaskClient("service_account", "queue", backend)
         task = client.build_task(
             "target", {"message": {"title": "enqueue"}}, 60, "task_name", 120
         )

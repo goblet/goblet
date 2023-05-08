@@ -3,6 +3,7 @@ import logging
 from goblet.client import VersionedClients
 from goblet_gcp_client.client import get_default_project, get_default_location
 from goblet.common_cloud_actions import check_or_enable_service
+import goblet.globals as g
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -24,6 +25,7 @@ class Handler:
         versioned_clients: VersionedClients = None,
         resources=None,
     ):
+        self.config = g.config
         self.name = name
         self.backend = backend
         self.resources = resources or {}
@@ -33,7 +35,7 @@ class Handler:
     def register(self, name, func, kwargs):
         raise NotImplementedError("register")
 
-    def deploy(self, source=None, entrypoint=None, config={}):
+    def deploy(self, source=None, entrypoint=None):
         if self.resources and self.backend.resource_type not in self.valid_backends:
             log.info(
                 f"skipping... {self.backend.resource_type} not supported for {self.resource_type}"
@@ -41,9 +43,9 @@ class Handler:
             return
         if not self.resources:
             return
-        self._deploy(source, entrypoint, config=config)
+        self._deploy(source, entrypoint)
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         raise NotImplementedError("deploy")
 
     def destroy(self):

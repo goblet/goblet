@@ -24,10 +24,9 @@ class ApiGateway(Infrastructure):
             "openapi_dict": kwargs["openapi_dict"],
         }
 
-    def deploy(self, config={}):
+    def deploy(self):
         if not self.resource:
             return
-        self.config.update_g_config(values=config)
         goblet_spec = OpenApiSpec(
             self.resource["name"],
             self.resource["backend_url"],
@@ -43,10 +42,10 @@ class ApiGateway(Infrastructure):
         with open(updated_filename, "w") as f:
             goblet_spec.write(f)
         deploy_apigateway(
-            self.resource["name"], self.config, self.client, updated_filename
+            self.resource["name"], self.config, self.versioned_clients, updated_filename
         )
 
     def destroy(self):
         if not self.resource:
             return
-        destroy_apigateway(self.resource["name"], self.client)
+        destroy_apigateway(self.resource["name"], self.versioned_clients)

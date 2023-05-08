@@ -71,5 +71,5 @@ class GConfig:
             f.write(json.dumps(self.config, indent=4))
 
     def validate(self):
-        if self.stage and self.stage not in self.config.get("stages"):
+        if self.stage and self.stage not in self.config.get("stages", {}):
             raise ValueError(f"stage {self.stage} not found in config")

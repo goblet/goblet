@@ -124,9 +124,16 @@ class TestEventArc:
         monkeypatch.setenv("G_TEST_NAME", "eventarc-deploy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
+        goblet = Goblet(
+            function_name="test-eventarc",
+            backend="cloudrun",
+            config={
+                "eventarc": {"serviceAccount": "test@goblet.iam.gserviceaccount.com"}
+            },
+        )
         eventarc = EventArc(
             "test-eventarc",
-            backend=CloudRun(Goblet(function_name="test-eventarc", backend="cloudrun")),
+            backend=CloudRun(goblet),
             resources=[
                 {
                     "trigger_name": "test-eventarc-bucket-get",
@@ -145,11 +152,7 @@ class TestEventArc:
                 }
             ],
         )
-        eventarc._deploy(
-            config={
-                "eventarc": {"serviceAccount": "test@goblet.iam.gserviceaccount.com"}
-            }
-        )
+        eventarc._deploy()
 
         responses = get_responses("eventarc-deploy")
 
@@ -162,9 +165,16 @@ class TestEventArc:
         monkeypatch.setenv("G_TEST_NAME", "eventarc-update")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
+        goblet = Goblet(
+            function_name="test-eventarc",
+            backend="cloudrun",
+            config={
+                "eventarc": {"serviceAccount": "test@goblet.iam.gserviceaccount.com"}
+            },
+        )
         eventarc = EventArc(
             "test-eventarc",
-            backend=CloudRun(Goblet(function_name="test-eventarc", backend="cloudrun")),
+            backend=CloudRun(goblet),
             resources=[
                 {
                     "trigger_name": "test-eventarc-bucket-get",
@@ -183,11 +193,7 @@ class TestEventArc:
                 }
             ],
         )
-        eventarc._deploy(
-            config={
-                "eventarc": {"serviceAccount": "test@goblet.iam.gserviceaccount.com"}
-            }
-        )
+        eventarc._deploy()
 
         responses = get_responses("eventarc-update")
 

@@ -24,10 +24,10 @@ class CloudFunctionV2(Backend):
     monitoring_label_key = "function_name"
     required_apis = ["cloudfunctions"]
 
-    def __init__(self, app, config={}):
-        self.client = VersionedClients(app.client_versions).cloudfunctions
+    def __init__(self, app):
+        self.client = VersionedClients({"cloudfunctions": "v2"}).cloudfunctions
         self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{app.function_name}"
-        super().__init__(app, self.client, self.func_path, config=config)
+        super().__init__(app, self.client, self.func_path)
 
     def validation_config(self):
         name_pattern = r"^[a-z0-9-]+$"
@@ -37,11 +37,7 @@ class CloudFunctionV2(Backend):
                 f"Invalid Cloudfunction name {self.name}. Needs to follow regex of pattern {name_pattern}"
             )
 
-    def deploy(self, force=False, config=None):
-        if config:
-            self.config.update_g_config(values=config)
-        config = self.config
-
+    def deploy(self, force=False):
         put_headers = {
             "content-type": "application/zip",
         }
@@ -50,8 +46,8 @@ class CloudFunctionV2(Backend):
             return None
 
         if self.app.is_http():
-            client, params = self._get_upload_params(source, config=config)
-            create_cloudfunctionv2(client, params, config=config)
+            client, params = self._get_upload_params(source)
+            create_cloudfunctionv2(client, params)
 
         return source
 
@@ -60,9 +56,8 @@ class CloudFunctionV2(Backend):
         if all:
             destroy_cloudfunction_artifacts(self.name)
 
-    def _get_upload_params(self, source, config=None):
-        config = config or self.config
-        user_configs = config.cloudfunction or {}
+    def _get_upload_params(self, source):
+        user_configs = self.config.cloudfunction or {}
         build_configs = user_configs.get("buildConfig", {})
         if build_configs:
             del user_configs["buildConfig"]
@@ -72,7 +67,7 @@ class CloudFunctionV2(Backend):
                 "environment": "GEN_2",
                 "description": self.config.description or "created by goblet",
                 "buildConfig": {
-                    "runtime": get_function_runtime(self.client, config),
+                    "runtime": get_function_runtime(self.client, self.config),
                     "entryPoint": "goblet_entrypoint",
                     "source": {"storageSource": source["storageSource"]},
                     **build_configs,

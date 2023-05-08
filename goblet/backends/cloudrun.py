@@ -33,10 +33,10 @@ class CloudRun(Backend):
     monitoring_label_key = "service_name"
     required_apis = ["run", "cloudbuild", "cloudfunctions"]
 
-    def __init__(self, app, config={}):
-        self.client = VersionedClients(app.client_versions).run
+    def __init__(self, app):
+        self.client = VersionedClients().run
         self.run_name = f"projects/{get_default_project()}/locations/{get_default_location()}/services/{app.function_name}"
-        super().__init__(app, self.client, self.run_name, config=config)
+        super().__init__(app, self.client, self.run_name)
 
     def validation_config(self):
         name_pattern = r"^[a-z]([-a-z0-9]*[a-z0-9])?"
@@ -46,11 +46,8 @@ class CloudRun(Backend):
                 f"Invalid Cloudrun name {self.name}. Needs to follow regex of pattern {name_pattern}"
             )
 
-    def deploy(self, force=False, config=None):
-        versioned_clients = VersionedClients(self.app.client_versions)
-        if config:
-            self.config.update_g_config(values=config)
-        config = self.config
+    def deploy(self, force=False):
+        versioned_clients = VersionedClients()
         put_headers = {
             "content-type": "application/zip",
         }
@@ -88,7 +85,7 @@ class CloudRun(Backend):
             self.create_build(versioned_clients.cloudbuild, source, self.name)
 
         if not self.skip_run_deployment():
-            serviceRevision = RevisionSpec(config, versioned_clients, self.name)
+            serviceRevision = RevisionSpec(self.config, versioned_clients, self.name)
             serviceRevision.deployRevision()
         else:
             self.log.info("Skipping cloudrun deployment since it is not needed...")
@@ -165,7 +162,7 @@ class CloudRun(Backend):
         return skip
 
     def _checksum(self):
-        versioned_clients = VersionedClients(self.app.client_versions)
+        versioned_clients = VersionedClients()
         resp = versioned_clients.cloudbuild.execute(
             "list",
             parent_key="projectId",
@@ -241,7 +238,7 @@ class CloudRun(Backend):
     def get_environment_vars(self):
         env_dict = {}
         env = self.config.config.get("cloudrun_container", {}).get("env", [])
-        versioned_clients = VersionedClients(self.app.client_versions)
+        versioned_clients = VersionedClients()
         for env_item in env:
             # get secret
             if env_item.get("valueSource"):

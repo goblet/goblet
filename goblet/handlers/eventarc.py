@@ -2,7 +2,6 @@ from goblet.common_cloud_actions import (
     create_eventarc_trigger,
     destroy_eventarc_trigger,
 )
-from goblet.config import GConfig
 from goblet.response import Response
 import logging
 
@@ -75,14 +74,13 @@ class EventArc(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, sourceUrl=None, entrypoint=None, config={}):
+    def _deploy(self, sourceUrl=None, entrypoint=None):
         if not self.resources:
             return
-        gconfig = GConfig(config=config)
-        if gconfig.eventarc and gconfig.eventarc.get("serviceAccount"):
-            service_account = gconfig.eventarc.get("serviceAccount")
-        elif gconfig.cloudrun and gconfig.cloudrun.get("service-account"):
-            service_account = gconfig.cloudrun.get("service-account")
+        if self.config.eventarc and self.config.eventarc.get("serviceAccount"):
+            service_account = self.config.eventarc.get("serviceAccount")
+        elif self.config.cloudrun and self.config.cloudrun.get("service-account"):
+            service_account = self.config.cloudrun.get("service-account")
         else:
             raise ValueError(
                 "Service account not found for cloudrun or eventarc. You can set `serviceAccount` field in config.json under `eventarc`"
@@ -110,7 +108,7 @@ class EventArc(Handler):
                         "path": f"/x-goblet-eventarc-triggers/{trigger['trigger_name']}",
                     }
                 },
-                "labels": gconfig.labels,
+                "labels": self.config.labels,
                 **topic,
             }
             create_eventarc_trigger(

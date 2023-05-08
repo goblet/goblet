@@ -3,9 +3,11 @@ import logging
 import sys
 import os
 
-from goblet.client import DEFAULT_CLIENT_VERSIONS
 from goblet.config import GConfig
-from goblet.decorators import Register_Handlers
+import goblet.globals as g
+from goblet.decorators import Goblet_Decorators
+from goblet.resource_manager import Resource_Manager
+
 from google.cloud.logging.handlers import StructuredLogHandler
 from google.cloud.logging_v2.handlers import setup_logging
 
@@ -15,7 +17,7 @@ log = logging.getLogger("goblet.app")
 log.setLevel(logging.INFO)
 
 
-class Goblet(Register_Handlers):
+class Goblet(Goblet_Decorators, Resource_Manager):
     """
     Main class which inherits most of its logic from the Register_Handlers class. Local param is used
     to set the entrypoint for running goblet locally
@@ -27,30 +29,26 @@ class Goblet(Register_Handlers):
         backend="cloudfunction",
         local="local",
         cors=None,
-        client_versions=None,
         routes_type="apigateway",
-        config={},
+        config=None,
         log_level=logging.INFO,
         labels={},
         is_sub_app=False,
     ):
-        self.client_versions = DEFAULT_CLIENT_VERSIONS
-        self.client_versions.update(client_versions or {})
-        self.backend_class = self.get_backend_and_check_versions(
-            backend, client_versions or {}
-        )
-        self.function_name = GConfig(config).function_name or function_name
+        g.config = GConfig(config or {})
+        self.config = g.config
+        self.function_name = self.config.function_name or function_name
         self.labels = labels
-        self.backend = self.backend_class(self, config=config)
+
+        self.backend_class = self.get_backend_and_check_versions(backend)
+        self.backend = self.backend_class(self)
         self.is_sub_app = is_sub_app
 
         super(Goblet, self).__init__(
             function_name=self.function_name,
             backend=self.backend,
             cors=cors,
-            client_versions=self.client_versions,
             routes_type=routes_type,
-            config=config,
         )
         self.log = logging.getLogger(__name__)
         self.headers = {}
@@ -81,26 +79,25 @@ class Goblet(Register_Handlers):
         skip_resources=False,
         skip_backend=False,
         skip_infra=False,
-        config={},
         force=False,
         write_config=False,
         stage=None,
     ):
-        config.update({"labels": self.labels})
+        g.config.update_g_config(values={"labels": self.labels})
         source = None
         backend = self.backend
         if not skip_infra:
             log.info("deploying infrastructure")
-            self.deploy_infrastructure(config=config)
+            self.deploy_infrastructure()
 
         infra_config = self.get_infrastructure_config()
         backend.update_config(infra_config, write_config, stage)
 
         if not skip_backend:
             log.info(f"preparing to deploy with backend {self.backend.resource_type}")
-            source = backend.deploy(force=force, config=config)
+            source = backend.deploy(force=force)
         if not skip_resources:
-            self.deploy_handlers(source, config=config)
+            self.deploy_handlers(source)
 
     def destroy(self, all=False, skip_infra=False):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
