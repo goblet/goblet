@@ -1,7 +1,12 @@
 from goblet import Goblet
 from goblet.infrastructures.redis import Redis
 from goblet.test_utils import dummy_function
-from goblet_gcp_client import get_response, get_responses, reset_replay_count, get_replay_count
+from goblet_gcp_client import (
+    get_response,
+    get_responses,
+    reset_replay_count,
+    get_replay_count,
+)
 
 
 class TestRedis:
@@ -51,16 +56,13 @@ class TestRedis:
 
         reset_replay_count()
 
-        app = Goblet(function_name="goblet-example",
-            config={"redis": {"memorySizeGb": 2}})
+        app = Goblet(
+            function_name="goblet-example", config={"redis": {"memorySizeGb": 2}}
+        )
         app.redis(name="redis-test")
 
-        app.deploy(
-            force=True,
-            skip_backend=True,
-            skip_resources=True
-        )
-        
+        app.deploy(force=True, skip_backend=True, skip_resources=True)
+
         redis_response = get_response(
             "redis-update",
             "get-v1-projects-goblet-locations-us-central1-instances-redis-test_1.json",
