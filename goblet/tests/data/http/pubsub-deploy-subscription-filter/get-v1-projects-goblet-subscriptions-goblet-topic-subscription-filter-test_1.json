@@ -3,7 +3,7 @@
   "body": {
     "error": {
       "code": 404,
-      "message": "Function goblet_example in region us-central1 in project goblet does not exist",
+      "message": "Resource not found (resource=goblet-topic-subscription-config-test).",
       "status": "NOT_FOUND"
     }
   }

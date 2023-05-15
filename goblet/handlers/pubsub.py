@@ -51,6 +51,7 @@ class PubSub(Handler):
                 "attributes": attributes,
                 "project": project,
                 "filter": filter,
+                "force_update": kwargs.get("force_update", False),
             }
         else:
             self.resources[topic] = {"trigger": {}, "subscription": {}}
@@ -61,6 +62,7 @@ class PubSub(Handler):
                     "project": project,
                     "filter": filter,
                     "config": config,
+                    "force_update": kwargs.get("force_update", False),
                 }
             }
 
@@ -150,6 +152,7 @@ class PubSub(Handler):
             client=self.versioned_clients.pubsub,
             sub_name=sub_name,
             req_body=req_body,
+            force_update=topic["force_update"],
         )
 
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):

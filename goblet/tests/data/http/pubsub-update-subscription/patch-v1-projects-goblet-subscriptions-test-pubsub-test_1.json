@@ -1,7 +1,7 @@
 {
   "headers": {},
   "body": {
-    "name": "projects/goblet/subscriptions/test-cross-project-test",
+    "name": "projects/goblet/subscriptions/test-pubsub-test",
     "topic": "projects/goblet/topics/test",
     "pushConfig": {
       "pushEndpoint": "https://us-central1-goblet.cloudfunctions.net/test-cross-project",
