@@ -1,0 +1,23 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/subscriptions/test-cross-project-test",
+    "topic": "projects/goblet/topics/test",
+    "pushConfig": {
+      "pushEndpoint": "https://us-central1-goblet.cloudfunctions.net/goblet",
+      "attributes": {
+        "x-goog-version": "v1"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "SERVICE_ACCOUNT@developer.gserviceaccount.com",
+        "audience": "https://us-central1-goblet.cloudfunctions.net/goblet"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "2678400s"
+    },
+    "state": "ACTIVE"
+  }
+}

@@ -3,7 +3,7 @@
   "body": {
     "etag": "yUJULiRifeMrxyO4zqYD3Q==",
     "routineReference": {
-      "projectId": "premise-data-platform-dev",
+      "projectId": "goblet",
       "datasetId": "blogs",
       "routineId": "bqremotefunction_test_string_test_blogs_1"
     },
@@ -28,7 +28,7 @@
       "typeKind": "STRING"
     },
     "remoteFunctionOptions": {
-      "endpoint": "https://us-central1-premise-data-platform-dev.cloudfunctions.net/bqremotefunction_test",
+      "endpoint": "https://us-central1-goblet.cloudfunctions.net/bqremotefunction_test",
       "connection": "projects/goblet/locations/us-central1/connections/bqremotefunction_test",
       "userDefinedContext": {
         "X-Goblet-Name": "bqremotefunction_test_string_test_blogs_1"

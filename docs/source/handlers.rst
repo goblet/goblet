@@ -201,6 +201,11 @@ Example usage:
     def pubsub_subscription_filter(data):
         return 
 
+    # switching the pubsub topic to a different project requires force_update, since it requires the subscription to be recreated
+    @app.topic('test', project="NEW_CROSS_PROJECT", force_update=True)
+    def cross_project(data):
+        return 
+
 Storage
 ^^^^^^^
 
