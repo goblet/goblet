@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handlers &mdash; goblet 0.11.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Backends" href="backends.html" />
+    <link rel="prev" title="Topics" href="topics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            goblet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Handlers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#http">Http</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#routes">Routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scheduled-jobs">Scheduled Jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pubsub">PubSub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#storage">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eventarc">Eventarc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jobs">Jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bigquery-remote-functions">BigQuery Remote Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cloudtask-target">CloudTask Target</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends.html">Backends</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">goblet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Handlers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/handlers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="handlers">
+<h1>Handlers<a class="headerlink" href="#handlers" title="Permalink to this heading">¶</a></h1>
+<section id="http">
+<h2>Http<a class="headerlink" href="#http" title="Permalink to this heading">¶</a></h2>
+<p>You can have a http endpoint that can be triggered by calling the cloudfunction directly. This is the simpliest endpoint and will
+only deploy a cloudfunction. The function takes in a flask request object</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s1">&#39;simple_http&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">http_entrypoint</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>You can have multiple http endpoints that get triggered based on the request headers. Note if multiple header filters match, only the first match will be
+triggered.</p>
+<p>The following endpoint will be triggered on any request that has a “X-Github-Event” header</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following endpoints will be triggered if the request contains a “X-Github-Event” header that matches the corresponding value</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">:</span> <span class="s2">&quot;issue&quot;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on issue&quot;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">:</span> <span class="s2">&quot;pr&quot;</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;triggered on pr&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="routes">
+<h2>Routes<a class="headerlink" href="#routes" title="Permalink to this heading">¶</a></h2>
+<p>The Goblet.route() method is used to construct which routes you want to create for your API.
+Behind the scenese goblet will configure an Api Config and Api Gateway on gcp.</p>
+<p>The concept of routes are the same mechanism used by Flask. You decorate a function with <code class="docutils literal notranslate"><span class="pre">&#64;app.route(...)</span></code>,
+and whenever a user requests that URL from the api gateway url, the function you’ve decorated is called. For example,
+suppose you deployed this app:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s1">&#39;helloworld&#39;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;index&#39;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/a&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">a</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/b&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">b</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you go to <a class="reference external" href="https://endpoint/">https://endpoint/</a>, the index() function would be called. If you went to <a class="reference external" href="https://endpoint/a">https://endpoint/a</a> and <a class="reference external" href="https://endpoint/b">https://endpoint/b</a>, then the a() and b() function would be called, respectively.</p>
+<p>You can also create a route that captures part of the URL. This captured value will then be passed in as arguments to your view function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users/</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you then go to <a class="reference external" href="https://endpoint/users/james">https://endpoint/users/james</a>, then the view function will be called as: users(‘james’).
+The parameters are passed as keyword parameters based on the name as they appear in the URL.
+The argument names for the view function must match the name of the captured argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/a/</span><span class="si">{first}</span><span class="s1">/b/</span><span class="si">{second}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>By default there is a timeout on api gateway of 15 seconds. This can be overriden by setting <cite>“api_gateway”: {“deadline”: 45}</cite> in <cite>config.json</cite>. You
+can configure a per route deadline by passing in the deadline parameter in your route.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/deadline&#39;</span><span class="p">,</span> <span class="n">deadline</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">deadline</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;custom_deadline&#39;</span>
+</pre></div>
+</div>
+<p>By default routes are deployed to an api gateway. For cloudrun you have the option to use <cite>route_type=cloudrun</cite> to simply use the cloudrun
+instance itself. The routes work the same as with an apigateway, but you would access the api via the cloudrun url instead of the api gateway url.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudrun-routing&quot;</span><span class="p">,</span> <span class="n">routes_type</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;cloudrun&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="scheduled-jobs">
+<h2>Scheduled Jobs<a class="headerlink" href="#scheduled-jobs" title="Permalink to this heading">¶</a></h2>
+<p>To deploy scheduled jobs using a cron schedule use the <cite>&#64;app.schedule(…)</cite> decorator. The cron schedule follows the unix-cron format.
+More information on the cron format can be found in the <a class="reference external" href="https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules">gcp docs</a>. Make sure <a class="reference external" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> is enabled in your account if you want to deploy
+scheduled jobs.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can pass in additional fields to your schedule to add custom headers, body, and method using the types defines for <a class="reference external" href="https://cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs#Job">job</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;5 * * * *&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-cron&quot;</span><span class="p">:</span> <span class="s2">&quot;5 * * * *&quot;</span><span class="p">},</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;a base64-encoded string&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;6 * * * *&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-cron&quot;</span><span class="p">:</span> <span class="s2">&quot;6 * * * *&quot;</span><span class="p">},</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;another base64-encoded string&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s1">&#39;10 * * * *&#39;</span><span class="p">,</span> <span class="n">httpMethod</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">body</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">headers</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that several of customizable fields require specific formats which include <cite>body</cite> which is a base64 encoded string. In order
+to use a json field for the body you would need to use the following code</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;value&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then in your function you would decode the body using</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">raw_payload</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Another unique field is <cite>attemptDeadline</cite> which requires a duration format such as <cite>3.5s</cite></p>
+<p>To test your scheduled jobs locally you will need to pass a <cite>X-Goblet-Type</cite> header with the value <cite>schedule</cite> and a <cite>X-Goblet-Name</cite> header
+with the name of your scheduled function.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X-Goblet-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;schedule&quot;</span><span class="p">,</span>
+<span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="n">FUNCTION_NAME</span>
+</pre></div>
+</div>
+</section>
+<section id="pubsub">
+<h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this heading">¶</a></h2>
+<p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
+provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
+If using cloudrun backend or <cite>use_subscription=true</cite> the attributes will be created as a filter on the subscription itself. You can also pass in
+a custom <cite>filter</cite> as well. Note that filters are not able to be modified once they are applied to a subscription.</p>
+<p>In addition to filters you can also add configuration values that will be passed directly to the subscription.
+By setting <cite>config={“enableExactlyOnceDelivery”: True}</cite> you can enable exactly delivery to ensure messages are not redelivered once acknowledged.
+For additional information on configuration values available see <a class="reference external" href="https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body">PubSub Subscription Fields</a></p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pubsub topic</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="c1"># pubsub topic with matching message attributes</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">home2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="c1"># pubsub topic in a different project</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;CROSS_PROJECT&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cross_project</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+
+<span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+
+<span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+
+<span class="c1"># switching the pubsub topic to a different project requires force_update, since it requires the subscription to be recreated</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;NEW_CROSS_PROJECT&quot;</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cross_project</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</section>
+<section id="storage">
+<h2>Storage<a class="headerlink" href="#storage" title="Permalink to this heading">¶</a></h2>
+<p>You can trigger functions from storage events using the <code class="docutils literal notranslate"><span class="pre">&#64;app.storage(BUCKET,</span> <span class="pre">EVENT)</span></code> decorator. It is required to pass in the bucket name and the event_type.
+The following events are supported by GCP</p>
+<ul class="simple">
+<li><p>finalize</p></li>
+<li><p>delete</p></li>
+<li><p>archive</p></li>
+<li><p>metadataUpdate</p></li>
+</ul>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;finalize&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To trigger a function on multiple events or multiple buckets you can specify multiple decorators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;archive&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s1">&#39;BUCKET_NAME2&#39;</span><span class="p">,</span> <span class="s1">&#39;finalize&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="eventarc">
+<h2>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this heading">¶</a></h2>
+<p>You can trigger functions from evenarc events using the <cite>&#64;app.eventarc(topic=None, event_filters=[])</cite> decorator. Specifying a topic will create a trigger on a custom pubsub topic. For
+all other events, specify the event attribute  and event value in the <cite>event_filters</cite> list. See <a class="reference external" href="https://cloud.google.com/eventarc/docs/creating-triggers#trigger-gcloud">Creating Triggers</a> for more information
+on possible values.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example eventarc pubsub topic</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pubsub</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+
+<span class="c1"># Example eventarc direct event</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
+    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.storage.object.v1.finalized&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;BUCKET&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">bucket</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_post&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+
+<span class="c1"># Example eventarc audit log</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
+    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.audit.log.v1.written&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;methodName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.objects.get&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;serviceName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.googleapis.com&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">bucket_get</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</section>
+<section id="jobs">
+<h2>Jobs<a class="headerlink" href="#jobs" title="Permalink to this heading">¶</a></h2>
+<p>You can create and trigger cloudrun jobs using the <cite>&#64;app.job(…)</cite> decorator. If you would like to trigger multiple tasks in one job execution
+you can specify multiple decorators with a different <cite>task_id</cite>. Any custom job configurations such as a schedule should be added to the <cite>task_id=0</cite>. Jobs can be further configured
+by setting various configs in <cite>config.json.</cite></p>
+<p><cite>job_spec</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/TaskTemplate">Cloudrun Jobs Spec</a></p>
+<p><cite>job_container</cite> can be found at <a class="reference external" href="https://cloud.google.com/run/docs/reference/rest/v2/Container">Cloudrun Jobs Container</a></p>
+<p>You can schedule executions by passing in a cron <cite>schedule</cite> to the first task. Each job task function takes in the task id.</p>
+<p>To test a job locally you can run <cite>goblet job run APP_NAME-JOB_NAME TASK_ID</cite></p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job1_task1</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job1_task2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;different task for job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job2&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">job2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;another job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
+</pre></div>
+</div>
+<p>See the example <a class="reference external" href="https://github.com/goblet/goblet/blob/main/examples/example_cloudrun_job/config.json">config.json</a></p>
+</section>
+<section id="bigquery-remote-functions">
+<h2>BigQuery Remote Functions<a class="headerlink" href="#bigquery-remote-functions" title="Permalink to this heading">¶</a></h2>
+<p>To deploy BigQuery remote functions use <code class="docutils literal notranslate"><span class="pre">&#64;app.bqremotefunction(...)</span></code> decorator.
+BigQuery remote functions documentation can be found <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions">here</a>.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=...</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_remote_function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;input parameters are </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Allowed data type can be found <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types">data types for remote functions</a>.
+The routine name on BigQuery will be &lt;goblet_function_name&gt;_&lt;remotefunction_name&gt;.</p>
+<p>As an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;my_functions&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;my_dataset_id&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_routine</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Name: </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> LastName: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Creates a routine named my_functions_my_routine with two strings as
+input parameters with names x and y and return a formatted string. The dataset id
+will be “my_dataset_id”.</p>
+<p>The dataset_id reference a dataset in BigQuery already created in the same
+location and project in GCP.</p>
+<p>To call a routine from BigQuery just use</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span><span class="w"> </span><span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">my_functions_my_routine</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span>
+</pre></div>
+</div>
+<p>This will apply my_functions_my_routine to every tuple present in table
+my_dataset_id.table passing fields name and last_name from the table as inputs.
+Data type inputs for the routine used in BigQuery query must match with data types used in the python function
+definition. In the example above select will return as many single-tuple value as tuples
+exist in the table.</p>
+<p>Another example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;math_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;blogs&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
+    <span class="k">return</span> <span class="n">w</span>
+</pre></div>
+</div>
+<p>Should be called this way:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span><span class="w"> </span><span class="n">PROJECT</span><span class="p">.</span><span class="n">my_dataset_id</span><span class="p">.</span><span class="n">math_example_multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">my_dataset_id</span><span class="p">.</span><span class="k">table</span>
+</pre></div>
+</div>
+<p>And will return an integer resulting from the multiplication from the three fields
+x,y,z in table my_dataset_id.table for every tuple in the table.</p>
+<p>When deploying a BigQuery remote function, Goblet creates the resources in GCP: a
+<a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/bigqueryconnection">BigQuery connection</a>,
+a <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/rest/v2/routines">BigQuery routine</a> and
+a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).</p>
+</section>
+<section id="cloudtask-target">
+<h2>CloudTask Target<a class="headerlink" href="#cloudtask-target" title="Permalink to this heading">¶</a></h2>
+<p>You can handle http requests from a CloudTask by using the <code class="docutils literal notranslate"><span class="pre">&#64;app.cloudtasktarget(name=&quot;target&quot;)</span></code> decorator.
+For Goblet to route a request to a function decorated with <code class="docutils literal notranslate"><span class="pre">cloudtasktarget(name=&quot;target&quot;)</span></code>, the request must include
+the following headers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;Google-Cloud-Tasks&quot;</span><span class="p">,</span>
+<span class="s2">&quot;X-Goblet-CloudTask-Target&quot;</span><span class="p">:</span> <span class="s2">&quot;target&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Goblet uses the <cite>User-Agent</cite> headers to route the request to the CloudTaskTarget instance. The CloudTask Queue adds this headers.</p></li>
+<li><p>The <cite>X-Goblet-CloudTask-Target</cite> routes the request to the expected function.</p></li>
+</ul>
+</div>
+<p>The next example shows the function that would serve a request with the headers shown above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudtask_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">cloudtasktarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_target_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; handle request &#39;&#39;&#39;</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>Another example using <code class="docutils literal notranslate"><span class="pre">app.cloudtaskqueue</span></code> to queue and handle tasks in the same instance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;cloudtask_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">cloudtaskqueue</span><span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">cloudtasktarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_target_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; handle request &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">{}</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/enqueue&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">enqueue</span><span class="p">():</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;enqueue&quot;</span><span class="p">}}</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backends.html" class="btn btn-neutral float-right" title="Backends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, austen novis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples &mdash; goblet 0.10.4 documentation</title>
+  <title>Examples &mdash; goblet 0.11.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -46,7 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="backends.html">Backends</a></li>
@@ -100,376 +100,389 @@
 <span class="linenos">  5</span>    <span class="n">LogMatchCondition</span><span class="p">,</span>
 <span class="linenos">  6</span>    <span class="n">CustomMetricCondition</span><span class="p">,</span>
 <span class="linenos">  7</span><span class="p">)</span>
-<span class="linenos">  8</span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="linenos">  9</span>
-<span class="linenos"> 10</span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet-example&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central-1&quot;</span><span class="p">)</span>
-<span class="linenos"> 11</span><span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>  <span class="c1"># configure goblet logger level</span>
-<span class="linenos"> 12</span><span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="linenos"> 13</span>
-<span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="linenos"> 15</span><span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
-<span class="linenos"> 16</span>
-<span class="linenos"> 17</span><span class="c1"># Example http trigger</span>
-<span class="linenos"> 18</span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">()</span>
-<span class="linenos"> 19</span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="linenos"> 20</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-<span class="linenos"> 21</span>
+<span class="linenos">  8</span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="linenos">  9</span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="linenos"> 10</span>
+<span class="linenos"> 11</span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet-example&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central-1&quot;</span><span class="p">)</span>
+<span class="linenos"> 12</span><span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>  <span class="c1"># configure goblet logger level</span>
+<span class="linenos"> 13</span><span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="linenos"> 16</span><span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="c1"># Example http trigger</span>
+<span class="linenos"> 19</span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">()</span>
+<span class="linenos"> 20</span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos"> 21</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
 <span class="linenos"> 22</span>
-<span class="linenos"> 23</span><span class="c1"># Example http trigger that contains header</span>
-<span class="linenos"> 24</span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">})</span>
-<span class="linenos"> 25</span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="linenos"> 26</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-<span class="linenos"> 27</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="c1"># Example http trigger that contains header</span>
+<span class="linenos"> 25</span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">})</span>
+<span class="linenos"> 26</span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos"> 27</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
 <span class="linenos"> 28</span>
-<span class="linenos"> 29</span><span class="c1"># Example http triggers that matches header</span>
-<span class="linenos"> 30</span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">:</span> <span class="s2">&quot;issue&quot;</span><span class="p">})</span>
-<span class="linenos"> 31</span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="linenos"> 32</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-<span class="linenos"> 33</span>
+<span class="linenos"> 29</span>
+<span class="linenos"> 30</span><span class="c1"># Example http triggers that matches header</span>
+<span class="linenos"> 31</span><span class="nd">@app</span><span class="o">.</span><span class="n">http</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Github-Event&quot;</span><span class="p">:</span> <span class="s2">&quot;issue&quot;</span><span class="p">})</span>
+<span class="linenos"> 32</span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos"> 33</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
 <span class="linenos"> 34</span>
-<span class="linenos"> 35</span><span class="c1"># Path param</span>
-<span class="linenos"> 36</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home/</span><span class="si">{test}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="linenos"> 37</span><span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
-<span class="linenos"> 38</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-<span class="linenos"> 39</span>
+<span class="linenos"> 35</span>
+<span class="linenos"> 36</span><span class="c1"># Path param</span>
+<span class="linenos"> 37</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home/</span><span class="si">{test}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 38</span><span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+<span class="linenos"> 39</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
 <span class="linenos"> 40</span>
-<span class="linenos"> 41</span><span class="c1"># Example query args</span>
-<span class="linenos"> 42</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home&quot;</span><span class="p">)</span>
-<span class="linenos"> 43</span><span class="k">def</span> <span class="nf">query_args</span><span class="p">():</span>
-<span class="linenos"> 44</span>    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
-<span class="linenos"> 45</span>    <span class="n">q</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">)</span>
-<span class="linenos"> 46</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
-<span class="linenos"> 47</span>
+<span class="linenos"> 41</span>
+<span class="linenos"> 42</span><span class="c1"># Example query args</span>
+<span class="linenos"> 43</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home&quot;</span><span class="p">)</span>
+<span class="linenos"> 44</span><span class="k">def</span> <span class="nf">query_args</span><span class="p">():</span>
+<span class="linenos"> 45</span>    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
+<span class="linenos"> 46</span>    <span class="n">q</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">)</span>
+<span class="linenos"> 47</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
 <span class="linenos"> 48</span>
-<span class="linenos"> 49</span><span class="c1"># POST request</span>
-<span class="linenos"> 50</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
-<span class="linenos"> 51</span><span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
-<span class="linenos"> 52</span>    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
-<span class="linenos"> 53</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-<span class="linenos"> 54</span>
+<span class="linenos"> 49</span>
+<span class="linenos"> 50</span><span class="c1"># POST request</span>
+<span class="linenos"> 51</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="linenos"> 52</span><span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
+<span class="linenos"> 53</span>    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
+<span class="linenos"> 54</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
 <span class="linenos"> 55</span>
-<span class="linenos"> 56</span><span class="c1"># Typed Path Param</span>
-<span class="linenos"> 57</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home/</span><span class="si">{name}</span><span class="s2">/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
-<span class="linenos"> 58</span><span class="k">def</span> <span class="nf">namer</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="linenos"> 59</span>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos"> 60</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span><span class="c1"># Typed Path Param</span>
+<span class="linenos"> 58</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/home/</span><span class="si">{name}</span><span class="s2">/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="linenos"> 59</span><span class="k">def</span> <span class="nf">namer</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="linenos"> 60</span>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="linenos"> 61</span>
-<span class="linenos"> 62</span><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
-<span class="linenos"> 63</span>    <span class="n">lat</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
-<span class="linenos"> 64</span>    <span class="n">lng</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
-<span class="linenos"> 65</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+<span class="linenos"> 64</span>    <span class="n">lat</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
+<span class="linenos"> 65</span>    <span class="n">lng</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">()</span>
 <span class="linenos"> 66</span>
-<span class="linenos"> 67</span><span class="c1"># Custom schema types</span>
-<span class="linenos"> 68</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/points&quot;</span><span class="p">)</span>
-<span class="linenos"> 69</span><span class="k">def</span> <span class="nf">points</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]:</span>
-<span class="linenos"> 70</span>    <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">({</span><span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;lng&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
-<span class="linenos"> 71</span>    <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
-<span class="linenos"> 72</span>
+<span class="linenos"> 67</span>
+<span class="linenos"> 68</span><span class="c1"># Custom schema types</span>
+<span class="linenos"> 69</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/points&quot;</span><span class="p">)</span>
+<span class="linenos"> 70</span><span class="k">def</span> <span class="nf">points</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]:</span>
+<span class="linenos"> 71</span>    <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">({</span><span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;lng&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+<span class="linenos"> 72</span>    <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">]</span>
 <span class="linenos"> 73</span>
-<span class="linenos"> 74</span><span class="c1"># Custom Marshmallow Fields</span>
-<span class="linenos"> 75</span><span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>
-<span class="linenos"> 76</span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="linenos"> 77</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span><span class="c1"># Custom Marshmallow Fields</span>
+<span class="linenos"> 76</span><span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>
+<span class="linenos"> 77</span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="linenos"> 78</span>
-<span class="linenos"> 79</span><span class="k">def</span> <span class="nf">enum_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="linenos"> 80</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 81</span><span class="sd">    Add an OpenAPI extension for marshmallow_enum.EnumField instances</span>
-<span class="linenos"> 82</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 83</span>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">EnumField</span><span class="p">):</span>
-<span class="linenos"> 84</span>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">enum</span><span class="p">]}</span>
-<span class="linenos"> 85</span>    <span class="k">return</span> <span class="p">{}</span>
-<span class="linenos"> 86</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span><span class="k">def</span> <span class="nf">enum_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="linenos"> 81</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 82</span><span class="sd">    Add an OpenAPI extension for marshmallow_enum.EnumField instances</span>
+<span class="linenos"> 83</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 84</span>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">EnumField</span><span class="p">):</span>
+<span class="linenos"> 85</span>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">enum</span><span class="p">]}</span>
+<span class="linenos"> 86</span>    <span class="k">return</span> <span class="p">{}</span>
 <span class="linenos"> 87</span>
-<span class="linenos"> 88</span><span class="n">app</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">marshmallow_attribute_function</span> <span class="o">=</span> <span class="n">enum_to_properties</span>
-<span class="linenos"> 89</span>
+<span class="linenos"> 88</span>
+<span class="linenos"> 89</span><span class="n">app</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">marshmallow_attribute_function</span> <span class="o">=</span> <span class="n">enum_to_properties</span>
 <span class="linenos"> 90</span>
-<span class="linenos"> 91</span><span class="k">class</span> <span class="nc">StopLight</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="linenos"> 92</span>    <span class="n">green</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="linenos"> 93</span>    <span class="n">yellow</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="linenos"> 94</span>    <span class="n">red</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="linenos"> 95</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span><span class="k">class</span> <span class="nc">StopLight</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="linenos"> 93</span>    <span class="n">green</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="linenos"> 94</span>    <span class="n">yellow</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="linenos"> 95</span>    <span class="n">red</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="linenos"> 96</span>
-<span class="linenos"> 97</span><span class="k">class</span> <span class="nc">TrafficStop</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
-<span class="linenos"> 98</span>    <span class="n">light_color</span> <span class="o">=</span> <span class="n">EnumField</span><span class="p">(</span><span class="n">StopLight</span><span class="p">)</span>
-<span class="linenos"> 99</span>
+<span class="linenos"> 97</span>
+<span class="linenos"> 98</span><span class="k">class</span> <span class="nc">TrafficStop</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+<span class="linenos"> 99</span>    <span class="n">light_color</span> <span class="o">=</span> <span class="n">EnumField</span><span class="p">(</span><span class="n">StopLight</span><span class="p">)</span>
 <span class="linenos">100</span>
-<span class="linenos">101</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/traffic&quot;</span><span class="p">)</span>
-<span class="linenos">102</span><span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TrafficStop</span><span class="p">:</span>
-<span class="linenos">103</span>    <span class="k">return</span> <span class="n">TrafficStop</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;light_color&quot;</span><span class="p">:</span> <span class="n">StopLight</span><span class="o">.</span><span class="n">green</span><span class="p">})</span>
-<span class="linenos">104</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/traffic&quot;</span><span class="p">)</span>
+<span class="linenos">103</span><span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TrafficStop</span><span class="p">:</span>
+<span class="linenos">104</span>    <span class="k">return</span> <span class="n">TrafficStop</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s2">&quot;light_color&quot;</span><span class="p">:</span> <span class="n">StopLight</span><span class="o">.</span><span class="n">green</span><span class="p">})</span>
 <span class="linenos">105</span>
-<span class="linenos">106</span><span class="c1"># Returns follow openapi spec</span>
-<span class="linenos">107</span><span class="c1"># definitions:</span>
-<span class="linenos">108</span><span class="c1">#   TrafficStop:</span>
-<span class="linenos">109</span><span class="c1">#     type: object</span>
-<span class="linenos">110</span><span class="c1">#     properties:</span>
-<span class="linenos">111</span><span class="c1">#       light_color:</span>
-<span class="linenos">112</span><span class="c1">#         type: string</span>
-<span class="linenos">113</span><span class="c1">#         enum:</span>
-<span class="linenos">114</span><span class="c1">#         - green</span>
-<span class="linenos">115</span><span class="c1">#         - yellow</span>
-<span class="linenos">116</span><span class="c1">#         - red</span>
-<span class="linenos">117</span>
-<span class="linenos">118</span><span class="c1"># Pydantic Typing</span>
-<span class="linenos">119</span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-<span class="linenos">120</span>
+<span class="linenos">106</span>
+<span class="linenos">107</span><span class="c1"># Returns follow openapi spec</span>
+<span class="linenos">108</span><span class="c1"># definitions:</span>
+<span class="linenos">109</span><span class="c1">#   TrafficStop:</span>
+<span class="linenos">110</span><span class="c1">#     type: object</span>
+<span class="linenos">111</span><span class="c1">#     properties:</span>
+<span class="linenos">112</span><span class="c1">#       light_color:</span>
+<span class="linenos">113</span><span class="c1">#         type: string</span>
+<span class="linenos">114</span><span class="c1">#         enum:</span>
+<span class="linenos">115</span><span class="c1">#         - green</span>
+<span class="linenos">116</span><span class="c1">#         - yellow</span>
+<span class="linenos">117</span><span class="c1">#         - red</span>
+<span class="linenos">118</span>
+<span class="linenos">119</span><span class="c1"># Pydantic Typing</span>
+<span class="linenos">120</span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="linenos">121</span>
-<span class="linenos">122</span><span class="k">class</span> <span class="nc">NestedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="linenos">123</span>    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">124</span>
+<span class="linenos">122</span>
+<span class="linenos">123</span><span class="k">class</span> <span class="nc">NestedModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="linenos">124</span>    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
 <span class="linenos">125</span>
-<span class="linenos">126</span><span class="k">class</span> <span class="nc">PydanticModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="linenos">127</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
-<span class="linenos">128</span>    <span class="n">nested</span><span class="p">:</span> <span class="n">NestedModel</span>
-<span class="linenos">129</span>
+<span class="linenos">126</span>
+<span class="linenos">127</span><span class="k">class</span> <span class="nc">PydanticModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="linenos">128</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos">129</span>    <span class="n">nested</span><span class="p">:</span> <span class="n">NestedModel</span>
 <span class="linenos">130</span>
-<span class="linenos">131</span><span class="c1"># Request Body Typing</span>
-<span class="linenos">132</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/pydantic&quot;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="n">PydanticModel</span><span class="p">)</span>
-<span class="linenos">133</span><span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PydanticModel</span><span class="p">:</span>
-<span class="linenos">134</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">PydanticModel</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span>
-<span class="linenos">135</span>
+<span class="linenos">131</span>
+<span class="linenos">132</span><span class="c1"># Request Body Typing</span>
+<span class="linenos">133</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/pydantic&quot;</span><span class="p">,</span> <span class="n">request_body</span><span class="o">=</span><span class="n">PydanticModel</span><span class="p">)</span>
+<span class="linenos">134</span><span class="k">def</span> <span class="nf">traffic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PydanticModel</span><span class="p">:</span>
+<span class="linenos">135</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">PydanticModel</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span>
 <span class="linenos">136</span>
-<span class="linenos">137</span><span class="c1"># Custom Backend</span>
-<span class="linenos">138</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/custom_backend&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>
-<span class="linenos">139</span><span class="k">def</span> <span class="nf">custom_backend</span><span class="p">():</span>
-<span class="linenos">140</span>    <span class="k">return</span>
-<span class="linenos">141</span>
+<span class="linenos">137</span>
+<span class="linenos">138</span><span class="c1"># Custom Backend</span>
+<span class="linenos">139</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/custom_backend&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;https://www.CLOUDRUN_URL.com/home&quot;</span><span class="p">)</span>
+<span class="linenos">140</span><span class="k">def</span> <span class="nf">custom_backend</span><span class="p">():</span>
+<span class="linenos">141</span>    <span class="k">return</span>
 <span class="linenos">142</span>
-<span class="linenos">143</span><span class="c1"># Method Security</span>
-<span class="linenos">144</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/method_security&quot;</span><span class="p">,</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;your_custom_auth_id&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
-<span class="linenos">145</span><span class="k">def</span> <span class="nf">method_security</span><span class="p">():</span>
-<span class="linenos">146</span>    <span class="k">return</span>
-<span class="linenos">147</span>
+<span class="linenos">143</span>
+<span class="linenos">144</span><span class="c1"># Method Security</span>
+<span class="linenos">145</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/method_security&quot;</span><span class="p">,</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;your_custom_auth_id&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
+<span class="linenos">146</span><span class="k">def</span> <span class="nf">method_security</span><span class="p">():</span>
+<span class="linenos">147</span>    <span class="k">return</span>
 <span class="linenos">148</span>
-<span class="linenos">149</span><span class="c1"># Custom responses and request_types</span>
-<span class="linenos">150</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
-<span class="linenos">151</span>    <span class="s2">&quot;/custom&quot;</span><span class="p">,</span>
-<span class="linenos">152</span>    <span class="n">request_body</span><span class="o">=</span><span class="p">{</span>
-<span class="linenos">153</span>        <span class="s2">&quot;application/json&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}}}</span>
-<span class="linenos">154</span>    <span class="p">},</span>
-<span class="linenos">155</span>    <span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;400&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;400&quot;</span><span class="p">}},</span>
-<span class="linenos">156</span><span class="p">)</span>
-<span class="linenos">157</span><span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
-<span class="linenos">158</span>    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
-<span class="linenos">159</span>    <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">]</span>
-<span class="linenos">160</span>    <span class="k">return</span>
-<span class="linenos">161</span>
+<span class="linenos">149</span>
+<span class="linenos">150</span><span class="c1"># Custom responses and request_types</span>
+<span class="linenos">151</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+<span class="linenos">152</span>    <span class="s2">&quot;/custom&quot;</span><span class="p">,</span>
+<span class="linenos">153</span>    <span class="n">request_body</span><span class="o">=</span><span class="p">{</span>
+<span class="linenos">154</span>        <span class="s2">&quot;application/json&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}}}</span>
+<span class="linenos">155</span>    <span class="p">},</span>
+<span class="linenos">156</span>    <span class="n">responses</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;400&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;400&quot;</span><span class="p">}},</span>
+<span class="linenos">157</span><span class="p">)</span>
+<span class="linenos">158</span><span class="k">def</span> <span class="nf">custom</span><span class="p">():</span>
+<span class="linenos">159</span>    <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span>
+<span class="linenos">160</span>    <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;string1&quot;</span><span class="p">,</span> <span class="s2">&quot;string2&quot;</span><span class="p">]</span>
+<span class="linenos">161</span>    <span class="k">return</span>
 <span class="linenos">162</span>
-<span class="linenos">163</span><span class="c1"># Example response object</span>
-<span class="linenos">164</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/response&quot;</span><span class="p">)</span>
-<span class="linenos">165</span><span class="k">def</span> <span class="nf">response</span><span class="p">():</span>
-<span class="linenos">166</span>    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-<span class="linenos">167</span>        <span class="p">{</span><span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">400</span><span class="p">},</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span>
-<span class="linenos">168</span>    <span class="p">)</span>
-<span class="linenos">169</span>
+<span class="linenos">163</span>
+<span class="linenos">164</span><span class="c1"># Example response object</span>
+<span class="linenos">165</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/response&quot;</span><span class="p">)</span>
+<span class="linenos">166</span><span class="k">def</span> <span class="nf">response</span><span class="p">():</span>
+<span class="linenos">167</span>    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+<span class="linenos">168</span>        <span class="p">{</span><span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">400</span><span class="p">},</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span>
+<span class="linenos">169</span>    <span class="p">)</span>
 <span class="linenos">170</span>
-<span class="linenos">171</span><span class="c1"># Scheduled job</span>
-<span class="linenos">172</span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s2">&quot;5 * * * *&quot;</span><span class="p">)</span>
-<span class="linenos">173</span><span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
-<span class="linenos">174</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
-<span class="linenos">175</span>
+<span class="linenos">171</span>
+<span class="linenos">172</span><span class="c1"># Scheduled job</span>
+<span class="linenos">173</span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="s2">&quot;5 * * * *&quot;</span><span class="p">)</span>
+<span class="linenos">174</span><span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+<span class="linenos">175</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
 <span class="linenos">176</span>
-<span class="linenos">177</span><span class="c1"># Scheduled job with custom headers, method, and body</span>
-<span class="linenos">178</span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span>
-<span class="linenos">179</span>    <span class="s2">&quot;5 * * * *&quot;</span><span class="p">,</span>
-<span class="linenos">180</span>    <span class="n">httpMethod</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-<span class="linenos">181</span>    <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Custom&quot;</span><span class="p">:</span> <span class="s2">&quot;header&quot;</span><span class="p">},</span>
-<span class="linenos">182</span>    <span class="n">body</span><span class="o">=</span><span class="s2">&quot;BASE64 ENCODED STRING&quot;</span><span class="p">,</span>
-<span class="linenos">183</span><span class="p">)</span>
-<span class="linenos">184</span><span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
-<span class="linenos">185</span>    <span class="n">headers</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">headers</span>
-<span class="linenos">186</span>    <span class="n">body</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">body</span>
-<span class="linenos">187</span>    <span class="n">method</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">method</span>
-<span class="linenos">188</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
-<span class="linenos">189</span>
+<span class="linenos">177</span>
+<span class="linenos">178</span><span class="c1"># Scheduled job with custom headers, method, and body</span>
+<span class="linenos">179</span><span class="nd">@app</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span>
+<span class="linenos">180</span>    <span class="s2">&quot;5 * * * *&quot;</span><span class="p">,</span>
+<span class="linenos">181</span>    <span class="n">httpMethod</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="linenos">182</span>    <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Custom&quot;</span><span class="p">:</span> <span class="s2">&quot;header&quot;</span><span class="p">},</span>
+<span class="linenos">183</span>    <span class="n">body</span><span class="o">=</span><span class="s2">&quot;BASE64 ENCODED STRING&quot;</span><span class="p">,</span>
+<span class="linenos">184</span><span class="p">)</span>
+<span class="linenos">185</span><span class="k">def</span> <span class="nf">scheduled_job</span><span class="p">():</span>
+<span class="linenos">186</span>    <span class="n">headers</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">headers</span>
+<span class="linenos">187</span>    <span class="n">body</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">body</span>
+<span class="linenos">188</span>    <span class="n">method</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">method</span>
+<span class="linenos">189</span>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
 <span class="linenos">190</span>
-<span class="linenos">191</span><span class="c1"># Pubsub topic</span>
-<span class="linenos">192</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-<span class="linenos">193</span><span class="k">def</span> <span class="nf">topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">194</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">195</span>    <span class="k">return</span>
-<span class="linenos">196</span>
+<span class="linenos">191</span>
+<span class="linenos">192</span><span class="c1"># Pubsub topic</span>
+<span class="linenos">193</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="linenos">194</span><span class="k">def</span> <span class="nf">topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">195</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">196</span>    <span class="k">return</span>
 <span class="linenos">197</span>
-<span class="linenos">198</span><span class="c1"># Pubsub topic with matching message attributes</span>
-<span class="linenos">199</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
-<span class="linenos">200</span><span class="k">def</span> <span class="nf">pubsub_attributes</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">201</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">202</span>    <span class="k">return</span>
-<span class="linenos">203</span>
+<span class="linenos">198</span>
+<span class="linenos">199</span><span class="c1"># Pubsub topic with matching message attributes</span>
+<span class="linenos">200</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
+<span class="linenos">201</span><span class="k">def</span> <span class="nf">pubsub_attributes</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">202</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">203</span>    <span class="k">return</span>
 <span class="linenos">204</span>
-<span class="linenos">205</span><span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
-<span class="linenos">206</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">207</span><span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">208</span>    <span class="k">return</span>
-<span class="linenos">209</span>
+<span class="linenos">205</span>
+<span class="linenos">206</span><span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
+<span class="linenos">207</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">208</span><span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">209</span>    <span class="k">return</span>
 <span class="linenos">210</span>
-<span class="linenos">211</span><span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
-<span class="linenos">212</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span>
-<span class="linenos">213</span>    <span class="s2">&quot;test&quot;</span><span class="p">,</span>
-<span class="linenos">214</span>    <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="linenos">215</span>    <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">,</span>
-<span class="linenos">216</span><span class="p">)</span>
-<span class="linenos">217</span><span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">218</span>    <span class="k">return</span>
-<span class="linenos">219</span>
+<span class="linenos">211</span>
+<span class="linenos">212</span><span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
+<span class="linenos">213</span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span>
+<span class="linenos">214</span>    <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+<span class="linenos">215</span>    <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">216</span>    <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">,</span>
+<span class="linenos">217</span><span class="p">)</span>
+<span class="linenos">218</span><span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">219</span>    <span class="k">return</span>
 <span class="linenos">220</span>
-<span class="linenos">221</span><span class="c1"># Example Storage trigger on the create/finalize event</span>
-<span class="linenos">222</span><span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s2">&quot;BUCKET_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">)</span>
-<span class="linenos">223</span><span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-<span class="linenos">224</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-<span class="linenos">225</span>    <span class="k">return</span>
-<span class="linenos">226</span>
+<span class="linenos">221</span>
+<span class="linenos">222</span><span class="c1"># Example Storage trigger on the create/finalize event</span>
+<span class="linenos">223</span><span class="nd">@app</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="s2">&quot;BUCKET_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">)</span>
+<span class="linenos">224</span><span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<span class="linenos">225</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="linenos">226</span>    <span class="k">return</span>
 <span class="linenos">227</span>
-<span class="linenos">228</span><span class="c1"># Example before request</span>
-<span class="linenos">229</span><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span><span class="p">()</span>
-<span class="linenos">230</span><span class="k">def</span> <span class="nf">add_db</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="linenos">231</span>    <span class="n">app</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="s2">&quot;db&quot;</span>
-<span class="linenos">232</span>    <span class="k">return</span> <span class="n">request</span>
-<span class="linenos">233</span>
+<span class="linenos">228</span>
+<span class="linenos">229</span><span class="c1"># Example before request</span>
+<span class="linenos">230</span><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span><span class="p">()</span>
+<span class="linenos">231</span><span class="k">def</span> <span class="nf">add_db</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos">232</span>    <span class="n">app</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="s2">&quot;db&quot;</span>
+<span class="linenos">233</span>    <span class="k">return</span> <span class="n">request</span>
 <span class="linenos">234</span>
-<span class="linenos">235</span><span class="c1"># Example after request</span>
-<span class="linenos">236</span><span class="nd">@app</span><span class="o">.</span><span class="n">after_request</span><span class="p">()</span>
-<span class="linenos">237</span><span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-<span class="linenos">238</span>    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Custom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;custom header&quot;</span>
-<span class="linenos">239</span>    <span class="k">return</span> <span class="n">response</span>
-<span class="linenos">240</span>
+<span class="linenos">235</span>
+<span class="linenos">236</span><span class="c1"># Example after request</span>
+<span class="linenos">237</span><span class="nd">@app</span><span class="o">.</span><span class="n">after_request</span><span class="p">()</span>
+<span class="linenos">238</span><span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="linenos">239</span>    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Custom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;custom header&quot;</span>
+<span class="linenos">240</span>    <span class="k">return</span> <span class="n">response</span>
 <span class="linenos">241</span>
-<span class="linenos">242</span><span class="c1"># Example eventarc pubsub topic</span>
-<span class="linenos">243</span><span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-<span class="linenos">244</span><span class="k">def</span> <span class="nf">pubsub</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">245</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">)</span>
-<span class="linenos">246</span>    <span class="k">return</span>
-<span class="linenos">247</span>
+<span class="linenos">242</span>
+<span class="linenos">243</span><span class="c1"># Example eventarc pubsub topic</span>
+<span class="linenos">244</span><span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="linenos">245</span><span class="k">def</span> <span class="nf">pubsub</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">246</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">)</span>
+<span class="linenos">247</span>    <span class="k">return</span>
 <span class="linenos">248</span>
-<span class="linenos">249</span><span class="c1"># Example eventarc direct event</span>
-<span class="linenos">250</span><span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
-<span class="linenos">251</span>    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
-<span class="linenos">252</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.storage.object.v1.finalized&quot;</span><span class="p">},</span>
-<span class="linenos">253</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;BUCKET&quot;</span><span class="p">},</span>
-<span class="linenos">254</span>    <span class="p">],</span>
-<span class="linenos">255</span>    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east1&quot;</span><span class="p">,</span>
-<span class="linenos">256</span><span class="p">)</span>
-<span class="linenos">257</span><span class="k">def</span> <span class="nf">bucket</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">258</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_post&quot;</span><span class="p">)</span>
-<span class="linenos">259</span>    <span class="k">return</span>
-<span class="linenos">260</span>
+<span class="linenos">249</span>
+<span class="linenos">250</span><span class="c1"># Example eventarc direct event</span>
+<span class="linenos">251</span><span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
+<span class="linenos">252</span>    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">253</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.storage.object.v1.finalized&quot;</span><span class="p">},</span>
+<span class="linenos">254</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;bucket&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;BUCKET&quot;</span><span class="p">},</span>
+<span class="linenos">255</span>    <span class="p">],</span>
+<span class="linenos">256</span>    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east1&quot;</span><span class="p">,</span>
+<span class="linenos">257</span><span class="p">)</span>
+<span class="linenos">258</span><span class="k">def</span> <span class="nf">bucket</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">259</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_post&quot;</span><span class="p">)</span>
+<span class="linenos">260</span>    <span class="k">return</span>
 <span class="linenos">261</span>
-<span class="linenos">262</span><span class="c1"># Example eventarc audit log</span>
-<span class="linenos">263</span><span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
-<span class="linenos">264</span>    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
-<span class="linenos">265</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.audit.log.v1.written&quot;</span><span class="p">},</span>
-<span class="linenos">266</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;methodName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.objects.get&quot;</span><span class="p">},</span>
-<span class="linenos">267</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;serviceName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.googleapis.com&quot;</span><span class="p">},</span>
-<span class="linenos">268</span>    <span class="p">],</span>
-<span class="linenos">269</span>    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central1&quot;</span><span class="p">,</span>
-<span class="linenos">270</span><span class="p">)</span>
-<span class="linenos">271</span><span class="k">def</span> <span class="nf">bucket_get</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="linenos">272</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
-<span class="linenos">273</span>    <span class="k">return</span>
-<span class="linenos">274</span>
+<span class="linenos">262</span>
+<span class="linenos">263</span><span class="c1"># Example eventarc audit log</span>
+<span class="linenos">264</span><span class="nd">@app</span><span class="o">.</span><span class="n">eventarc</span><span class="p">(</span>
+<span class="linenos">265</span>    <span class="n">event_filters</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">266</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;google.cloud.audit.log.v1.written&quot;</span><span class="p">},</span>
+<span class="linenos">267</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;methodName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.objects.get&quot;</span><span class="p">},</span>
+<span class="linenos">268</span>        <span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;serviceName&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;storage.googleapis.com&quot;</span><span class="p">},</span>
+<span class="linenos">269</span>    <span class="p">],</span>
+<span class="linenos">270</span>    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-central1&quot;</span><span class="p">,</span>
+<span class="linenos">271</span><span class="p">)</span>
+<span class="linenos">272</span><span class="k">def</span> <span class="nf">bucket_get</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="linenos">273</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;bucket_get&quot;</span><span class="p">)</span>
+<span class="linenos">274</span>    <span class="k">return</span>
 <span class="linenos">275</span>
-<span class="linenos">276</span><span class="c1"># Example Cloudrun Job with schedule</span>
-<span class="linenos">277</span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
-<span class="linenos">278</span><span class="k">def</span> <span class="nf">job1_task1</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
-<span class="linenos">279</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="linenos">280</span>    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
-<span class="linenos">281</span>
+<span class="linenos">276</span>
+<span class="linenos">277</span><span class="c1"># Example Cloudrun Job with schedule</span>
+<span class="linenos">278</span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;* * * * *&quot;</span><span class="p">)</span>
+<span class="linenos">279</span><span class="k">def</span> <span class="nf">job1_task1</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+<span class="linenos">280</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">281</span>    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
 <span class="linenos">282</span>
-<span class="linenos">283</span><span class="c1"># Example Cloudrun Job with additional task</span>
-<span class="linenos">284</span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="linenos">285</span><span class="k">def</span> <span class="nf">job1_task2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
-<span class="linenos">286</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;different task for job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="linenos">287</span>    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
-<span class="linenos">288</span>
+<span class="linenos">283</span>
+<span class="linenos">284</span><span class="c1"># Example Cloudrun Job with additional task</span>
+<span class="linenos">285</span><span class="nd">@app</span><span class="o">.</span><span class="n">job</span><span class="p">(</span><span class="s2">&quot;job1&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">286</span><span class="k">def</span> <span class="nf">job1_task2</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+<span class="linenos">287</span>    <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;different task for job...</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">288</span>    <span class="k">return</span> <span class="s2">&quot;200&quot;</span>
 <span class="linenos">289</span>
-<span class="linenos">290</span><span class="c1"># Example BQ Remote Function</span>
-<span class="linenos">291</span><span class="c1"># Called in BQ with the following sql: SELECT `PROJECT.DATASET.math_example_multiply(x,y,z)` from DATASET.table</span>
-<span class="linenos">292</span><span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;DATASET&quot;</span><span class="p">)</span>
-<span class="linenos">293</span><span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="linenos">294</span>    <span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
-<span class="linenos">295</span>    <span class="k">return</span> <span class="n">w</span>
-<span class="linenos">296</span>
+<span class="linenos">290</span>
+<span class="linenos">291</span><span class="c1"># Example BQ Remote Function</span>
+<span class="linenos">292</span><span class="c1"># Called in BQ with the following sql: SELECT `PROJECT.DATASET.math_example_multiply(x,y,z)` from DATASET.table</span>
+<span class="linenos">293</span><span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;DATASET&quot;</span><span class="p">)</span>
+<span class="linenos">294</span><span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="linenos">295</span>    <span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
+<span class="linenos">296</span>    <span class="k">return</span> <span class="n">w</span>
 <span class="linenos">297</span>
-<span class="linenos">298</span><span class="c1"># Example Redis Instance</span>
-<span class="linenos">299</span><span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="p">(</span><span class="s2">&quot;redis-test&quot;</span><span class="p">)</span>
-<span class="linenos">300</span>
-<span class="linenos">301</span><span class="c1"># Example VPC Connector</span>
-<span class="linenos">302</span><span class="n">app</span><span class="o">.</span><span class="n">vpcconnector</span><span class="p">(</span><span class="s2">&quot;vpc-conn-test&quot;</span><span class="p">)</span>
-<span class="linenos">303</span>
-<span class="linenos">304</span><span class="c1"># Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10</span>
-<span class="linenos">305</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span>
-<span class="linenos">306</span>    <span class="s2">&quot;metric&quot;</span><span class="p">,</span>
-<span class="linenos">307</span>    <span class="n">conditions</span><span class="o">=</span><span class="p">[</span>
-<span class="linenos">308</span>        <span class="n">MetricCondition</span><span class="p">(</span>
-<span class="linenos">309</span>            <span class="s2">&quot;test&quot;</span><span class="p">,</span>
-<span class="linenos">310</span>            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;cloudfunctions.googleapis.com/function/execution_count&quot;</span><span class="p">,</span>
-<span class="linenos">311</span>            <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-<span class="linenos">312</span>        <span class="p">)</span>
-<span class="linenos">313</span>    <span class="p">],</span>
-<span class="linenos">314</span><span class="p">)</span>
-<span class="linenos">315</span>
-<span class="linenos">316</span><span class="c1"># Example Metric Alert for the cloudfunction metric execution_times with a Delta type with a threshold of 1000 ms</span>
-<span class="linenos">317</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span>
-<span class="linenos">318</span>    <span class="s2">&quot;metric&quot;</span><span class="p">,</span>
-<span class="linenos">319</span>    <span class="n">conditions</span><span class="o">=</span><span class="p">[</span>
-<span class="linenos">320</span>        <span class="n">MetricCondition</span><span class="p">(</span>
-<span class="linenos">321</span>            <span class="s2">&quot;test&quot;</span><span class="p">,</span>
-<span class="linenos">322</span>            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;cloudfunctions.googleapis.com/function/execution_times&quot;</span><span class="p">,</span>
-<span class="linenos">323</span>            <span class="n">value</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-<span class="linenos">324</span>            <span class="n">aggregations</span><span class="o">=</span><span class="p">[</span>
-<span class="linenos">325</span>                <span class="p">{</span>
-<span class="linenos">326</span>                    <span class="s2">&quot;alignmentPeriod&quot;</span><span class="p">:</span> <span class="s2">&quot;300s&quot;</span><span class="p">,</span>
-<span class="linenos">327</span>                    <span class="s2">&quot;crossSeriesReducer&quot;</span><span class="p">:</span> <span class="s2">&quot;REDUCE_NONE&quot;</span><span class="p">,</span>
-<span class="linenos">328</span>                    <span class="s2">&quot;perSeriesAligner&quot;</span><span class="p">:</span> <span class="s2">&quot;ALIGN_PERCENTILE_50&quot;</span><span class="p">,</span>
-<span class="linenos">329</span>                <span class="p">}</span>
-<span class="linenos">330</span>            <span class="p">],</span>
-<span class="linenos">331</span>        <span class="p">)</span>
-<span class="linenos">332</span>    <span class="p">],</span>
-<span class="linenos">333</span><span class="p">)</span>
-<span class="linenos">334</span>
-<span class="linenos">335</span><span class="c1"># Example Log Match metric that will trigger an incendent off of any Error logs</span>
-<span class="linenos">336</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">LogMatchCondition</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;severity&gt;=ERROR&quot;</span><span class="p">)])</span>
-<span class="linenos">337</span>
-<span class="linenos">338</span><span class="c1"># Example Metric Alert that creates a custom metric for severe errors with http code in the 500&#39;s and creates an alert with a threshold of 10</span>
-<span class="linenos">339</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span>
-<span class="linenos">340</span>    <span class="s2">&quot;custom&quot;</span><span class="p">,</span>
-<span class="linenos">341</span>    <span class="n">conditions</span><span class="o">=</span><span class="p">[</span>
-<span class="linenos">342</span>        <span class="n">CustomMetricCondition</span><span class="p">(</span>
-<span class="linenos">343</span>            <span class="s2">&quot;custom&quot;</span><span class="p">,</span>
-<span class="linenos">344</span>            <span class="n">metric_filter</span><span class="o">=</span><span class="s2">&quot;severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)&quot;</span><span class="p">,</span>
-<span class="linenos">345</span>            <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-<span class="linenos">346</span>        <span class="p">)</span>
-<span class="linenos">347</span>    <span class="p">],</span>
-<span class="linenos">348</span><span class="p">)</span>
-<span class="linenos">349</span>
+<span class="linenos">298</span><span class="c1"># Totally contrived example of an async function (a real one would use aiohttp or similar)</span>
+<span class="linenos">299</span><span class="k">async</span> <span class="k">def</span> <span class="nf">async_multiply</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="linenos">300</span>    <span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+<span class="linenos">301</span>    <span class="k">return</span> <span class="n">w</span>
+<span class="linenos">302</span>
+<span class="linenos">303</span><span class="c1"># Example BQ Remote Function with vectorized function</span>
+<span class="linenos">304</span><span class="c1"># For network-bound BQ Remote Functions, this approach using async will yield significantly better performance</span>
+<span class="linenos">305</span><span class="nd">@app</span><span class="o">.</span><span class="n">bqremotefunction</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;blogs&quot;</span><span class="p">,</span><span class="n">vectorize_func</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">306</span><span class="k">def</span> <span class="nf">function_test</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="linenos">307</span>     <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">async_multiply</span><span class="p">(</span><span class="n">elem_x</span><span class="p">,</span> <span class="n">elem_y</span><span class="p">))</span> <span class="k">for</span> <span class="n">elem_x</span><span class="p">,</span> <span class="n">elem_y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)]</span>
+<span class="linenos">308</span>     <span class="k">return</span> <span class="n">results</span>
+<span class="linenos">309</span>
+<span class="linenos">310</span>
+<span class="linenos">311</span><span class="c1"># Example Redis Instance</span>
+<span class="linenos">312</span><span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="p">(</span><span class="s2">&quot;redis-test&quot;</span><span class="p">)</span>
+<span class="linenos">313</span>
+<span class="linenos">314</span><span class="c1"># Example VPC Connector</span>
+<span class="linenos">315</span><span class="n">app</span><span class="o">.</span><span class="n">vpcconnector</span><span class="p">(</span><span class="s2">&quot;vpc-conn-test&quot;</span><span class="p">)</span>
+<span class="linenos">316</span>
+<span class="linenos">317</span><span class="c1"># Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10</span>
+<span class="linenos">318</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span>
+<span class="linenos">319</span>    <span class="s2">&quot;metric&quot;</span><span class="p">,</span>
+<span class="linenos">320</span>    <span class="n">conditions</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">321</span>        <span class="n">MetricCondition</span><span class="p">(</span>
+<span class="linenos">322</span>            <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+<span class="linenos">323</span>            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;cloudfunctions.googleapis.com/function/execution_count&quot;</span><span class="p">,</span>
+<span class="linenos">324</span>            <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="linenos">325</span>        <span class="p">)</span>
+<span class="linenos">326</span>    <span class="p">],</span>
+<span class="linenos">327</span><span class="p">)</span>
+<span class="linenos">328</span>
+<span class="linenos">329</span><span class="c1"># Example Metric Alert for the cloudfunction metric execution_times with a Delta type with a threshold of 1000 ms</span>
+<span class="linenos">330</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span>
+<span class="linenos">331</span>    <span class="s2">&quot;metric&quot;</span><span class="p">,</span>
+<span class="linenos">332</span>    <span class="n">conditions</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">333</span>        <span class="n">MetricCondition</span><span class="p">(</span>
+<span class="linenos">334</span>            <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+<span class="linenos">335</span>            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;cloudfunctions.googleapis.com/function/execution_times&quot;</span><span class="p">,</span>
+<span class="linenos">336</span>            <span class="n">value</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="linenos">337</span>            <span class="n">aggregations</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">338</span>                <span class="p">{</span>
+<span class="linenos">339</span>                    <span class="s2">&quot;alignmentPeriod&quot;</span><span class="p">:</span> <span class="s2">&quot;300s&quot;</span><span class="p">,</span>
+<span class="linenos">340</span>                    <span class="s2">&quot;crossSeriesReducer&quot;</span><span class="p">:</span> <span class="s2">&quot;REDUCE_NONE&quot;</span><span class="p">,</span>
+<span class="linenos">341</span>                    <span class="s2">&quot;perSeriesAligner&quot;</span><span class="p">:</span> <span class="s2">&quot;ALIGN_PERCENTILE_50&quot;</span><span class="p">,</span>
+<span class="linenos">342</span>                <span class="p">}</span>
+<span class="linenos">343</span>            <span class="p">],</span>
+<span class="linenos">344</span>        <span class="p">)</span>
+<span class="linenos">345</span>    <span class="p">],</span>
+<span class="linenos">346</span><span class="p">)</span>
+<span class="linenos">347</span>
+<span class="linenos">348</span><span class="c1"># Example Log Match metric that will trigger an incendent off of any Error logs</span>
+<span class="linenos">349</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">LogMatchCondition</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;severity&gt;=ERROR&quot;</span><span class="p">)])</span>
 <span class="linenos">350</span>
-<span class="linenos">351</span><span class="c1"># Example CloudTask Queue + CloudTask HTTP Target</span>
-<span class="linenos">352</span><span class="n">client</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">cloudtaskqueue</span><span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span>
-<span class="linenos">353</span>    <span class="s2">&quot;rateLimits&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="linenos">354</span>        <span class="s2">&quot;maxDispatchesPerSecond&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
-<span class="linenos">355</span>        <span class="s2">&quot;maxBurstSize&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-<span class="linenos">356</span>        <span class="s2">&quot;maxConcurrentDispatches&quot;</span><span class="p">:</span> <span class="mi">1000</span>
-<span class="linenos">357</span>    <span class="p">},</span>
-<span class="linenos">358</span>    <span class="s2">&quot;retryConfig&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="linenos">359</span>        <span class="s2">&quot;maxAttempts&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-<span class="linenos">360</span>        <span class="s2">&quot;minBackoff&quot;</span><span class="p">:</span> <span class="s2">&quot;0.100s&quot;</span><span class="p">,</span>
-<span class="linenos">361</span>        <span class="s2">&quot;maxBackoff&quot;</span><span class="p">:</span> <span class="s2">&quot;3600s&quot;</span><span class="p">,</span>
-<span class="linenos">362</span>        <span class="s2">&quot;maxDoublings&quot;</span><span class="p">:</span> <span class="mi">16</span>
-<span class="linenos">363</span>    <span class="p">}</span>
-<span class="linenos">364</span><span class="p">})</span>
-<span class="linenos">365</span>
-<span class="linenos">366</span><span class="nd">@app</span><span class="o">.</span><span class="n">cloudtasktarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
-<span class="linenos">367</span><span class="k">def</span> <span class="nf">my_target_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="linenos">368</span><span class="w">    </span><span class="sd">&#39;&#39;&#39; handle request &#39;&#39;&#39;</span>
-<span class="linenos">369</span>    <span class="k">return</span> <span class="p">{}</span>
-<span class="linenos">370</span>
-<span class="linenos">371</span>
-<span class="linenos">372</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/enqueue&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
-<span class="linenos">373</span><span class="k">def</span> <span class="nf">enqueue</span><span class="p">():</span>
-<span class="linenos">374</span>    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;enqueue&quot;</span><span class="p">}}</span>
-<span class="linenos">375</span>    <span class="n">client</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
-<span class="linenos">376</span>    <span class="k">return</span> <span class="p">{}</span>
-<span class="linenos">377</span>
+<span class="linenos">351</span><span class="c1"># Example Metric Alert that creates a custom metric for severe errors with http code in the 500&#39;s and creates an alert with a threshold of 10</span>
+<span class="linenos">352</span><span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span>
+<span class="linenos">353</span>    <span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+<span class="linenos">354</span>    <span class="n">conditions</span><span class="o">=</span><span class="p">[</span>
+<span class="linenos">355</span>        <span class="n">CustomMetricCondition</span><span class="p">(</span>
+<span class="linenos">356</span>            <span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+<span class="linenos">357</span>            <span class="n">metric_filter</span><span class="o">=</span><span class="s2">&quot;severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)&quot;</span><span class="p">,</span>
+<span class="linenos">358</span>            <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="linenos">359</span>        <span class="p">)</span>
+<span class="linenos">360</span>    <span class="p">],</span>
+<span class="linenos">361</span><span class="p">)</span>
+<span class="linenos">362</span>
+<span class="linenos">363</span>
+<span class="linenos">364</span><span class="c1"># Example CloudTask Queue + CloudTask HTTP Target</span>
+<span class="linenos">365</span><span class="n">client</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">cloudtaskqueue</span><span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span>
+<span class="linenos">366</span>    <span class="s2">&quot;rateLimits&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos">367</span>        <span class="s2">&quot;maxDispatchesPerSecond&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+<span class="linenos">368</span>        <span class="s2">&quot;maxBurstSize&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+<span class="linenos">369</span>        <span class="s2">&quot;maxConcurrentDispatches&quot;</span><span class="p">:</span> <span class="mi">1000</span>
+<span class="linenos">370</span>    <span class="p">},</span>
+<span class="linenos">371</span>    <span class="s2">&quot;retryConfig&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos">372</span>        <span class="s2">&quot;maxAttempts&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+<span class="linenos">373</span>        <span class="s2">&quot;minBackoff&quot;</span><span class="p">:</span> <span class="s2">&quot;0.100s&quot;</span><span class="p">,</span>
+<span class="linenos">374</span>        <span class="s2">&quot;maxBackoff&quot;</span><span class="p">:</span> <span class="s2">&quot;3600s&quot;</span><span class="p">,</span>
+<span class="linenos">375</span>        <span class="s2">&quot;maxDoublings&quot;</span><span class="p">:</span> <span class="mi">16</span>
+<span class="linenos">376</span>    <span class="p">}</span>
+<span class="linenos">377</span><span class="p">})</span>
+<span class="linenos">378</span>
+<span class="linenos">379</span><span class="nd">@app</span><span class="o">.</span><span class="n">cloudtasktarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<span class="linenos">380</span><span class="k">def</span> <span class="nf">my_target_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos">381</span><span class="w">    </span><span class="sd">&#39;&#39;&#39; handle request &#39;&#39;&#39;</span>
+<span class="linenos">382</span>    <span class="k">return</span> <span class="p">{}</span>
+<span class="linenos">383</span>
+<span class="linenos">384</span>
+<span class="linenos">385</span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/enqueue&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="linenos">386</span><span class="k">def</span> <span class="nf">enqueue</span><span class="p">():</span>
+<span class="linenos">387</span>    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;enqueue&quot;</span><span class="p">}}</span>
+<span class="linenos">388</span>    <span class="n">client</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+<span class="linenos">389</span>    <span class="k">return</span> <span class="p">{}</span>
+<span class="linenos">390</span>
 </pre></div>
 </div>
 </section>
