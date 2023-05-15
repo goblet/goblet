@@ -1,6 +1,6 @@
-=========
-Resources
-=========
+========
+Handlers
+========
 
 Http
 ^^^^
@@ -199,6 +199,11 @@ Example usage:
     # create a pubsub subscription instead of pubsub triggered function and add filter
     @app.topic('test', use_subscription=True, filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"')
     def pubsub_subscription_filter(data):
+        return 
+
+    # switching the pubsub topic to a different project requires force_update, since it requires the subscription to be recreated
+    @app.topic('test', project="NEW_CROSS_PROJECT", force_update=True)
+    def cross_project(data):
         return 
 
 Storage
@@ -443,4 +448,3 @@ Another example using ``app.cloudtaskqueue`` to queue and handle tasks in the sa
         payload = {"message": {"title": "enqueue"}}
         client.enqueue(target="target", payload=payload)
         return {}
-

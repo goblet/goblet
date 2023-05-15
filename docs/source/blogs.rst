@@ -12,3 +12,5 @@ Blogs
 * `Tutorial: Connecting Cloudrun and Cloudfunctions to Redis and other Private Services using Goblet <https://engineering.premise.com/tutorial-connecting-cloudrun-and-cloudfunctions-to-redis-and-other-private-services-using-goblet-5782f80da6a0>`__
 * `Tutorial: Deploying BigQuery Remote Functions <https://engineering.premise.com/tutorial-deploying-bigquery-remote-functions-9040316d9d3e>`__
 * `GCP Alerts the Easy Way: Alerting for Cloudfunctions and Cloudrun using Goblet <https://engineering.premise.com/gcp-alerts-the-easy-way-alerting-for-cloudfunctions-and-cloudrun-using-goblet-62bdf2126ef6>`__
+* `Tutorial: Deploy CloudTaskQueues, enqueue CloudTasks and handle CloudTasks <https://engineering.premise.com/deploy-and-handle-gcp-cloudtasks-with-goblet-in-minutes-ee138e9dd2c5>`__
+* `Tutorial: Low Usage Alerting On Slack for Google Cloud Platform <https://engineering.premise.com/tutorial-low-usage-alerting-on-slack-for-google-cloud-platform-gcp-cc68ac8ca4d>`__

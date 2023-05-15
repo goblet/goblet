@@ -1,7 +1,6 @@
-from goblet.config import GConfig
 import logging
 
-from goblet.resources.handler import Handler
+from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project, get_default_location
 from goblet.common_cloud_actions import (
     get_function_runtime,
@@ -26,6 +25,7 @@ class Storage(Handler):
 
     resource_type = "storage"
     valid_backends = ["cloudfunction", "cloudfunctionv2"]
+    required_apis = ["cloudfunctions"]
 
     def __init__(self, name, backend, versioned_clients=None, resources=None):
         super(Storage, self).__init__(
@@ -78,14 +78,13 @@ class Storage(Handler):
         self.resources.extend(other.resources)
         return self
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         client = self.versioned_clients.cloudfunctions
         if not self.resources or not source:
             return
 
         log.info("deploying storage functions......")
-        gconfig = GConfig(config)
-        user_configs = gconfig.cloudfunction or {}
+        user_configs = self.config.cloudfunction or {}
         for bucket in self.resources:
             function_name = f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
                 ".", "-"
@@ -93,15 +92,15 @@ class Storage(Handler):
             if self.versioned_clients.cloudfunctions.version == "v1":
                 req_body = {
                     "name": function_name,
-                    "description": gconfig.description or "created by goblet",
+                    "description": self.config.description or "created by goblet",
                     "entryPoint": entrypoint,
                     "sourceUploadUrl": source["uploadUrl"],
                     "eventTrigger": {
                         "eventType": f"google.storage.object.{bucket['event_type']}",
                         "resource": f"projects/{get_default_project()}/buckets/{bucket['bucket']}",
                     },
-                    "runtime": get_function_runtime(client, gconfig),
-                    "labels": gconfig.labels,
+                    "runtime": get_function_runtime(client, self.config),
+                    "labels": self.config.labels,
                     **user_configs,
                 }
                 create_cloudfunctionv1(
@@ -112,9 +111,9 @@ class Storage(Handler):
                     "body": {
                         "name": function_name,
                         "environment": "GEN_2",
-                        "description": config.description or "created by goblet",
+                        "description": self.config.description or "created by goblet",
                         "buildConfig": {
-                            "runtime": get_function_runtime(client, gconfig),
+                            "runtime": get_function_runtime(client, self.config),
                             "entryPoint": entrypoint,
                             "source": {"storageSource": source["storageSource"]},
                         },
@@ -129,7 +128,7 @@ class Storage(Handler):
                         },
                         **user_configs,
                     },
-                    "labels": gconfig.labels,
+                    "labels": self.config.labels,
                     "functionId": function_name.split("/")[-1],
                 }
                 create_cloudfunctionv2(self.versioned_clients.cloudfunctions, params)

@@ -11,6 +11,7 @@ from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
 from goblet_gcp_client.client import get_default_project
 from goblet.__version__ import __version__
+import goblet.globals as g
 
 logging.basicConfig()
 
@@ -91,11 +92,16 @@ def deploy(
                 os.environ[key] = value
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
+
+        # update config
+        g.config.update_g_config(
+            values=imported_config, write_config=write_config, stage=stage
+        )
+
         app.deploy(
             skip_resources,
             skip_backend,
             skip_infra,
-            config=goblet_config.config,
             force=force,
             stage=stage,
             write_config=write_config,
@@ -270,6 +276,7 @@ def package(stage):
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
         app.package()
+        app.backend.zipf.close()
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -360,6 +367,61 @@ def run_job(name, task_id, set_env, stage):
             for k, v in env_dict.items():
                 os.environ[k] = v
         app(name, int(task_id))
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
+
+
+@main.group()
+def services():
+    """check and enable gcp service apis for your gcp project"""
+    pass
+
+
+@services.command(name="check")
+@click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def check_gcp_services(project, stage):
+    """check status of gcp service apis"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
+    try:
+        _project = project or get_default_project()
+        if not _project:
+            click.echo(
+                "Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT"
+            )
+        os.environ["GOOGLE_PROJECT"] = _project
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        app.check_or_enable_services()
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
+
+
+@services.command(name="enable")
+@click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def enable_gcp_services(project, stage):
+    """enable gcp service apis"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
+    try:
+        _project = project or get_default_project()
+        if not _project:
+            click.echo(
+                "Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT"
+            )
+        os.environ["GOOGLE_PROJECT"] = _project
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        app.check_or_enable_services(enable=True)
 
     except FileNotFoundError as not_found:
         click.echo(

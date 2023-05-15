@@ -1,6 +1,7 @@
 import logging
 from goblet_gcp_client import Client
 from goblet_gcp_client.client import get_default_project
+import goblet.globals as g
 
 log = logging.getLogger("goblet.client")
 log.setLevel(logging.INFO)
@@ -18,6 +19,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "bigqueryconnection": "v1",
     "secretmanager": "v1",
     "cloudtasks": "v2",
+    "serviceusage": "v1",
 }
 
 
@@ -31,8 +33,16 @@ def get_default_project_number():
 
 # Clients
 class VersionedClients:
-    def __init__(self, client_versions=DEFAULT_CLIENT_VERSIONS):
-        self.client_versions = client_versions
+    def __init__(self, client_versions=None):
+        self.client_versions = DEFAULT_CLIENT_VERSIONS
+        if (
+            g.config
+            and g.config.client_versions
+            and isinstance(g.config.client_versions, dict)
+        ):
+            self.client_versions.update(g.config.client_versions)
+        if client_versions:
+            self.client_versions.update(client_versions)
 
     @property
     def cloudfunctions(self):
@@ -212,5 +222,14 @@ class VersionedClients:
             "secretmanager",
             self.client_versions.get("secretmanager", "v1"),
             calls="projects.secrets.versions",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def service_usage(self):
+        return Client(
+            "serviceusage",
+            self.client_versions.get("serviceusage", "v1"),
+            calls="services",
             parent_schema="projects/{project_id}",
         )

@@ -3,8 +3,6 @@ import logging
 from goblet.infrastructures.infrastructure import Infrastructure
 from goblet_gcp_client.client import get_default_project
 
-from goblet.config import GConfig
-
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger("goblet.deployer")
@@ -20,6 +18,7 @@ class Alerts(Infrastructure):
     resource_type = "alerts"
     can_sync = True
     _gcp_deployed_alerts = {}
+    required_apis = ["logging"]
 
     def register(self, name, **kwargs):
         kwargs = kwargs.get("kwargs", {})
@@ -38,7 +37,7 @@ class Alerts(Infrastructure):
         List of deployed gcp alerts, since we need to get unique id's from alerts in order to patch or avoid creating duplicates
         """
         if not self._gcp_deployed_alerts:
-            alerts = self.client.monitoring_alert.execute(
+            alerts = self.versioned_clients.monitoring_alert.execute(
                 "list",
                 parent_key="name",
                 params={"filter": f'display_name=starts_with("{self.name}-")'},
@@ -47,13 +46,12 @@ class Alerts(Infrastructure):
                 self._gcp_deployed_alerts[alert["displayName"]] = alert
         return self._gcp_deployed_alerts
 
-    def deploy(self, source=None, entrypoint=None, config={}):
+    def deploy(self, source=None, entrypoint=None):
         if not self.resource:
             return
-        gconfig = GConfig(config=config)
         config_notification_channels = []
-        if gconfig.alerts:
-            config_notification_channels = gconfig.alerts.get(
+        if self.config.alerts:
+            config_notification_channels = self.config.alerts.get(
                 "notification_channels", []
             )
 
@@ -75,7 +73,7 @@ class Alerts(Infrastructure):
             formatted_conditions.append(condition.condition)
 
             # deploy custom metrics if needed
-            condition.deploy_extra(self.client)
+            condition.deploy_extra(self.versioned_clients)
 
         default_alert_kwargs.update(alert["kwargs"])
         alert["notification_channels"].extend(notification_channels)
@@ -90,7 +88,7 @@ class Alerts(Infrastructure):
         # check if exists
         if alert_name in self.gcp_deployed_alerts:
             # patch
-            self.client.monitoring_alert.execute(
+            self.versioned_clients.monitoring_alert.execute(
                 "patch",
                 parent_key="name",
                 parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
@@ -100,7 +98,7 @@ class Alerts(Infrastructure):
             log.info(f"updated alert: {alert_name}")
         else:
             # deploy
-            self.client.monitoring_alert.execute(
+            self.versioned_clients.monitoring_alert.execute(
                 "create",
                 parent_key="name",
                 params={"body": body},
@@ -126,7 +124,7 @@ class Alerts(Infrastructure):
             log.info(f"Alert {alert_name} already destroyed")
         else:
             try:
-                self.client.monitoring_alert.execute(
+                self.versioned_clients.monitoring_alert.execute(
                     "delete",
                     parent_key="name",
                     parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
@@ -144,7 +142,7 @@ class Alerts(Infrastructure):
                 self.backend.name,
                 self.backend.monitoring_label_key,
             )
-            condition.destroy_extra(self.client)
+            condition.destroy_extra(self.versioned_clients)
 
 
 class AlertCondition:

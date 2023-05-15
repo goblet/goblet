@@ -13,7 +13,8 @@ class TestBackend:
         test_custom_files = {
             "custom_files": {"include": ["*.yaml"], "exclude": [".secret"]}
         }
-        backend = Backend(Goblet(), None, None, config=test_custom_files)
+        goblet = Goblet(config=test_custom_files)
+        backend = Backend(goblet, None, None)
 
         assert "*.yaml" in backend.zip_config["include"]
         assert "*.py" in backend.zip_config["include"]
@@ -22,7 +23,8 @@ class TestBackend:
 
     def test_get_env_cloudfunction_v1(self):
         test_env = {"cloudfunction": {"environmentVariables": {"TEST": "VALUE"}}}
-        backend = CloudFunctionV1(Goblet(), config=test_env)
+        goblet = Goblet(config=test_env)
+        backend = CloudFunctionV1(goblet)
 
         assert backend.get_environment_vars() == {"TEST": "VALUE"}
 
@@ -32,13 +34,15 @@ class TestBackend:
                 "serviceConfig": {"environmentVariables": {"TEST": "VALUE"}}
             }
         }
-        backend = CloudFunctionV2(Goblet(), config=test_env)
+        goblet = Goblet(config=test_env)
+        backend = CloudFunctionV2(goblet)
 
         assert backend.get_environment_vars() == {"TEST": "VALUE"}
 
     def test_get_env_cloudrun(self):
         test_env = {"cloudrun_container": {"env": [{"name": "TEST", "value": "VALUE"}]}}
-        backend = CloudRun(Goblet(), config=test_env)
+        goblet = Goblet(config=test_env)
+        backend = CloudRun(goblet)
 
         assert backend.get_environment_vars() == {"TEST": "VALUE"}
 
@@ -60,7 +64,8 @@ class TestBackend:
                 ]
             }
         }
-        backend = CloudRun(Goblet(), config=test_env)
+        goblet = Goblet(config=test_env)
+        backend = CloudRun(goblet)
 
         assert backend.get_environment_vars() == {"TESTSECRET": "testtesttest"}
 
@@ -77,7 +82,8 @@ class TestBackend:
                 ]
             }
         }
-        backend = CloudFunctionV1(Goblet(), config=test_env)
+        goblet = Goblet(config=test_env)
+        backend = CloudFunctionV1(goblet)
 
         assert backend.get_environment_vars() == {"TESTSECRET": "testtesttest"}
 

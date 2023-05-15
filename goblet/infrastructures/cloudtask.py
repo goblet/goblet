@@ -5,16 +5,16 @@ from goblet.infrastructures.infrastructure import Infrastructure
 import logging
 import datetime
 from google.protobuf import duration_pb2, timestamp_pb2
+from goblet.client import VersionedClients
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
 class CloudTaskClient:
-    def __init__(self, versioned_clients, service_account, queue, backend):
+    def __init__(self, service_account, queue, backend):
         self.service_account = service_account
         self.queue = queue
-        self.client = versioned_clients
         self.backend = backend
 
     def build_task(self, target, payload, in_seconds, task_name, deadline):
@@ -70,13 +70,14 @@ class CloudTaskClient:
 
     def enqueue(self, target, payload, in_seconds=None, task_name=None, deadline=None):
         task = self.build_task(target, payload, in_seconds, task_name, deadline)
-        return self.client.cloudtask.execute(
+        return VersionedClients().cloudtask.execute(
             "create", parent_schema=self.queue, params={"body": {"task": task}}
         )
 
 
 class CloudTaskQueue(Infrastructure):
     resource_type = "cloudtaskqueue"
+    required_apis = ["cloudtasks"]
 
     # https://cloud.google.com/apis/design/resource_names
     def register(self, name, kwargs):
@@ -89,22 +90,20 @@ class CloudTaskQueue(Infrastructure):
         ):
             queue_config = self.config.cloudtaskqueue.get(resource_id)
         self.resource[resource_id] = {
-            "name": f"{self.client.cloudtask_queue.parent}/queues/{resource_id}",
+            "name": f"{self.versioned_clients.cloudtask_queue.parent}/queues/{resource_id}",
             "id": resource_id,
             "config": queue_config,
         }
 
         return CloudTaskClient(
-            versioned_clients=self.client,
             service_account=self.config.cloudtask.get("serviceAccount", None),
             queue=self.resource[resource_id]["name"],
             backend=self.backend,
         )
 
-    def deploy(self, config={}):
+    def deploy(self):
         if not self.resource:
             return
-        self.config.update_g_config(values=config)
 
         for resource_id, resource in self.resource.items():
             params = {"name": resource["name"]}
@@ -112,7 +111,9 @@ class CloudTaskQueue(Infrastructure):
                 params = {**params, **resource["config"]}
 
             try:
-                self.client.cloudtask_queue.execute("create", params={"body": params})
+                self.versioned_clients.cloudtask_queue.execute(
+                    "create", params={"body": params}
+                )
                 log.info(f'CloudTask Queue [{resource["id"]}] deployed')
 
             except HttpError as e:
@@ -120,7 +121,7 @@ class CloudTaskQueue(Infrastructure):
                     log.info(f'found cloudtask queue {resource["id"]}')
 
                     if self.should_patch(resource["id"]):
-                        self.client.cloudtask_queue.execute(
+                        self.versioned_clients.cloudtask_queue.execute(
                             "patch",
                             parent_key="name",
                             parent_schema=resource["name"],
@@ -130,12 +131,12 @@ class CloudTaskQueue(Infrastructure):
                 else:
                     raise e
 
-    def destroy(self, config={}):
+    def destroy(self):
         if not self.resource:
             return
         for resource_id, resource in self.resource.items():
             try:
-                resp = self.client.cloudtask_queue.execute(
+                resp = self.versioned_clients.cloudtask_queue.execute(
                     "delete", parent_key="name", parent_schema=resource["name"]
                 )
                 if resp == {}:
@@ -176,7 +177,7 @@ class CloudTaskQueue(Infrastructure):
     def get(self, resource_id):
         if not self.resource or not resource_id:
             return
-        return self.client.cloudtask_queue.execute(
+        return self.versioned_clients.cloudtask_queue.execute(
             "get", parent_key="name", parent_schema=self.resource[resource_id]["name"]
         )
 

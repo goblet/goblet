@@ -5,8 +5,9 @@ from urllib.parse import quote_plus
 import base64
 from googleapiclient.errors import HttpError
 
-from goblet.config import GConfig
+import goblet.globals as g
 from goblet.client import (
+    VersionedClients,
     get_default_project_number,
 )
 from goblet_gcp_client.client import (
@@ -17,23 +18,61 @@ from goblet_gcp_client.client import (
 )
 from goblet.errors import GobletError
 from goblet.utils import get_python_runtime
+from typing import List
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
+def check_or_enable_service(resources: List[str], enable: bool = False):
+    if len(resources) == 0:
+        return
+    client = VersionedClients().service_usage
+    if enable:
+        resp = client.execute(
+            "batchEnable",
+            parent_key="parent",
+            parent_schema="projects/{project_id}",
+            params={
+                "body": {
+                    "serviceIds": [
+                        f"{resource}.googleapis.com" for resource in resources
+                    ]
+                }
+            },
+        )
+        if not resp.get("done"):
+            client.wait_for_operation(resp["name"], calls="operations")
+        for resource in resources:
+            log.info(f"{resource} enabled")
+    else:
+        resp = client.execute(
+            "batchGet",
+            parent_key="parent",
+            parent_schema="projects/{project_id}",
+            params={
+                "names": [
+                    f"projects/{get_default_project()}/services/{resource}.googleapis.com"
+                    for resource in resources
+                ]
+            },
+        )
+        for service in resp["services"]:
+            log.info(f"{service['config']['name']} {service['state']}")
+    return None
+
+
 ####### Cloud Functions #######
 def create_cloudfunctionv1(client: Client, params: dict, config=None):
     create_cloudfunction(
-        client, params, config, parent_key="location", operations_calls="operations"
+        client, params, parent_key="location", operations_calls="operations"
     )
 
 
-def create_cloudfunctionv2(client: Client, params: dict, config=None):
+def create_cloudfunctionv2(client: Client, params: dict):
     create_cloudfunction(
         client,
         params,
-        config,
         parent_key="parent",
         operations_calls="projects.locations.operations",
     )
@@ -42,7 +81,6 @@ def create_cloudfunctionv2(client: Client, params: dict, config=None):
 def create_cloudfunction(
     client: Client,
     params: dict,
-    config=None,
     parent_key="location",
     operations_calls="operations",
 ):
@@ -66,10 +104,9 @@ def create_cloudfunction(
     client.wait_for_operation(resp["name"], calls=operations_calls)
 
     # Set IAM Bindings
-    config = config or GConfig(config=config)
-    if config.bindings:
+    if g.config.bindings:
         log.info(f"adding IAM bindings for cloudfunction {function_name}")
-        policy_bindings = {"policy": {"bindings": config.bindings}}
+        policy_bindings = {"policy": {"bindings": g.config.bindings}}
         resp = client.execute(
             "setIamPolicy",
             parent_key="resource",
@@ -252,7 +289,7 @@ def create_cloudbuild(client, req_body):
         log.info("creating cloudbuild")
     except HttpError as e:
         raise e
-    cloudbuild_config = GConfig().cloudbuild or {}
+    cloudbuild_config = g.config.cloudbuild or {}
     timeout_seconds = cloudbuild_config.get("timeout", "600s")
     if "s" not in timeout_seconds:
         log.info(
@@ -317,9 +354,36 @@ def getCloudbuildArtifact(client, artifactName, config):
 ####### Pub Sub #######
 
 
-def create_pubsub_subscription(client, sub_name, req_body):
-    """Creates a pubsub subscription from req_body"""
+def get_pubsub_subscription(client, sub_name, req_body):
     try:
+        resp = client.execute(
+            "get",
+            parent_key="subscription",
+            parent_schema="projects/{project_id}/subscriptions/" + sub_name,
+        )
+    except HttpError as e:
+        if e.resp.status == 404:
+            return None
+    return resp
+
+
+def create_pubsub_subscription(client, sub_name, req_body, force_update=False):
+    """Creates a pubsub subscription from req_body"""
+    response = get_pubsub_subscription(client, sub_name, req_body)
+    if response and response["topic"] != req_body["topic"]:
+        log.info(
+            f"Pubsub subscription projects do not match. {req_body['name']} is currently subscribed to {response['topic']}, but defined to be {req_body['topic']}."
+        )
+        if force_update:
+            log.info("force_update is set to True. Deleting existing subscrition...")
+            destroy_pubsub_subscription(client, sub_name)
+            response = None
+        else:
+            log.info("force_update is set to False. Skipping update...")
+            return
+
+    # create pubsub
+    if not response:
         client.execute(
             "create",
             parent_key="name",
@@ -327,27 +391,27 @@ def create_pubsub_subscription(client, sub_name, req_body):
             params={"body": req_body},
         )
         log.info(f"creating pubsub subscription {sub_name}")
-    except HttpError as e:
-        if e.resp.status == 409:
-            log.info(f"updating pubsub subscription {sub_name}")
-            # Setup update mask
-            keys = list(req_body.keys())
-            # Remove keys that cannot be updated
-            keys.remove("name")
-            keys.remove("topic")
-            if "filter" in keys:
-                keys.remove("filter")
-            if "enableMessageOrdering" in keys:
-                keys.remove("enableMessageOrdering")
-            updateMask = ",".join(keys)
-            client.execute(
-                "patch",
-                parent_key="name",
-                parent_schema="projects/{project_id}/subscriptions/" + sub_name,
-                params={"body": {"subscription": req_body, "updateMask": updateMask}},
-            )
-        else:
-            raise e
+
+    # update
+    else:
+        log.info(f"updating pubsub subscription {sub_name}")
+
+        # Setup update mask
+        keys = list(req_body.keys())
+        # Remove keys that cannot be updated
+        keys.remove("name")
+        keys.remove("topic")
+        if "filter" in keys:
+            keys.remove("filter")
+        if "enableMessageOrdering" in keys:
+            keys.remove("enableMessageOrdering")
+        updateMask = ",".join(keys)
+        client.execute(
+            "patch",
+            parent_key="name",
+            parent_schema="projects/{project_id}/subscriptions/" + sub_name,
+            params={"body": {"subscription": req_body, "updateMask": updateMask}},
+        )
 
 
 def destroy_pubsub_subscription(client, name):

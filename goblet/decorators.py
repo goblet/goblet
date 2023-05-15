@@ -3,27 +3,16 @@ import os
 import yaml
 from warnings import warn
 import logging
-from googleapiclient.errors import HttpError
+
+from goblet_gcp_client.client import get_default_location, get_default_project
+
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
 from goblet.backends.cloudrun import CloudRun
-from goblet.client import VersionedClients
-from goblet_gcp_client.client import get_default_location, get_default_project
-from goblet.infrastructures.cloudtask import CloudTaskQueue
-from goblet.resources.bq_remote_function import BigQueryRemoteFunction
-from goblet.resources.eventarc import EventArc
-from goblet.resources.pubsub import PubSub
-from goblet.resources.routes import Routes
-from goblet.resources.scheduler import Scheduler
-from goblet.resources.cloudtasktarget import CloudTaskTarget
-from goblet.resources.storage import Storage
-from goblet.resources.http import HTTP
-from goblet.resources.jobs import Jobs
 
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
-from goblet.infrastructures.alerts import Alerts
-from goblet.infrastructures.apigateway import ApiGateway
+from goblet.infrastructures.cloudtask import CloudTaskQueue
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -54,7 +43,7 @@ SUPPORTED_INFRASTRUCTURES = {
 }
 
 
-class DecoratorAPI:
+class Goblet_Decorators:
     """Decorator endpoints that are called by the user. Returns _create_registration_function which will trigger the corresponding
     registration function in the Register_Handlers class. For example _create_registration_function with type route will call
     _register_route"""
@@ -120,9 +109,23 @@ class DecoratorAPI:
             },
         )
 
-    def bqremotefunction(self, **kwargs):
+    def bqremotefunction(
+        self, dataset_id, vectorize_func=False, max_batching_rows=0, **kwargs
+    ):
+        """
+        BigQuery remote function trigger
+        dataset_id: Where the function will be registered
+        vectorize_func: If True, ensure every argument of your function is a list, and returns a list
+        max_batching_rows: Max number of rows in each batch sent to the remote service. 0 for dynamic
+        """
         return self._create_registration_function(
-            handler_type="bqremotefunction", registration_kwargs={"kwargs": kwargs}
+            handler_type="bqremotefunction",
+            registration_kwargs={
+                "dataset_id": dataset_id,
+                "vectorize_func": vectorize_func,
+                "max_batching_rows": max_batching_rows,
+                "kwargs": kwargs,
+            },
         )
 
     def topic(self, topic, **kwargs):
@@ -286,266 +289,3 @@ class DecoratorAPI:
         middleware_list = self.middleware_handlers[before_or_after].get(event_type, [])
         middleware_list.append(func)
         self.middleware_handlers[before_or_after][event_type] = middleware_list
-
-
-class Register_Handlers(DecoratorAPI):
-    """Core Goblet logic. App entrypoint is the __call__ function which routes the request to the corresonding handler class"""
-
-    def __init__(
-        self,
-        function_name,
-        backend,
-        cors=None,
-        client_versions=None,
-        routes_type="apigateway",
-        config={},
-    ):
-        self.app_list = []
-        self.client_versions = client_versions
-
-        versioned_clients = VersionedClients(client_versions or {})
-
-        self.handlers = {
-            "cloudtasktarget": CloudTaskTarget(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "route": Routes(
-                function_name,
-                cors=cors,
-                backend=backend,
-                versioned_clients=versioned_clients,
-                routes_type=routes_type,
-            ),
-            "pubsub": PubSub(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "storage": Storage(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "eventarc": EventArc(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "http": HTTP(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "jobs": Jobs(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "schedule": Scheduler(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-            "bqremotefunction": BigQueryRemoteFunction(
-                function_name, backend=backend, versioned_clients=versioned_clients
-            ),
-        }
-
-        self.infrastructure = {
-            "cloudtaskqueue": CloudTaskQueue(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-                config=config,
-            ),
-            "redis": Redis(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-                config=config,
-            ),
-            "vpcconnector": VPCConnector(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-                config=config,
-            ),
-            "alerts": Alerts(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-                config=config,
-            ),
-            "apigateway": ApiGateway(
-                function_name,
-                backend=backend,
-                versioned_clients=versioned_clients,
-                config=config,
-            ),
-        }
-
-        self.middleware_handlers = {
-            "before": {},
-            "after": {},
-        }
-        self.current_request = None
-
-    def __call__(self, request, context=None):
-        """Goblet entrypoint"""
-        self.current_request = request
-        self.request_context = context
-
-        # set var's for added apps
-        for added_app in self.app_list:
-            added_app.current_request = request
-            added_app.request_context = context
-
-        event_type = self.get_event_type(request, context)
-        # call before request middleware
-        request = self._call_middleware(request, event_type, before_or_after="before")
-        response = None
-        if event_type not in EVENT_TYPES:
-            raise ValueError(f"{event_type} not a valid event type")
-        if event_type == "job":
-            response = self.handlers["jobs"](request, context)
-        if event_type == "schedule":
-            response = self.handlers["schedule"](request)
-        if event_type == "pubsub":
-            response = self.handlers["pubsub"](request, context)
-        if event_type == "storage":
-            # Storage trigger can be made with @eventarc decorator
-            try:
-                response = self.handlers["storage"](request, context)
-            except ValueError:
-                event_type = "eventarc"
-        if event_type == "route":
-            response = self.handlers["route"](request)
-        if event_type == "http":
-            response = self.handlers["http"](request)
-        if event_type == "eventarc":
-            response = self.handlers["eventarc"](request)
-        if event_type == "bqremotefunction":
-            response = self.handlers["bqremotefunction"](request)
-        if event_type == "cloudtasktarget":
-            response = self.handlers["cloudtasktarget"](request)
-
-        # call after request middleware
-        response = self._call_middleware(response, event_type, before_or_after="after")
-        return response
-
-    def __add__(self, other):
-        self.app_list.append(other)
-        for handler in self.handlers:
-            self.handlers[handler] += other.handlers[handler]
-        return self
-
-    def combine(self, other):
-        return self + other
-
-    def get_event_type(self, request, context=None):
-        """Parse event type from the event request and context"""
-        if os.environ.get("CLOUD_RUN_TASK_INDEX"):
-            return "job"
-        if context and context.event_type:
-            return context.event_type.split(".")[1].split("/")[0]
-        if request.headers.get("X-Goblet-Type") == "schedule":
-            return "schedule"
-        if request.headers.get("User-Agent") == "Google-Cloud-Tasks":
-            return "cloudtasktarget"
-        if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
-            return "eventarc"
-        if (
-            request.is_json
-            and request.json.get("userDefinedContext")
-            and request.json["userDefinedContext"].get("X-Goblet-Name")
-        ):
-            return "bqremotefunction"
-        if (
-            request.is_json
-            and request.get_json(silent=True)
-            and request.json.get("subscription")
-            and request.json.get("message")
-        ):
-            return "pubsub"
-        if (
-            request.path
-            and request.path == "/"
-            and not request.headers.get("X-Envoy-Original-Path")
-        ):
-            return "http"
-        if request.path:
-            return "route"
-        return None
-
-    def _call_middleware(self, event, event_type, before_or_after="before"):
-        middleware = self.middleware_handlers[before_or_after].get("all", [])
-        middleware.extend(self.middleware_handlers[before_or_after].get(event_type, []))
-        for m in middleware:
-            event = m(event)
-
-        return event
-
-    def get_infrastructure_config(self):
-        configs = []
-        for _, v in self.infrastructure.items():
-            config = v.get_config()
-            if config:
-                configs.append(config)
-        return configs
-
-    def deploy_handlers(self, source, config={}):
-        """Call each handlers deploy method"""
-        for k, v in self.handlers.items():
-            log.info(f"deploying {k}")
-            v.deploy(source, entrypoint="goblet_entrypoint", config=config)
-
-    def deploy_infrastructure(self, config={}):
-        """Call deploy for each infrastructure"""
-        for k, v in self.infrastructure.items():
-            log.info(f"deploying {k}")
-            v.deploy(config=config)
-
-    def sync(self, dryrun=False):
-        """Call each handlers sync method"""
-        # Sync Infrastructure
-        for _, v in self.infrastructure.items():
-            try:
-                v.sync(dryrun)
-            except HttpError as e:
-                if e.resp.status == 403:
-                    continue
-                raise e
-
-        # Sync Handlers
-        for _, v in self.handlers.items():
-            try:
-                v.sync(dryrun)
-            except HttpError as e:
-                if e.resp.status == 403:
-                    continue
-                raise e
-
-    def is_http(self):
-        """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own
-        function"""
-        # TODO: move to handlers
-        if (
-            len(self.handlers["route"].resources) > 0
-            or len(self.handlers["schedule"].resources) > 0
-            or self.handlers["http"].resources
-            or self.handlers["pubsub"].is_http()
-            or len(self.handlers["bqremotefunction"].resources) > 0
-            or len(self.handlers["cloudtasktarget"].resources) > 0
-        ):
-            return True
-        return False
-
-    def get_backend_and_check_versions(self, backend: str, client_versions: dict):
-        try:
-            backend_class = SUPPORTED_BACKENDS[backend]
-        except KeyError:
-            raise KeyError(f"Backend {backend} not in supported backends")
-
-        version_key = (
-            "cloudfunctions" if backend.startswith("cloudfunction") else backend
-        )
-        specified_version = client_versions.get(version_key)
-        if specified_version:
-            if specified_version not in backend_class.supported_versions:
-                raise ValueError(
-                    f"{version_key} version {self.client_versions[version_key]} "
-                    f"not supported. Valid version(s): {', '.join(backend_class.supported_versions)}."
-                )
-        else:
-            # if not set, set to last in list of supported versions (most recent)
-            self.client_versions[version_key] = backend_class.supported_versions[-1]
-
-        return backend_class

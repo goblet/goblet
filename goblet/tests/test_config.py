@@ -24,7 +24,7 @@ class TestGConfig:
 
     def test_stages(self):
         config = GConfig(test_config, stage="dev")
-        config.update_g_config()
+        # config.update_g_config()
         assert config.cloudfunction["environmentVariables"]["key"] == "dev"
 
     def test_env_variable(self, monkeypatch):

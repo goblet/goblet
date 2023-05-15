@@ -1,10 +1,9 @@
 import logging
 
-from goblet.resources.handler import Handler
+from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project, get_default_location
 
 from goblet.common_cloud_actions import get_cloudrun_url
-from goblet.config import GConfig
 
 from googleapiclient.errors import HttpError
 
@@ -20,6 +19,7 @@ class Scheduler(Handler):
     resource_type = "scheduler"
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
+    required_apis = ["cloudscheduler"]
 
     def register(self, name, func, kwargs):
         schedule = kwargs["schedule"]
@@ -79,7 +79,7 @@ class Scheduler(Handler):
             raise ValueError(f"Function {func_name} not found")
         return job["func"]()
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
+    def _deploy(self, source=None, entrypoint=None):
         if not self.resources:
             return
 
@@ -99,13 +99,12 @@ class Scheduler(Handler):
         if self.backend.resource_type == "cloudrun":
             # dont get target in scheduler is needed only for jobs
             cloudrun_target = None
-            config = GConfig(config=config)
-            if config.cloudrun and config.cloudrun.get("service-account"):
-                service_account = config.cloudrun.get("service-account")
-            elif config.scheduler and config.scheduler.get("serviceAccount"):
-                service_account = config.scheduler.get("serviceAccount")
-            elif config.job and config.job.get("serviceAccount"):
-                service_account = config.job.get("serviceAccount")
+            if self.config.cloudrun and self.config.cloudrun.get("service-account"):
+                service_account = self.config.cloudrun.get("service-account")
+            elif self.config.scheduler and self.config.scheduler.get("serviceAccount"):
+                service_account = self.config.scheduler.get("serviceAccount")
+            elif self.config.job and self.config.job.get("serviceAccount"):
+                service_account = self.config.job.get("serviceAccount")
             else:
                 raise ValueError(
                     "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
@@ -138,8 +137,8 @@ class Scheduler(Handler):
             filter(lambda job: f"jobs/{self.name}-" in job["name"], jobs)
         )
         for filtered_job in filtered_jobs:
-            split_name = filtered_job["name"].split("/")[-1].split("-")
-            filtered_name = split_name[1]
+            split_name = filtered_job["name"].split("/")[-1].split(f"{self.name}-")
+            filtered_name = split_name[-1]
             if not self.resources.get(filtered_name):
                 log.info(f'Detected unused job in GCP {filtered_job["name"]}')
                 if not dryrun:

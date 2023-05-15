@@ -1,7 +1,7 @@
 import pytest
 from goblet import Goblet
 from goblet.config import GConfig
-from goblet.resources.routes import Routes
+from goblet.handlers.routes import Routes
 
 from goblet.backends import CloudFunctionV1, CloudFunctionV2, CloudRun
 from goblet_gcp_client import get_replay_count

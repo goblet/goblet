@@ -9,11 +9,11 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 
 import goblet
 
-from goblet.resources.handler import Handler
-from goblet.resources.plugins.pydantic import PydanticPlugin
+from goblet.handlers.handler import Handler
+from goblet.handlers.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
-from goblet.config import GConfig
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
+
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -26,6 +26,7 @@ class Routes(Handler):
 
     resource_type = "routes"
     valid_backends = ["cloudfunction", "cloudrun", "cloudfunctionv2"]
+    required_apis = ["cloudfunctions", "apigateway"]
 
     def __init__(
         self,
@@ -103,8 +104,7 @@ class Routes(Handler):
                 return False
         return True
 
-    def _deploy(self, source=None, entrypoint=None, config={}):
-        gconfig = GConfig(config)
+    def _deploy(self, source=None, entrypoint=None):
         if (
             self.routes_type != "apigateway"
             and self.backend.resource_type.startswith("cloudfunction")
@@ -120,7 +120,7 @@ class Routes(Handler):
         self.generate_openapi_spec(base_url)
         deploy_apigateway(
             self.name,
-            gconfig,
+            self.config,
             self.versioned_clients,
             f"{get_g_dir()}/{self.name}_openapi_spec.yml",
         )
@@ -132,13 +132,12 @@ class Routes(Handler):
         destroy_apigateway(self.name, self.versioned_clients)
 
     def generate_openapi_spec(self, cloudfunction):
-        config = GConfig()
-        deadline = self.get_timeout(config)
+        deadline = self.get_timeout(self.config)
         spec = OpenApiSpec(
             self.name,
             cloudfunction,
-            security_definitions=config.securityDefinitions,
-            security=config.security,
+            security_definitions=self.config.securityDefinitions,
+            security=self.config.security,
             marshmallow_attribute_function=self.marshmallow_attribute_function,
             deadline=deadline,
         )

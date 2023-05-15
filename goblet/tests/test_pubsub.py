@@ -4,13 +4,18 @@ from unittest.mock import Mock
 import pytest
 
 from goblet import Goblet, Response
-from goblet.resources.pubsub import PubSub
+from goblet.handlers.pubsub import PubSub
 from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
 )
 from goblet.backends import CloudRun, CloudFunctionV1
-from goblet_gcp_client import get_responses, get_response
+from goblet_gcp_client import (
+    get_responses,
+    get_response,
+    get_replay_count,
+    reset_replay_count,
+)
 
 
 class TestPubSub:
@@ -234,14 +239,15 @@ class TestPubSub:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet-topic-cross-project")
+        app = Goblet(
+            function_name="goblet-topic-cross-project",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.topic("test", project="goblet-cross-project")(dummy_function)
 
-        app.deploy(
-            force=True, config={"pubsub": {"serviceAccountEmail": service_account}}
-        )
+        app.deploy(force=True)
 
         put_subscription = get_response(
             "pubsub-deploy-cross-project",
@@ -249,7 +255,7 @@ class TestPubSub:
         )
         responses = get_responses("pubsub-deploy-cross-project")
         assert "goblet-cross-project" in put_subscription["body"]["topic"]
-        assert len(responses) == 5
+        assert len(responses) == 6
 
     def test_deploy_pubsub_subscription_with_filter(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -258,19 +264,17 @@ class TestPubSub:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        app = Goblet(function_name="goblet-topic-subscription-filter")
+        app = Goblet(
+            function_name="goblet-topic-subscription-filter",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.topic("test", use_subscription=True, filter='attributes.test = "1"')(
             dummy_function
         )
 
-        app.deploy(
-            force=True,
-            skip_backend=True,
-            skip_infra=True,
-            config={"pubsub": {"serviceAccountEmail": service_account}},
-        )
+        app.deploy(force=True, skip_backend=True, skip_infra=True)
 
         put_subscription = get_response(
             "pubsub-deploy-subscription-filter",
@@ -278,7 +282,7 @@ class TestPubSub:
         )
         responses = get_responses("pubsub-deploy-subscription-filter")
         assert put_subscription["body"]["filter"] == 'attributes.test = "1"'
-        assert len(responses) == 2
+        assert len(responses) == 3
 
     def test_destroy_pubsub(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -309,27 +313,35 @@ class TestPubSub:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-cloudrun")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        pubsub = PubSub("goblet", backend=CloudRun(Goblet(backend="cloudrun")))
-        pubsub.register("test", None, kwargs={"topic": "test", "kwargs": {}})
-
         cloudrun_url = "https://goblet-12345.a.run.app"
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        pubsub._deploy(config={"pubsub": {"serviceAccountEmail": service_account}})
+        pubsub = PubSub(
+            "goblet",
+            backend=CloudRun(
+                Goblet(
+                    backend="cloudrun",
+                    config={"pubsub": {"serviceAccountEmail": service_account}},
+                )
+            ),
+        )
+        pubsub.register("test", None, kwargs={"topic": "test", "kwargs": {}})
+
+        pubsub._deploy()
 
         responses = get_responses("pubsub-deploy-cloudrun")
 
-        assert len(responses) == 2
-        assert responses[0]["body"]["status"]["url"] == cloudrun_url
+        assert len(responses) == 3
+        assert responses[1]["body"]["status"]["url"] == cloudrun_url
         assert (
-            responses[1]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"]
+            responses[2]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"]
             == service_account
         )
         assert (
-            responses[1]["body"]["pushConfig"]["oidcToken"]["audience"] == cloudrun_url
+            responses[2]["body"]["pushConfig"]["oidcToken"]["audience"] == cloudrun_url
         )
-        assert responses[1]["body"]["pushConfig"]["pushEndpoint"] == cloudrun_url
-        assert responses[1]["body"]["topic"] == "projects/goblet/topics/test"
+        assert responses[2]["body"]["pushConfig"]["pushEndpoint"] == cloudrun_url
+        assert responses[2]["body"]["topic"] == "projects/goblet/topics/test"
 
     def test_destroy_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -354,28 +366,97 @@ class TestPubSub:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", "pubsub-update-subscription")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        reset_replay_count()
+
+        new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
 
         pubsub = PubSub(
-            "test-cross-project",
-            backend=CloudFunctionV1(Goblet()),
+            "test-pubsub",
+            backend=CloudFunctionV1(
+                Goblet(config={"pubsub": {"serviceAccountEmail": new_service_account}})
+            ),
         )
         pubsub.register(
             "test",
             None,
-            kwargs={"topic": "test", "kwargs": {"project": "goblet-cross-project"}},
+            kwargs={
+                "topic": "test",
+                "kwargs": {"project": "goblet", "use_subscription": "true"},
+            },
         )
 
-        new_service_account = "service_account_new@goblet.iam.gserviceaccount.com"
-        pubsub._deploy(config={"pubsub": {"serviceAccountEmail": new_service_account}})
+        pubsub._deploy()
 
         responses = get_responses("pubsub-update-subscription")
 
-        assert len(responses) == 3
+        assert get_replay_count() == 2
         assert (
             responses[1]["body"]["pushConfig"]["oidcToken"]["serviceAccountEmail"]
             == new_service_account
         )
-        assert responses[2]["body"]["error"]["code"] == 409
+
+    def test_update_pubsub_subscription_force_update_false(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv(
+            "G_TEST_NAME", "pubsub-update-subscription-force-update-false"
+        )
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        pubsub = PubSub(
+            "test-cross-project",
+            backend=CloudFunctionV1(
+                Goblet(config={"pubsub": {"serviceAccountEmail": service_account}})
+            ),
+        )
+        pubsub.register(
+            "test",
+            None,
+            kwargs={"topic": "test", "kwargs": {"project": "goblet_cross_project"}},
+        )
+
+        pubsub._deploy()
+
+        responses = get_responses("pubsub-update-subscription-force-update-false")
+
+        assert len(responses) == 1
+        assert responses[0]["body"]["topic"] != "goblet_cross_project"
+
+    def test_update_pubsub_subscription_force_update_true(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv(
+            "G_TEST_NAME", "pubsub-update-subscription-force-update-true"
+        )
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        reset_replay_count()
+
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        pubsub = PubSub(
+            "test-cross-project",
+            backend=CloudFunctionV1(
+                Goblet(config={"pubsub": {"serviceAccountEmail": service_account}})
+            ),
+        )
+        pubsub.register(
+            "test",
+            None,
+            kwargs={
+                "topic": "test",
+                "kwargs": {"project": "goblet_cross_project", "force_update": True},
+            },
+        )
+
+        pubsub._deploy()
+
+        responses = get_responses("pubsub-update-subscription-force-update-true")
+        replay_count = get_replay_count()
+        assert replay_count == 3
+        assert responses[1]["body"]["topic"] != "goblet_cross_project"
 
     def test_sync_pubsub_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -400,19 +481,17 @@ class TestPubSub:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
 
-        app = Goblet(function_name="goblet-topic-subscription-config")
+        app = Goblet(
+            function_name="goblet-topic-subscription-config",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
         setattr(app, "entrypoint", "app")
 
         app.topic(
             "test", use_subscription=True, config={"enableExactlyOnceDelivery": True}
         )(dummy_function)
 
-        app.deploy(
-            force=True,
-            skip_backend=True,
-            skip_infra=True,
-            config={"pubsub": {"serviceAccountEmail": service_account}},
-        )
+        app.deploy(force=True, skip_backend=True, skip_infra=True)
 
         put_subscription = get_response(
             "pubsub-deploy-subscription-config",
@@ -420,4 +499,4 @@ class TestPubSub:
         )
         responses = get_responses("pubsub-deploy-subscription-config")
         assert put_subscription["body"]["enableExactlyOnceDelivery"]
-        assert len(responses) == 2
+        assert len(responses) == 3

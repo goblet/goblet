@@ -1,6 +1,6 @@
 from typing import List, Optional
 from marshmallow import Schema, fields
-from goblet.resources.routes import OpenApiSpec, RouteEntry
+from goblet.handlers.routes import OpenApiSpec, RouteEntry
 from pydantic import BaseModel
 
 

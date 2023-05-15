@@ -75,6 +75,13 @@ $ curl https://api.uc.gateway.dev/home
 
 ## Resources Supported
 
+#### Infrastructure
+* vpc connector
+* redis
+* alerts
+* api gateway
+* cloudtaskqueue
+
 #### Backends
 * cloudfunction
 * cloudfunction V2
@@ -84,7 +91,7 @@ $ curl https://api.uc.gateway.dev/home
 * api gateway
 * http
 
-#### Triggering
+#### Handlers
 * pubsub
 * scheduler
 * storage
@@ -92,13 +99,6 @@ $ curl https://api.uc.gateway.dev/home
 * cloudrun jobs
 * bq remote functions
 * cloudtasktarget
-
-#### Infrastructure
-* vpc connector
-* redis
-* alerts
-* api gateway
-* cloudtaskqueue
 
 ## Data Typing Frameworks Supported
 
@@ -262,6 +262,10 @@ INFO:goblet.deployer:deleting storage bucket......
 [Tutorial: Deploying BigQuery Remote Functions](https://engineering.premise.com/tutorial-deploying-bigquery-remote-functions-9040316d9d3e)
 
 [GCP Alerts the Easy Way: Alerting for Cloudfunctions and Cloudrun using Goblet](https://engineering.premise.com/gcp-alerts-the-easy-way-alerting-for-cloudfunctions-and-cloudrun-using-goblet-62bdf2126ef6)
+
+[Tutorial: Deploy CloudTaskQueues, enqueue CloudTasks and handle CloudTasks](https://engineering.premise.com/deploy-and-handle-gcp-cloudtasks-with-goblet-in-minutes-ee138e9dd2c5)
+
+[Tutorial: Low Usage Alerting On Slack for Google Cloud Platform](https://engineering.premise.com/tutorial-low-usage-alerting-on-slack-for-google-cloud-platform-gcp-cc68ac8ca4d)
 
 ## Examples
 

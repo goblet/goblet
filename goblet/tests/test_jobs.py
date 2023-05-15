@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 from goblet import Goblet
-from goblet.resources.jobs import Jobs
+from goblet.handlers.jobs import Jobs
 import pytest
 
 from goblet.test_utils import (
@@ -98,9 +98,13 @@ class TestJobs:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet-test", backend="cloudrun")
+        app = Goblet(
+            function_name="goblet-test",
+            backend="cloudrun",
+            config={"scheduler": {"serviceAccount": "test@goblet.com"}},
+        )
         app.job("test", schedule="* * * * *")(dummy_function)
-        app.deploy(force=True, config={"scheduler": {"serviceAccount": "test@goblet."}})
+        app.deploy(force=True)
 
         scheduler = get_response(
             "job-deploy-schedule",

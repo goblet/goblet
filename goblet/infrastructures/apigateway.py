@@ -3,7 +3,7 @@ import os
 
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 from goblet.infrastructures.infrastructure import Infrastructure
-from goblet.resources.routes import OpenApiSpec
+from goblet.handlers.routes import OpenApiSpec
 from goblet.utils import get_g_dir, get_dir
 
 log = logging.getLogger("goblet.deployer")
@@ -14,6 +14,7 @@ class ApiGateway(Infrastructure):
     """Api Gateway that is deployed with an existing openapi spec"""
 
     resource_type = "apigateway"
+    required_apis = ["apigateway"]
 
     def register(self, name, **kwargs):
         kwargs = kwargs["kwargs"]
@@ -23,10 +24,9 @@ class ApiGateway(Infrastructure):
             "openapi_dict": kwargs["openapi_dict"],
         }
 
-    def deploy(self, config={}):
+    def deploy(self):
         if not self.resource:
             return
-        self.config.update_g_config(values=config)
         goblet_spec = OpenApiSpec(
             self.resource["name"],
             self.resource["backend_url"],
@@ -42,10 +42,10 @@ class ApiGateway(Infrastructure):
         with open(updated_filename, "w") as f:
             goblet_spec.write(f)
         deploy_apigateway(
-            self.resource["name"], self.config, self.client, updated_filename
+            self.resource["name"], self.config, self.versioned_clients, updated_filename
         )
 
     def destroy(self):
         if not self.resource:
             return
-        destroy_apigateway(self.resource["name"], self.client)
+        destroy_apigateway(self.resource["name"], self.versioned_clients)
