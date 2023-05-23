@@ -204,7 +204,7 @@ would look as follows
 Iam Bindings
 ^^^^^^^^^^^^
 
-You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `congig.json` file.
+You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `config.json` file.
 The bindings should be in the `GCP Policy format <https://cloud.google.com/functions/docs/reference/rest/v1/Policy>`_
 
 For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
@@ -333,6 +333,15 @@ You pass in the arguments to you function in a list in the ``calls`` field.
         },
         "calls": [[2, 2], [3, 3]],
     }
+
+Log Levels
+^^^^^^^^^^
+You can set the log level by passing in the environent variable `GOBLET_LOG_LEVEL`. By default the log level is `INFO`. You can set the level 
+to `DEBUG` by passing `--debug` after any goblet command. 
+
+.. code:: console
+
+    goblet --debug package
 
 
 Debugging with VScode
