@@ -1,4 +1,5 @@
 import base64
+import os
 from goblet.common_cloud_actions import (
     create_pubsub_subscription,
     destroy_pubsub_subscription,
@@ -15,7 +16,7 @@ from goblet_gcp_client.client import get_default_project
 from goblet.utils import attributes_to_filter
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class PubSub(Handler):

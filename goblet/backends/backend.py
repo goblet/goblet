@@ -29,7 +29,7 @@ class Backend:
         self.app = app
         self.name = app.function_name
         self.log = logging.getLogger("goblet.backend")
-        self.log.setLevel(logging.INFO)
+        self.log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
         self.zip_path = get_g_dir() + f"/{self.name}.zip"
         self._zipf = None
         self.config = g.config
@@ -153,6 +153,7 @@ class Backend:
         """skip files if not required and do not exist"""
         if not os.path.exists(filename) and filename not in self.required_files:
             return
+        self.log.debug(f"Zipping file: {filename}...")
         self.zipf.write(filename, arcname)
 
     def _zip_config(self):
@@ -178,6 +179,7 @@ class Backend:
             globbed_files.extend(Path("").rglob(pattern))
         for path in globbed_files:
             if not set(path.parts).intersection(exclusion_set):
+                self.log.debug(f"Zipping file: {path}...")
                 self.zipf.write(str(path))
 
     def get_environment_vars(self):

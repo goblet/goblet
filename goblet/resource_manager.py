@@ -28,7 +28,7 @@ from goblet.infrastructures.cloudtask import CloudTaskQueue
 import goblet.globals as g
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 EVENT_TYPES = [
     "all",

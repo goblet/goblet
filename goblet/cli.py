@@ -19,7 +19,11 @@ SUPPORTED_BACKENDS = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
 
 
 @click.group()
-def main():
+@click.option("--debug", is_flag=True)
+def main(debug):
+    if debug:
+        click.echo("Debug mode is 'on'\n")
+        os.environ["GOBLET_LOG_LEVEL"] = "DEBUG"
     pass
 
 

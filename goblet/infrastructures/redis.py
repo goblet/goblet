@@ -1,9 +1,10 @@
 from goblet.infrastructures.infrastructure import Infrastructure
 from googleapiclient.errors import HttpError
 import logging
+import os
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class Redis(Infrastructure):

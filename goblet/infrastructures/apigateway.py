@@ -7,7 +7,7 @@ from goblet.handlers.routes import OpenApiSpec
 from goblet.utils import get_g_dir, get_dir
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class ApiGateway(Infrastructure):

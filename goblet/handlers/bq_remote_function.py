@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from typing import get_type_hints
 
 from googleapiclient.errors import HttpError
@@ -9,7 +10,7 @@ from goblet_gcp_client.client import get_default_project
 
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 BIGQUERY_DATATYPES = {
     bool: "BOOL",

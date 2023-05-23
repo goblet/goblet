@@ -2,6 +2,7 @@ from collections import OrderedDict
 from marshmallow.schema import Schema
 from pydantic import BaseModel
 import logging
+import os
 import re
 from typing import get_type_hints
 from apispec import APISpec
@@ -16,7 +17,7 @@ from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class Routes(Handler):

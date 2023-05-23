@@ -6,6 +6,7 @@ import base64
 from googleapiclient.errors import HttpError
 
 import goblet.globals as g
+import os
 from goblet.client import (
     VersionedClients,
     get_default_project_number,
@@ -21,7 +22,7 @@ from goblet.utils import get_python_runtime
 from typing import List
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 def check_or_enable_service(resources: List[str], enable: bool = False):

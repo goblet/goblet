@@ -1,5 +1,6 @@
 import logging
 import math
+import os
 
 from goblet.client import (
     get_default_project_number,
@@ -14,7 +15,7 @@ from goblet.common_cloud_actions import (
 from goblet.config import GConfig
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class RevisionSpec:
