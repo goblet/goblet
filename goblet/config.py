@@ -4,7 +4,7 @@ import os
 import logging
 
 log = logging.getLogger("goblet.config")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class GConfig:

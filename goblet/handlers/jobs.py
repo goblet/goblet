@@ -1,4 +1,5 @@
 import logging
+import os
 
 from goblet.handlers.handler import Handler
 from goblet.common_cloud_actions import getCloudbuildArtifact
@@ -6,7 +7,7 @@ from goblet.common_cloud_actions import getCloudbuildArtifact
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class Jobs(Handler):

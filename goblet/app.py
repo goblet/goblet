@@ -14,7 +14,7 @@ from google.cloud.logging_v2.handlers import setup_logging
 logging.basicConfig()
 
 log = logging.getLogger("goblet.app")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class Goblet(Goblet_Decorators, Resource_Manager):
@@ -31,7 +31,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         cors=None,
         routes_type="apigateway",
         config=None,
-        log_level=logging.INFO,
+        log_level="INFO",
         labels={},
         is_sub_app=False,
     ):
@@ -71,7 +71,12 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         elif not os.environ.get("X-GOBLET-DEPLOY"):
             self.log.handlers.clear()
             handler = StructuredLogHandler()
-            setup_logging(handler, log_level=log_level)
+            setup_logging(
+                handler,
+                log_level=logging.getLevelName(
+                    os.getenv("GOBLET_LOG_LEVEL", log_level)
+                ),
+            )
             self.log = logging.getLogger(__name__)
 
     def deploy(
