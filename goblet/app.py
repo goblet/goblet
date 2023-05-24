@@ -113,8 +113,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         # checks registered deployable handlers before determining if backend exists
         if (
             registered_handlers
-            and not backend.get()
+            and skip_backend
             and (handlers or not skip_handlers)
+            and not backend.get()
         ):
             log.error("backend is not deployed, handlers cannot be deployed. exiting.")
             sys.exit(1)
