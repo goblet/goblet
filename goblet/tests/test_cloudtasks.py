@@ -39,7 +39,7 @@ class TestCloudTasks:
         app.deploy(
             force=True,
             skip_backend=True,
-            skip_resources=True,
+            skip_handlers=True,
         )
 
         post_cloudtaskqueue = get_response(
@@ -89,7 +89,7 @@ class TestCloudTasks:
         app.deploy(
             force=True,
             skip_backend=True,
-            skip_resources=True,
+            skip_handlers=True,
         )
 
         @app.cloudtasktarget(name="target")

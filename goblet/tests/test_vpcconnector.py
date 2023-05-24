@@ -37,7 +37,7 @@ class TestVPCConnector:
         app.deploy(
             force=True,
             skip_backend=True,
-            skip_resources=True,
+            skip_handlers=True,
         )
 
         vpc_conn = get_response(
@@ -81,7 +81,7 @@ class TestVPCConnector:
         app.vpcconnector(name="vpc-test")
         app.deploy(
             skip_infra=True,
-            skip_resources=True,
+            skip_handlers=True,
             force=True,
         )
 
@@ -114,7 +114,7 @@ class TestVPCConnector:
 
         app.vpcconnector(name="vpc-test")
         app.deploy(
-            skip_resources=True,
+            skip_handlers=True,
             skip_infra=True,
             force=True,
         )
@@ -146,7 +146,7 @@ class TestVPCConnector:
 
         app.vpcconnector(name="vpc-test")
         app.deploy(
-            skip_resources=True,
+            skip_handlers=True,
             skip_infra=True,
             force=True,
         )

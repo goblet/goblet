@@ -81,17 +81,23 @@ class Goblet(Goblet_Decorators, Resource_Manager):
 
     def deploy(
         self,
-        skip_resources=False,
+        skip_handlers=False,
         skip_backend=False,
         skip_infra=False,
         force=False,
         write_config=False,
         stage=None,
+        handlers=None,
+        infras=None,
     ):
         g.config.update_g_config(values={"labels": self.labels})
         source = None
         backend = self.backend
-        if not skip_infra:
+
+        if infras:
+            log.info("deploying infrastructure")
+            self.deploy_infrastructure(infras)
+        elif not skip_infra:
             log.info("deploying infrastructure")
             self.deploy_infrastructure()
 
@@ -101,20 +107,74 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         if not skip_backend:
             log.info(f"preparing to deploy with backend {self.backend.resource_type}")
             source = backend.deploy(force=force)
-        if not skip_resources:
+
+        registered_handlers = self.get_registered_handler_resource_types()
+
+        # checks registered deployable handlers before determining if backend exists
+        if (
+            registered_handlers
+            and not backend.get()
+            and (handlers or not skip_handlers)
+        ):
+            log.error("backend is not deployed, handlers cannot be deployed. exiting.")
+            sys.exit(1)
+
+        if handlers:
+            log.info(f"deploying {handlers} handlers")
+            self.deploy_handlers(source, handlers)
+        elif not skip_handlers:
+            log.info("deploying handlers")
             self.deploy_handlers(source)
 
-    def destroy(self, all=False, skip_infra=False):
+    def destroy(
+        self,
+        all=False,
+        skip_infra=False,
+        skip_handlers=False,
+        skip_backend=False,
+        handlers: list[str] = None,
+        infras: list[str] = None,
+    ):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
-        for k, v in self.handlers.items():
-            log.info(f"destroying {k}")
-            v.destroy()
-        self.backend.destroy(all=all)
 
-        if not skip_infra:
-            for k, v in self.infrastructure.items():
-                log.info(f"destroying {k}")
-                v.destroy()
+        if handlers:
+            log.info(f"destroying {handlers} handlers")
+            self.destroy_handlers(handlers)
+        elif not skip_handlers:
+            log.info("destroying handlers")
+            self.destroy_handlers()
+
+        if not skip_backend:
+            self.backend.destroy(all=all)
+
+        if infras:
+            log.info(f"destroying {infras} infrastructure")
+            self.destroy_infrastructure(infras)
+        elif not skip_infra:
+            log.info("destroying infrastructure")
+            self.destroy_infrastructure()
+
+    def sync(
+        self,
+        dryrun=False,
+        skip_infra=False,
+        skip_handlers=False,
+        handlers: list[str] = None,
+        infras: list[str] = None,
+    ):
+        if infras:
+            log.info(f"syncing {infras} infrastructure")
+            self.sync_infrastructure(dryrun, infras)
+        elif not skip_infra:
+            log.info("syncing infrastructure")
+            self.sync_infrastructure(dryrun)
+
+        if handlers:
+            log.info(f"syncing {handlers} handlers")
+            self.sync_handlers(dryrun, handlers)
+        elif not skip_handlers:
+            log.info("syncing handlers")
+            self.sync_handlers(dryrun)
 
     def check_or_enable_services(self, enable=False):
         self.backend._check_or_enable_service(enable)

@@ -72,3 +72,8 @@ class Handler:
         if not self.resources:
             return
         return check_or_enable_service(self.required_apis, enable)
+
+    def get_resource_type(self):
+        if not self.resources:
+            return
+        return self.resource_type
