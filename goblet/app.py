@@ -10,6 +10,7 @@ from goblet.resource_manager import Resource_Manager
 
 from google.cloud.logging.handlers import StructuredLogHandler
 from google.cloud.logging_v2.handlers import setup_logging
+from typing import List
 
 logging.basicConfig()
 
@@ -133,8 +134,8 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         skip_infra=False,
         skip_handlers=False,
         skip_backend=False,
-        handlers: list[str] = None,
-        infras: list[str] = None,
+        handlers: List[str] = None,
+        infras: List[str] = None,
     ):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
 
@@ -160,8 +161,8 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         dryrun=False,
         skip_infra=False,
         skip_handlers=False,
-        handlers: list[str] = None,
-        infras: list[str] = None,
+        handlers: List[str] = None,
+        infras: List[str] = None,
     ):
         if infras:
             log.info(f"syncing {infras} infrastructure")

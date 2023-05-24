@@ -27,6 +27,8 @@ from goblet.infrastructures.cloudtask import CloudTaskQueue
 
 import goblet.globals as g
 
+from typing import List
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
@@ -222,7 +224,7 @@ class Resource_Manager:
                 resource_types.append(resource_type)
         return resource_types
 
-    def deploy_handlers(self, source, handlers: list[str] = None):
+    def deploy_handlers(self, source, handlers: List[str] = None):
         """Call each handlers deploy method"""
         if handlers:
             for handler in handlers:
@@ -235,11 +237,11 @@ class Resource_Manager:
                 log.info(f"deploying {k}")
                 v.deploy(source, entrypoint="goblet_entrypoint")
 
-    def destroy_handlers(self, handlers: list[str] = None):
+    def destroy_handlers(self, handlers: List[str] = None):
         """Call each handlers destroy method
 
         Args:
-            handlers (list[str], optional):
+            handlers (List[str], optional):
                 List of handler resources, if supplied will only target specified resource.
         """
         if handlers:
@@ -251,7 +253,7 @@ class Resource_Manager:
                 log.info(f"destroying {k}")
                 v.destroy()
 
-    def sync_handlers(self, dryrun=False, handlers: list[str] = None):
+    def sync_handlers(self, dryrun=False, handlers: List[str] = None):
         if handlers:
             for handler in handlers:
                 try:
@@ -269,7 +271,7 @@ class Resource_Manager:
                         continue
                     raise e
 
-    def deploy_infrastructure(self, infras: list[str] = None):
+    def deploy_infrastructure(self, infras: List[str] = None):
         """Call deploy for each infrastructure"""
         if infras:
             for infra in infras:
@@ -280,11 +282,11 @@ class Resource_Manager:
                 log.info(f"deploying {k}")
                 v.deploy()
 
-    def destroy_infrastructure(self, infras: list[str] = None):
+    def destroy_infrastructure(self, infras: List[str] = None):
         """Call destroy method for each infrastructure resource
 
         Args:
-            infras (list[str], optional):
+            infras (List[str], optional):
                 List of infrastructure resources, if supplied will only target specified resource.
         """
         if infras:
@@ -296,7 +298,7 @@ class Resource_Manager:
                 log.info(f"destroying {k}")
                 v.destroy()
 
-    def sync_infrastructure(self, dryrun=False, infras: list[str] = None):
+    def sync_infrastructure(self, dryrun=False, infras: List[str] = None):
         if infras:
             for infra in infras:
                 try:
