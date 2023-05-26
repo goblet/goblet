@@ -119,7 +119,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             sys.exit(1)
 
         if handlers or not skip_handlers:
-            log.info(f"deploying handlers")
+            log.info("deploying handlers")
             self.deploy_handlers(source, handlers)
 
     def destroy(
@@ -141,7 +141,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.backend.destroy(all=all)
 
         if infras or not skip_infra:
-            log.info(f"destroying infrastructure")
+            log.info("destroying infrastructure")
             self.destroy_infrastructure(infras)
 
     def sync(
@@ -153,10 +153,10 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         infras: List[str] = None,
     ):
         if infras or not skip_infra:
-            log.info(f"syncing infrastructure")
+            log.info("syncing infrastructure")
             self.sync_infrastructure(dryrun, infras)
         if handlers or not skip_handlers:
-            log.info(f"syncing handlers")
+            log.info("syncing handlers")
             self.sync_handlers(dryrun, handlers)
 
     def check_or_enable_services(self, enable=False):
