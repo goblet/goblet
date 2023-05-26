@@ -95,12 +95,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         source = None
         backend = self.backend
 
-        if infras:
+        if infras or not skip_infra:
             log.info("deploying infrastructure")
             self.deploy_infrastructure(infras)
-        elif not skip_infra:
-            log.info("deploying infrastructure")
-            self.deploy_infrastructure()
 
         infra_config = self.get_infrastructure_config()
         backend.update_config(infra_config, write_config, stage)
@@ -121,12 +118,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.error("backend is not deployed, handlers cannot be deployed. exiting.")
             sys.exit(1)
 
-        if handlers:
-            log.info(f"deploying {handlers} handlers")
+        if handlers or not skip_handlers:
+            log.info(f"deploying handlers")
             self.deploy_handlers(source, handlers)
-        elif not skip_handlers:
-            log.info("deploying handlers")
-            self.deploy_handlers(source)
 
     def destroy(
         self,
@@ -139,22 +133,16 @@ class Goblet(Goblet_Decorators, Resource_Manager):
     ):
         """Destroys http cloudfunction and then calls goblet.destroy() to remove handler's infrastructure"""
 
-        if handlers:
-            log.info(f"destroying {handlers} handlers")
-            self.destroy_handlers(handlers)
-        elif not skip_handlers:
+        if handlers or not skip_handlers:
             log.info("destroying handlers")
-            self.destroy_handlers()
+            self.destroy_handlers(handlers)
 
         if not skip_backend:
             self.backend.destroy(all=all)
 
-        if infras:
-            log.info(f"destroying {infras} infrastructure")
+        if infras or not skip_infra:
+            log.info(f"destroying infrastructure")
             self.destroy_infrastructure(infras)
-        elif not skip_infra:
-            log.info("destroying infrastructure")
-            self.destroy_infrastructure()
 
     def sync(
         self,
@@ -164,19 +152,12 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         handlers: List[str] = None,
         infras: List[str] = None,
     ):
-        if infras:
-            log.info(f"syncing {infras} infrastructure")
+        if infras or not skip_infra:
+            log.info(f"syncing infrastructure")
             self.sync_infrastructure(dryrun, infras)
-        elif not skip_infra:
-            log.info("syncing infrastructure")
-            self.sync_infrastructure(dryrun)
-
-        if handlers:
-            log.info(f"syncing {handlers} handlers")
+        if handlers or not skip_handlers:
+            log.info(f"syncing handlers")
             self.sync_handlers(dryrun, handlers)
-        elif not skip_handlers:
-            log.info("syncing handlers")
-            self.sync_handlers(dryrun)
 
     def check_or_enable_services(self, enable=False):
         self.backend._check_or_enable_service(enable)

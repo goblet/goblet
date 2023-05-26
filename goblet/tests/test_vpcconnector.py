@@ -1,3 +1,4 @@
+import pytest
 from goblet import Goblet
 from goblet.test_utils import dummy_function
 from pytest import raises
@@ -164,3 +165,31 @@ class TestVPCConnector:
             == function_v2_metadata["serviceConfig"]["vpcConnectorEgressSettings"]
         )
         assert "vpc-test" in function_v2_metadata["serviceConfig"]["vpcConnector"]
+
+    def test_deploy_vpcconnector_solo(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "vpcconnector-deploy-solo")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet(
+            function_name="goblet-example",
+            config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
+            backend="cloudrun",
+        )
+        app.vpcconnector(name="vpc-test")
+        app.job(name="job-test")(dummy_function)
+
+        app.deploy(
+            force=True, infras=["vpcconnector"], skip_backend=True, skip_handlers=True
+        )
+
+        responses = get_responses("vpcconnector-deploy-solo")
+        assert len(responses) == 3
+        assert "vpc-test" in responses[0]["body"]["name"]
+
+        with pytest.raises(FileNotFoundError) as _:
+            get_response(
+                "vpcconnector-deploy-solo",
+                "post-v2-projects-goblet-locations-us-central1-jobs_1.json",
+            )
