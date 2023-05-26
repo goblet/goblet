@@ -1,14 +1,14 @@
 {
   "headers": {},
   "body": {
-    "name": "projects/premise-governance-rd/locations/us-central1/connectors/vpc-test",
+    "name": "projects/goblet/locations/us-central1/connectors/vpc-test",
     "network": "default",
     "ipCidrRange": "10.32.1.0/28",
     "state": "READY",
     "minThroughput": 200,
     "maxThroughput": 300,
     "connectedProjects": [
-      "premise-governance-rd"
+      "goblet"
     ],
     "machineType": "e2-micro",
     "minInstances": 2,

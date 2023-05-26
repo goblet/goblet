@@ -1,18 +1,18 @@
 {
   "headers": {},
   "body": {
-    "name": "projects/premise-governance-rd/locations/us-central1/operations/ccbd4475-81a7-41cf-abcd-beb8ec7c2d7c",
+    "name": "projects/goblet/locations/us-central1/operations/ccbd4475-81a7-41cf-abcd-beb8ec7c2d7c",
     "metadata": {
       "@type": "type.googleapis.com/google.cloud.vpcaccess.v1.OperationMetadata",
       "method": "google.cloud.vpcaccess.v1.VpcAccessService.CreateConnector",
       "createTime": "2023-05-26T16:48:10.262669Z",
       "endTime": "2023-05-26T16:49:53.570489Z",
-      "target": "projects/premise-governance-rd/locations/us-central1/connectors/vpc-test"
+      "target": "projects/goblet/locations/us-central1/connectors/vpc-test"
     },
     "done": true,
     "response": {
       "@type": "type.googleapis.com/google.cloud.vpcaccess.v1.Connector",
-      "name": "projects/premise-governance-rd/locations/us-central1/connectors/vpc-test",
+      "name": "projects/goblet/locations/us-central1/connectors/vpc-test",
       "network": "default",
       "ipCidrRange": "10.32.1.0/28",
       "state": "READY",
