@@ -16,6 +16,22 @@ import goblet.globals as g
 logging.basicConfig()
 
 SUPPORTED_BACKENDS = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
+SUPPORTED_HANDLERS = [
+    "cloudtasktarget",
+    "pubsub",
+    "storage",
+    "eventarc",
+    "jobs",
+    "schedule",
+    "bqremotefunction",
+]
+SUPPORTED_INFRASTRUCTURES = [
+    "cloudtaskqueue",
+    "redis",
+    "vpcconnector",
+    "alerts",
+    "apigateway",
+]
 
 
 @click.group()
@@ -44,22 +60,34 @@ def version():
 @click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
 @click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
 @click.option("-s", "--stage", "stage", envvar="STAGE")
-@click.option("--skip-resources", "skip_resources", is_flag=True)
+@click.option("--skip-handlers", "skip_handlers", is_flag=True)
 @click.option("--skip-backend", "skip_backend", is_flag=True)
 @click.option("--skip-infra", "skip_infra", is_flag=True)
 @click.option("--config-from-json-string", "config")
 @click.option("-f", "--force", "force", is_flag=True)
 @click.option("--write-config", "write_config", is_flag=True)
+@click.option(
+    "-h", "--handler", "handler", type=click.Choice(SUPPORTED_HANDLERS), multiple=True
+)
+@click.option(
+    "-i",
+    "--infra",
+    "infra",
+    type=click.Choice(SUPPORTED_INFRASTRUCTURES),
+    multiple=True,
+)
 def deploy(
     project,
     location,
     stage,
-    skip_resources,
+    skip_handlers,
     skip_backend,
     skip_infra,
     config,
     force,
     write_config,
+    handler,
+    infra,
 ):
     """
     You can set the project and location using environment variable GOOGLE_PROJECT and GOOGLE_LOCATION
@@ -103,12 +131,14 @@ def deploy(
         )
 
         app.deploy(
-            skip_resources,
+            skip_handlers,
             skip_backend,
             skip_infra,
             force=force,
             stage=stage,
             write_config=write_config,
+            handlers=list(set(handler)),
+            infras=list(set(infra)),
         )
 
     except FileNotFoundError as not_found:
@@ -124,7 +154,29 @@ def deploy(
 @click.option("-s", "--stage", "stage", envvar="STAGE")
 @click.option("-a", "--all", "all", is_flag=True)
 @click.option("--skip-infra", "skip_infra", is_flag=True)
-def destroy(project, location, stage, all, skip_infra):
+@click.option("--skip-handlers", "skip_handlers", is_flag=True)
+@click.option("--skip-backend", "skip_backend", is_flag=True)
+@click.option(
+    "-h", "--handler", "handler", type=click.Choice(SUPPORTED_HANDLERS), multiple=True
+)
+@click.option(
+    "-i",
+    "--infra",
+    "infra",
+    type=click.Choice(SUPPORTED_INFRASTRUCTURES),
+    multiple=True,
+)
+def destroy(
+    project,
+    location,
+    stage,
+    all,
+    skip_infra,
+    skip_handlers,
+    skip_backend,
+    handler,
+    infra,
+):
     """
     Deletes all resources in gcp that are defined the current deployment
 
@@ -153,7 +205,14 @@ def destroy(project, location, stage, all, skip_infra):
                 os.environ[key] = value
 
         app = get_goblet_app(goblet_config.main_file or "main.py")
-        app.destroy(all, skip_infra)
+        app.destroy(
+            all,
+            skip_infra,
+            skip_handlers,
+            skip_backend,
+            handlers=list(set(handler)),
+            infras=list(set(infra)),
+        )
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -167,7 +226,28 @@ def destroy(project, location, stage, all, skip_infra):
 @click.option("-l", "--location", "location", envvar="GOOGLE_LOCATION", required=True)
 @click.option("-s", "--stage", "stage", envvar="STAGE")
 @click.option("-d", "--dryrun", "dryrun", is_flag=True)
-def sync(project, location, stage, dryrun):
+@click.option("--skip-infra", "skip_infra", is_flag=True)
+@click.option("--skip-handlers", "skip_handlers", is_flag=True)
+@click.option(
+    "-h", "--handler", "handler", type=click.Choice(SUPPORTED_HANDLERS), multiple=True
+)
+@click.option(
+    "-i",
+    "--infra",
+    "infra",
+    type=click.Choice(SUPPORTED_INFRASTRUCTURES),
+    multiple=True,
+)
+def sync(
+    project,
+    location,
+    stage,
+    dryrun,
+    skip_infra,
+    skip_handlers,
+    handler,
+    infra,
+):
     """
     Syncs resources that are deployed with current app configuration. This command will delete resources based on naming
     convention that are no longer in the app configuration.
@@ -186,7 +266,7 @@ def sync(project, location, stage, dryrun):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        app.sync(dryrun)
+        app.sync(dryrun, skip_infra, skip_handlers, handler, infra)
 
     except FileNotFoundError as not_found:
         click.echo(

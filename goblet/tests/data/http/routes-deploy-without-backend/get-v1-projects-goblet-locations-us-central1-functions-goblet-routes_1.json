@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 404,
+      "message": "Function goblet-routes in region us-central1 in project goblet does not exist",
+      "status": "NOT_FOUND"
+    }
+  }
+}

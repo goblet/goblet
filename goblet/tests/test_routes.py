@@ -275,3 +275,16 @@ class TestRoutes:
         assert responses[1]["body"]["metadata"]["target"].endswith("goblet-routes")
         assert responses[2]["body"]["metadata"]["verb"] == "delete"
         assert responses[2]["body"]["metadata"]["target"].endswith("goblet-routes")
+
+    def test_deploy_routes_without_backend(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "routes-deploy-without-backend")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet("goblet-routes")
+        app.route("/home")(dummy_function)
+
+        with pytest.raises(SystemExit) as e:
+            app.deploy(handlers=["routes"], skip_backend=True)
+        assert e.value.code == 1
