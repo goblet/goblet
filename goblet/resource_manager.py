@@ -219,9 +219,8 @@ class Resource_Manager:
         """Get resource types for all deployable registered handlers, http is only non deployable resource"""
         resource_types = []
         for _, v in self.handlers.items():
-            resource_type = v.get_resource_type()
-            if resource_type and resource_type != "http":
-                resource_types.append(resource_type)
+            if v.resource_type != "http" and v.resources:
+                resource_types.append(resource_types)
         return resource_types
 
     def deploy_handlers(self, source, handlers: List[str] = None):
