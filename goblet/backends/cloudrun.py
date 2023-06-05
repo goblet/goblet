@@ -239,7 +239,7 @@ class CloudRun(Backend):
         env_dict = {}
         env = self.config.config.get("cloudrun_container", {}).get("env", [])
         # Append if job_container is set
-        env.append(self.config.config.get("job_container", {}).get("env", []))
+        env.extend(self.config.config.get("job_container", {}).get("env", []))
 
         versioned_clients = VersionedClients()
         for env_item in env:
