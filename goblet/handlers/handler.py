@@ -1,4 +1,5 @@
 import logging
+import os
 
 from goblet.client import VersionedClients
 from goblet_gcp_client.client import get_default_project, get_default_location
@@ -6,7 +7,7 @@ from goblet.common_cloud_actions import check_or_enable_service
 import goblet.globals as g
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class Handler:

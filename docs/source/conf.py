@@ -43,10 +43,7 @@ exclude_patterns = []
 #
 html_theme = "alabaster"
 
-html_theme_options = {"rightsidebar": "true", "relbarbgcolor": "black"}
-
-html_static_path = ["_static"]
-
+# html_static_path = ["_static"]
 
 import sphinx_rtd_theme
 

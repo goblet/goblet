@@ -27,8 +27,10 @@ from goblet.infrastructures.cloudtask import CloudTaskQueue
 
 import goblet.globals as g
 
+from typing import List
+
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 EVENT_TYPES = [
     "all",
@@ -213,37 +215,105 @@ class Resource_Manager:
                 configs.append(config)
         return configs
 
-    def deploy_handlers(self, source):
-        """Call each handlers deploy method"""
-        for k, v in self.handlers.items():
-            log.info(f"deploying {k}")
-            v.deploy(source, entrypoint="goblet_entrypoint")
-
-    def deploy_infrastructure(self):
-        """Call deploy for each infrastructure"""
-        for k, v in self.infrastructure.items():
-            log.info(f"deploying {k}")
-            v.deploy()
-
-    def sync(self, dryrun=False):
-        """Call each handlers sync method"""
-        # Sync Infrastructure
-        for _, v in self.infrastructure.items():
-            try:
-                v.sync(dryrun)
-            except HttpError as e:
-                if e.resp.status == 403:
-                    continue
-                raise e
-
-        # Sync Handlers
+    def get_registered_handler_resource_types(self):
+        """Get resource types for all deployable registered handlers, http is only non deployable resource"""
+        resource_types = []
         for _, v in self.handlers.items():
-            try:
-                v.sync(dryrun)
-            except HttpError as e:
-                if e.resp.status == 403:
-                    continue
-                raise e
+            if v.resource_type != "http" and v.resources:
+                resource_types.append(resource_types)
+        return resource_types
+
+    def deploy_handlers(self, source, handlers: List[str] = None):
+        """Call each handlers deploy method"""
+        if handlers:
+            for handler in handlers:
+                log.info(f"deploying {handler}")
+                self.handlers.get(handler).deploy(
+                    source, entrypoint="goblet_entrypoint"
+                )
+        else:
+            for k, v in self.handlers.items():
+                log.info(f"deploying {k}")
+                v.deploy(source, entrypoint="goblet_entrypoint")
+
+    def destroy_handlers(self, handlers: List[str] = None):
+        """Call each handlers destroy method
+
+        Args:
+            handlers (List[str], optional):
+                List of handler resources, if supplied will only target specified resource.
+        """
+        if handlers:
+            for handler in handlers:
+                log.info(f"destroying {handler}")
+                self.handlers.get(handler).destroy()
+        else:
+            for k, v in self.handlers.items():
+                log.info(f"destroying {k}")
+                v.destroy()
+
+    def sync_handlers(self, dryrun=False, handlers: List[str] = None):
+        if handlers:
+            for handler in handlers:
+                try:
+                    self.handlers.get(handler).sync(dryrun)
+                except HttpError as e:
+                    if e.resp.status == 403:
+                        continue
+                    raise e
+        else:
+            for _, v in self.handlers.items():
+                try:
+                    v.sync(dryrun)
+                except HttpError as e:
+                    if e.resp.status == 403:
+                        continue
+                    raise e
+
+    def deploy_infrastructure(self, infras: List[str] = None):
+        """Call deploy for each infrastructure"""
+        if infras:
+            for infra in infras:
+                log.info(f"deploying {infra}")
+                self.infrastructure.get(infra).deploy()
+        else:
+            for k, v in self.infrastructure.items():
+                log.info(f"deploying {k}")
+                v.deploy()
+
+    def destroy_infrastructure(self, infras: List[str] = None):
+        """Call destroy method for each infrastructure resource
+
+        Args:
+            infras (List[str], optional):
+                List of infrastructure resources, if supplied will only target specified resource.
+        """
+        if infras:
+            for infra in infras:
+                log.info(f"destroying {infra}")
+                self.infrastructure.get(infra).destroy()
+        else:
+            for k, v in self.infrastructure.items():
+                log.info(f"destroying {k}")
+                v.destroy()
+
+    def sync_infrastructure(self, dryrun=False, infras: List[str] = None):
+        if infras:
+            for infra in infras:
+                try:
+                    self.infrastructure.get(infra).sync(dryrun)
+                except HttpError as e:
+                    if e.resp.status == 403:
+                        continue
+                    raise e
+        else:
+            for _, v in self.infrastructure.items():
+                try:
+                    v.sync(dryrun)
+                except HttpError as e:
+                    if e.resp.status == 403:
+                        continue
+                    raise e
 
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own

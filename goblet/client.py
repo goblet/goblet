@@ -1,10 +1,11 @@
 import logging
+import os
 from goblet_gcp_client import Client
 from goblet_gcp_client.client import get_default_project
 import goblet.globals as g
 
 log = logging.getLogger("goblet.client")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 DEFAULT_CLIENT_VERSIONS = {
     "cloudfunctions": "v1",

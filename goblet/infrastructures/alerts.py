@@ -1,4 +1,5 @@
 import logging
+import os
 
 from goblet.infrastructures.infrastructure import Infrastructure
 from goblet_gcp_client.client import get_default_project
@@ -6,7 +7,7 @@ from goblet_gcp_client.client import get_default_project
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class Alerts(Infrastructure):

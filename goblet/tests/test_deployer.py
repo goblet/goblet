@@ -20,7 +20,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP("name", app)
 
-        app.deploy(skip_resources=True, skip_infra=True, force=True)
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-function-deploy")
         assert len(responses) == 3
@@ -42,7 +42,7 @@ class TestDeployer:
 
         app.handlers["http"].register("", dummy_function, {})
 
-        app.deploy(skip_resources=True, skip_infra=True, force=True)
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-function-deploy-v2")
         assert len(responses) == 3
@@ -68,7 +68,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP("name", app)
 
-        app.deploy(skip_resources=True, skip_infra=True, force=True)
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-cloudrun-deploy")
         assert len(responses) == 9
@@ -94,7 +94,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP("name", app)
         with pytest.raises(GobletError):
-            app.deploy(skip_resources=True, skip_infra=True, force=True)
+            app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
     def test_destroy_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -160,7 +160,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP("name", app)
         app.deploy(
-            skip_resources=True,
+            skip_handlers=True,
             skip_infra=True,
             force=True,
         )
@@ -214,7 +214,7 @@ class TestDeployer:
         app.handlers["http"] = HTTP("name", app)
 
         app.deploy(
-            skip_resources=True,
+            skip_handlers=True,
             skip_infra=True,
             force=True,
         )
@@ -254,7 +254,7 @@ class TestDeployer:
 
         app.handlers["http"] = HTTP("name", app, resources=[{}])
 
-        app.deploy(skip_resources=True, skip_infra=True, force=True)
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         response = get_response(
             G_TEST_NAME, "post-v2-projects-goblet-locations-us-central1-services_1.json"

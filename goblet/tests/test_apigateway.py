@@ -87,6 +87,6 @@ class TestApiGatewayExisting:
 
         app = Goblet("goblet_routes")
         app.apigateway("goblet-routes", "URL", openapi_dict=openapi_dict)
-        app.deploy(force=True, skip_resources=True, skip_backend=True)
+        app.deploy(force=True, skip_handlers=True, skip_backend=True)
 
         assert get_replay_count() == 7

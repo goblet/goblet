@@ -204,7 +204,7 @@ would look as follows
 Iam Bindings
 ^^^^^^^^^^^^
 
-You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `congig.json` file.
+You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `config.json` file.
 The bindings should be in the `GCP Policy format <https://cloud.google.com/functions/docs/reference/rest/v1/Policy>`_
 
 For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
@@ -260,13 +260,6 @@ Note: If you have both `http()` and `route("/")` in order to test the route loca
 
     curl localhost:8080/endpoint
 
-To test a scheduled job locally you will need to include two headers in your request. One ``X-Goblet-Type:schedule`` and 
-``X-Goblet-Name:FUNCTION_NAME`` which is the name of your function.
-
-.. code:: sh 
-
-    curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
-
 The goblet app will run on port 8080 by default. You can specify a custom port with the ``-p`` flag. 
 
 .. code:: sh 
@@ -279,6 +272,77 @@ this will pass through environment variables set in a stage as well if you speci
 .. code:: sh 
 
     goblet local --set-env --stage dev
+
+Scheduled Job 
+#############
+
+To test a scheduled job locally you will need to include two headers in your request. One ``X-Goblet-Type:schedule`` and 
+``X-Goblet-Name:FUNCTION_NAME`` which is the name of your function.
+
+.. code:: sh 
+
+    curl -H X-Goblet-Type:schedule -H X-Goblet-Name:FUNCTION_NAME localhost:8080
+
+Pubsub 
+######
+
+To test a pubsub topic locally you will need to include the subscription in the payload as well as a base64 encoded string for the body. 
+
+.. code:: python 
+
+    {
+        "subscription": "TOPIC_NAME", 
+        "body": base64.b64encode(json.dumps({"key":"value"}).encode())
+    } 
+
+Cloud Task
+##########
+
+To test a cloudtask locally you will need to add the ``User-Agent:Google-Cloud-Tasks`` and ``X-Goblet-CloudTask-Target:TARGET`` headers
+
+.. code:: sh 
+
+    curl -H X-Goblet-CloudTask-Target:TARGET -H User-Agent:Google-Cloud-Tasks localhost:8080
+
+Eventarc
+########
+
+To test an eventarc event locally you will need to add ``Ce-Type`` and ``Ce-Source`` headers
+
+.. code:: sh 
+    
+    curl -H Ce-Type:google.cloud.pubsub.topic.v1.messagePublished -H Ce-Sourc://pubsub.googleapis.com/projects/goblet/topics/test localhost:8080
+
+Cloudrun Job 
+############
+
+To test a cloudrun job locally you can run `goblet job run APP_NAME-JOB_NAME TASK_ID`
+
+BQ Remote Function
+##################
+
+To test an bqremotefunction locally you will need to add a ``userDefinedContext`` field to the body with a ``X-Goblet-Name`` field with the format of ``APP_NAME`` _ ``FUNCTION_NAME``.
+You pass in the arguments to you function in a list in the ``calls`` field.
+
+
+.. code:: python
+
+    {
+        "userDefinedContext": {
+            "X-Goblet-Name": "bqremotefunction_test_function_test"
+        },
+        "calls": [[2, 2], [3, 3]],
+    }
+
+Log Levels
+^^^^^^^^^^
+You can set the log level by passing in the environent variable `GOBLET_LOG_LEVEL`. By default the log level is `INFO`. You can set the level 
+to `DEBUG` by passing `--debug` after any goblet command. 
+
+.. code:: console
+
+    goblet --debug package
+
 
 Debugging with VScode
 ^^^^^^^^^^^^^^^^^^^^^

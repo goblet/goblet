@@ -3,12 +3,13 @@ from base64 import b64encode
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
 import logging
+import os
 import datetime
 from google.protobuf import duration_pb2, timestamp_pb2
 from goblet.client import VersionedClients
 
 log = logging.getLogger("goblet.deployer")
-log.setLevel(logging.INFO)
+log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
 class CloudTaskClient:

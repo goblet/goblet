@@ -34,7 +34,7 @@ class TestRedis:
         )
         app.redis(name="redis-test")
 
-        app.deploy(force=True, skip_backend=True, skip_resources=True)
+        app.deploy(force=True, skip_backend=True, skip_handlers=True)
 
         post_redis = get_response(
             "redis-deploy",
@@ -61,7 +61,7 @@ class TestRedis:
         )
         app.redis(name="redis-test")
 
-        app.deploy(force=True, skip_backend=True, skip_resources=True)
+        app.deploy(force=True, skip_backend=True, skip_handlers=True)
 
         redis_response = get_response(
             "redis-update",
@@ -112,7 +112,7 @@ class TestRedis:
 
         app.handlers["http"].register("", dummy_function, {})
 
-        app.deploy(skip_resources=True, skip_infra=True)
+        app.deploy(skip_handlers=True, skip_infra=True)
         app.destroy(skip_infra=True)
 
         cloudrun_response = get_response(
@@ -161,7 +161,7 @@ class TestRedis:
         app.handlers["http"].register("", dummy_function, {})
 
         app.deploy(
-            skip_resources=True,
+            skip_handlers=True,
             skip_infra=True,
         )
         app.destroy(skip_infra=True)
@@ -202,7 +202,7 @@ class TestRedis:
         app.redis(name="redis-test")
         app.handlers["http"].register("", dummy_function, {})
 
-        app.deploy(skip_resources=True, skip_infra=True)
+        app.deploy(skip_handlers=True, skip_infra=True)
         app.destroy(skip_infra=True)
 
         responses = get_responses("redis-deploy-functionv2")

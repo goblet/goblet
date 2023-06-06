@@ -206,6 +206,15 @@ Example usage:
     def cross_project(data):
         return 
 
+To test a pubsub topic locally you will need to include the subscription in the payload as well as a base64 encoded string for the body. 
+
+.. code:: python 
+
+    {
+        "subscription": "TOPIC_NAME", 
+        "body": base64.b64encode(json.dumps({"key":"value"}).encode())
+    } 
+
 Storage
 ^^^^^^^
 
@@ -278,6 +287,13 @@ Example usage:
     def bucket_get(data):
         app.log.info("bucket_get")
         return
+
+To test an eventarc event locally you will need to add ``Ce-Type`` and ``Ce-Source`` headers
+
+.. code:: sh 
+    
+    curl -H Ce-Type:google.cloud.pubsub.topic.v1.messagePublished -H Ce-Sourc://pubsub.googleapis.com/projects/goblet/topics/test localhost:8080
+
 
 Jobs
 ^^^^
@@ -392,6 +408,20 @@ When deploying a BigQuery remote function, Goblet creates the resources in GCP: 
 `BigQuery connection <https://cloud.google.com/bigquery/docs/reference/bigqueryconnection>`_,
 a `BigQuery routine <https://cloud.google.com/bigquery/docs/reference/rest/v2/routines>`_ and
 a cloudfunction or cloudrun (depending on the parameter backend used in Goblet instantiation).
+
+
+To test an bqremotefunction locally you will need to add a ``userDefinedContext`` field to the body with a ``X-Goblet-Name`` field with the format of ``APP_NAME`` _ ``FUNCTION_NAME``.
+You pass in the arguments to you function in a list in the ``calls`` field.
+
+
+.. code:: python
+
+    {
+        "userDefinedContext": {
+            "X-Goblet-Name": "bqremotefunction_test_function_test"
+        },
+        "calls": [[2, 2], [3, 3]],
+    }
 
 
 CloudTask Target
