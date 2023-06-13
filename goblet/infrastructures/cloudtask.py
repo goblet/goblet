@@ -2,6 +2,7 @@ import json
 from base64 import b64encode
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
+from goblet.permissions import gcp_generic_resource_permissions
 import logging
 import os
 import datetime
@@ -79,6 +80,7 @@ class CloudTaskClient:
 class CloudTaskQueue(Infrastructure):
     resource_type = "cloudtaskqueue"
     required_apis = ["cloudtasks"]
+    permissions = gcp_generic_resource_permissions("cloudtasks", "queues")
 
     # https://cloud.google.com/apis/design/resource_names
     def register(self, name, kwargs):

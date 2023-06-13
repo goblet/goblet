@@ -7,6 +7,7 @@ from googleapiclient.errors import HttpError
 
 from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project
+from goblet.permissions import gcp_generic_resource_permissions
 
 
 log = logging.getLogger("goblet.deployer")
@@ -37,6 +38,12 @@ class BigQueryRemoteFunction(Handler):
     can_sync = False
     resource_type = "bqremotefunction"
     required_apis = ["bigquery", "bigqueryconnection"]
+    permissions = [
+        "bigquery.connections.create",
+        "bigquery.connections.get",
+        "bigquery.connections.delete",
+        *gcp_generic_resource_permissions("bigquery", "routines"),
+    ]
 
     def register(self, name, func, kwargs):
         """

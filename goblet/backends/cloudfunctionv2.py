@@ -12,6 +12,7 @@ from goblet.common_cloud_actions import (
     get_cloudfunction_url,
 )
 from goblet.errors import GobletValidationError
+from goblet.permissions import gcp_generic_resource_permissions
 
 
 class CloudFunctionV2(Backend):
@@ -23,6 +24,13 @@ class CloudFunctionV2(Backend):
     monitoring_type = "cloud_function"
     monitoring_label_key = "function_name"
     required_apis = ["cloudfunctions"]
+    permissions = [
+        "cloudfunctions.functions.getIamPolicy",
+        "cloudfunctions.functions.setIamPolicy",
+        "cloudfunctions.operations.get",
+        "cloudfunctions.functions.sourceCodeSet",
+        *gcp_generic_resource_permissions("cloudfunctions", "functions"),
+    ]
 
     def __init__(self, app):
         self.client = VersionedClients({"cloudfunctions": "v2"}).cloudfunctions

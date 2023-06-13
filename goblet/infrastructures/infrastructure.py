@@ -9,6 +9,7 @@ class Infrastructure:
     resource_type = ""
     can_sync = False
     required_apis = []
+    permissions = []
 
     def __init__(
         self,

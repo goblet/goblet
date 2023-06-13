@@ -14,6 +14,7 @@ from goblet.handlers.handler import Handler
 from goblet.handlers.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
+from goblet.permissions import gcp_generic_resource_permissions
 
 
 log = logging.getLogger("goblet.deployer")
@@ -28,6 +29,12 @@ class Routes(Handler):
     resource_type = "routes"
     valid_backends = ["cloudfunction", "cloudrun", "cloudfunctionv2"]
     required_apis = ["cloudfunctions", "apigateway"]
+    permissions = [
+        "apigateway.operations.get",
+        *gcp_generic_resource_permissions("apigateway", "apiconfigs"),
+        *gcp_generic_resource_permissions("apigateway", "apis"),
+        *gcp_generic_resource_permissions("apigateway", "gateways"),
+    ]
 
     def __init__(
         self,

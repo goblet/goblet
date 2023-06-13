@@ -1,5 +1,6 @@
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
+from goblet.permissions import gcp_generic_resource_permissions
 
 import logging
 import os
@@ -11,6 +12,10 @@ log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 class VPCConnector(Infrastructure):
     resource_type = "vpcconnector"
     required_apis = ["vpcaccess"]
+    permissions = [
+        "vpcaccess.operations.get",
+        gcp_generic_resource_permissions("vpcaccess", "connectors"),
+    ]
 
     def register(self, name, kwargs):
         self.resource = {"name": name}

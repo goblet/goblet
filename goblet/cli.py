@@ -513,6 +513,28 @@ def enable_gcp_services(project, stage):
         )
         sys.exit(1)
 
+@services.command(name="autogen_iam")
+@click.option("--yaml", "yaml", is_flag=True)
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def enable_gcp_services(yaml):
+    """Generate a custom role json or yaml
+    
+    Can create the custom role using gcloud cli using the yaml output:
+
+    gcloud iam roles create myCompanyAdmin --organization=123456789012 --file=my-role-definition.yaml
+    """
+    os.environ["X-GOBLET-DEPLOY"] = "true"
+    try:
+        if stage:
+            os.environ["STAGE"] = stage
+        # app = get_goblet_app(GConfig().main_file or "main.py")
+        # app.check_or_enable_services(enable=True)
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()  # pylint: disable=no-value-for-parameter

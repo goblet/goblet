@@ -10,6 +10,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     destroy_cloudfunction,
 )
+from goblet.permissions import gcp_generic_resource_permissions
 
 
 class CloudFunctionV1(Backend):
@@ -20,6 +21,13 @@ class CloudFunctionV1(Backend):
     monitoring_type = "cloud_function"
     monitoring_label_key = "function_name"
     required_apis = ["cloudfunctions", "secretmanager"]
+    permissions = [
+        "cloudfunctions.functions.getIamPolicy",
+        "cloudfunctions.functions.setIamPolicy",
+        "cloudfunctions.operations.get",
+        "cloudfunctions.functions.sourceCodeSet",
+        *gcp_generic_resource_permissions("cloudfunctions", "functions"),
+    ]
 
     def __init__(self, app):
         self.client = VersionedClients().cloudfunctions

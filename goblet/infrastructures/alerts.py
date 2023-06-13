@@ -3,6 +3,7 @@ import os
 
 from goblet.infrastructures.infrastructure import Infrastructure
 from goblet_gcp_client.client import get_default_project
+from goblet.permissions import gcp_generic_resource_permissions
 
 from googleapiclient.errors import HttpError
 
@@ -20,6 +21,10 @@ class Alerts(Infrastructure):
     can_sync = True
     _gcp_deployed_alerts = {}
     required_apis = ["logging"]
+    permissions = [
+        *gcp_generic_resource_permissions("monitoring", "alertPolicies"),
+        *gcp_generic_resource_permissions("logging", "logMetrics"),
+    ]
 
     def register(self, name, **kwargs):
         kwargs = kwargs.get("kwargs", {})

@@ -1,4 +1,5 @@
 from goblet.infrastructures.infrastructure import Infrastructure
+from goblet.permissions import gcp_generic_resource_permissions
 from googleapiclient.errors import HttpError
 import logging
 import os
@@ -11,6 +12,10 @@ class Redis(Infrastructure):
     resource_type = "redis"
     update_keys = ["displayName", "labels", "memorySizeGb", "replicaCount"]
     required_apis = ["redis"]
+    permissions = [
+        "redis.operations.get",
+        gcp_generic_resource_permissions("redis", "instances"),
+    ]
 
     def register(self, name, kwargs):
         self.resource = {"name": name}

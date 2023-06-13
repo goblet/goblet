@@ -5,6 +5,7 @@ from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project, get_default_location
 
 from goblet.common_cloud_actions import get_cloudrun_url
+from goblet.permissions import gcp_generic_resource_permissions
 
 from googleapiclient.errors import HttpError
 
@@ -21,6 +22,9 @@ class Scheduler(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
     required_apis = ["cloudscheduler"]
+    permissions = [
+        *gcp_generic_resource_permissions("cloudscheduler", "jobs"),
+    ]
 
     def register(self, name, func, kwargs):
         schedule = kwargs["schedule"]

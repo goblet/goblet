@@ -5,6 +5,7 @@ from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 from goblet.infrastructures.infrastructure import Infrastructure
 from goblet.handlers.routes import OpenApiSpec
 from goblet.utils import get_g_dir, get_dir
+from goblet.permissions import gcp_generic_resource_permissions
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -15,6 +16,12 @@ class ApiGateway(Infrastructure):
 
     resource_type = "apigateway"
     required_apis = ["apigateway"]
+    permissions = [
+        "apigateway.operations.get",
+        *gcp_generic_resource_permissions("apigateway", "apiconfigs"),
+        *gcp_generic_resource_permissions("apigateway", "apis"),
+        *gcp_generic_resource_permissions("apigateway", "gateways"),
+    ]
 
     def register(self, name, **kwargs):
         kwargs = kwargs["kwargs"]

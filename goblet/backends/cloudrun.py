@@ -24,6 +24,7 @@ from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
 from goblet.errors import GobletValidationError
+from goblet.permissions import gcp_generic_resource_permissions
 
 
 class CloudRun(Backend):
@@ -32,6 +33,18 @@ class CloudRun(Backend):
     monitoring_type = "cloud_run_revision"
     monitoring_label_key = "service_name"
     required_apis = ["run", "cloudbuild", "cloudfunctions"]
+    permissions = [
+        *gcp_generic_resource_permissions("run", "services"),
+        "run.services.getIamPolicy",
+        "run.services.setIamPolicy",
+        "run.revisions.get",
+        "run.revisions.list",
+        "run.operations.get",
+        "cloudbuild.builds.create",
+        "cloudbuild.builds.get",
+        "cloudbuild.builds.list",
+        "cloudfunctions.functions.sourceCodeSet",
+    ]
 
     def __init__(self, app):
         self.client = VersionedClients().run

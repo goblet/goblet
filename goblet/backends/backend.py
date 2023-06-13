@@ -24,6 +24,7 @@ class Backend:
     monitoring_type = ""
     monitoring_label_key = ""
     required_apis = []
+    permissions = []
 
     def __init__(self, app, client, func_path):
         self.app = app
