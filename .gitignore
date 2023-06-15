@@ -1,4 +1,5 @@
 main.py
+!examples/*/main.py
 other.py
 .vscode
 .idea
