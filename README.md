@@ -46,7 +46,7 @@ def scheduled_job():
     return jsonify("success")
 
 # Pubsub subscription
-@app.topic("test")
+@app.pubsub_subscription("test")
 def pubsub_subscription(data):
     app.log.info(data)
     return
@@ -81,6 +81,7 @@ $ curl https://api.uc.gateway.dev/home
 * alerts
 * api gateway
 * cloudtaskqueue
+* pubsub topics
 
 #### Backends
 * cloudfunction

@@ -162,7 +162,7 @@ then your goblet code could be like
 
 .. code:: python 
 
-    @app.topic(os.environ["PUBSUB_TOPIC"])
+    @app.pubsub_subscription(os.environ["PUBSUB_TOPIC"])
     def handle_topic(data):
         return 
 
@@ -594,7 +594,7 @@ In some cases there is additional context passed with the event. For example for
 
 .. code:: python 
 
-    @app.topic("TOPIC")
+    @app.pubsub_subscription("TOPIC")
     def context():
         context = app.request_context
         return "context"
