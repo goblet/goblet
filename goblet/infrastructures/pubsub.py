@@ -3,21 +3,19 @@ from base64 import b64encode
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
 import logging
-import datetime
-from google.protobuf import duration_pb2, timestamp_pb2
+from goblet.client import VersionedClients
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
 
 
 class PubSubClient:
-    def __init__(self, topic, versioned_clients):
+    def __init__(self, topic):
         self.topic = topic
-        self.versioned_clients = versioned_clients
 
     def publish(self, message):
         message = json.dumps(message)
-        return self.versioned_clients.pubsub_topic.execute(
+        return VersionedClients().pubsub_topic.execute(
             "publish",
             parent_key="topic",
             parent_schema=self.topic,
@@ -42,11 +40,10 @@ class PubSubTopic(Infrastructure):
 
         self.resource[resource_id] = {
             "id": resource_id,
-            "name": f"{self.client.pubsub_topic.parent}/topics/{name}",
+            "name": f"{self.versioned_clients.pubsub_topic.parent}/topics/{name}",
             "config": topic_config
         }
         return PubSubClient(
-            versioned_clients=self.client,
             topic=self.resource[resource_id]["name"]
         )
 
@@ -61,7 +58,7 @@ class PubSubTopic(Infrastructure):
                 params = {**params, **resource["config"]}
 
             try:
-                self.client.pubsub_topic.execute(
+                self.versioned_clients.pubsub_topic.execute(
                     "create",
                     parent_key="name",
                     parent_schema=resource["name"],
@@ -80,21 +77,21 @@ class PubSubTopic(Infrastructure):
             return
         for resource_id, resource in self.resource.items():
             try:
-                resp = self.client.cloudtask_queue.execute(
-                    "delete", parent_key="name", parent_schema=resource["name"]
+                resp = self.versioned_clients.pubsub_topic.execute(
+                    "delete", parent_key="topic", parent_schema=resource["name"]
                 )
                 if resp == {}:
-                    log.info(f"CloudTask Queue [{resource['id']}] destroyed")
+                    log.info(f"PubSub Topic [{resource['id']}] destroyed")
             except HttpError as e:
                 if e.resp.status == 404:
-                    log.info(f"cloudtask queue {resource['id']} already destroyed")
+                    log.info(f"PubSub Topic {resource['id']} already destroyed")
                 else:
                     raise e
 
     def get(self, resource_id):
         if not self.resource or not resource_id:
             return
-        return self.client.pubsub_topic.execute(
+        return self.versioned_clients.pubsub_topic.execute(
             "get", parent_key="name", parent_schema=self.resource[resource_id]["name"]
         )
 

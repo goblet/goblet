@@ -41,6 +41,7 @@ SUPPORTED_INFRASTRUCTURES = {
     "redis": Redis,
     "vpcconnector": VPCConnector,
     "cloudtaskqueue": CloudTaskQueue,
+    "pubsub_topic": PubSubTopic,
 }
 
 
@@ -135,6 +136,7 @@ class Goblet_Decorators:
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},
         )
+    
     def topic(self, topic, **kwargs):
         warn('This method is deprecated, use @app.pubsub_subscription', DeprecationWarning, stacklevel=2)
         return self.pubsub_subscription(topic, **kwargs)
@@ -246,6 +248,7 @@ class Goblet_Decorators:
         )
 
     def pubsub_topic(self, name, config=None, **kwargs):
+        """PubSub Topic Infrastructure"""
         kwargs["config"] = config
         return self._register_infrastructure(
             handler_type="pubsub_topic",

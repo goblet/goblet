@@ -24,6 +24,7 @@ from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
+from goblet.infrastructures.pubsub import PubSubTopic
 
 import goblet.globals as g
 
@@ -55,6 +56,7 @@ SUPPORTED_INFRASTRUCTURES = {
     "redis": Redis,
     "vpcconnector": VPCConnector,
     "cloudtaskqueue": CloudTaskQueue,
+    "pubsub_topic": PubSubTopic,
 }
 
 
@@ -102,6 +104,7 @@ class Resource_Manager:
             ),
             "alerts": Alerts(function_name, backend=backend),
             "apigateway": ApiGateway(function_name, backend=backend),
+            "pubsub_topic": PubSubTopic(function_name, backend=backend),
         }
 
         self.middleware_handlers = {

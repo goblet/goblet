@@ -40,7 +40,7 @@ def main(request):
 #     return jsonify("success")
 
 # pubsub topic
-# @app.topic('test_topic')
+# @app.pubsub_subscription('test_topic')
 # def topic(data):
 #     app.log.info(data)
 #     return
