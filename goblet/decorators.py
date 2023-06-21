@@ -145,14 +145,6 @@ class Goblet_Decorators:
         )
         return self.pubsub_subscription(topic, **kwargs)
 
-    def topic(self, topic, **kwargs):
-        warn(
-            "This method is deprecated, use @app.pubsub_subscription",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.pubsub_subscription(topic, **kwargs)
-
     def cloudtasktarget(self, name, **kwargs):
         """CloudTask trigger"""
         kwargs["name"] = name
