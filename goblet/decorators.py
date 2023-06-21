@@ -136,9 +136,13 @@ class Goblet_Decorators:
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},
         )
-    
+
     def topic(self, topic, **kwargs):
-        warn('This method is deprecated, use @app.pubsub_subscription', DeprecationWarning, stacklevel=2)
+        warn(
+            "This method is deprecated, use @app.pubsub_subscription",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.pubsub_subscription(topic, **kwargs)
 
     def topic(self, topic, **kwargs):

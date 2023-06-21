@@ -35,6 +35,7 @@ class TestPubSub:
         )
 
         assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
+
     def test_destroy_pubsub_topic(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
