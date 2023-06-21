@@ -270,9 +270,9 @@ class TestPubSubSubscription:
         )
         setattr(app, "entrypoint", "app")
 
-        app.pubsub_subscription("test", use_subscription=True, filter='attributes.test = "1"')(
-            dummy_function
-        )
+        app.pubsub_subscription(
+            "test", use_subscription=True, filter='attributes.test = "1"'
+        )(dummy_function)
 
         app.deploy(force=True, skip_backend=True, skip_infra=True)
 

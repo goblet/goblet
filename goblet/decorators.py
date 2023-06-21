@@ -141,6 +141,14 @@ class Goblet_Decorators:
         warn('This method is deprecated, use @app.pubsub_subscription', DeprecationWarning, stacklevel=2)
         return self.pubsub_subscription(topic, **kwargs)
 
+    def topic(self, topic, **kwargs):
+        warn(
+            "This method is deprecated, use @app.pubsub_subscription",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.pubsub_subscription(topic, **kwargs)
+
     def cloudtasktarget(self, name, **kwargs):
         """CloudTask trigger"""
         kwargs["name"] = name
@@ -254,7 +262,6 @@ class Goblet_Decorators:
             handler_type="pubsub_topic",
             kwargs={"name": name, "config": config, "kwargs": kwargs},
         )
-
 
     def redis(self, name, **kwargs):
         """Redis Infrastructure"""

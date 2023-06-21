@@ -1,6 +1,7 @@
 from goblet import Goblet
-from goblet_gcp_client import get_response, get_responses
+from goblet_gcp_client import get_response
 from goblet.infrastructures.pubsub import PubSubClient
+
 
 class TestPubSub:
     def test_add_pubsub_topics(self):
@@ -21,9 +22,7 @@ class TestPubSub:
 
         app = Goblet(function_name="goblet_example")
 
-        client: PubSubClient = app.pubsub_topic( # noqa: F841
-            name="test"
-        )
+        client: PubSubClient = app.pubsub_topic(name="test")  # noqa: F841
 
         app.deploy(
             force=True,
@@ -36,7 +35,6 @@ class TestPubSub:
         )
 
         assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
-    
     def test_destroy_pubsub_topic(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
@@ -45,9 +43,7 @@ class TestPubSub:
 
         app = Goblet(function_name="goblet_example")
 
-        client: PubSubClient = app.pubsub_topic(  # noqa: F841
-            name="test"
-        )
+        client: PubSubClient = app.pubsub_topic(name="test")  # noqa: F841
 
         app.destroy(
             skip_backend=True,

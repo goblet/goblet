@@ -21,13 +21,9 @@ class PubSubClient:
             parent_schema=self.topic,
             params={
                 "body": {
-                    "messages": [
-                        {
-                            "data": b64encode(message.encode()).decode("utf8")
-                        }
-                    ]
+                    "messages": [{"data": b64encode(message.encode()).decode("utf8")}]
                 }
-            }
+            },
         )
 
 
@@ -41,11 +37,9 @@ class PubSubTopic(Infrastructure):
         self.resource[resource_id] = {
             "id": resource_id,
             "name": f"{self.versioned_clients.pubsub_topic.parent}/topics/{name}",
-            "config": topic_config
+            "config": topic_config,
         }
-        return PubSubClient(
-            topic=self.resource[resource_id]["name"]
-        )
+        return PubSubClient(topic=self.resource[resource_id]["name"])
 
     def deploy(self, config={}):
         if not self.resource:
@@ -62,7 +56,7 @@ class PubSubTopic(Infrastructure):
                     "create",
                     parent_key="name",
                     parent_schema=resource["name"],
-                    params={"body": params}
+                    params={"body": params},
                 )
                 log.info(f'PubSub Topic [{resource["id"]}] deployed')
 
