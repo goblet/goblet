@@ -32,7 +32,7 @@ class CloudRun(Backend):
     supported_versions = ["v2"]
     monitoring_type = "cloud_run_revision"
     monitoring_label_key = "service_name"
-    required_apis = ["run", "cloudbuild", "cloudfunctions"]
+    required_apis = ["run", "cloudbuild", "cloudfunctions", "cloudresourcemanager"]
     permissions = [
         *gcp_generic_resource_permissions("run", "services"),
         "run.services.getIamPolicy",

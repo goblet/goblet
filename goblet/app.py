@@ -167,6 +167,15 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             v._check_or_enable_service(enable)
         return None
 
+    def get_permissions(self):
+        permissions = set()
+        permissions.update(self.backend.permissions)
+        for _, v in self.handlers.items():
+            permissions.update(v.get_permissions())
+        for _, v in self.infrastructure.items():
+            permissions.update(v.get_permissions())
+        return permissions
+
     def package(self):
         self.backend.zip()
 

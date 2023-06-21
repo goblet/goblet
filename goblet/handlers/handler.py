@@ -73,3 +73,8 @@ class Handler:
         if not self.resources:
             return
         return check_or_enable_service(self.required_apis, enable)
+
+    def get_permissions(self):
+        if len(self.resources) > 0:
+            return self.permissions
+        return []

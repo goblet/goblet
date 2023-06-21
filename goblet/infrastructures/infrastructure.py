@@ -15,11 +15,11 @@ class Infrastructure:
         self,
         name,
         backend=None,
-        resource=None,
+        resources=None,
     ):
         self.name = name
         self.backend = backend
-        self.resource = resource or {}
+        self.resources = resources or {}
         self.config = g.config
         self.versioned_clients = VersionedClients()
 
@@ -46,3 +46,8 @@ class Infrastructure:
         if not self.resource:
             return
         return check_or_enable_service(self.required_apis, enable)
+
+    def get_permissions(self):
+        if len(self.resources) > 0:
+            return self.permissions
+        return []

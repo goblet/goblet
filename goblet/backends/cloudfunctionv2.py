@@ -23,7 +23,7 @@ class CloudFunctionV2(Backend):
     config_key = "cloudfunction"
     monitoring_type = "cloud_function"
     monitoring_label_key = "function_name"
-    required_apis = ["cloudfunctions"]
+    required_apis = ["cloudfunctions", "cloudresourcemanager"]
     permissions = [
         "cloudfunctions.functions.getIamPolicy",
         "cloudfunctions.functions.setIamPolicy",
