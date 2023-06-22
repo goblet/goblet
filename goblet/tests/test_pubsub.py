@@ -34,7 +34,10 @@ class TestPubSub:
             "put-v1-projects-goblet-topics-test_1.json",
         )
 
+        pubsub_topic = app.infrastructure["pubsub_topic"]
+
         assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
+        assert pubsub_topic.resource["test"]["id"] == "test"
 
     def test_destroy_pubsub_topic(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -55,4 +58,36 @@ class TestPubSub:
             "delete-v1-projects-goblet-topics-test_1.json",
         )
 
+        pubsub_topic = app.infrastructure["pubsub_topic"]
+
         assert delete_pubsub_topic["body"] == {}
+        assert pubsub_topic.resource["test"]["id"] == "test"
+
+    def test_update_pubsub_topic(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet_example")
+
+        app.pubsub_topic(name="test")  # noqa: F841
+
+        app.deploy(
+            force=True,
+            skip_backend=True,
+        )
+
+        pubsub_topic = app.infrastructure["pubsub_topic"]
+        assert pubsub_topic.resource["test"]["id"] == "test"
+        assert pubsub_topic.resource["test"]["config"] == None
+
+        app.pubsub_topic(name="test", config={"messageRetentionDuration":"3600s"})
+
+        app.deploy(
+            force=True,
+            skip_backend=True,
+        )
+        pubsub_topic = app.infrastructure["pubsub_topic"]
+        assert pubsub_topic.resource["test"]["id"] == "test"
+        assert pubsub_topic.resource["test"]["config"] == {"messageRetentionDuration":"3600s"}
