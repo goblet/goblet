@@ -78,7 +78,14 @@ class TestPubSub:
             skip_backend=True,
         )
 
+        put_pubsub_topic = get_response(
+            "pubsub-deploy",
+            "put-v1-projects-goblet-topics-test_1.json",
+        )
         pubsub_topic = app.infrastructure["pubsub_topic"]
+
+        assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
+        assert "messageRetentionDuration" not in put_pubsub_topic["body"] 
         assert pubsub_topic.resource["test"]["id"] == "test"
         assert pubsub_topic.resource["test"]["config"] == None
 
@@ -88,6 +95,14 @@ class TestPubSub:
             force=True,
             skip_backend=True,
         )
+
+        patch_pubsub_topic = get_response(
+            "pubsub-deploy",
+            "patch-v1-projects-goblet-topics-test_1.json",
+        )
         pubsub_topic = app.infrastructure["pubsub_topic"]
+
+        assert patch_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
+        assert "messageRetentionDuration" in patch_pubsub_topic["body"] and patch_pubsub_topic["body"]["messageRetentionDuration"] == "3600s"
         assert pubsub_topic.resource["test"]["id"] == "test"
         assert pubsub_topic.resource["test"]["config"] == {"messageRetentionDuration":"3600s"}
