@@ -31,7 +31,7 @@ class TestPubSub:
 
         put_pubsub_topic = get_response(
             "pubsub-deploy",
-            "put-v1-projects-test_project-topics-test_1.json",
+            "put-v1-projects-goblet-topics-test_1.json",
         )
 
         assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
@@ -52,7 +52,7 @@ class TestPubSub:
 
         delete_pubsub_topic = get_response(
             "pubsub-deploy",
-            "delete-v1-projects-test_project-topics-test_1.json",
+            "delete-v1-projects-goblet-topics-test_1.json",
         )
 
         assert delete_pubsub_topic["body"] == {}

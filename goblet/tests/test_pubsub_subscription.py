@@ -215,18 +215,19 @@ class TestPubSubSubscription:
 
         app.deploy(force=True)
 
-        responses = get_responses("pubsub-deploy")
-
-        assert len(responses) == 3
-        assert responses[2]["body"]["metadata"]["target"].endswith(
+        response = get_response(
+            "pubsub-deploy",
+            "post-v1-projects-goblet-locations-us-central1-functions_1.json",
+        )
+        assert response["body"]["metadata"]["target"].endswith(
             "goblet_topic-topic-test-topic"
         )
         assert (
-            responses[2]["body"]["metadata"]["request"]["eventTrigger"]["resource"]
+            response["body"]["metadata"]["request"]["eventTrigger"]["resource"]
             == "projects/goblet/topics/test-topic"
         )
         assert (
-            responses[2]["body"]["metadata"]["request"]["eventTrigger"]["eventType"]
+            response["body"]["metadata"]["request"]["eventTrigger"]["eventType"]
             == "providers/cloud.pubsub/eventTypes/topic.publish"
         )
 
