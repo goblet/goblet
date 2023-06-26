@@ -68,7 +68,7 @@ class PubSubTopic(Infrastructure):
                         log.info(f"params: {params}")
                         self.versioned_clients.pubsub_topic.execute(
                             "patch",
-                            parent=None, 
+                            parent=None,
                             params={
                                 "name": self.resource[resource_id]["name"],
                                 "body": {"topic": params, "updateMask": updateMask},
@@ -93,10 +93,10 @@ class PubSubTopic(Infrastructure):
                     log.info(f"PubSub Topic {resource['id']} already destroyed")
                 else:
                     raise e
-                
+
     def paths_to_update(self, resource_id):
         paths = []
-        
+
         # if there is user config, there is nothing to compare with
         if not self.resource[resource_id].get("config"):
             return paths
