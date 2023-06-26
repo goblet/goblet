@@ -188,3 +188,6 @@ class Backend:
 
     def _check_or_enable_service(self, enable=False):
         return check_or_enable_service(self.required_apis, enable)
+
+    def add_invoker_binding(self, principle):        
+        raise NotImplementedError("add_invoker_binding")

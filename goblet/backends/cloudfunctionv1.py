@@ -10,7 +10,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     destroy_cloudfunction,
 )
-from goblet.permissions import gcp_generic_resource_permissions
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 
 
 class CloudFunctionV1(Backend):
@@ -151,3 +151,6 @@ class CloudFunctionV1(Backend):
                 )
 
         return env_dict
+
+    def add_invoker_binding(self, principle):        
+        add_binding(self.client, self.func_path, "cloudfunctions.invoker", principle)
