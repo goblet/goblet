@@ -683,7 +683,16 @@ def deploy_service_account(client, name, roleName):
             log.info(f"service account {name} already exists...")
         else:
             raise e
-    add_binding(client, "projects/" + get_default_project() + "/serviceAccounts/" + "goblet-test-pubsub@premise-data-platform-dev.iam.gserviceaccount.com","projects/premise-data-platform-dev/roles/Goblet_Deployment_Role_goblet_test_pubsub","serviceAccount:goblet-test-pubsub@premise-data-platform-dev.iam.gserviceaccount.com" )
+    add_binding(
+        client,
+        "projects/"
+        + get_default_project()
+        + "/serviceAccounts/"
+        + "goblet-test-pubsub@premise-data-platform-dev.iam.gserviceaccount.com",
+        "projects/premise-data-platform-dev/roles/Goblet_Deployment_Role_goblet_test_pubsub",
+        "serviceAccount:goblet-test-pubsub@premise-data-platform-dev.iam.gserviceaccount.com",
+    )
+
 
 # def set_project_bindings(client, role, principle):
 #     # Get & Set iam policy at the project level
@@ -693,7 +702,7 @@ def deploy_service_account(client, name, roleName):
 #         parent_schema="projects/"
 #         + get_default_project()
 #     )
-    
+
 #     log.info(f"setting iam policy for service account {name}...")
 #     client.execute(
 #         "setIamPolicy",

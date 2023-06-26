@@ -24,7 +24,7 @@ from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
 from goblet.errors import GobletValidationError
-from goblet.permissions import gcp_generic_resource_permissions,add_binding
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 
 
 class CloudRun(Backend):
@@ -292,5 +292,5 @@ class CloudRun(Backend):
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
 
-    def add_invoker_binding(self, principle):        
+    def add_invoker_binding(self, principle):
         add_binding(self.client, self.run_name, "run.invoker", principle)

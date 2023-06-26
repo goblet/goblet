@@ -4,6 +4,7 @@ from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
 import logging
 from goblet.client import VersionedClients
+from goblet.permissions import gcp_generic_resource_permissions
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -29,6 +30,8 @@ class PubSubClient:
 
 class PubSubTopic(Infrastructure):
     resource_type = "pubsub_topic"
+    required_apis = ["pubsub"]
+    permissions = gcp_generic_resource_permissions("pubsub", "topics")
 
     def register(self, name, kwargs):
         resource_id = name

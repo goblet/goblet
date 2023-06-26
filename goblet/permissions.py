@@ -1,8 +1,9 @@
-import logging 
+import logging
 import os
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
+
 
 def gcp_generic_resource_permissions(service, subservice):
     """
@@ -32,13 +33,12 @@ def create_custom_role(app_name, permissions):
         },
     }
 
+
 def add_binding(client, resource_parent_schema, roleName, principal):
     """Generic add-binding procedure that updates the current resource policy if the desired role and principle do not already exist."""
     # Get Iam policy for resource
     resp = client.execute(
-        "getIamPolicy",
-        parent_key="resource",
-        parent_schema=resource_parent_schema
+        "getIamPolicy", parent_key="resource", parent_schema=resource_parent_schema
     )
     bindings = resp["bindings"]
     role_missing = True
@@ -47,28 +47,19 @@ def add_binding(client, resource_parent_schema, roleName, principal):
         if role_binding["role"] == roleName:
             if principal in role_binding["members"]:
                 # Member exists
-                log.info(f"iam policy for {resource_parent_schema} already up to date...")
+                log.info(
+                    f"iam policy for {resource_parent_schema} already up to date..."
+                )
                 return
             else:
                 role_missing = False
                 role_binding["members"].append(principal)
     if role_missing:
-        bindings.append(
-            {
-                "role": roleName,
-                "members":[principal]
-            }
-        )
+        bindings.append({"role": roleName, "members": [principal]})
     log.info(f"setting iam policy for {resource_parent_schema}...")
     client.execute(
         "setIamPolicy",
         parent_key="resource",
         parent_schema=resource_parent_schema,
-        params={
-            "body": {
-                "policy": {
-                    "bindings": bindings
-                }
-            }
-        }
+        params={"body": {"policy": {"bindings": bindings}}},
     )

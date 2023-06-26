@@ -22,7 +22,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "cloudtasks": "v2",
     "serviceusage": "v1",
     "iam": "v1",
-    "cloudresourcemanager": "v3"
+    "cloudresourcemanager": "v3",
 }
 
 
