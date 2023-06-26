@@ -1,0 +1,25 @@
+{
+    "securityDefinitions":{
+        "custom_service_account": {
+            "authorizationUrl": "",
+            "flow": "implicit",
+            "type": "oauth2",
+            "x-google-audiences": "SERVICE_ACCOUNT@PROJECT.iam.gserviceaccount.com",
+            "x-google-issuer": "SERVICE_ACCOUNT@PROJECT.iam.gserviceaccount.com",
+            "x-google-jwks_uri": "https://www.googleapis.com/robot/v1/metadata/x509/SERVICE_ACCOUNT@PROJECT.iam.gserviceaccount.com"
+          },
+        "firebase": {
+            "authorizationUrl": "",
+            "flow": "implicit",
+            "type": "oauth2",
+            "x-google-issuer": "https://securetoken.google.com/PROJECT",
+            "x-google-jwks_uri": "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com",
+            "x-google-audiences": "PROJECT"
+          },
+        "custom_api_key":{
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-API-Key"
+        }
+    }
+}

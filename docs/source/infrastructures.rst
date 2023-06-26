@@ -124,3 +124,14 @@ The configuration can be provided inline when declaring the queue, or in your co
             "queue": { ... }
         }
     }
+
+PubSub Topics
+^^^^^^^^^^^^^
+
+.. code:: python
+
+    app = Goblet()
+    config = { ... }
+    app.pubsub_topic("topic", config=config)
+
+To further configure your PubSub topic within Goblet, provide the config parameter base on the documentation. `Topic Resource<https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.topics#resource:-topic>`_.
