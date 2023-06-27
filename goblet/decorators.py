@@ -132,6 +132,24 @@ class Goblet_Decorators:
 
     def pubsub_subscription(self, topic, **kwargs):
         """Pubsub topic trigger"""
+        dlq = kwargs.pop("dlq", False)
+        dlq_topic_config = kwargs.pop("dlq_topic_config", {})
+        if dlq:
+            log.info(f"Creating DLQ topic for {topic}")
+            self._register_infrastructure(
+                handler_type="pubsub_topic",
+                kwargs={"name": f"{topic}-dlq", "config": dlq_topic_config},
+            )
+            dlq_policy = {
+                "deadLetterPolicy": {
+                    "deadLetterTopic": self.infrastructure["pubsub_topic"].resource[f"{topic}-dlq"]["name"],
+                }
+            }
+            if "config" in kwargs:
+                kwargs["config"].update(dlq_policy)
+            else:
+                kwargs["config"] = dlq_policy
+
         return self._create_registration_function(
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},

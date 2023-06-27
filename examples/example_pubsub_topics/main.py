@@ -26,7 +26,7 @@ def publish():
 
 
 # Triggered by pubsub topic
-@app.pubsub_subscription("goblet-created-test-topic")
+@app.pubsub_subscription("goblet-created-test-topic", dlq=True)
 def topic(data):
     app.log.info(data)
     return
