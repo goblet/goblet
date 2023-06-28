@@ -43,7 +43,7 @@ class Infrastructure:
         return None
 
     def _check_or_enable_service(self, enable=False):
-        if not self.resource:
+        if not self.resources:
             return
         return check_or_enable_service(self.required_apis, enable)
 
