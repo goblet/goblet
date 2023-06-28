@@ -149,4 +149,6 @@ class CloudFunctionV2(Backend):
         )
 
     def add_invoker_binding(self, principles):
-        add_binding(self.client, self.func_path, "roles/cloudfunctions.invoker", principles)
+        add_binding(
+            self.client, self.func_path, "roles/cloudfunctions.invoker", principles
+        )

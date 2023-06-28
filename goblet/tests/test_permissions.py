@@ -91,17 +91,14 @@ class TestPermissions:
                     "serviceAccountEmail": "sa_pubsub@goblet.iam.gserviceaccount.com"
                 },
                 "scheduler": {
-                    "serviceAccount":"sa_scheduler@goblet.iam.gserviceaccount.com"
-                }
+                    "serviceAccount": "sa_scheduler@goblet.iam.gserviceaccount.com"
+                },
             },
         )
         app.topic("test")(dummy_function)
         app.schedule("* * * * *")(dummy_function)
 
-        app.deploy(
-            force=True, 
-            skip_backend=True
-        )
+        app.deploy(force=True, skip_backend=True)
 
         set_iam_resp_1 = get_response(
             "permissions-set_invoker-cloudrun",
@@ -112,7 +109,8 @@ class TestPermissions:
             "post-v2-projects-goblet-locations-us-central1-services-goblet-set-invoker-permissions-setIamPolicy_2.json",
         )
         assert (
-            "sa_pubsub@goblet.iam.gserviceaccount.com" in set_iam_resp_1["body"]["bindings"][0]["members"][0]
+            "sa_pubsub@goblet.iam.gserviceaccount.com"
+            in set_iam_resp_1["body"]["bindings"][0]["members"][0]
         )
         assert "run.invoker" in set_iam_resp_1["body"]["bindings"][0]["role"]
         assert len(set_iam_resp_2["body"]["bindings"][0]["members"]) == 2
