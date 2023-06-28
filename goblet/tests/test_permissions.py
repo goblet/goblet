@@ -10,7 +10,6 @@ from goblet.handlers.routes import Routes
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 
 from goblet_gcp_client import (
-    get_responses,
     get_response,
     get_replay_count,
     reset_replay_count,
@@ -76,3 +75,44 @@ class TestPermissions:
             service_account_email in set_iam_resp["body"]["bindings"][0]["members"][0]
         )
         assert role_name in set_iam_resp["body"]["bindings"][0]["role"]
+
+    def test_set_invoker_permissions_cloudrun(self, monkeypatch):
+        """Deploy a custom role and service account"""
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "permissions-set_invoker-cloudrun")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet(
+            function_name="goblet-set-invoker-permissions",
+            backend="cloudrun",
+            config={
+                "pubsub": {
+                    "serviceAccountEmail": "sa_pubsub@goblet.iam.gserviceaccount.com"
+                },
+                "scheduler": {
+                    "serviceAccount":"sa_scheduler@goblet.iam.gserviceaccount.com"
+                }
+            },
+        )
+        app.topic("test")(dummy_function)
+        app.schedule("* * * * *")(dummy_function)
+
+        app.deploy(
+            force=True, 
+            skip_backend=True
+        )
+
+        set_iam_resp_1 = get_response(
+            "permissions-set_invoker-cloudrun",
+            "post-v2-projects-goblet-locations-us-central1-services-goblet-set-invoker-permissions-setIamPolicy_1.json",
+        )
+        set_iam_resp_2 = get_response(
+            "permissions-set_invoker-cloudrun",
+            "post-v2-projects-goblet-locations-us-central1-services-goblet-set-invoker-permissions-setIamPolicy_2.json",
+        )
+        assert (
+            "sa_pubsub@goblet.iam.gserviceaccount.com" in set_iam_resp_1["body"]["bindings"][0]["members"][0]
+        )
+        assert "run.invoker" in set_iam_resp_1["body"]["bindings"][0]["role"]
+        assert len(set_iam_resp_2["body"]["bindings"][0]["members"]) == 2

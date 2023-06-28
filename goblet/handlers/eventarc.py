@@ -89,6 +89,8 @@ class EventArc(Handler):
                 "Service account not found for cloudrun or eventarc. You can set `serviceAccount` field in config.json under `eventarc`"
             )
 
+        self.service_accounts = [service_account]
+
         log.info("deploying eventarc triggers......")
         for trigger in self.resources:
             topic = {}

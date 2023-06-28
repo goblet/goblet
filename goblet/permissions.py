@@ -21,7 +21,7 @@ def gcp_generic_resource_permissions(service, subservice):
 def create_custom_role_policy(app_name, permissions):
     """
     https://cloud.google.com/iam/docs/creating-custom-roles#iam-custom-roles-create-rest
-    Role name much be `"[a-zA-Z0-9_\.]{3,64}"`
+    Role name much be `"[a-zA-Z0-9_.]{3,64}"`
     """
     return {
         "roleId": f"Goblet_Deployment_Role_{app_name.replace('-','_')}",
@@ -40,7 +40,9 @@ def add_binding(client, resource_parent_schema, roleName, principals):
     resp = client.execute(
         "getIamPolicy", parent_key="resource", parent_schema=resource_parent_schema
     )
-    bindings = resp["bindings"]
+    bindings = resp.get("bindings", [])
+    # default service account type for bindings
+    principals = [f"serviceAccount:{p}" for p in principals if ":" not in p]
     role_missing = True
     # Check to see if desired role and principle exist
     for role_binding in bindings:

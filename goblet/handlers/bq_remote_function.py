@@ -117,7 +117,7 @@ class BigQueryRemoteFunction(Handler):
         bq_query_connection = None
         try:
             bq_query_connection = self.deploy_bigquery_connection(f"{self.name}")
-            self.backend.set_iam_policy(
+            self.service_accounts.append(
                 bq_query_connection["cloudResource"]["serviceAccountId"]
             )
         except HttpError as exception:

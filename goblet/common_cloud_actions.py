@@ -661,7 +661,7 @@ def deploy_custom_role(client, role):
 
 def deploy_service_account(versioned_client, name, roleName):
     """Deploys service account with custom role.
-    Service Account name needs to be [a-zA-Z][a-zA-Z\d\-]*[a-zA-Z\d]
+    Service Account name needs to be [a-zA-Z][a-zA-Z-]*[a-zA-Z]
     """
     try:
         params = {

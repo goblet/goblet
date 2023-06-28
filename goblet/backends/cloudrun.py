@@ -293,4 +293,4 @@ class CloudRun(Backend):
             self._zip_file(self.config.main_file, "main.py")
 
     def add_invoker_binding(self, principles):
-        add_binding(self.client, self.run_name, "run.invoker", principles)
+        add_binding(self.client, self.run_name, "roles/run.invoker", principles)

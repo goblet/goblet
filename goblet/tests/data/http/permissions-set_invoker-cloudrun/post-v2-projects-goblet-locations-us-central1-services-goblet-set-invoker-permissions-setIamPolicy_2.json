@@ -1,0 +1,16 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwX/NL33duA=",
+    "bindings": [
+      {
+        "role": "roles/run.invoker",
+        "members": [
+          "serviceAccount:sa_pubsub@goblet.iam.gserviceaccount.com",
+          "serviceAccount:sa_scheduler@goblet.iam.gserviceaccount.com"
+        ]
+      }
+    ]
+  }
+}

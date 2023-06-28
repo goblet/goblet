@@ -1,0 +1,26 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/jobs/goblet-set-invoker-permissions-dummy_function",
+    "description": "Created by goblet",
+    "httpTarget": {
+      "uri": "https://goblet-set-invoker-permissions-ue5lbildha-uc.a.run.app/",
+      "httpMethod": "GET",
+      "headers": {
+        "X-Goblet-Type": "schedule",
+        "User-Agent": "Google-Cloud-Scheduler",
+        "X-Goblet-Name": "dummy_function"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "sa_scheduler@goblet.iam.gserviceaccount.com",
+        "audience": "https://goblet-set-invoker-permissions-ue5lbildha-uc.a.run.app"
+      }
+    },
+    "userUpdateTime": "2023-06-28T18:27:46Z",
+    "state": "ENABLED",
+    "scheduleTime": "2023-06-28T18:28:00Z",
+    "schedule": "* * * * *",
+    "timeZone": "UTC",
+    "attemptDeadline": "180s"
+  }
+}

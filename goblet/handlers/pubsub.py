@@ -135,6 +135,7 @@ class PubSub(Handler):
             raise ValueError(
                 "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
+        self.service_accounts = [service_account]
         req_body = {
             "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",

@@ -32,7 +32,7 @@ class ApiGateway(Infrastructure):
         }
 
     def deploy(self):
-        if not self.resource:
+        if not self.resources:
             return
         goblet_spec = OpenApiSpec(
             self.resources["name"],
