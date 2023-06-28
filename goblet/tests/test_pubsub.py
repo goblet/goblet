@@ -11,8 +11,8 @@ class TestPubSub:
         app.pubsub_topic(name="pubsub_topic02")
 
         pubsub_topic = app.infrastructure["pubsub_topic"]
-        assert pubsub_topic.resource["pubsub_topic01"]["id"] == "pubsub_topic01"
-        assert pubsub_topic.resource["pubsub_topic02"]["id"] == "pubsub_topic02"
+        assert pubsub_topic.resources["pubsub_topic01"]["id"] == "pubsub_topic01"
+        assert pubsub_topic.resources["pubsub_topic02"]["id"] == "pubsub_topic02"
 
     def test_create_pubsub_topic(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -37,7 +37,7 @@ class TestPubSub:
         pubsub_topic = app.infrastructure["pubsub_topic"]
 
         assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
-        assert pubsub_topic.resource["test"]["id"] == "test"
+        assert pubsub_topic.resources["test"]["id"] == "test"
 
     def test_destroy_pubsub_topic(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -61,7 +61,7 @@ class TestPubSub:
         pubsub_topic = app.infrastructure["pubsub_topic"]
 
         assert delete_pubsub_topic["body"] == {}
-        assert pubsub_topic.resource["test"]["id"] == "test"
+        assert pubsub_topic.resources["test"]["id"] == "test"
 
     def test_update_pubsub_topic(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -86,8 +86,8 @@ class TestPubSub:
 
         assert put_pubsub_topic["body"]["name"] == "projects/goblet/topics/test"
         assert "messageRetentionDuration" not in put_pubsub_topic["body"]
-        assert pubsub_topic.resource["test"]["id"] == "test"
-        assert pubsub_topic.resource["test"]["config"] is None
+        assert pubsub_topic.resources["test"]["id"] == "test"
+        assert pubsub_topic.resources["test"]["config"] is None
 
         app.pubsub_topic(name="test", config={"messageRetentionDuration": "3600s"})
 
@@ -107,7 +107,7 @@ class TestPubSub:
             "messageRetentionDuration" in patch_pubsub_topic["body"]
             and patch_pubsub_topic["body"]["messageRetentionDuration"] == "3600s"
         )
-        assert pubsub_topic.resource["test"]["id"] == "test"
-        assert pubsub_topic.resource["test"]["config"] == {
+        assert pubsub_topic.resources["test"]["id"] == "test"
+        assert pubsub_topic.resources["test"]["config"] == {
             "messageRetentionDuration": "3600s"
         }

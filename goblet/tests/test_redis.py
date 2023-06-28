@@ -15,7 +15,7 @@ class TestRedis:
 
         app.redis(name="redis-test")
         redis = app.infrastructure["redis"]
-        assert redis.resource["name"] == "redis-test"
+        assert redis.resources["name"] == "redis-test"
 
     def test_deploy_redis(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -76,7 +76,7 @@ class TestRedis:
         monkeypatch.setenv("G_TEST_NAME", "redis-destroy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        redis = Redis("goblet-redis", resource={"name": "redis-test"})
+        redis = Redis("goblet-redis", resources={"name": "redis-test"})
         redis.destroy()
 
         delete_redis = get_response(

@@ -36,7 +36,7 @@ class TestAlerts:
         )
 
         jobs = app.infrastructure["alerts"]
-        assert len(jobs.resource) == 3
+        assert len(jobs.resources) == 3
 
     def test_format_filter_or_query(self):
         condition = MetricCondition(
@@ -178,5 +178,5 @@ class TestAlerts:
         )
 
         assert len(responses) - 1 == alerts["body"]["totalSize"] - len(
-            app.infrastructure["alerts"].resource
+            app.infrastructure["alerts"].resources
         )

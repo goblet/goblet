@@ -16,7 +16,7 @@ class TestVPCConnector:
 
         app.vpcconnector(name="vpc-test")
         vpc = app.infrastructure["vpcconnector"]
-        assert vpc.resource["name"] == "vpc-test"
+        assert vpc.resources["name"] == "vpc-test"
 
     def test_add_invalid_vpcconnector(self):
         app = Goblet(function_name="goblet_example")
@@ -55,7 +55,7 @@ class TestVPCConnector:
         monkeypatch.setenv("G_TEST_NAME", "vpcconnector-destroy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        vpc = VPCConnector("goblet-vpc", resource={"name": "vpc-test"})
+        vpc = VPCConnector("goblet-vpc", resources={"name": "vpc-test"})
         vpc.destroy()
 
         responses = get_responses("vpcconnector-destroy")
