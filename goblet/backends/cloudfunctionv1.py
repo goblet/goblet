@@ -152,5 +152,5 @@ class CloudFunctionV1(Backend):
 
         return env_dict
 
-    def add_invoker_binding(self, principle):
-        add_binding(self.client, self.func_path, "cloudfunctions.invoker", principle)
+    def add_invoker_binding(self, principles):
+        add_binding(self.client, self.func_path, "cloudfunctions.invoker", principles)

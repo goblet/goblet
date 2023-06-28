@@ -174,6 +174,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             permissions.update(v.get_permissions())
         for _, v in self.infrastructure.items():
             permissions.update(v.get_permissions())
+
+        permissions = list(permissions)
+        permissions.sort()
         return permissions
 
     def package(self):

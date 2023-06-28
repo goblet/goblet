@@ -18,7 +18,7 @@ def gcp_generic_resource_permissions(service, subservice):
     ]
 
 
-def create_custom_role(app_name, permissions):
+def create_custom_role_policy(app_name, permissions):
     """
     https://cloud.google.com/iam/docs/creating-custom-roles#iam-custom-roles-create-rest
     Role name much be `"[a-zA-Z0-9_\.]{3,64}"`
@@ -34,7 +34,7 @@ def create_custom_role(app_name, permissions):
     }
 
 
-def add_binding(client, resource_parent_schema, roleName, principal):
+def add_binding(client, resource_parent_schema, roleName, principals):
     """Generic add-binding procedure that updates the current resource policy if the desired role and principle do not already exist."""
     # Get Iam policy for resource
     resp = client.execute(
@@ -45,7 +45,7 @@ def add_binding(client, resource_parent_schema, roleName, principal):
     # Check to see if desired role and principle exist
     for role_binding in bindings:
         if role_binding["role"] == roleName:
-            if principal in role_binding["members"]:
+            if all(p in role_binding["members"] for p in principals):
                 # Member exists
                 log.info(
                     f"iam policy for {resource_parent_schema} already up to date..."
@@ -53,9 +53,9 @@ def add_binding(client, resource_parent_schema, roleName, principal):
                 return
             else:
                 role_missing = False
-                role_binding["members"].append(principal)
+                role_binding["members"].extend(principals)
     if role_missing:
-        bindings.append({"role": roleName, "members": [principal]})
+        bindings.append({"role": roleName, "members": principals})
     log.info(f"setting iam policy for {resource_parent_schema}...")
     client.execute(
         "setIamPolicy",

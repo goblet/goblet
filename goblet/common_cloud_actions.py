@@ -659,8 +659,10 @@ def deploy_custom_role(client, role):
     return resp
 
 
-def deploy_service_account(client, name, roleName):
-    """Deploys service account with custom role"""
+def deploy_service_account(versioned_client, name, roleName):
+    """Deploys service account with custom role.
+    Service Account name needs to be [a-zA-Z][a-zA-Z\d\-]*[a-zA-Z\d]
+    """
     try:
         params = {
             "body": {
@@ -671,7 +673,7 @@ def deploy_service_account(client, name, roleName):
                 },
             }
         }
-        client.execute(
+        versioned_client.service_account.execute(
             "create",
             parent_key="name",
             parent_schema="projects/" + get_default_project(),
@@ -684,45 +686,8 @@ def deploy_service_account(client, name, roleName):
         else:
             raise e
     add_binding(
-        client,
-        "projects/"
-        + get_default_project()
-        + "/serviceAccounts/"
-        + "goblet-test-pubsub@premise-data-platform-dev.iam.gserviceaccount.com",
-        "projects/premise-data-platform-dev/roles/Goblet_Deployment_Role_goblet_test_pubsub",
-        "serviceAccount:goblet-test-pubsub@premise-data-platform-dev.iam.gserviceaccount.com",
+        versioned_client.project_resource_manager,
+        "projects/" + get_default_project(),
+        f"projects/{get_default_project()}/roles/{roleName}",
+        [f"serviceAccount:{name}@{get_default_project()}.iam.gserviceaccount.com"],
     )
-
-
-# def set_project_bindings(client, role, principle):
-#     # Get & Set iam policy at the project level
-#     resp = client.execute(
-#         "setIamPolicy",
-#         parent_key="resource",
-#         parent_schema="projects/"
-#         + get_default_project()
-#     )
-
-#     log.info(f"setting iam policy for service account {name}...")
-#     client.execute(
-#         "setIamPolicy",
-#         parent_key="resource",
-#         parent_schema="projects/"
-#         + get_default_project()
-#         + "/serviceAccounts/"
-#         + f"{name}@{get_default_project()}.iam.gserviceaccount.com",
-#         params={
-#             "body": {
-#                 "policy": {
-#                     "bindings": [
-#                         {
-#                             "role": f"projects/{get_default_project()}/roles/{roleName}",
-#                             "members": [
-#                                 f"serviceAccount:{name}@{get_default_project()}.iam.gserviceaccount.com"
-#                             ],
-#                         }
-#                     ]
-#                 }
-#             }
-#         }
-#     )

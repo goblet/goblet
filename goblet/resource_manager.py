@@ -367,9 +367,6 @@ class Resource_Manager:
         return backend_class
 
     def create_service_account(self, role):
-        service_account_client = VersionedClients().service_account
         iam_role_client = VersionedClients().iam_roles
         deploy_custom_role(iam_role_client, role)
-        deploy_service_account(
-            service_account_client, self.function_name, role["roleId"]
-        )
+        deploy_service_account(VersionedClients(), self.function_name, role["roleId"])

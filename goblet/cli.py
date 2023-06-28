@@ -13,7 +13,7 @@ from goblet.write_files import create_goblet_dir
 from goblet_gcp_client.client import get_default_project
 from goblet.__version__ import __version__
 import goblet.globals as g
-from goblet.permissions import create_custom_role
+from goblet.permissions import create_custom_role_policy
 
 logging.basicConfig()
 
@@ -531,15 +531,14 @@ def autogen_iam(yaml, stage):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        permissions = list(app.get_permissions())
-        permissions.sort()
-        custom_role = create_custom_role(app.function_name, permissions)
+        permissions = app.get_permissions()
+        custom_role_policy = create_custom_role_policy(app.function_name, permissions)
         if yaml:
             with open(".goblet/autogen_iam_role.yaml", "w") as f:
-                f.write(yml.dump(custom_role))
+                f.write(yml.dump(custom_role_policy))
         else:
             with open(".goblet/autogen_iam_role.json", "w") as f:
-                f.write(json.dumps(custom_role))
+                f.write(json.dumps(custom_role_policy))
 
     except FileNotFoundError as not_found:
         click.echo(
@@ -565,10 +564,11 @@ def create_service_account(name, project, stage):
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        permissions = list(app.get_permissions())
-        permissions.sort()
-        custom_role = create_custom_role(name or app.function_name, permissions)
-        app.create_service_account(custom_role)
+        permissions = app.get_permissions()
+        custom_role_policy = create_custom_role_policy(
+            name or app.function_name, permissions
+        )
+        app.create_service_account(custom_role_policy)
 
     except FileNotFoundError as not_found:
         click.echo(
