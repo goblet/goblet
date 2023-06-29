@@ -6,15 +6,15 @@ from goblet.infrastructures.pubsub import PubSubClient
 
 app = Goblet(function_name="create-pubsub-topic")
 
-app.log.setLevel(logging.INFO)  # configure goblet logger level
+app.log.setLevel(logging.DEBUG)  # configure goblet logger level
 goblet_entrypoint(app)
 
 # Create pubsub topics
 client: PubSubClient = app.pubsub_topic("goblet-created-test-topic")
 
 # Route that publishes to pubsub topic
-@app.route('/publish', methods=['GET'])
-def publish():
+@app.http()
+def publish(request):
     response = client.publish(
         message={
             'hello': 'worlds!',
@@ -28,5 +28,11 @@ def publish():
 # Triggered by pubsub topic
 @app.pubsub_subscription("goblet-created-test-topic", dlq=True)
 def topic(data):
+    app.log.info(data)
+    return "Internal Server Error", 500
+
+# Triggered by DLQ topic
+@app.pubsub_subscription("goblet-created-test-topic-dlq")
+def dlq_topic(data):
     app.log.info(data)
     return

@@ -135,10 +135,11 @@ class Goblet_Decorators:
         dlq = kwargs.pop("dlq", False)
         dlq_topic_config = kwargs.pop("dlq_topic_config", {})
         if dlq:
-            log.info(f"Creating DLQ topic for {topic}")
+            log.info(f"DLQ enabled use of subscription will be forced to topic {topic}")
+            kwargs["use_subscription"] = True
             self._register_infrastructure(
                 handler_type="pubsub_topic",
-                kwargs={"name": f"{topic}-dlq", "config": dlq_topic_config},
+                kwargs={"name": f"{topic}-dlq", "config": dlq_topic_config, "dlq": True},
             )
             dlq_policy = {
                 "deadLetterPolicy": {

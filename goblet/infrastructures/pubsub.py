@@ -4,6 +4,8 @@ from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
 import logging
 from goblet.client import VersionedClients
+from goblet.permissions import add_binding
+from goblet.client import get_default_project_number
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -33,11 +35,13 @@ class PubSubTopic(Infrastructure):
     def register(self, name, kwargs):
         resource_id = name
         topic_config = kwargs.get("config", None)
+        dlq = kwargs.get("dlq", False)
 
         self.resource[resource_id] = {
             "id": resource_id,
             "name": f"{self.versioned_clients.pubsub_topic.parent}/topics/{name}",
             "config": topic_config,
+            "dlq": dlq,
         }
         return PubSubClient(topic=self.resource[resource_id]["name"])
 
@@ -59,6 +63,15 @@ class PubSubTopic(Infrastructure):
                     params={"body": params},
                 )
                 log.info(f'PubSub Topic [{resource["id"]}] deployed')
+
+                if resource["dlq"] is True:
+                    # Add IAM roles to use dead-letter topics
+                    try:
+                        default_pubsub_service_account = f"serviceAccount:service-{get_default_project_number()}@gcp-sa-pubsub.iam.gserviceaccount.com"
+                        add_binding(self.versioned_clients.pubsub_topic, resource["name"], "roles/pubsub.publisher", default_pubsub_service_account)
+                    except HttpError as e:
+                        if e.resp.status == 403:
+                            log.info(f"User is not authorized to add IAM role 'roles/pubsub.publisher' to topic '{resource['name']}' you need to handle this manually.")
 
             except HttpError as e:
                 if e.resp.status == 409:
