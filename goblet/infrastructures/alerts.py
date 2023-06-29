@@ -3,6 +3,7 @@ import os
 
 from goblet.infrastructures.infrastructure import Infrastructure
 from goblet_gcp_client.client import get_default_project
+from goblet.permissions import gcp_generic_resource_permissions
 
 from googleapiclient.errors import HttpError
 
@@ -20,12 +21,16 @@ class Alerts(Infrastructure):
     can_sync = True
     _gcp_deployed_alerts = {}
     required_apis = ["logging"]
+    permissions = [
+        *gcp_generic_resource_permissions("monitoring", "alertPolicies"),
+        *gcp_generic_resource_permissions("logging", "logMetrics"),
+    ]
 
     def register(self, name, **kwargs):
         kwargs = kwargs.get("kwargs", {})
         conditions = kwargs.pop("conditions")
         notification_channels = kwargs.pop("notification_channels", [])
-        self.resource[f"{self.name}-{name}"] = {
+        self.resources[f"{self.name}-{name}"] = {
             "name": f"{self.name}-{name}",
             "conditions": conditions,
             "notification_channels": notification_channels,
@@ -48,7 +53,7 @@ class Alerts(Infrastructure):
         return self._gcp_deployed_alerts
 
     def deploy(self, source=None, entrypoint=None):
-        if not self.resource:
+        if not self.resources:
             return
         config_notification_channels = []
         if self.config.alerts:
@@ -57,7 +62,7 @@ class Alerts(Infrastructure):
             )
 
         log.info("deploying alerts......")
-        for alert_name, alert in self.resource.items():
+        for alert_name, alert in self.resources.items():
             self.deploy_alert(alert_name, alert, config_notification_channels)
 
     def deploy_alert(self, alert_name, alert, notification_channels):
@@ -109,15 +114,15 @@ class Alerts(Infrastructure):
     def _sync(self, dryrun=False):
         # Does not sync custom metrics
         for alert_name in self.gcp_deployed_alerts.keys():
-            if not self.resource.get(alert_name):
+            if not self.resources.get(alert_name):
                 log.info(f"Detected unused alert {alert_name}")
                 if not dryrun:
                     self._destroy_alert(alert_name)
 
     def destroy(self):
-        if not self.resource:
+        if not self.resources:
             return
-        for alert_name in self.resource.keys():
+        for alert_name in self.resources.keys():
             self._destroy_alert(alert_name)
 
     def _destroy_alert(self, alert_name):
@@ -136,7 +141,7 @@ class Alerts(Infrastructure):
                     log.info(f"Alert {alert_name} already destroyed")
                 else:
                     raise e
-        for condition in self.resource.get(alert_name, {}).get("conditions", []):
+        for condition in self.resources.get(alert_name, {}).get("conditions", []):
             condition.format_filter_or_query(
                 self.name,
                 self.backend.monitoring_type,

@@ -113,6 +113,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             registered_handlers
             and skip_backend
             and (handlers or not skip_handlers)
+            and not backend.skip_deployment()
             and not backend.get()
         ):
             log.error("backend is not deployed, handlers cannot be deployed. exiting.")
@@ -166,6 +167,18 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         for _, v in self.infrastructure.items():
             v._check_or_enable_service(enable)
         return None
+
+    def get_permissions(self):
+        permissions = set()
+        permissions.update(self.backend.permissions)
+        for _, v in self.handlers.items():
+            permissions.update(v.get_permissions())
+        for _, v in self.infrastructure.items():
+            permissions.update(v.get_permissions())
+
+        permissions = list(permissions)
+        permissions.sort()
+        return permissions
 
     def package(self):
         self.backend.zip()

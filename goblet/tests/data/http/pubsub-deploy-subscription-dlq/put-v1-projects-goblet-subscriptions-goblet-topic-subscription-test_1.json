@@ -1,0 +1,19 @@
+{
+    "headers": {},
+    "body": {
+        "name": "projects/goblet/subscriptions/goblet-topic-subscription-test",
+        "topic": "projects/goblet/topics/test",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 60,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+            "ttl": "2678400s"
+        },
+        "enableExactlyOnceDelivery": true,
+        "deadLetterPolicy": {
+            "deadLetterTopic": "projects/goblet/topics/goblet-topic-subscription-test-dlq",
+            "maxDeliveryAttempts": 5
+        },
+        "state": "ACTIVE"
+    }
+}

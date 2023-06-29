@@ -24,6 +24,7 @@ from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
 from goblet.errors import GobletValidationError
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 
 
 class CloudRun(Backend):
@@ -31,7 +32,19 @@ class CloudRun(Backend):
     supported_versions = ["v2"]
     monitoring_type = "cloud_run_revision"
     monitoring_label_key = "service_name"
-    required_apis = ["run", "cloudbuild", "cloudfunctions"]
+    required_apis = ["run", "cloudbuild", "cloudfunctions", "cloudresourcemanager"]
+    permissions = [
+        *gcp_generic_resource_permissions("run", "services"),
+        "run.services.getIamPolicy",
+        "run.services.setIamPolicy",
+        "run.revisions.get",
+        "run.revisions.list",
+        "run.operations.get",
+        "cloudbuild.builds.create",
+        "cloudbuild.builds.get",
+        "cloudbuild.builds.list",
+        "cloudfunctions.functions.sourceCodeSet",
+    ]
 
     def __init__(self, app):
         self.client = VersionedClients().run
@@ -144,6 +157,9 @@ class CloudRun(Backend):
         }
 
         create_cloudbuild(client, req_body)
+
+    def skip_deployment(self):
+        return self.skip_run_deployment
 
     def skip_run_deployment(self):
         """Skip cloudrun deployment if only jobs"""
@@ -278,3 +294,6 @@ class CloudRun(Backend):
             self._zip_file(self.config.requirements_file, "requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
+
+    def add_invoker_binding(self, principles):
+        add_binding(self.client, self.run_name, "roles/run.invoker", principles)

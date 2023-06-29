@@ -155,3 +155,49 @@ class TestJobs:
         responses = get_responses("job-destroy")
         assert len(responses) == 2
         assert "goblet-test-test" in responses[0]["body"]["metadata"]["name"]
+
+    def test_job_iam_bindings(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "job-iam-bindings")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet(
+            function_name="goblet-test",
+            backend="cloudrun",
+            config={
+                "scheduler": {"serviceAccount": "test@goblet.iam.gserviceaccount.com"},
+                "bindings": [
+                    {
+                        "role": "roles/run.invoker",
+                        "members": ["user:test.user@goblet.com"],
+                    }
+                ],
+            },
+        )
+        app.job("test", schedule="10 10 * * *")(dummy_function)
+        app.deploy(force=True, skip_backend=True)
+
+        job_bindings = get_response(
+            "job-iam-bindings",
+            "post-v2-projects-goblet-locations-us-central1-jobs-goblet-test-test-setIamPolicy_1.json",
+        )
+        assert (
+            job_bindings["body"]["bindings"][0]["members"][0]
+            == "user:test.user@goblet.com"
+        )
+        assert len(job_bindings["body"]["bindings"][0]["members"]) == 1
+
+        schedule_bindings = get_response(
+            "job-iam-bindings",
+            "post-v2-projects-goblet-locations-us-central1-jobs-goblet-test-test-setIamPolicy_2.json",
+        )
+        assert (
+            schedule_bindings["body"]["bindings"][0]["members"][1]
+            == "user:test.user@goblet.com"
+        )
+        assert (
+            schedule_bindings["body"]["bindings"][0]["members"][0]
+            == "serviceAccount:test@goblet.iam.gserviceaccount.com"
+        )
+        assert len(schedule_bindings["body"]["bindings"][0]["members"]) == 2

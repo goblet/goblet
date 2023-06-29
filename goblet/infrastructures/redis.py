@@ -1,4 +1,5 @@
 from goblet.infrastructures.infrastructure import Infrastructure
+from goblet.permissions import gcp_generic_resource_permissions
 from googleapiclient.errors import HttpError
 import logging
 import os
@@ -11,12 +12,16 @@ class Redis(Infrastructure):
     resource_type = "redis"
     update_keys = ["displayName", "labels", "memorySizeGb", "replicaCount"]
     required_apis = ["redis"]
+    permissions = [
+        "redis.operations.get",
+        gcp_generic_resource_permissions("redis", "instances"),
+    ]
 
     def register(self, name, kwargs):
-        self.resource = {"name": name}
+        self.resources = {"name": name}
 
     def deploy(self):
-        if not self.resource:
+        if not self.resources:
             return
         redis_config = self.config.redis or {}
         req_body = {
@@ -28,19 +33,19 @@ class Redis(Infrastructure):
         try:
             resp = self.versioned_clients.redis.execute(
                 "create",
-                params={"instanceId": self.resource["name"], "body": req_body},
+                params={"instanceId": self.resources["name"], "body": req_body},
             )
             self.versioned_clients.redis.wait_for_operation(resp["name"])
         except HttpError as e:
             if e.resp.status == 409:
-                log.info(f"updating redis {self.resource['name']}")
+                log.info(f"updating redis {self.resources['name']}")
                 if req_body.get("tier") == "BASIC":
                     self.update_keys.remove("replicaCount")
                 resp = self.versioned_clients.redis.execute(
                     "patch",
                     parent_key="name",
                     parent_schema="projects/{project_id}/locations/{location_id}/instances/"
-                    + self.resource["name"],
+                    + self.resources["name"],
                     params={"updateMask": ",".join(self.update_keys), "body": req_body},
                 )
                 self.versioned_clients.redis.wait_for_operation(resp["name"])
@@ -49,35 +54,35 @@ class Redis(Infrastructure):
 
     def destroy(self):
         try:
-            if not self.resource:
+            if not self.resources:
                 return
             resp = self.versioned_clients.redis.execute(
                 "delete",
                 parent_key="name",
                 parent_schema="projects/{project_id}/locations/{location_id}/instances/"
-                + self.resource["name"],
+                + self.resources["name"],
             )
             self.versioned_clients.redis.wait_for_operation(resp["name"])
-            log.info(f"destroying redis {self.resource['name']}")
+            log.info(f"destroying redis {self.resources['name']}")
         except HttpError as e:
             if e.resp.status == 404:
-                log.info(f"redis {self.resource['name']} already destroyed")
+                log.info(f"redis {self.resources['name']} already destroyed")
             else:
                 raise e
 
     def get(self):
-        if not self.resource:
+        if not self.resources:
             return
         resp = self.versioned_clients.redis.execute(
             "get",
             parent_key="name",
             parent_schema="projects/{project_id}/locations/{location_id}/instances/"
-            + self.resource["name"],
+            + self.resources["name"],
         )
         return resp
 
     def get_config(self):
-        if not self.resource:
+        if not self.resources:
             return
         redis = self.get()
         return {

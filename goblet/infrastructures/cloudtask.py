@@ -2,6 +2,7 @@ import json
 from base64 import b64encode
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
+from goblet.permissions import gcp_generic_resource_permissions
 import logging
 import os
 import datetime
@@ -79,6 +80,7 @@ class CloudTaskClient:
 class CloudTaskQueue(Infrastructure):
     resource_type = "cloudtaskqueue"
     required_apis = ["cloudtasks"]
+    permissions = gcp_generic_resource_permissions("cloudtasks", "queues")
 
     # https://cloud.google.com/apis/design/resource_names
     def register(self, name, kwargs):
@@ -90,7 +92,7 @@ class CloudTaskQueue(Infrastructure):
             and self.config.cloudtaskqueue.get(resource_id, None)
         ):
             queue_config = self.config.cloudtaskqueue.get(resource_id)
-        self.resource[resource_id] = {
+        self.resources[resource_id] = {
             "name": f"{self.versioned_clients.cloudtask_queue.parent}/queues/{resource_id}",
             "id": resource_id,
             "config": queue_config,
@@ -98,15 +100,15 @@ class CloudTaskQueue(Infrastructure):
 
         return CloudTaskClient(
             service_account=self.config.cloudtask.get("serviceAccount", None),
-            queue=self.resource[resource_id]["name"],
+            queue=self.resources[resource_id]["name"],
             backend=self.backend,
         )
 
     def deploy(self):
-        if not self.resource:
+        if not self.resources:
             return
 
-        for resource_id, resource in self.resource.items():
+        for resource_id, resource in self.resources.items():
             params = {"name": resource["name"]}
             if resource["config"]:
                 params = {**params, **resource["config"]}
@@ -133,9 +135,9 @@ class CloudTaskQueue(Infrastructure):
                     raise e
 
     def destroy(self):
-        if not self.resource:
+        if not self.resources:
             return
-        for resource_id, resource in self.resource.items():
+        for resource_id, resource in self.resources.items():
             try:
                 resp = self.versioned_clients.cloudtask_queue.execute(
                     "delete", parent_key="name", parent_schema=resource["name"]
@@ -150,11 +152,11 @@ class CloudTaskQueue(Infrastructure):
 
     def should_patch(self, resource_id):
         # if there is user config, there is nothing to compare with
-        if not self.resource[resource_id].get("config"):
+        if not self.resources[resource_id].get("config"):
             return False
 
         deployed_config = self.get_deployed_config(resource_id)
-        for section, configurations in self.resource[resource_id]["config"].items():
+        for section, configurations in self.resources[resource_id]["config"].items():
             for k, v in configurations.items():
                 try:
                     # a value set in the desired config is
@@ -176,14 +178,14 @@ class CloudTaskQueue(Infrastructure):
         }
 
     def get(self, resource_id):
-        if not self.resource or not resource_id:
+        if not self.resources or not resource_id:
             return
         return self.versioned_clients.cloudtask_queue.execute(
-            "get", parent_key="name", parent_schema=self.resource[resource_id]["name"]
+            "get", parent_key="name", parent_schema=self.resources[resource_id]["name"]
         )
 
     def get_config(self, config={}):
-        if not self.resource:
+        if not self.resources:
             return
 
         return {"resource_type": self.resource_type, "values": {}}

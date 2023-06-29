@@ -1,0 +1,23 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/subscriptions/goblet-set-invoker-permissions-test",
+    "topic": "projects/goblet/topics/test",
+    "pushConfig": {
+      "pushEndpoint": "https://goblet-set-invoker-permissions-ue5lbildha-uc.a.run.app",
+      "attributes": {
+        "x-goog-version": "v1"
+      },
+      "oidcToken": {
+        "serviceAccountEmail": "sa_pubsub@goblet.iam.gserviceaccount.com",
+        "audience": "https://goblet-set-invoker-permissions-ue5lbildha-uc.a.run.app"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "2678400s"
+    },
+    "state": "ACTIVE"
+  }
+}

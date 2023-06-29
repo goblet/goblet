@@ -14,7 +14,7 @@ import logging
 from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project
 from goblet.utils import attributes_to_filter
-from goblet.permissions import add_binding
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 from goblet.client import get_default_project_number
 from googleapiclient.errors import HttpError
 
@@ -30,7 +30,8 @@ class PubSub(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
-    required_apis = ["pubsub", "cloudfunctions"]
+    required_apis = ["pubsub"]
+    permissions = gcp_generic_resource_permissions("pubsub", "subscriptions")
 
     def register(self, name, func, kwargs):
         topic = kwargs["topic"]
@@ -137,8 +138,9 @@ class PubSub(Handler):
             raise ValueError(
                 "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
-        
-        deadLetterPolicy = topic["config"].get("deadLetterPolicy", {})    
+
+        deadLetterPolicy = topic["config"].get("deadLetterPolicy", {})
+        self.service_accounts = [service_account]
         req_body = {
             "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
@@ -166,10 +168,17 @@ class PubSub(Handler):
         if deadLetterPolicy != {}:
             try:
                 default_pubsub_service_account = f"serviceAccount:service-{get_default_project_number()}@gcp-sa-pubsub.iam.gserviceaccount.com"
-                add_binding(self.versioned_clients.pubsub, "projects/{project_id}/subscriptions/" + sub_name, "roles/pubsub.subscriber", default_pubsub_service_account)
+                add_binding(
+                    self.versioned_clients.pubsub,
+                    "projects/{project_id}/subscriptions/" + sub_name,
+                    "roles/pubsub.subscriber",
+                    default_pubsub_service_account,
+                )
             except HttpError as e:
                 if e.resp.status == 403:
-                    log.info(f"User is not authorized to add IAM role 'roles/pubsub.subscriber' to subscription '{sub_name}' you need to handle this manually.")
+                    log.info(
+                        f"User is not authorized to add IAM role 'roles/pubsub.subscriber' to subscription '{sub_name}' you need to handle this manually."
+                    )
 
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"

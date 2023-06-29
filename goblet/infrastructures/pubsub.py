@@ -4,7 +4,7 @@ from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
 import logging
 from goblet.client import VersionedClients
-from goblet.permissions import add_binding
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 from goblet.client import get_default_project_number
 
 log = logging.getLogger("goblet.deployer")
@@ -31,26 +31,28 @@ class PubSubClient:
 
 class PubSubTopic(Infrastructure):
     resource_type = "pubsub_topic"
+    required_apis = ["pubsub"]
+    permissions = gcp_generic_resource_permissions("pubsub", "topics")
 
     def register(self, name, kwargs):
         resource_id = name
         topic_config = kwargs.get("config", None)
         dlq = kwargs.get("dlq", False)
 
-        self.resource[resource_id] = {
+        self.resources[resource_id] = {
             "id": resource_id,
             "name": f"{self.versioned_clients.pubsub_topic.parent}/topics/{name}",
             "config": topic_config,
             "dlq": dlq,
         }
-        return PubSubClient(topic=self.resource[resource_id]["name"])
+        return PubSubClient(topic=self.resources[resource_id]["name"])
 
     def deploy(self, config={}):
-        if not self.resource:
+        if not self.resources:
             return
         self.config.update_g_config(values=config)
 
-        for resource_id, resource in self.resource.items():
+        for resource_id, resource in self.resources.items():
             params = {"name": resource["name"]}
             if resource["config"]:
                 params = {**params, **resource["config"]}
@@ -68,10 +70,17 @@ class PubSubTopic(Infrastructure):
                     # Add IAM roles to use dead-letter topics
                     try:
                         default_pubsub_service_account = f"serviceAccount:service-{get_default_project_number()}@gcp-sa-pubsub.iam.gserviceaccount.com"
-                        add_binding(self.versioned_clients.pubsub_topic, resource["name"], "roles/pubsub.publisher", default_pubsub_service_account)
+                        add_binding(
+                            self.versioned_clients.pubsub_topic,
+                            resource["name"],
+                            "roles/pubsub.publisher",
+                            default_pubsub_service_account,
+                        )
                     except HttpError as e:
                         if e.resp.status == 403:
-                            log.info(f"User is not authorized to add IAM role 'roles/pubsub.publisher' to topic '{resource['name']}' you need to handle this manually.")
+                            log.info(
+                                f"User is not authorized to add IAM role 'roles/pubsub.publisher' to topic '{resource['name']}' you need to handle this manually."
+                            )
 
             except HttpError as e:
                 if e.resp.status == 409:
@@ -83,7 +92,7 @@ class PubSubTopic(Infrastructure):
                             "patch",
                             parent=None,
                             params={
-                                "name": self.resource[resource_id]["name"],
+                                "name": self.resources[resource_id]["name"],
                                 "body": {"topic": params, "updateMask": updateMask},
                             },
                         )
@@ -92,9 +101,9 @@ class PubSubTopic(Infrastructure):
                     raise e
 
     def destroy(self, config={}):
-        if not self.resource:
+        if not self.resources:
             return
-        for resource_id, resource in self.resource.items():
+        for resource_id, resource in self.resources.items():
             try:
                 resp = self.versioned_clients.pubsub_topic.execute(
                     "delete", parent_key="topic", parent_schema=resource["name"]
@@ -111,11 +120,11 @@ class PubSubTopic(Infrastructure):
         paths = []
 
         # if there is user config, there is nothing to compare with
-        if not self.resource[resource_id].get("config"):
+        if not self.resources[resource_id].get("config"):
             return paths
 
         deployed_config = self.get(resource_id)
-        for k, v in self.resource[resource_id]["config"].items():
+        for k, v in self.resources[resource_id]["config"].items():
             try:
                 # a value set in the desired config is
                 # different from the value deployed
@@ -129,14 +138,14 @@ class PubSubTopic(Infrastructure):
         return paths
 
     def get(self, resource_id):
-        if not self.resource or not resource_id:
+        if not self.resources or not resource_id:
             return
         return self.versioned_clients.pubsub_topic.execute(
-            "get", parent=None, params={"topic": self.resource[resource_id]["name"]}
+            "get", parent=None, params={"topic": self.resources[resource_id]["name"]}
         )
 
     def get_config(self, config={}):
-        if not self.resource:
+        if not self.resources:
             return
 
         return {"resource_type": self.resource_type, "values": {}}

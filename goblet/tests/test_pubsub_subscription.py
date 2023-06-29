@@ -501,3 +501,28 @@ class TestPubSubSubscription:
         responses = get_responses("pubsub-deploy-subscription-config")
         assert put_subscription["body"]["enableExactlyOnceDelivery"]
         assert len(responses) == 3
+
+    def test_deploy_pubsub_subscription_with_dlq(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-dlq")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        app = Goblet(
+            function_name="goblet-topic-subscription",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.pubsub_subscription("test", dlq=True)(dummy_function)
+
+        app.deploy(force=True, skip_backend=True, skip_infra=True)
+
+        put_subscription = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-test_1.json",
+        )
+        assert put_subscription["body"]["deadLetterPolicy"]["deadLetterTopic"] == (
+            "projects/goblet/topics/goblet-topic-subscription-test-dlq"
+        )

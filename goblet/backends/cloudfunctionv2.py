@@ -12,6 +12,7 @@ from goblet.common_cloud_actions import (
     get_cloudfunction_url,
 )
 from goblet.errors import GobletValidationError
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 
 
 class CloudFunctionV2(Backend):
@@ -22,7 +23,14 @@ class CloudFunctionV2(Backend):
     config_key = "cloudfunction"
     monitoring_type = "cloud_function"
     monitoring_label_key = "function_name"
-    required_apis = ["cloudfunctions"]
+    required_apis = ["cloudfunctions", "cloudresourcemanager"]
+    permissions = [
+        "cloudfunctions.functions.getIamPolicy",
+        "cloudfunctions.functions.setIamPolicy",
+        "cloudfunctions.operations.get",
+        "cloudfunctions.functions.sourceCodeSet",
+        *gcp_generic_resource_permissions("cloudfunctions", "functions"),
+    ]
 
     def __init__(self, app):
         self.client = VersionedClients({"cloudfunctions": "v2"}).cloudfunctions
@@ -138,4 +146,9 @@ class CloudFunctionV2(Backend):
             self.config.config.get("cloudfunction", {})
             .get("serviceConfig", {})
             .get("environmentVariables", {})
+        )
+
+    def add_invoker_binding(self, principles):
+        add_binding(
+            self.client, self.func_path, "roles/cloudfunctions.invoker", principles
         )

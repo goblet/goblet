@@ -6,12 +6,14 @@ import subprocess
 import json
 import requests
 import sys
+import yaml as yml
 
 from goblet.utils import get_g_dir, get_goblet_app
 from goblet.write_files import create_goblet_dir
 from goblet_gcp_client.client import get_default_project
 from goblet.__version__ import __version__
 import goblet.globals as g
+from goblet.permissions import create_custom_role_policy
 
 logging.basicConfig()
 
@@ -506,6 +508,67 @@ def enable_gcp_services(project, stage):
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
         app.check_or_enable_services(enable=True)
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
+
+
+@services.command(name="autogen_iam")
+@click.option("--yaml", "yaml", is_flag=True)
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def autogen_iam(yaml, stage):
+    """Generate a custom role json or yaml
+
+    Can create the custom role using gcloud cli using the yaml output:
+
+    gcloud iam roles create myCompanyAdmin --organization=123456789012 --file=my-role-definition.yaml
+    """
+    os.environ["X-GOBLET-DEPLOY"] = "false"
+    try:
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        permissions = app.get_permissions()
+        custom_role_policy = create_custom_role_policy(app.function_name, permissions)
+        if yaml:
+            with open(".goblet/autogen_iam_role.yaml", "w") as f:
+                f.write(yml.dump(custom_role_policy))
+        else:
+            with open(".goblet/autogen_iam_role.json", "w") as f:
+                f.write(json.dumps(custom_role_policy))
+
+    except FileNotFoundError as not_found:
+        click.echo(
+            f"Missing {not_found.filename}. Make sure you are in the correct directory and this file exists"
+        )
+        sys.exit(1)
+
+
+@services.command(name="create_service_account")
+@click.option("-n", "--name", "name", envvar="NAME")
+@click.option("-p", "--project", "project", envvar="GOOGLE_PROJECT")
+@click.option("-s", "--stage", "stage", envvar="STAGE")
+def create_service_account(name, project, stage):
+    """Create a custom role and service account for deploying the goblet app"""
+    os.environ["X-GOBLET-DEPLOY"] = "true"
+    try:
+        _project = project or get_default_project()
+        if not _project:
+            click.echo(
+                "Project not found. Set --project flag or add to gcloud by using gcloud config set project PROJECT"
+            )
+        os.environ["GOOGLE_PROJECT"] = _project
+        if stage:
+            os.environ["STAGE"] = stage
+        app = get_goblet_app(GConfig().main_file or "main.py")
+        permissions = app.get_permissions()
+        custom_role_policy = create_custom_role_policy(
+            name or app.function_name, permissions
+        )
+        app.create_service_account(custom_role_policy)
 
     except FileNotFoundError as not_found:
         click.echo(

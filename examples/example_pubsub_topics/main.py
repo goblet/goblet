@@ -29,6 +29,7 @@ def publish(request):
 @app.pubsub_subscription("goblet-created-test-topic", dlq=True)
 def topic(data):
     app.log.info(data)
+    # Simulates failure to trigger DLQ
     return "Internal Server Error", 500
 
 # Triggered by DLQ topic

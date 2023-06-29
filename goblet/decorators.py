@@ -139,11 +139,17 @@ class Goblet_Decorators:
             kwargs["use_subscription"] = True
             self._register_infrastructure(
                 handler_type="pubsub_topic",
-                kwargs={"name": f"{topic}-dlq", "config": dlq_topic_config, "dlq": True},
+                kwargs={
+                    "name": f"{topic}-dlq",
+                    "config": dlq_topic_config,
+                    "dlq": True,
+                },
             )
             dlq_policy = {
                 "deadLetterPolicy": {
-                    "deadLetterTopic": self.infrastructure["pubsub_topic"].resource[f"{topic}-dlq"]["name"],
+                    "deadLetterTopic": self.infrastructure["pubsub_topic"].resources[
+                        f"{topic}-dlq"
+                    ]["name"],
                 }
             }
             if "config" in kwargs:
