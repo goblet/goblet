@@ -183,7 +183,6 @@ class PubSub(Handler):
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
-        log.info(source)
         user_configs = self.config.cloudfunction or {}
         if self.versioned_clients.cloudfunctions.version == "v1":
             req_body = {
