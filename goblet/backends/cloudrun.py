@@ -158,6 +158,9 @@ class CloudRun(Backend):
 
         create_cloudbuild(client, req_body)
 
+    def skip_deployment(self):
+        return self.skip_run_deployment
+
     def skip_run_deployment(self):
         """Skip cloudrun deployment if only jobs"""
         skip = True

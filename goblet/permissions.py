@@ -42,7 +42,7 @@ def add_binding(client, resource_parent_schema, roleName, principals):
     )
     bindings = resp.get("bindings", [])
     # default service account type for bindings
-    principals = [f"serviceAccount:{p}" for p in principals if ":" not in p]
+    principals = [f"serviceAccount:{p}" if ":" not in p else p for p in principals]
     role_missing = True
     # Check to see if desired role and principle exist
     for role_binding in bindings:

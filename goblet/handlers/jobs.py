@@ -139,3 +139,16 @@ class Jobs(Handler):
                 log.info("Jobs already destroyed")
             else:
                 raise e
+
+    def set_invoker_permissions(self):
+        if self.config.bindings:
+            for job_name in self.resources.keys():
+                log.info(f"adding IAM bindings for cloudrun job {job_name}")
+                policy_bindings = {"policy": {"bindings": self.config.bindings}}
+                self.versioned_clients.run_job.execute(
+                    "setIamPolicy",
+                    parent_key="resource",
+                    parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+                    + job_name,
+                    params={"body": policy_bindings},
+                )

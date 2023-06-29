@@ -56,6 +56,9 @@ class Backend:
     def deploy(self, force=False):
         raise NotImplementedError("destroy")
 
+    def skip_deployment(self):
+        return False
+
     def destroy(self, all=False):
         raise NotImplementedError("destroy")
 

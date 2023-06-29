@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwX/RQxYEeQ=",
+    "bindings": [
+      {
+        "role": "roles/run.invoker",
+        "members": [
+          "user:test.user@goblet.com"
+        ]
+      }
+    ]
+  }
+}

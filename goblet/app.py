@@ -113,6 +113,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             registered_handlers
             and skip_backend
             and (handlers or not skip_handlers)
+            and not backend.skip_deployment()
             and not backend.get()
         ):
             log.error("backend is not deployed, handlers cannot be deployed. exiting.")
