@@ -297,10 +297,11 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9744; [Cloud Endpoints](https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions) trigger \
  &#9745; [EventArc](https://cloud.google.com/eventarc/docs) trigger \
  &#9745; [Redis](https://cloud.google.com/memorystore) infrastructure \
- &#9744; [Cloud Tracing](https://cloud.google.com/trace/docs/setup/python-ot) \
  &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions) \
  &#9745; Deploy API Gateway from existing openapi spec \
- &#9745; Deploy arbitrary Dockerfile to Cloudrun 
+ &#9745; Deploy arbitrary Dockerfile to Cloudrun \
+ &#9745; Create Deployment Service Accounts \
+ &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers
 
 
 ## Want to Contribute

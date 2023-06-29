@@ -184,6 +184,7 @@ You can customize the configs for an Api Gateway using the `apiConfig` key in `c
         }
     }  
 
+
 Private Python Libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -199,12 +200,27 @@ would look as follows
                 "GIT_TOKEN":"YOURGITHUBTOKEN"
             }
         }
-    } 
+    }
 
-Iam Bindings
+
+Permissions and Service Accounts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can view required permissions for deploying your goblet application by running `goblet services autogen_iam`. This will 
+create a `autogen_iam_role.json` file in `.goblet` folder with all the required permissions needed to deploy the selected resources. 
+You can add a `--yaml` flag to create the role in yaml format. 
+
+You can create a custom role based on the permissions needed to deploy you goblet application and create a custom service account that uses this role by running 
+`goblet services create_service_account -p PROJECT`. This will create a service account with the same name as your application. 
+
+
+IAM Bindings
 ^^^^^^^^^^^^
 
-You can add Iam bindings to your cloudfunctions by adding a `binding` section to your `config.json` file.
+Goblet will automatically add IAM bindings required by handlers during deployment. For example, the service account attached to a scheduled job
+or pubsub will automatically be granted invoker access on the backend. 
+
+You can add additional IAM bindings to your application by adding a `binding` section to your `config.json` file.
 The bindings should be in the `GCP Policy format <https://cloud.google.com/functions/docs/reference/rest/v1/Policy>`_
 
 For example to allow unauthenticated (public) access to your cloudfunctions you would add the `roles/cloudfunctions.invoker` to
@@ -438,6 +454,7 @@ your api_keys using `os.environ["env-variable-name"]` which will return the valu
         }
     }
 
+
 Authentication
 ^^^^^^^^^^^^^^
 API gateway supports several authentication options including, `jwt`_, `firebase`_, `auth0`_, `Okta`_, `google_id`_, 
@@ -599,6 +616,7 @@ In some cases there is additional context passed with the event. For example for
         context = app.request_context
         return "context"
 
+
 Response
 ^^^^^^^^
 Goblet http function response should be of the form a flask `response <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response>`__. See more at the `cloudfunctions`_ documentation
@@ -662,6 +680,7 @@ This will send a JSON response like this to the browser:
         "email": "admin@localhost",
         "id": 42
     }
+
 
 OpenApi Spec
 ^^^^^^^^^^^^
@@ -758,6 +777,7 @@ If you use a custom schema type you should create a schema class that inherits f
 
 .. _OPENAPI: https://swagger.io/specification/
 .. _GATEWAY: https://cloud.google.com/api-gateway/docs/openapi-overview
+
 
 Multiple Files
 ^^^^^^^^^^^^^^
@@ -863,6 +883,7 @@ cloudfunction, specify the endpoint in the `backend` argment in `route`. Note th
     def home():
         return 
 
+
 Cors
 ^^^^
 
@@ -894,6 +915,7 @@ Use the `CORSConfig` class to set customized cors headers from the `goblet.resou
         return jsonify('localhost is allowed')
 
 Setting cors on an endpoint or the application will automatically add an OPTIONS method to support preflighting requests. 
+
 
 Multiple Cloudfunctions
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -940,6 +962,7 @@ in the packaged zipfile.
 Note: There is a bug when uploading a different `main_file`, while also having `main.py` in your code, so if you decide to use `main_file` remove `main.py`. The bug 
 shows the previos main.py in the gcp console, however the local zipfile and uploaded zipfile in gcs both contain the correct `main.py` 
 
+
 Syncing State
 ^^^^^^^^^^^^^
 
@@ -947,6 +970,7 @@ The cli command `goblet sync` will sync resources that are deployed in GCP based
 convention that are no longer in the app configuration. For example schuduled jobs start with the function_name prefix so if the function_name is goblet_function
 the sync command will flag any scheduled jobs that start with the prefix `goblet_function` that are not in the current app config. Note this may cause some resources
 that are named similar to be deleted so make sure to run the command with `--dryrun` flag to see what resources are flagged for deletion.
+
 
 Middleware
 ^^^^^^^^^^
@@ -968,6 +992,7 @@ handler or do post prosessing on your responses.
 
 You can have your middleware trigger only on certain event types using the `event_type` argument. Default is `all`. Possible 
 event types are `["all", "http", "schedule", "pubsub", "storage", "route"]`
+
 
 Labels
 ^^^^^^
@@ -993,6 +1018,7 @@ config.json
             }
         }
     }
+
 
 Deploying Arbitrary Services
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
