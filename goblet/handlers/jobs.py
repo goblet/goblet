@@ -3,6 +3,7 @@ import os
 
 from goblet.handlers.handler import Handler
 from goblet.common_cloud_actions import getCloudbuildArtifact
+from goblet.permissions import gcp_generic_resource_permissions
 
 from googleapiclient.errors import HttpError
 
@@ -18,7 +19,15 @@ class Jobs(Handler):
     resource_type = "job"
     valid_backends = ["cloudrun"]
     can_sync = True
-    required_apis = ["cloudbuild", "run"]
+    required_apis = ["cloudbuild", "run", "cloudfunctions"]
+    permissions = [
+        *gcp_generic_resource_permissions("run", "jobs"),
+        "run.operations.get",
+        "cloudbuild.builds.create",
+        "cloudbuild.builds.get",
+        "cloudbuild.builds.list",
+        "cloudfunctions.functions.sourceCodeSet",
+    ]
 
     def register(self, name, func, kwargs):
         task_id = kwargs["task_id"]
@@ -130,3 +139,16 @@ class Jobs(Handler):
                 log.info("Jobs already destroyed")
             else:
                 raise e
+
+    def set_invoker_permissions(self):
+        if self.config.bindings:
+            for job_name in self.resources.keys():
+                log.info(f"adding IAM bindings for cloudrun job {job_name}")
+                policy_bindings = {"policy": {"bindings": self.config.bindings}}
+                self.versioned_clients.run_job.execute(
+                    "setIamPolicy",
+                    parent_key="resource",
+                    parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
+                    + job_name,
+                    params={"body": policy_bindings},
+                )

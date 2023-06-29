@@ -5,6 +5,7 @@ from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project, get_default_location
 
 from goblet.common_cloud_actions import get_cloudrun_url
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 
 from googleapiclient.errors import HttpError
 
@@ -21,6 +22,9 @@ class Scheduler(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     can_sync = True
     required_apis = ["cloudscheduler"]
+    permissions = [
+        *gcp_generic_resource_permissions("cloudscheduler", "jobs"),
+    ]
 
     def register(self, name, func, kwargs):
         schedule = kwargs["schedule"]
@@ -110,6 +114,9 @@ class Scheduler(Handler):
                 raise ValueError(
                     "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
                 )
+
+        self.service_accounts = [service_account]
+
         log.info("deploying scheduled jobs......")
         for job_name, job in self.resources.items():
             if job["uri"]:
@@ -130,7 +137,15 @@ class Scheduler(Handler):
 
             self.deploy_job(job_name, job["job_json"])
             triggered_resource = f"{self.name}-{job_name.split('schedule-job-')[-1]}"
-            self.set_iam_policy(target, triggered_resource, service_account)
+            # Set invoker permission on cloudrun job
+            if "jobs/" in target:
+                add_binding(
+                    self.versioned_clients.run_job,
+                    "projects/{project_id}/locations/{location_id}/jobs/"
+                    + triggered_resource,
+                    "roles/run.invoker",
+                    [f"serviceAccount:{service_account}"],
+                )
 
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
@@ -184,33 +199,5 @@ class Scheduler(Handler):
         except HttpError as e:
             if e.resp.status == 404:
                 log.info("Scheduled jobs already destroyed")
-            else:
-                raise e
-
-    def set_iam_policy(self, target, triggered_resource, service_account):
-        """set iam policy for job to be triggered on schedule"""
-        try:
-            log.info(f"setting iam policy for {triggered_resource}")
-            policy = {
-                "policy": {
-                    "bindings": {
-                        "role": "roles/run.invoker",
-                        "members": [f"serviceAccount:{service_account}"],
-                    }
-                }
-            }
-            if "jobs/" in target:
-                self.versioned_clients.run_job.execute(
-                    "setIamPolicy",
-                    params={"body": policy},
-                    parent_key="resource",
-                    parent_schema="projects/{project_id}/locations/{location_id}/jobs/"
-                    + triggered_resource,
-                )
-        except HttpError as e:
-            if e.resp.status == 403:
-                log.error(
-                    f"unable to set iam policy for {triggered_resource} {e.error_details}"
-                )
             else:
                 raise e

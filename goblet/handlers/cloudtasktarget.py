@@ -43,6 +43,7 @@ class CloudTaskTarget(Handler):
             raise e
 
     def _deploy(self, source=None, entrypoint=None, config={}):
+        self.service_accounts = self.config.cloudtask.get("serviceAccount", [])
         return
 
     def destroy(self):

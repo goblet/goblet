@@ -8,6 +8,7 @@ import os
 
 from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project, get_default_location
+from goblet.permissions import gcp_generic_resource_permissions
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -25,6 +26,7 @@ class EventArc(Handler):
     valid_backends = ["cloudrun"]
     can_sync = True
     required_apis = ["eventarc"]
+    permissions = [*gcp_generic_resource_permissions("eventarc", "triggers")]
 
     def __init__(self, name, backend, versioned_clients=None, resources=None):
         super(EventArc, self).__init__(
@@ -86,6 +88,8 @@ class EventArc(Handler):
             raise ValueError(
                 "Service account not found for cloudrun or eventarc. You can set `serviceAccount` field in config.json under `eventarc`"
             )
+
+        self.service_accounts = [service_account]
 
         log.info("deploying eventarc triggers......")
         for trigger in self.resources:

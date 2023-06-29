@@ -28,6 +28,8 @@ from goblet.infrastructures.pubsub import PubSubTopic
 
 import goblet.globals as g
 
+from goblet.common_cloud_actions import deploy_custom_role, deploy_service_account
+
 from typing import List
 
 log = logging.getLogger(__name__)
@@ -112,6 +114,7 @@ class Resource_Manager:
             "after": {},
         }
         self.current_request = None
+        self.function_name = function_name
 
     def __call__(self, request, context=None):
         """Goblet entrypoint"""
@@ -362,3 +365,8 @@ class Resource_Manager:
             client_versions[version_key] = backend_class.supported_versions[-1]
 
         return backend_class
+
+    def create_service_account(self, role):
+        iam_role_client = VersionedClients().iam_roles
+        deploy_custom_role(iam_role_client, role)
+        deploy_service_account(VersionedClients(), self.function_name, role["roleId"])

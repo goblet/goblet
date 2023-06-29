@@ -18,6 +18,8 @@ class Handler:
     resource_type = ""
     can_sync = False
     required_apis = []
+    permissions = []
+    service_accounts = []
 
     def __init__(
         self,
@@ -45,6 +47,10 @@ class Handler:
         if not self.resources:
             return
         self._deploy(source, entrypoint)
+        try:
+            self.set_invoker_permissions()
+        except Exception:
+            log.warning(f"Error setting invoker permissions for {self.resource_type}")
 
     def _deploy(self, source=None, entrypoint=None):
         raise NotImplementedError("deploy")
@@ -72,3 +78,12 @@ class Handler:
         if not self.resources:
             return
         return check_or_enable_service(self.required_apis, enable)
+
+    def get_permissions(self):
+        if len(self.resources) > 0:
+            return self.permissions
+        return []
+
+    def set_invoker_permissions(self):
+        if self.service_accounts:
+            self.backend.add_invoker_binding(self.service_accounts)

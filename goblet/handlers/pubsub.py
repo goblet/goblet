@@ -14,6 +14,7 @@ import logging
 from goblet.handlers.handler import Handler
 from goblet_gcp_client.client import get_default_project
 from goblet.utils import attributes_to_filter
+from goblet.permissions import gcp_generic_resource_permissions
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -27,7 +28,8 @@ class PubSub(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
-    required_apis = ["pubsub", "cloudfunctions"]
+    required_apis = ["pubsub"]
+    permissions = gcp_generic_resource_permissions("pubsub", "subscriptions")
 
     def register(self, name, func, kwargs):
         topic = kwargs["topic"]
@@ -133,6 +135,7 @@ class PubSub(Handler):
             raise ValueError(
                 "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
+        self.service_accounts = [service_account]
         req_body = {
             "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
