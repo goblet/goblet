@@ -19,7 +19,7 @@ from goblet_gcp_client import (
 class TestPermissions:
     def test_gcp_generic_resource_permissions(self):
         permissions = gcp_generic_resource_permissions("cloudfunctions", "functions")
-        assert "cloudfunctions.function.create" in permissions
+        assert "cloudfunctions.functions.create" in permissions
         assert len(permissions) == 5
 
     def test_get_permissions(self):

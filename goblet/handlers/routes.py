@@ -126,7 +126,7 @@ class Routes(Handler):
         log.info("deploying api......")
         base_url = self.backend.http_endpoint
         self.generate_openapi_spec(base_url)
-        if self.config.apiConfig.get("gatewayServiceAccount"):
+        if self.config and self.config.apiConfig.get("gatewayServiceAccount"):
             self.service_accounts = [self.config.apiConfig.get("gatewayServiceAccount")]
         deploy_apigateway(
             self.name,
