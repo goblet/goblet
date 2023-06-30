@@ -11,7 +11,7 @@
         },
         "enableExactlyOnceDelivery": true,
         "deadLetterPolicy": {
-            "deadLetterTopic": "projects/goblet/topics/goblet-topic-subscription-test-dlq",
+            "deadLetterTopic": "projects/goblet/topics/test-dlq",
             "maxDeliveryAttempts": 5
         },
         "state": "ACTIVE"

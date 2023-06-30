@@ -517,12 +517,20 @@ class TestPubSubSubscription:
 
         app.pubsub_subscription("test", dlq=True)(dummy_function)
 
-        app.deploy(force=True, skip_backend=True, skip_infra=True)
+        app.deploy(force=True, skip_backend=True)
+
+        put_topic = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "put-v1-projects-goblet-topics-test-dlq_1.json",
+        )
+        assert put_topic["body"]["name"] == (
+            "projects/goblet/topics/test-dlq"
+        )
 
         put_subscription = get_response(
             "pubsub-deploy-subscription-dlq",
             "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-test_1.json",
         )
         assert put_subscription["body"]["deadLetterPolicy"]["deadLetterTopic"] == (
-            "projects/goblet/topics/goblet-topic-subscription-test-dlq"
+            "projects/goblet/topics/test-dlq"
         )
