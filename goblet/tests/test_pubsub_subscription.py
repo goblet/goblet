@@ -523,9 +523,7 @@ class TestPubSubSubscription:
             "pubsub-deploy-subscription-dlq",
             "put-v1-projects-goblet-topics-test-dlq_1.json",
         )
-        assert put_topic["body"]["name"] == (
-            "projects/goblet/topics/test-dlq"
-        )
+        assert put_topic["body"]["name"] == ("projects/goblet/topics/test-dlq")
 
         put_subscription = get_response(
             "pubsub-deploy-subscription-dlq",
