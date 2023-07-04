@@ -105,7 +105,6 @@ class PubSub(Handler):
         if not self.resources:
             return
         for topic_name in self.resources:
-            log.info(self.resources[topic_name])
             # Deploy triggers
             for _, topic_info in self.resources[topic_name]["trigger"].items():
                 self._deploy_trigger(

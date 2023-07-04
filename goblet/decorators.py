@@ -137,18 +137,28 @@ class Goblet_Decorators:
         if dlq:
             log.info(f"DLQ enabled use of subscription will be forced to topic {topic}")
             kwargs["use_subscription"] = True
+            dlq_topic_name = f"{topic}-dlq" if "name" not in dlq_topic_config else dlq_topic_config.pop("name")
+            dlq_pull_subscription_config = dlq_topic_config.pop("pull_subscription_config", {})
+            dlq_pull_subscription_name = f"{dlq_topic_name}-pull-subscription" if "name" not in dlq_pull_subscription_config else dlq_pull_subscription_config.pop("name")
+            # Create DLQ topic
             self._register_infrastructure(
                 handler_type="pubsub_topic",
                 kwargs={
-                    "name": f"{topic}-dlq",
-                    "config": dlq_topic_config,
-                    "dlq": True,
+                    "name": dlq_topic_name,
+                    "kwargs": {
+                        "config": dlq_topic_config,
+                        "dlq": True,
+                        "dlq_pull_subscription": {
+                            "name": dlq_pull_subscription_name,
+                            "config": dlq_pull_subscription_config,
+                        },
+                    },
                 },
             )
             dlq_policy = {
                 "deadLetterPolicy": {
                     "deadLetterTopic": self.infrastructure["pubsub_topic"].resources[
-                        f"{topic}-dlq"
+                        dlq_topic_name
                     ]["name"],
                 }
             }

@@ -6,6 +6,7 @@ import logging
 from goblet.client import VersionedClients
 from goblet.permissions import gcp_generic_resource_permissions, add_binding
 from goblet.client import get_default_project_number
+from goblet.common_cloud_actions import create_pubsub_subscription
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -38,12 +39,14 @@ class PubSubTopic(Infrastructure):
         resource_id = name
         topic_config = kwargs.get("config", None)
         dlq = kwargs.get("dlq", False)
+        dlq_pull_subscription = kwargs.get("dlq_pull_subscription", None)
 
         self.resources[resource_id] = {
             "id": resource_id,
             "name": f"{self.versioned_clients.pubsub_topic.parent}/topics/{name}",
             "config": topic_config,
             "dlq": dlq,
+            "dlq_pull_subscription": dlq_pull_subscription,
         }
         return PubSubClient(topic=self.resources[resource_id]["name"])
 
@@ -65,7 +68,7 @@ class PubSubTopic(Infrastructure):
                     params={"body": params},
                 )
                 log.info(f'PubSub Topic [{resource["id"]}] deployed')
-
+    
                 if resource["dlq"] is True:
                     # Add IAM roles to use dead-letter topics
                     try:
@@ -81,6 +84,21 @@ class PubSubTopic(Infrastructure):
                             log.info(
                                 f"User is not authorized to add IAM role 'roles/pubsub.publisher' to topic '{resource['name']}' you need to handle this manually."
                             )
+
+                    # Create Pull Subscription for DLQ so messages don't get lost
+                    dlq_pull_subscription = resource["dlq_pull_subscription"]
+                    log.info(f"Creating pull subscription {dlq_pull_subscription['name']} for DLQ {resource['id']}")
+                    create_pubsub_subscription(
+                        client=self.versioned_clients.pubsub,
+                        sub_name=dlq_pull_subscription["name"],
+                        force_update=False,
+                        req_body={
+                            "name": dlq_pull_subscription["name"],
+                            "topic": resource["name"],
+                            **dlq_pull_subscription.get("config", {}),
+                        },
+                    )
+                    
 
             except HttpError as e:
                 if e.resp.status == 409:
