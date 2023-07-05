@@ -340,7 +340,9 @@ class LogMatchCondition(AlertCondition):
         super().__init__(
             name=name,
             log_match={
-                "filter": 'resource.type="{monitoring_type}"\nresource.labels.{monitoring_label_key}="{resource_name}"\n'
+                "filter": filter
+                if kwargs.get("replace_filter", False)
+                else 'resource.type="{monitoring_type}"\nresource.labels.{monitoring_label_key}="{resource_name}"\n'
                 + filter
             },
         )
