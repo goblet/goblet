@@ -27,7 +27,7 @@ REQUIRED = [
     "google-api-python-client>=2.83.0",
     "functions-framework>=3.0.0",
     "marshmallow>=3.15.0",
-    "pydantic>=1.10.2,<2.0.0'",
+    "pydantic>=1.10.2,<2.0.0",
     "PyYAML==6.0",
     "google-cloud-logging==3.5.0",
     "google-cloud-appengine-logging==1.3.0",
