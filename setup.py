@@ -22,16 +22,17 @@ VERSION = os.environ.get("VERSION")
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "apispec",
-    "click",
-    "google-api-python-client",
-    "functions-framework",
-    "marshmallow",
-    "pydantic",
-    "PyYAML",
-    "google-cloud-logging",
-    "goblet-gcp-client",
-    "protobuf",
+    "apispec==5.1.1",
+    "click>=8.0.4",
+    "google-api-python-client>=2.83.0",
+    "functions-framework>=3.0.0",
+    "marshmallow>=3.15.0",
+    "pydantic>=1.10.2,<2.0.0",
+    "PyYAML==6.0",
+    "google-cloud-logging==3.5.0",
+    "google-cloud-appengine-logging==1.3.0",
+    "goblet-gcp-client>=0.1.6",
+    "protobuf==3.20.3",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
