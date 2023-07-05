@@ -38,7 +38,7 @@ class Backend:
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
         include = ["*.py", ".goblet/*.py", "requirements.txt"]
-        exclude = ["build", "docs", "examples", "test", "tests", "venv"]
+        exclude = ["build", "docs", "examples", "test", "tests", "venv", ".git"]
 
         include.extend(custom_files.get("include", []))
         exclude.extend(custom_files.get("exclude", []))
