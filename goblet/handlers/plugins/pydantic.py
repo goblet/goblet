@@ -2,7 +2,6 @@ from typing import Any, Optional
 
 from apispec import BasePlugin, APISpec
 from pydantic import BaseModel
-from pydantic.main import ModelMetaclass
 import copy
 
 
@@ -59,7 +58,7 @@ class PydanticPlugin(BasePlugin):
         for parameter in parameters:
             if (
                 isinstance(parameter, dict)
-                and issubclass(type(parameter.get("schema", {})), ModelMetaclass)
+                and issubclass(type(parameter.get("schema", {})), BaseModel)
                 and "in" in parameter
             ):
                 schema_instance = parameter.pop("schema")
