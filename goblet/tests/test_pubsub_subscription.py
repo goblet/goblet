@@ -508,6 +508,7 @@ class TestPubSubSubscription:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-dlq")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+        reset_replay_count()
 
         app = Goblet(
             function_name="goblet-topic-subscription",
