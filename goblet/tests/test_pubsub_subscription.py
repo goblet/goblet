@@ -534,7 +534,7 @@ class TestPubSubSubscription:
         ) and put_pull_subscription["body"]["topic"] == (
             "projects/goblet/topics/test-dlq"
         )
-        
+
         put_subscription = get_response(
             "pubsub-deploy-subscription-dlq",
             "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-test_1.json",

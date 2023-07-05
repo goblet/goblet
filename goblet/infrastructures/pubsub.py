@@ -6,7 +6,10 @@ from goblet.infrastructures.infrastructure import Infrastructure
 from goblet.client import VersionedClients
 from goblet.permissions import gcp_generic_resource_permissions, add_binding
 from goblet.client import get_default_project_number
-from goblet.common_cloud_actions import create_pubsub_subscription, destroy_pubsub_subscription
+from goblet.common_cloud_actions import (
+    create_pubsub_subscription,
+    destroy_pubsub_subscription,
+)
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -68,7 +71,7 @@ class PubSubTopic(Infrastructure):
                     params={"body": params},
                 )
                 log.info(f'PubSub Topic [{resource["id"]}] deployed')
-    
+
                 if resource["dlq"] is True:
                     # Add IAM roles to use dead-letter topics
                     try:
@@ -87,7 +90,9 @@ class PubSubTopic(Infrastructure):
 
                     # Create Pull Subscription for DLQ so messages don't get lost
                     dlq_pull_subscription = resource["dlq_pull_subscription"]
-                    log.info(f"Creating pull subscription {dlq_pull_subscription['name']} for DLQ {resource['id']}")
+                    log.info(
+                        f"Creating pull subscription {dlq_pull_subscription['name']} for DLQ {resource['id']}"
+                    )
                     create_pubsub_subscription(
                         client=self.versioned_clients.pubsub,
                         sub_name=dlq_pull_subscription["name"],
@@ -98,7 +103,6 @@ class PubSubTopic(Infrastructure):
                             **dlq_pull_subscription.get("config", {}),
                         },
                     )
-                    
 
             except HttpError as e:
                 if e.resp.status == 409:
@@ -126,11 +130,13 @@ class PubSubTopic(Infrastructure):
                 if resource["dlq"] is True:
                     # Delete Pull Subscription for DLQ
                     dlq_pull_subscription = resource["dlq_pull_subscription"]
-                    log.info(f"Deleting pull subscription {dlq_pull_subscription['name']} for DLQ {resource['id']}")
-                    destroy_pubsub_subscription(
-                        self.versioned_clients.pubsub, dlq_pull_subscription['name']
+                    log.info(
+                        f"Deleting pull subscription {dlq_pull_subscription['name']} for DLQ {resource['id']}"
                     )
-                    
+                    destroy_pubsub_subscription(
+                        self.versioned_clients.pubsub, dlq_pull_subscription["name"]
+                    )
+
                 resp = self.versioned_clients.pubsub_topic.execute(
                     "delete", parent_key="topic", parent_schema=resource["name"]
                 )
