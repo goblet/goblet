@@ -1,0 +1,8 @@
+{
+    "headers": {},
+    "body": {
+        "name": "projects/goblet/subscriptions/goblet-topic-subscription-test-dlq",
+        "topic": "projects/goblet/topics/test-dlq",
+        "state": "ACTIVE"
+    }
+}

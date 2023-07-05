@@ -525,6 +525,16 @@ class TestPubSubSubscription:
         )
         assert put_topic["body"]["name"] == ("projects/goblet/topics/test-dlq")
 
+        put_pull_subscription = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "put-v1-projects-goblet-subscriptions-test-dlq-pull-subscription_1.json",
+        )
+        assert put_pull_subscription["body"]["name"] == (
+            "projects/goblet/subscriptions/goblet-topic-subscription-test-dlq"
+        ) and put_pull_subscription["body"]["topic"] == (
+            "projects/goblet/topics/test-dlq"
+        )
+        
         put_subscription = get_response(
             "pubsub-deploy-subscription-dlq",
             "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-test_1.json",
@@ -532,3 +542,5 @@ class TestPubSubSubscription:
         assert put_subscription["body"]["deadLetterPolicy"]["deadLetterTopic"] == (
             "projects/goblet/topics/test-dlq"
         )
+
+        assert get_replay_count() == 13

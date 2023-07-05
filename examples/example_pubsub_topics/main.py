@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import logging
 from goblet import Goblet, goblet_entrypoint
@@ -31,14 +30,8 @@ def publish(request):
 
 # Triggered by pubsub topic. Simulates failure to trigger DLQ
 @app.pubsub_subscription("goblet-created-test-topic", dlq=True)
-def topic(data):
-    app.log.info(data)
-    if data.get("message") == "failure":
-        # Simulates failure to trigger DLQ
-        return "Internal Server Error", 500
-    elif data.get("message") == "success":
-        return "success", 200
-        
+def subscription(data: str):
+    raise Exception("Simulating failure")
 
 # Backfill route to pull from DLQ
 @app.http(headers={"X-Backfill": "true"})
@@ -76,7 +69,8 @@ def backfill(request):
         for received_message in pull_response.received_messages:
             decoded_data = received_message.message.data.decode()
             try:
-                client.publish(message=json.loads(decoded_data))
+                app.log.info(f"Backfilling message {decoded_data}")
+                # TODO: Backfill logic here
                 backfill_response = "success"
             except Exception as e:
                 backfill_response = None

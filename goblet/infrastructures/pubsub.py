@@ -6,7 +6,7 @@ from goblet.infrastructures.infrastructure import Infrastructure
 from goblet.client import VersionedClients
 from goblet.permissions import gcp_generic_resource_permissions, add_binding
 from goblet.client import get_default_project_number
-from goblet.common_cloud_actions import create_pubsub_subscription
+from goblet.common_cloud_actions import create_pubsub_subscription, destroy_pubsub_subscription
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.INFO)
@@ -123,6 +123,14 @@ class PubSubTopic(Infrastructure):
             return
         for resource_id, resource in self.resources.items():
             try:
+                if resource["dlq"] is True:
+                    # Delete Pull Subscription for DLQ
+                    dlq_pull_subscription = resource["dlq_pull_subscription"]
+                    log.info(f"Deleting pull subscription {dlq_pull_subscription['name']} for DLQ {resource['id']}")
+                    destroy_pubsub_subscription(
+                        self.versioned_clients.pubsub, dlq_pull_subscription['name']
+                    )
+                    
                 resp = self.versioned_clients.pubsub_topic.execute(
                     "delete", parent_key="topic", parent_schema=resource["name"]
                 )
