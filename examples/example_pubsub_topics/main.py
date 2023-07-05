@@ -2,7 +2,7 @@ import datetime
 import json
 
 import logging
-from goblet import Goblet, goblet_entrypoint, Response
+from goblet import Goblet, goblet_entrypoint
 from goblet.infrastructures.pubsub import PubSubClient
 from goblet_gcp_client import Client
 
@@ -102,8 +102,6 @@ def backfill(request):
     app.log.info(
         f"Received {total_messages} messages: acknowledged {len(ack_ids)} messages and failed on {len(failed_ids)}"
     )
-    return Response(
-        f"Received {total_messages} messages: acknowledged {len(ack_ids)} messages and failed on {len(failed_ids)}",
-        status_code=200,
-    )
+    
+    return f"Received {total_messages} messages: acknowledged {len(ack_ids)} messages and failed on {len(failed_ids)}", 200
 

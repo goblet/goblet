@@ -1,2 +1,2 @@
 goblet-gcp @ git+https://github.com/nthings/goblet@main
-goblet-gcp-client
+goblet-gcp-client == 0.1.6

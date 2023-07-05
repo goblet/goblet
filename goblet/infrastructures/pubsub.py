@@ -1,8 +1,8 @@
 import json
+import logging
 from base64 import b64encode
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
-import logging
 from goblet.client import VersionedClients
 from goblet.permissions import gcp_generic_resource_permissions, add_binding
 from goblet.client import get_default_project_number
