@@ -501,3 +501,47 @@ class TestPubSubSubscription:
         responses = get_responses("pubsub-deploy-subscription-config")
         assert put_subscription["body"]["enableExactlyOnceDelivery"]
         assert len(responses) == 3
+
+    def test_deploy_pubsub_subscription_with_dlq(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-dlq")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+        reset_replay_count()
+
+        app = Goblet(
+            function_name="goblet-topic-subscription",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.pubsub_subscription("test", dlq=True)(dummy_function)
+
+        app.deploy(force=True, skip_backend=True)
+
+        put_topic = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "put-v1-projects-goblet-topics-test-dlq_1.json",
+        )
+        assert put_topic["body"]["name"] == ("projects/goblet/topics/test-dlq")
+
+        put_pull_subscription = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "put-v1-projects-goblet-subscriptions-test-dlq-pull-subscription_1.json",
+        )
+        assert put_pull_subscription["body"]["name"] == (
+            "projects/goblet/subscriptions/goblet-topic-subscription-test-dlq"
+        ) and put_pull_subscription["body"]["topic"] == (
+            "projects/goblet/topics/test-dlq"
+        )
+
+        put_subscription = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-test_1.json",
+        )
+        assert put_subscription["body"]["deadLetterPolicy"]["deadLetterTopic"] == (
+            "projects/goblet/topics/test-dlq"
+        )
+
+        assert get_replay_count() == 13
