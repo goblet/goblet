@@ -166,6 +166,7 @@ provide an attribute dictionary which will only trigger the function if the pubs
 If using cloudrun backend or `use_subscription=true` the attributes will be created as a filter on the subscription itself. You can also pass in 
 a custom `filter` as well. Note that filters are not able to be modified once they are applied to a subscription. 
 In order to use `DLQ <https://cloud.google.com/pubsub/docs/dead-letter-topics>`__ you can pass in `dlq=True` to the decorator which will create a subscription with a dead letter topic.
+You can customize the dead letter topic configuration and pull subscription to that dlq by passing in `dlq_topic_config={"name": "custom-dlq-name", "dlq_topic_config": {"name": "custom-pull-subscription-name", "config": {}}}` to the decorator.
 
 In addition to filters you can also add configuration values that will be passed directly to the subscription. 
 By setting `config={"enableExactlyOnceDelivery": True}` you can enable exactly delivery to ensure messages are not redelivered once acknowledged.

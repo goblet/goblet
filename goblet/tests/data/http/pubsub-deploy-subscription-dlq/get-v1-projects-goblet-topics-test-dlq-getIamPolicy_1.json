@@ -3,13 +3,6 @@
     "body": {
         "etag": "ACAB",
         "version": "3",
-        "bindings": [
-            {
-                "role": "roles/pubsub.subscriber",
-                "members": [
-                  "serviceAccount:service-goblet@appspot.gserviceaccount.com"
-                ]
-              }
-        ]
+        "bindings": []
     }
 }
