@@ -123,7 +123,7 @@ class CloudRun(Backend):
 
     def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
-        build_configs = self.config.cloudbuild or {}
+        build_configs = self.config.cloudbuild.copy() if self.config.cloudbuild else {}
         registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
         build_configs.pop("artifact_registry", None)
 
