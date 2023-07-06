@@ -23,14 +23,14 @@ class NestedModel(BaseModel):
 
 
 class PydanticModelSimple(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     flt: float
-    idlist: Optional[List[int]]
+    idlist: Optional[List[int]] = None
 
 
 class PydanticModelSimpleOptional(BaseModel):
-    id: Optional[int]
-    flt: Optional[float]
+    id: Optional[int] = None
+    flt: Optional[float] = None
 
 
 class PydanticModel(BaseModel):

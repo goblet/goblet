@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from apispec import BasePlugin, APISpec
 from pydantic import BaseModel
-from pydantic.main import ModelMetaclass
+from pydantic._internal._model_construction import ModelMetaclass
 import copy
 
 
@@ -20,18 +20,18 @@ class PydanticPlugin(BasePlugin):
         name: str,
         definition: dict,
         model: Optional[BaseModel] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ):
         if model is None:
             return None
 
-        org_schema = model.schema(ref_template="#/definitions/{model}")
+        org_schema = model.model_json_schema(ref_template="#/definitions/{model}")
         schema = copy.deepcopy(org_schema)
-        if "definitions" in schema:
-            for k, v in schema["definitions"].items():
+        if "$defs" in schema:
+            for k, v in schema["$defs"].items():
                 if k not in self.spec.components.schemas:
                     self.spec.components.schema(k, v)
-            del schema["definitions"]
+            del schema["$defs"]
 
         return schema
 
@@ -73,16 +73,21 @@ class PydanticPlugin(BasePlugin):
         """
         Extract Properties from pydantic model and convert into query params
         """
-        schema = model.schema()
+        schema = model.model_json_schema()
         params = []
         for key, value in schema["properties"].items():
             param = {
                 "in": "query",
                 "name": key,
-                "type": value["type"],
                 "required": key in schema.get("required", []),
             }
-            if value["type"] == "array":
-                param["items"] = value["items"]
+            if values := value.get("anyOf"):
+                param["type"] = values[0]["type"]
+                if param["type"] == "array":
+                    param["items"] = values[0]["items"]
+            else:
+                param["type"] = value["type"]
+                if param["type"] == "array":
+                    param["items"] = value["items"]
             params.append(param)
         return params
