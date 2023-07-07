@@ -516,7 +516,7 @@ class TestPubSubSubscription:
         )
         setattr(app, "entrypoint", "app")
 
-        app.pubsub_subscription("test", dlq=True)(dummy_function)
+        app.pubsub_subscription("test", dlq=True, dlq_alert=True)(dummy_function)
 
         app.deploy(force=True, skip_backend=True)
 
@@ -544,4 +544,12 @@ class TestPubSubSubscription:
             "projects/goblet/topics/test-dlq"
         )
 
-        assert get_replay_count() == 13
+        post_alert = get_response(
+            "pubsub-deploy-subscription-dlq",
+            "post-v3-projects-goblet-alertPolicies_1.json",
+        )
+        assert post_alert["body"]["displayName"] == (
+            "pubsub-deploy-subscription-dlq-alert"
+        )
+
+        assert get_replay_count() == 15

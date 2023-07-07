@@ -19,7 +19,7 @@ creates an alert using that metric.
 
 For `LogMatchCondition` you can completely replace the filter if necessary by setting the `replace_filter` flag to True. 
 
-`PubSubMetricAlert` is a special case of `MetricCondition` that will create an alert for `pubsub.googleapis.com/subscription/num_dead_letter_messages`
+`PubSubDLQAlert` is a special case of `MetricCondition` that will create an alert for `pubsub.googleapis.com/subscription/dead_letter_message_count` on a subscription.
 
 .. code:: python
 
@@ -36,7 +36,7 @@ For `LogMatchCondition` you can completely replace the filter if necessary by se
     app.alert("custom",conditions=[CustomMetricCondition("custom", metric_filter='severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)', value=10)])
 
     # Example PubSub Alert that will trigger an incident if there are more than 10 dead letter messages in the subscription
-    app.alert("pubsub",conditions=[PubSubMetricAlert("pubsub", dlq_subscription="projects/{project}/subscriptions/{subscription}", value=10)])
+    app.alert("pubsub",conditions=[PubSubDLQAlert("pubsub", subscription_id="{subscription}", value=10)])
 .. _redis:
 
 Redis
