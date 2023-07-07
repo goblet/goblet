@@ -353,16 +353,19 @@ class LogMatchCondition(AlertCondition):
             }
         }
 
-class PubSubMetricAlert(MetricCondition):
+
+class PubSubDLQAlert(MetricCondition):
     """
     Creates and deploys an alert for dead letter queue messages in a pubsub subscription.
     """
-    
-    def __init__(self, name, dlq_subscription, value=1, **kwargs) -> None:
-        self.metric_filter = 'resource.subscription_id = "' + dlq_subscription + '" AND resource.type = "pubsub_subscription" AND metric.type = "pubsub.googleapis.com/subscription/dead_letter_message_count"'
+
+    def __init__(self, name, subscription_id, value=0, **kwargs) -> None:
         super().__init__(
             name=name,
             metric="pubsub.googleapis.com/subscription/dead_letter_message_count",
             value=value,
+            filter='resource.labels.subscription_id = "{subscription_id}" AND resource.type = "pubsub_subscription" AND metric.type = "pubsub.googleapis.com/subscription/dead_letter_message_count"'.format(
+                subscription_id=subscription_id
+            ),
             **kwargs,
         )
