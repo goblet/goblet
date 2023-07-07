@@ -17,6 +17,8 @@ If you do not need a fully customized alert you can use the built in classes for
 defaults in terms of duration and aggregations, but can be overriden as needed. The `CustomMetricCondition` creates a custom metric based on the filter provided and then 
 creates an alert using that metric.  
 
+For `LogMatchCondition` you can completely replace the filter if necessary by setting the `replace_filter` flag to True. 
+
 .. code:: python
 
     from goblet.infrastructures.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
