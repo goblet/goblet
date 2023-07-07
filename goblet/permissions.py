@@ -58,8 +58,6 @@ def add_binding(client, resource_parent_schema, roleName, principals):
                 role_binding["members"].extend(principals)
     if role_missing:
         bindings.append({"role": roleName, "members": principals})
-    else:
-        return
     log.info(f"setting iam policy for {resource_parent_schema}...")
     client.execute(
         "setIamPolicy",
