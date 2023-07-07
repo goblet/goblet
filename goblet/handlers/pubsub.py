@@ -153,6 +153,7 @@ class PubSub(Handler):
                 },
             },
             "labels": self.config.labels,
+            "deadLetterPolicy": deadLetterPolicy,
             **topic["config"],
         }
         deadLetterPolicy = topic["config"].get("deadLetterPolicy", {})
