@@ -138,7 +138,6 @@ class PubSub(Handler):
                 "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
             )
 
-        deadLetterPolicy = topic["config"].get("deadLetterPolicy", {})
         self.service_accounts = [service_account]
         req_body = {
             "name": sub_name,
@@ -154,9 +153,11 @@ class PubSub(Handler):
                 },
             },
             "labels": self.config.labels,
-            "deadLetterPolicy": deadLetterPolicy,
             **topic["config"],
         }
+        deadLetterPolicy = topic["config"].get("deadLetterPolicy", {})
+        if deadLetterPolicy != {}:
+            req_body["deadLetterPolicy"] = deadLetterPolicy
         create_pubsub_subscription(
             client=self.versioned_clients.pubsub,
             sub_name=sub_name,
