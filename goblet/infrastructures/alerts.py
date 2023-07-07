@@ -352,3 +352,20 @@ class LogMatchCondition(AlertCondition):
                 "autoClose": "604800s",
             }
         }
+
+
+class PubSubDLQAlert(MetricCondition):
+    """
+    Creates and deploys an alert for dead letter queue messages in a pubsub subscription.
+    """
+
+    def __init__(self, name, subscription_id, value=0, **kwargs) -> None:
+        super().__init__(
+            name=name,
+            metric="pubsub.googleapis.com/subscription/dead_letter_message_count",
+            value=value,
+            filter='resource.labels.subscription_id = "{subscription_id}" AND resource.type = "pubsub_subscription" AND metric.type = "pubsub.googleapis.com/subscription/dead_letter_message_count"'.format(
+                subscription_id=subscription_id
+            ),
+            **kwargs,
+        )

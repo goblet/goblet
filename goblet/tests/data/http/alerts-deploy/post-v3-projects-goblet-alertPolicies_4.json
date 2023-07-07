@@ -1,0 +1,38 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/alertPolicies/5579527381098681933",
+    "displayName": "pubsub-deploy-subscription-dlq-alert",
+    "combiner": "OR",
+    "creationRecord": {
+      "mutateTime": "2023-01-03T13:28:32.471100597Z",
+      "mutatedBy": "goblet@goblet.com"
+    },
+    "mutationRecord": {
+      "mutateTime": "2023-01-03T13:28:32.471100597Z",
+      "mutatedBy": "goblet@goblet.com"
+    },
+    "conditions": [
+      {
+        "conditionThreshold": {
+          "filter": "resource.labels.subscription_id=\"pubsub-deploy-subscription\" AND resource.type=\"pubsub_subscription\" AND metric.type = \"pubsub.googleapis.com/subscription/dead_letter_message_count\"",
+          "comparison": "COMPARISON_GT",
+          "thresholdValue": 0,
+          "duration": "60s",
+          "aggregations": [
+            {
+              "alignmentPeriod": "300s",
+              "perSeriesAligner": "ALIGN_MEAN"
+            }
+          ]
+        },
+        "displayName": "alerts-test-custom",
+        "name": "projects/goblet/alertPolicies/5579527381098681933/conditions/2944630438723502663"
+      }
+    ],
+    "notificationChannels": [
+      "projects/goblet/notificationChannels/12567779892392936191"
+    ],
+    "enabled": true
+  }
+}
