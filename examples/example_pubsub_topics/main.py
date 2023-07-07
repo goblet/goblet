@@ -29,7 +29,7 @@ def publish(request):
 
 
 # Triggered by pubsub topic. Simulates failure to trigger DLQ
-@app.pubsub_subscription("goblet-created-test-topic", dlq=True)
+@app.pubsub_subscription("goblet-created-test-topic", dlq=True, dlq_alert=True)
 def subscription(data: str):
     raise Exception("Simulating failure")
 
