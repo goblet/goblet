@@ -354,7 +354,7 @@ class LogMatchCondition(AlertCondition):
         }
 
 
-class PubSubDLQAlert(MetricCondition):
+class PubSubDLQCondition(MetricCondition):
     """
     Creates and deploys an alert for dead letter queue messages in a pubsub subscription.
     """

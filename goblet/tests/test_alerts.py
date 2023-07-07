@@ -3,7 +3,7 @@ from goblet.infrastructures.alerts import (
     MetricCondition,
     LogMatchCondition,
     CustomMetricCondition,
-    PubSubDLQAlert,
+    PubSubDLQCondition,
 )
 from goblet.backends import CloudFunctionV1
 
@@ -88,7 +88,7 @@ class TestAlerts:
         app.alert(
             "pubsubdlq",
             conditions=[
-                PubSubDLQAlert(
+                PubSubDLQCondition(
                     "pubsubdlq",
                     subscription_id="pubsub-deploy-subscription",
                 )
@@ -163,7 +163,7 @@ class TestAlerts:
         app.alert(
             "pubsubdlq",
             conditions=[
-                PubSubDLQAlert(
+                PubSubDLQCondition(
                     "pubsubdlq",
                     subscription_id="pubsub-deploy-subscription",
                 )

@@ -29,7 +29,10 @@ def publish(request):
 
 
 # Triggered by pubsub topic. Simulates failure to trigger DLQ
-@app.pubsub_subscription("goblet-created-test-topic", dlq=True, dlq_alert=True)
+@app.pubsub_subscription("goblet-created-test-topic", dlq=True, dlq_alert=True, dlq_alert_config={
+    # Trigger alert if 10 messages fail within 1 minute
+    "trigger_value": 10,
+})
 def subscription(data: str):
     raise Exception("Simulating failure")
 

@@ -14,7 +14,7 @@ from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
-from goblet.infrastructures.alerts import PubSubDLQAlert
+from goblet.infrastructures.alerts import PubSubDLQCondition
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -194,7 +194,7 @@ class Goblet_Decorators:
                     else dlq_alert_config.pop("trigger_value")
                 )
                 dlq_alert_config["conditions"] = [
-                    PubSubDLQAlert(
+                    PubSubDLQCondition(
                         "pubsub",
                         subscription_id=sub_name,
                         value=dlq_alert_trigger_value,
