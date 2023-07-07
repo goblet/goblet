@@ -156,8 +156,7 @@ class CloudRun(Backend):
             **build_configs,
         }
 
-        req_body["tags"] = build_configs.get("tags", [])
-        req_body["tags"].append(f"goblet-build-{self.name}")
+        req_body["tags"] = build_configs.get("tags", []) + [f"goblet-build-{self.name}"]
 
         create_cloudbuild(client, req_body)
 
