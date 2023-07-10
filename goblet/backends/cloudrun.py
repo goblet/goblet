@@ -156,6 +156,8 @@ class CloudRun(Backend):
             **build_configs,
         }
 
+        req_body["tags"] = build_configs.get("tags", []) + [f"goblet-build-{self.name}"]
+
         create_cloudbuild(client, req_body)
 
     def skip_deployment(self):
@@ -183,8 +185,10 @@ class CloudRun(Backend):
             "list",
             parent_key="projectId",
             parent_schema=get_default_project(),
-            params={},
+            params={"filter": f"tags=goblet-build-{self.name}"},
         )
+        if not resp:
+            return 0
         latest_build_source = resp["builds"][0].get("source")
         if not latest_build_source:
             return 0
