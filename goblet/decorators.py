@@ -13,6 +13,8 @@ from goblet.backends.cloudrun import CloudRun
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.cloudtask import CloudTaskQueue
+from goblet.infrastructures.pubsub import PubSubTopic
+from goblet.infrastructures.alerts import PubSubDLQCondition
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -40,6 +42,7 @@ SUPPORTED_INFRASTRUCTURES = {
     "redis": Redis,
     "vpcconnector": VPCConnector,
     "cloudtaskqueue": CloudTaskQueue,
+    "pubsub_topic": PubSubTopic,
 }
 
 
@@ -128,12 +131,92 @@ class Goblet_Decorators:
             },
         )
 
-    def topic(self, topic, **kwargs):
+    def pubsub_subscription(self, topic, **kwargs):
         """Pubsub topic trigger"""
+        dlq = kwargs.pop("dlq", False)
+        dlq_topic_config = kwargs.pop("dlq_topic_config", {})
+        dlq_alert = kwargs.pop("dlq_alert", False)
+        dlq_alert_config = kwargs.pop("dlq_alert_config", {})
+        if dlq:
+            log.info(f"DLQ enabled use of subscription will be forced to topic {topic}")
+            kwargs["use_subscription"] = True
+            dlq_topic_name = (
+                f"{topic}-dlq"
+                if "name" not in dlq_topic_config
+                else dlq_topic_config.pop("name")
+            )
+            dlq_pull_subscription_config = dlq_topic_config.pop(
+                "pull_subscription_config", {}
+            )
+            dlq_pull_subscription_name = (
+                f"{dlq_topic_name}-pull-subscription"
+                if "name" not in dlq_pull_subscription_config
+                else dlq_pull_subscription_config.pop("name")
+            )
+            # Create DLQ topic
+            self._register_infrastructure(
+                handler_type="pubsub_topic",
+                kwargs={
+                    "name": dlq_topic_name,
+                    "kwargs": {
+                        "config": dlq_topic_config,
+                        "dlq": True,
+                        "dlq_pull_subscription": {
+                            "name": dlq_pull_subscription_name,
+                            "config": dlq_pull_subscription_config,
+                        },
+                    },
+                },
+            )
+            dlq_policy = {
+                "deadLetterPolicy": {
+                    "deadLetterTopic": self.infrastructure["pubsub_topic"].resources[
+                        dlq_topic_name
+                    ]["name"],
+                }
+            }
+            if "config" in kwargs:
+                kwargs["config"].update(dlq_policy)
+            else:
+                kwargs["config"] = dlq_policy
+
+            if dlq_alert:
+                sub_name = f"{self.function_name}-{topic}"
+                log.info(f"DLQ alert enabled for subscription {sub_name}")
+                dlq_alert_name = (
+                    f"{sub_name}-dlq-alert"
+                    if "name" not in dlq_alert_config
+                    else dlq_alert_config.pop("name")
+                )
+                dlq_alert_trigger_value = (
+                    0
+                    if "trigger_value" not in dlq_alert_config
+                    else dlq_alert_config.pop("trigger_value")
+                )
+                dlq_alert_config["conditions"] = [
+                    PubSubDLQCondition(
+                        "pubsub",
+                        subscription_id=sub_name,
+                        value=dlq_alert_trigger_value,
+                    )
+                ]
+                self._register_infrastructure(
+                    handler_type="alerts",
+                    kwargs={"name": dlq_alert_name, "kwargs": dlq_alert_config},
+                )
+
         return self._create_registration_function(
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},
         )
+
+    def topic(self, topic, **kwargs):
+        warn(
+            "This method is deprecated, use @app.pubsub_subscription",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.pubsub_subscription(topic, **kwargs)
 
     def cloudtasktarget(self, name, **kwargs):
         """CloudTask trigger"""
@@ -238,6 +321,14 @@ class Goblet_Decorators:
         kwargs["config"] = config
         return self._register_infrastructure(
             handler_type="cloudtaskqueue",
+            kwargs={"name": name, "config": config, "kwargs": kwargs},
+        )
+
+    def pubsub_topic(self, name, config=None, **kwargs):
+        """PubSub Topic Infrastructure"""
+        kwargs["config"] = config
+        return self._register_infrastructure(
+            handler_type="pubsub_topic",
             kwargs={"name": name, "config": config, "kwargs": kwargs},
         )
 

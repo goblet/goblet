@@ -18,8 +18,8 @@ class TestCloudTasks:
         app.cloudtaskqueue(name="cloudtaskqueue02")
 
         cloudtaskqueue = app.infrastructure["cloudtaskqueue"]
-        assert cloudtaskqueue.resource["cloudtaskqueue01"]["id"] == "cloudtaskqueue01"
-        assert cloudtaskqueue.resource["cloudtaskqueue02"]["id"] == "cloudtaskqueue02"
+        assert cloudtaskqueue.resources["cloudtaskqueue01"]["id"] == "cloudtaskqueue01"
+        assert cloudtaskqueue.resources["cloudtaskqueue02"]["id"] == "cloudtaskqueue02"
 
     def test_deploy_cloudtaskqueue(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

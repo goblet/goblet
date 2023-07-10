@@ -24,6 +24,7 @@ from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
 from goblet.write_files import write_dockerfile
 from goblet.errors import GobletValidationError
+from goblet.permissions import gcp_generic_resource_permissions, add_binding
 
 
 class CloudRun(Backend):
@@ -31,7 +32,19 @@ class CloudRun(Backend):
     supported_versions = ["v2"]
     monitoring_type = "cloud_run_revision"
     monitoring_label_key = "service_name"
-    required_apis = ["run", "cloudbuild", "cloudfunctions"]
+    required_apis = ["run", "cloudbuild", "cloudfunctions", "cloudresourcemanager"]
+    permissions = [
+        *gcp_generic_resource_permissions("run", "services"),
+        "run.services.getIamPolicy",
+        "run.services.setIamPolicy",
+        "run.revisions.get",
+        "run.revisions.list",
+        "run.operations.get",
+        "cloudbuild.builds.create",
+        "cloudbuild.builds.get",
+        "cloudbuild.builds.list",
+        "cloudfunctions.functions.sourceCodeSet",
+    ]
 
     def __init__(self, app):
         self.client = VersionedClients().run
@@ -110,7 +123,7 @@ class CloudRun(Backend):
 
     def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
-        build_configs = self.config.cloudbuild or {}
+        build_configs = self.config.cloudbuild.copy() if self.config.cloudbuild else {}
         registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
         build_configs.pop("artifact_registry", None)
 
@@ -143,7 +156,12 @@ class CloudRun(Backend):
             **build_configs,
         }
 
+        req_body["tags"] = build_configs.get("tags", []) + [f"goblet-build-{self.name}"]
+
         create_cloudbuild(client, req_body)
+
+    def skip_deployment(self):
+        return self.skip_run_deployment
 
     def skip_run_deployment(self):
         """Skip cloudrun deployment if only jobs"""
@@ -167,8 +185,10 @@ class CloudRun(Backend):
             "list",
             parent_key="projectId",
             parent_schema=get_default_project(),
-            params={},
+            params={"filter": f"tags=goblet-build-{self.name}"},
         )
+        if not resp:
+            return 0
         latest_build_source = resp["builds"][0].get("source")
         if not latest_build_source:
             return 0
@@ -278,3 +298,6 @@ class CloudRun(Backend):
             self._zip_file(self.config.requirements_file, "requirements.txt")
         if self.config.main_file:
             self._zip_file(self.config.main_file, "main.py")
+
+    def add_invoker_binding(self, principles):
+        add_binding(self.client, self.run_name, "roles/run.invoker", principles)

@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwX/MXfm2bo=",
+    "bindings": [
+      {
+        "role": "projects/goblet/roles/Goblet_Deployment_Role_goblet_create_service_account",
+        "members": [
+          "serviceAccount:goblet-create-service-account@goblet.iam.gserviceaccount.com"
+        ]
+      }
+    ]
+  }
+}

@@ -7,3 +7,4 @@ pytest
 requests-mock
 black==23.1.0
 importlib-metadata==4.13.0
+build

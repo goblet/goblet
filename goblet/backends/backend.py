@@ -24,6 +24,7 @@ class Backend:
     monitoring_type = ""
     monitoring_label_key = ""
     required_apis = []
+    permissions = []
 
     def __init__(self, app, client, func_path):
         self.app = app
@@ -37,7 +38,7 @@ class Backend:
         # specifies which files to be zipped
         custom_files = self.config.custom_files or {}
         include = ["*.py", ".goblet/*.py", "requirements.txt"]
-        exclude = ["build", "docs", "examples", "test", "tests", "venv"]
+        exclude = ["build", "docs", "examples", "test", "tests", "venv", ".git"]
 
         include.extend(custom_files.get("include", []))
         exclude.extend(custom_files.get("exclude", []))
@@ -54,6 +55,9 @@ class Backend:
 
     def deploy(self, force=False):
         raise NotImplementedError("destroy")
+
+    def skip_deployment(self):
+        return False
 
     def destroy(self, all=False):
         raise NotImplementedError("destroy")
@@ -187,3 +191,6 @@ class Backend:
 
     def _check_or_enable_service(self, enable=False):
         return check_or_enable_service(self.required_apis, enable)
+
+    def add_invoker_binding(self, principles):
+        raise NotImplementedError("add_invoker_binding")

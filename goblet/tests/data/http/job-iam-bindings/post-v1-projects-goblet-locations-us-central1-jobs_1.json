@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 409,
+      "message": "Job projects/goblet/locations/us-central1/jobs/goblet-test-schedule-job-test already exists.",
+      "status": "ALREADY_EXISTS"
+    }
+  }
+}

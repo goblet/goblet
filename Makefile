@@ -6,7 +6,7 @@ html:
 	cd docs && make html
 
 pypi:
-	python3 setup.py sdist bdist_wheel;
+	python3 -m build;
 	twine upload --skip-existing dist/*;
 
 lint:

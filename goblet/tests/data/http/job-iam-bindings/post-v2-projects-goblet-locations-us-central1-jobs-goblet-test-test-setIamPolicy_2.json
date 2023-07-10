@@ -1,0 +1,16 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwX/RQ0R0Kw=",
+    "bindings": [
+      {
+        "role": "roles/run.invoker",
+        "members": [
+          "serviceAccount:test@goblet.iam.gserviceaccount.com",
+          "user:test.user@goblet.com"
+        ]
+      }
+    ]
+  }
+}

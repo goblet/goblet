@@ -1,0 +1,26 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/roles/Goblet_Deployment_Role_goblet_create_service_account",
+    "title": "Deployment role for goblet-create-service-account",
+    "description": "Goblet generated role",
+    "includedPermissions": [
+      "cloudfunctions.functions.create",
+      "cloudfunctions.functions.delete",
+      "cloudfunctions.functions.get",
+      "cloudfunctions.functions.getIamPolicy",
+      "cloudfunctions.functions.list",
+      "cloudfunctions.functions.setIamPolicy",
+      "cloudfunctions.functions.sourceCodeSet",
+      "cloudfunctions.functions.update",
+      "cloudfunctions.operations.get",
+      "pubsub.subscriptions.create",
+      "pubsub.subscriptions.delete",
+      "pubsub.subscriptions.get",
+      "pubsub.subscriptions.list",
+      "pubsub.subscriptions.update"
+    ],
+    "stage": "GA",
+    "etag": "BwX/MSXEfFw="
+  }
+}

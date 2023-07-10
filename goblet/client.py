@@ -21,6 +21,8 @@ DEFAULT_CLIENT_VERSIONS = {
     "secretmanager": "v1",
     "cloudtasks": "v2",
     "serviceusage": "v1",
+    "iam": "v1",
+    "cloudresourcemanager": "v3",
 }
 
 
@@ -88,6 +90,15 @@ class VersionedClients:
             "pubsub",
             self.client_versions.get("pubsub", "v1"),
             calls="projects.subscriptions",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def pubsub_topic(self):
+        return Client(
+            "pubsub",
+            self.client_versions.get("pubsub", "v1"),
+            calls="projects.topics",
             parent_schema="projects/{project_id}",
         )
 
@@ -232,5 +243,32 @@ class VersionedClients:
             "serviceusage",
             self.client_versions.get("serviceusage", "v1"),
             calls="services",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def iam_roles(self):
+        return Client(
+            "iam",
+            self.client_versions.get("iam", "v1"),
+            calls="projects.roles",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def service_account(self):
+        return Client(
+            "iam",
+            self.client_versions.get("iam", "v1"),
+            calls="projects.serviceAccounts",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def project_resource_manager(self):
+        return Client(
+            "cloudresourcemanager",
+            self.client_versions.get("cloudresourcemanager", "v3"),
+            calls="projects",
             parent_schema="projects/{project_id}",
         )

@@ -1,0 +1,86 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/services/goblet-set-invoker-permissions",
+    "uid": "c343445c-583c-491a-b91f-32d937d85c21",
+    "generation": "1",
+    "createTime": "2023-06-28T17:38:42.556837Z",
+    "updateTime": "2023-06-28T17:38:42.556837Z",
+    "creator": "",
+    "lastModifier": "",
+    "ingress": "INGRESS_TRAFFIC_ALL",
+    "launchStage": "GA",
+    "template": {
+      "scaling": {
+        "maxInstanceCount": 100
+      },
+      "timeout": "300s",
+      "serviceAccount": "123456789-compute@developer.gserviceaccount.com",
+      "containers": [
+        {
+          "image": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet-set-invoker-permissions@sha256:d33c2a13b50caa33e439844e5618d14b2b0d1547574c2d88b171bfeb18d37b3f",
+          "command": [
+            "functions-framework",
+            "--target=goblet_entrypoint"
+          ],
+          "resources": {
+            "limits": {
+              "memory": "512Mi",
+              "cpu": "1000m"
+            },
+            "cpuIdle": true
+          },
+          "ports": [
+            {
+              "name": "http1",
+              "containerPort": 8080
+            }
+          ],
+          "startupProbe": {
+            "timeoutSeconds": 240,
+            "periodSeconds": 240,
+            "failureThreshold": 1,
+            "tcpSocket": {
+              "port": 8080
+            }
+          }
+        }
+      ],
+      "maxInstanceRequestConcurrency": 80
+    },
+    "traffic": [
+      {
+        "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
+        "percent": 100
+      }
+    ],
+    "observedGeneration": "1",
+    "terminalCondition": {
+      "type": "Ready",
+      "state": "CONDITION_SUCCEEDED",
+      "lastTransitionTime": "2023-06-28T17:39:03.849947Z"
+    },
+    "conditions": [
+      {
+        "type": "RoutesReady",
+        "state": "CONDITION_SUCCEEDED",
+        "lastTransitionTime": "2023-06-28T17:39:03.849947Z"
+      },
+      {
+        "type": "ConfigurationsReady",
+        "state": "CONDITION_SUCCEEDED",
+        "lastTransitionTime": "2023-06-28T17:38:42.932075Z"
+      }
+    ],
+    "latestReadyRevision": "projects/goblet/locations/us-central1/services/goblet-set-invoker-permissions/revisions/goblet-set-invoker-permissions-00001-2mk",
+    "latestCreatedRevision": "projects/goblet/locations/us-central1/services/goblet-set-invoker-permissions/revisions/goblet-set-invoker-permissions-00001-2mk",
+    "trafficStatuses": [
+      {
+        "type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST",
+        "percent": 100
+      }
+    ],
+    "uri": "https://goblet-set-invoker-permissions-ue5lbildha-uc.a.run.app",
+    "etag": "\"CKLg8aQGEIjRwokC/cHJvamVjdHMvcHJlbWlzZS1kYXRhLXBsYXRmb3JtLWRldi9sb2NhdGlvbnMvdXMtY2VudHJhbDEvc2VydmljZXMvZ29ibGV0LXNldC1pbnZva2VyLXBlcm1pc3Npb25z\""
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwX/NLxAI8s=",
+    "bindings": [
+      {
+        "role": "roles/run.invoker",
+        "members": [
+          "serviceAccount:sa_pubsub@goblet.iam.gserviceaccount.com"
+        ]
+      }
+    ]
+  }
+}
