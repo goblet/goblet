@@ -3,6 +3,7 @@ from goblet.infrastructures.alerts import (
     MetricCondition,
     LogMatchCondition,
     CustomMetricCondition,
+    PubSubDLQCondition,
 )
 from goblet.backends import CloudFunctionV1
 
@@ -84,6 +85,15 @@ class TestAlerts:
                 )
             ],
         )
+        app.alert(
+            "pubsubdlq",
+            conditions=[
+                PubSubDLQCondition(
+                    "pubsubdlq",
+                    subscription_id="pubsub-deploy-subscription",
+                )
+            ],
+        )
 
         app.deploy(skip_backend=True)
 
@@ -112,6 +122,14 @@ class TestAlerts:
             "post-v3-projects-goblet-alertPolicies_3.json",
         )
         assert post_alert_custom["body"]["displayName"] == "alerts-test-custom"
+        post_alert_dlq = get_response(
+            "alerts-deploy",
+            "post-v3-projects-goblet-alertPolicies_4.json",
+        )
+        assert (
+            post_alert_dlq["body"]["displayName"]
+            == "pubsub-deploy-subscription-dlq-alert"
+        )
 
     def test_destroy_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -142,12 +160,21 @@ class TestAlerts:
                 )
             ],
         )
+        app.alert(
+            "pubsubdlq",
+            conditions=[
+                PubSubDLQCondition(
+                    "pubsubdlq",
+                    subscription_id="pubsub-deploy-subscription",
+                )
+            ],
+        )
 
         app.destroy()
 
         responses = get_responses("alerts-destroy")
 
-        assert len(responses) == 6
+        assert len(responses) == 7
 
     def test_sync_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

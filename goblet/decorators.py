@@ -14,6 +14,7 @@ from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
+from goblet.infrastructures.alerts import PubSubDLQCondition
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -134,6 +135,8 @@ class Goblet_Decorators:
         """Pubsub topic trigger"""
         dlq = kwargs.pop("dlq", False)
         dlq_topic_config = kwargs.pop("dlq_topic_config", {})
+        dlq_alert = kwargs.pop("dlq_alert", False)
+        dlq_alert_config = kwargs.pop("dlq_alert_config", {})
         if dlq:
             log.info(f"DLQ enabled use of subscription will be forced to topic {topic}")
             kwargs["use_subscription"] = True
@@ -176,6 +179,31 @@ class Goblet_Decorators:
                 kwargs["config"].update(dlq_policy)
             else:
                 kwargs["config"] = dlq_policy
+
+            if dlq_alert:
+                sub_name = f"{self.function_name}-{topic}"
+                log.info(f"DLQ alert enabled for subscription {sub_name}")
+                dlq_alert_name = (
+                    f"{sub_name}-dlq-alert"
+                    if "name" not in dlq_alert_config
+                    else dlq_alert_config.pop("name")
+                )
+                dlq_alert_trigger_value = (
+                    0
+                    if "trigger_value" not in dlq_alert_config
+                    else dlq_alert_config.pop("trigger_value")
+                )
+                dlq_alert_config["conditions"] = [
+                    PubSubDLQCondition(
+                        "pubsub",
+                        subscription_id=sub_name,
+                        value=dlq_alert_trigger_value,
+                    )
+                ]
+                self._register_infrastructure(
+                    handler_type="alerts",
+                    kwargs={"name": dlq_alert_name, "kwargs": dlq_alert_config},
+                )
 
         return self._create_registration_function(
             handler_type="pubsub",
