@@ -4,13 +4,15 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Handlers &mdash; goblet 0.11.1 documentation</title>
+  <title>Handlers &mdash; goblet 0.11.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -230,43 +232,45 @@ with the name of your scheduled function.</p>
 </section>
 <section id="pubsub">
 <h2>PubSub<a class="headerlink" href="#pubsub" title="Permalink to this heading">¶</a></h2>
-<p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.topic(...)</span></code> decorator. All that is required is the topic name. You can optionally
+<p>You can trigger endpoints from pubsub using the <code class="docutils literal notranslate"><span class="pre">&#64;app.pubsub_subscription(...)</span></code> decorator. All that is required is the topic name. You can optionally
 provide an attribute dictionary which will only trigger the function if the pubsub message attributes matches those defined in the decorator.
 If using cloudrun backend or <cite>use_subscription=true</cite> the attributes will be created as a filter on the subscription itself. You can also pass in
-a custom <cite>filter</cite> as well. Note that filters are not able to be modified once they are applied to a subscription.</p>
+a custom <cite>filter</cite> as well. Note that filters are not able to be modified once they are applied to a subscription.
+In order to use <a class="reference external" href="https://cloud.google.com/pubsub/docs/dead-letter-topics">DLQ</a> you can pass in <cite>dlq=True</cite> to the decorator which will create a subscription with a dead letter topic.
+You can customize the dead letter topic configuration and pull subscription to that dlq by passing in <cite>dlq_topic_config={“name”: “custom-dlq-name”, “dlq_topic_config”: {“name”: “custom-pull-subscription-name”, “config”: {}}}</cite> to the decorator.</p>
 <p>In addition to filters you can also add configuration values that will be passed directly to the subscription.
 By setting <cite>config={“enableExactlyOnceDelivery”: True}</cite> you can enable exactly delivery to ensure messages are not redelivered once acknowledged.
 For additional information on configuration values available see <a class="reference external" href="https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.subscriptions/create#request-body">PubSub Subscription Fields</a></p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pubsub topic</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span>
 
 <span class="c1"># pubsub topic with matching message attributes</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">})</span>
 <span class="k">def</span> <span class="nf">home2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span>
 
 <span class="c1"># pubsub topic in a different project</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;CROSS_PROJECT&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;CROSS_PROJECT&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cross_project</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">return</span>
 
 <span class="c1"># create a pubsub subscription instead of pubsub triggered function</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pubsub_subscription_use_subscription</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">return</span>
 
 <span class="c1"># create a pubsub subscription instead of pubsub triggered function and add filter</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">use_subscription</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;attributes.name = &quot;com&quot; AND -attributes:&quot;iana.org/language_tag&quot;&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pubsub_subscription_filter</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">return</span>
 
 <span class="c1"># switching the pubsub topic to a different project requires force_update, since it requires the subscription to be recreated</span>
-<span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;NEW_CROSS_PROJECT&quot;</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;NEW_CROSS_PROJECT&quot;</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cross_project</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">return</span>
 </pre></div>

@@ -4,13 +4,15 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Infrastructure &mdash; goblet 0.11.1 documentation</title>
+  <title>Infrastructure &mdash; goblet 0.11.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -59,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#vpc-connector">VPC Connector</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api-gateway">Api Gateway</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cloudtask-queue">CloudTask Queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pubsub-topics">PubSub Topics</a></li>
 </ul>
 </li>
 </ul>
@@ -110,6 +113,8 @@ fully customize your alert based on the fields privided by the <a class="referen
 <p>If you do not need a fully customized alert you can use the built in classes for <cite>MetricCondition</cite>, <cite>LogMatchCondition</cite>, and <cite>CustomMetricCondition</cite>. These come with
 defaults in terms of duration and aggregations, but can be overriden as needed. The <cite>CustomMetricCondition</cite> creates a custom metric based on the filter provided and then
 creates an alert using that metric.</p>
+<p>For <cite>LogMatchCondition</cite> you can completely replace the filter if necessary by setting the <cite>replace_filter</cite> flag to True.</p>
+<p><cite>PubSubDLQCondition</cite> is a special case of <cite>MetricCondition</cite> that will create an alert for <cite>pubsub.googleapis.com/subscription/dead_letter_message_count</cite> on a subscription.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet.infrastructures.alerts</span> <span class="kn">import</span> <span class="n">MetricCondition</span><span class="p">,</span><span class="n">LogMatchCondition</span><span class="p">,</span><span class="n">CustomMetricCondition</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
 
@@ -121,6 +126,9 @@ creates an alert using that metric.</p>
 
 <span class="c1"># Example Metric Alert that creates a custom metric for severe errors with http code in the 500&#39;s and creates an alert with a threshold of 10</span>
 <span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span><span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">CustomMetricCondition</span><span class="p">(</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="n">metric_filter</span><span class="o">=</span><span class="s1">&#39;severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
+
+<span class="c1"># Example PubSub Alert that will trigger an incident if there are more than 10 dead letter messages in the subscription</span>
+<span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">,</span><span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">PubSubDLQCondition</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">,</span> <span class="n">subscription_id</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{subscription}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
 </pre></div>
 </div>
 </section>
@@ -209,6 +217,15 @@ The configuration can be provided inline when declaring the queue, or in your co
 <span class="p">}</span>
 </pre></div>
 </div>
+</section>
+<section id="pubsub-topics">
+<h2>PubSub Topics<a class="headerlink" href="#pubsub-topics" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+<span class="n">app</span><span class="o">.</span><span class="n">pubsub_topic</span><span class="p">(</span><span class="s2">&quot;topic&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To further configure your PubSub topic within Goblet, provide the config parameter base on the documentation. <a class="reference external" href="https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.topic">Topic Resource</a>.</p>
 </section>
 </section>
 

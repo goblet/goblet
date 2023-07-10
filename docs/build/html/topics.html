@@ -4,13 +4,15 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Topics &mdash; goblet 0.11.1 documentation</title>
+  <title>Topics &mdash; goblet 0.11.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -48,7 +50,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#private-python-libraries">Private Python Libraries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#iam-bindings">Iam Bindings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#permissions-and-service-accounts">Permissions and Service Accounts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iam-bindings">IAM Bindings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#scheduled-job">Scheduled Job</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pubsub">Pubsub</a></li>
@@ -254,7 +257,7 @@ useful if you want to set stage specific variables during your depoyment.</p>
 </pre></div>
 </div>
 <p>then your goblet code could be like</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PUBSUB_TOPIC&quot;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PUBSUB_TOPIC&quot;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">handle_topic</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">return</span>
 </pre></div>
@@ -292,9 +295,19 @@ would look as follows</p>
 </pre></div>
 </div>
 </section>
+<section id="permissions-and-service-accounts">
+<h2>Permissions and Service Accounts<a class="headerlink" href="#permissions-and-service-accounts" title="Permalink to this heading">¶</a></h2>
+<p>You can view required permissions for deploying your goblet application by running <cite>goblet services autogen_iam</cite>. This will
+create a <cite>autogen_iam_role.json</cite> file in <cite>.goblet</cite> folder with all the required permissions needed to deploy the selected resources.
+You can add a <cite>–yaml</cite> flag to create the role in yaml format.</p>
+<p>You can create a custom role based on the permissions needed to deploy you goblet application and create a custom service account that uses this role by running
+<cite>goblet services create_service_account -p PROJECT</cite>. This will create a service account with the same name as your application.</p>
+</section>
 <section id="iam-bindings">
-<h2>Iam Bindings<a class="headerlink" href="#iam-bindings" title="Permalink to this heading">¶</a></h2>
-<p>You can add Iam bindings to your cloudfunctions by adding a <cite>binding</cite> section to your <cite>config.json</cite> file.
+<h2>IAM Bindings<a class="headerlink" href="#iam-bindings" title="Permalink to this heading">¶</a></h2>
+<p>Goblet will automatically add IAM bindings required by handlers during deployment. For example, the service account attached to a scheduled job
+or pubsub will automatically be granted invoker access on the backend.</p>
+<p>You can add additional IAM bindings to your application by adding a <cite>binding</cite> section to your <cite>config.json</cite> file.
 The bindings should be in the <a class="reference external" href="https://cloud.google.com/functions/docs/reference/rest/v1/Policy">GCP Policy format</a></p>
 <p>For example to allow unauthenticated (public) access to your cloudfunctions you would add the <cite>roles/cloudfunctions.invoker</cite> to
 member <cite>allUsers</cite></p>
@@ -615,7 +628,7 @@ Here’s an example for accessing query string data in a view function:</p>
 </div>
 <p>To see the full list of available fields see <a class="reference external" href="https://tedboy.github.io/flask/generated/generated/werkzeug.Request.html">request</a></p>
 <p>In some cases there is additional context passed with the event. For example for pubsub events. This context can be accessed via <cite>app.request_context</cite></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s2">&quot;TOPIC&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">pubsub_subscription</span><span class="p">(</span><span class="s2">&quot;TOPIC&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">context</span><span class="p">():</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request_context</span>
     <span class="k">return</span> <span class="s2">&quot;context&quot;</span>
