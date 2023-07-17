@@ -135,6 +135,7 @@ class RevisionSpec:
         }
         self.req_body["template"]["containers"] = [{**self.cloudrun_container}]
         self.req_body["template"]["containers"][0]["image"] = self.artifactToDeploy
+        self.req_body["template"]["containers"].extend(self.config.cloudrun_container_extra or [])
 
         # check for traffic config
         if self.cloudrun_configs.get("traffic"):

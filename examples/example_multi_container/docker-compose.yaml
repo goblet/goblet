@@ -1,0 +1,35 @@
+services:
+  opa:
+    image: openpolicyagent/opa:0.54.0-rootless
+    ports:
+      - "8181:8181"
+    command:
+      - "run"
+      - "--server"
+      - "--log-format=json-pretty"
+      - "--set=decision_logs.console=true"
+      - "--set=services.nginx.url=http://bundle_server"
+      - "--set=bundles.nginx.service=nginx"
+      - "--set=bundles.nginx.resource=bundle.tar.gz"
+      - "--set=bundles.nginx.polling.min_delay_seconds=10"
+      - "--set=bundles.nginx.polling.max_delay_seconds=30"
+    depends_on:
+      - bundle_server
+  api_server:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - OPA_ADDR=http://opa:8181
+      - POLICY_PATH=/v1/data/httpapi/authz
+      - G_MOCK_CREDENTIALS=true
+    depends_on:
+      - opa
+    volumes:
+      - ~/.config:/root/.config
+  bundle_server:
+    image: nginx:1.20.0-alpine
+    ports:
+      - 8888:80
+    volumes:
+      - .:/usr/share/nginx/html/

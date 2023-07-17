@@ -302,6 +302,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions) \
  &#9745; Deploy API Gateway from existing openapi spec \
  &#9745; Deploy arbitrary Dockerfile to Cloudrun \
+ &#9745; [Multi Container Deployments](https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments) \
  &#9745; Create Deployment Service Accounts \
  &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers
 

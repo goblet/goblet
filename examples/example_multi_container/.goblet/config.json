@@ -1,0 +1,69 @@
+{
+    "cloudrun": {
+        "launchStage": "BETA"
+    },
+    "cloudrun_container": {
+        "env": [
+            {
+                "name": "OPA_ADDR",
+                "value": "http://opa:8181"
+            },
+            {
+                "name": "POLICY_PATH",
+                "value": "/v1/data/httpapi/authz"
+            }
+        ],
+        "ports": [
+            {
+                "containerPort": 8080
+            }
+        ]
+    },
+    "cloudrun_container_extra": [
+        {
+            "name": "opa-policy",
+            "image": "openpolicyagent/opa:0.55.0-dev-rootless",
+            "command": [
+                "./opa",
+                "run"
+            ],
+            "args": [
+                "--server",
+                "--log-format=json-pretty",
+                "--set=decision_logs.console=true",
+                "--set=services.nginx.url=http://localhost:80",
+                "--set=bundles.nginx.service=nginx",
+                "--set=bundles.nginx.resource=bundle.tar.gz",
+                "--set=bundles.nginx.polling.min_delay_seconds=10",
+                "--set=bundles.nginx.polling.max_delay_seconds=30"
+            ]
+        },
+        {
+            "name": "nginx",
+            "image": "nginx:1.20.0-alpine",
+            "volumeMounts": [
+                {
+                    "mountPath": "/usr/share/nginx/html/",
+                    "name": "bundle"
+                }
+            ]
+        }
+    ],
+    "cloudrun_revision": {
+        "serviceAccount": "SERVICE_ACCOUNT",
+        "volumes": [
+            {
+                "name": "bundle",
+                "secret": {
+                    "secret": "bundle",
+                    "items": [
+                        {
+                            "version": "latest",
+                            "path": "bundle.tar.gz"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
