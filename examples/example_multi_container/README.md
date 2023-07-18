@@ -1,6 +1,6 @@
-# Multi Container Deployment for OPA policies.
+# Multi Container Deployment.
 
-This deployment requires an opa server, a goblet app, and a nginx server to service the OPA policies. 
+This deployment deploys a goblet app and a nginx reverse proxy server. 
 
 ## Local
 
