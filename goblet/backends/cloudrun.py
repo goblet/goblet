@@ -43,6 +43,8 @@ class CloudRun(Backend):
         "cloudbuild.builds.create",
         "cloudbuild.builds.get",
         "cloudbuild.builds.list",
+        "cloudresourcemanager.projects.get",
+        "iam.serviceaccounts.actAs",
         "cloudfunctions.functions.sourceCodeSet",
     ]
 
