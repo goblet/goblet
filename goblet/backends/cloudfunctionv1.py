@@ -31,6 +31,8 @@ class CloudFunctionV1(Backend):
         "cloudfunctions.functions.setIamPolicy",
         "cloudfunctions.operations.get",
         "cloudfunctions.functions.sourceCodeSet",
+        "cloudresourcemanager.projects.get",
+        "iam.serviceaccounts.actAs",
         *gcp_generic_resource_permissions("cloudfunctions", "functions"),
     ]
 
