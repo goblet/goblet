@@ -1,6 +1,11 @@
 from goblet import Goblet
 from goblet.handlers.http import HTTP
-from goblet_gcp_client import get_responses, get_response
+from goblet_gcp_client import (
+    get_responses,
+    get_response,
+    get_replay_count,
+    reset_replay_count,
+)
 from goblet.test_utils import dummy_function, DATA_DIR_MAIN
 from goblet.errors import GobletError
 import pytest
@@ -72,6 +77,65 @@ class TestDeployer:
 
         responses = get_responses("deployer-cloudrun-deploy")
         assert len(responses) == 9
+
+    def test_deploy_cloudrun_multi_container(self, monkeypatch, requests_mock):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "deployer-cloudrun-deploy-multi-container")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+        reset_replay_count()
+
+        app = Goblet(
+            function_name="multi-container",
+            backend="cloudrun",
+            routes_type="cloudrun",
+            config={
+                "cloudrun": {"launchStage": "BETA"},
+                "deploy": {"environmentVariables": {"PORT": "80"}},
+                "cloudrun_container": {
+                    "env": [{"name": "PORT", "value": "80"}],
+                    "ports": [],
+                },
+                "cloudrun_container_extra": [
+                    {
+                        "name": "nginx",
+                        "image": "nginx:1.20.0-alpine",
+                        "volumeMounts": [{"mountPath": "/etc/nginx/", "name": "nginx"}],
+                        "ports": [{"containerPort": 8080}],
+                    }
+                ],
+                "cloudrun_revision": {
+                    "serviceAccount": "test@goblet.iam.gserviceaccount.com",
+                    "volumes": [
+                        {
+                            "name": "nginx",
+                            "secret": {
+                                "secret": "nginx",
+                                "items": [{"version": "latest", "path": "nginx.conf"}],
+                            },
+                        }
+                    ],
+                },
+            },
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{"http": True}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        service = get_response(
+            "deployer-cloudrun-deploy-multi-container",
+            "post-v2-projects-goblet-locations-us-central1-services_1.json",
+        )
+
+        assert get_replay_count() == 8
+        assert len(service["body"]["metadata"]["template"]["containers"]) == 2
+        assert (
+            service["body"]["metadata"]["template"]["containers"][1]["name"] == "nginx"
+        )
 
     def test_deploy_cloudrun_build_failed(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

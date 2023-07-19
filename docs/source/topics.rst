@@ -1058,3 +1058,10 @@ An example `config.json` can be found below.
             }]
         }
     }
+
+Multi Container Deployments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Additional containers are now supported in Cloudrun. See `Google annoucement <https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments>`__. 
+You can specify additional containers by using the `cloudrun_container_extra` section in `config.json`. Note you will also need to set the `launchStage` field in `cloudrun` to either `BETA`
+or `ALPHA`. Checkout the examples section for more details. 
