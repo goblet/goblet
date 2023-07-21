@@ -128,7 +128,7 @@ class TestDecoraters:
         def dummy_function2(self):
             return True
 
-        @app3.topic("test")
+        @app3.pubsub_subscription("test")
         def dummy_function3(self):
             return True
 

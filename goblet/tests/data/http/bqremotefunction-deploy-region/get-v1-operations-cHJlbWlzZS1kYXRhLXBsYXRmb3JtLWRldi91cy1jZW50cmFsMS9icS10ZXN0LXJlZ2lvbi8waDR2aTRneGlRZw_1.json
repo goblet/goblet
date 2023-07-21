@@ -1,0 +1,47 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1kYXRhLXBsYXRmb3JtLWRldi91cy1jZW50cmFsMS9icS10ZXN0LXJlZ2lvbi8waDR2aTRneGlRZw",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/goblet/locations/us-central1/functions/bq-test-region",
+      "type": "UPDATE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+        "name": "projects/goblet/locations/us-central1/functions/bq-test-region",
+        "description": "created by goblet",
+        "httpsTrigger": {},
+        "entryPoint": "goblet_entrypoint",
+        "sourceUploadUrl": "https://storage.googleapis.com/uploads-225494038240.us-central1.cloudfunctions.appspot.com/2fe9bafd-c840-4bb0-8e5b-c341c908d2e9.zip?GoogleAccessId=service-98058317567@gcf-admin-robot.iam.gserviceaccount.com&Expires=1689951710&Signature=Y%2F%2BwEwfRSEgBBXG7Vsmjd5%2FWIkoGN9zDKfTnsNBYckdQ2tmlgY1ecTgzxsIIXfuBJXM0kdMl%2FRWJ6GNfXlBT6OzWNDqzdm6HrYqx1p%2FvFi6Yvdqh61dJ4KMT%2FkHf5KZbcTmj61SpLkJq6cGSjs7tJ2TM6sMAo5iDu5LQeJvXDD4TgqR8EEa6gAmoBwOH1mcDXlM%2BV0aR%2B%2BiSNwqoC5caa5NUkv3xXMRXy%2B6dYpBCzY73gek68fyWlxlBAf4Whb0k8VePW0JsTlomfG4cuTYEgPG4nIzEfP5kbED6bZnoFwHGhwEoL1L1GUmgOc865p8YT2AKqj%2Fk1WTBleyagWEPGw%3D%3D",
+        "runtime": "python310"
+      },
+      "versionId": "5",
+      "updateTime": "2023-07-21T14:33:11Z",
+      "buildId": "db622e2c-6468-48f0-904a-c3dbf8f99f08",
+      "buildName": "projects/goblet/locations/us-central1/builds/db622e2c-6468-48f0-904a-c3dbf8f99f08"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+      "name": "projects/goblet/locations/us-central1/functions/bq-test-region",
+      "description": "created by goblet",
+      "httpsTrigger": {
+        "url": "https://us-central1-goblet.cloudfunctions.net/bq-test-region",
+        "securityLevel": "SECURE_OPTIONAL"
+      },
+      "status": "ACTIVE",
+      "entryPoint": "goblet_entrypoint",
+      "timeout": "60s",
+      "availableMemoryMb": 256,
+      "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+      "updateTime": "2023-07-21T14:33:11.623Z",
+      "versionId": "5",
+      "sourceUploadUrl": "https://storage.googleapis.com/uploads-225494038240.us-central1.cloudfunctions.appspot.com/2fe9bafd-c840-4bb0-8e5b-c341c908d2e9.zip",
+      "runtime": "python310",
+      "ingressSettings": "ALLOW_ALL",
+      "buildId": "db622e2c-6468-48f0-904a-c3dbf8f99f08",
+      "buildName": "projects/goblet/locations/us-central1/builds/db622e2c-6468-48f0-904a-c3dbf8f99f08",
+      "dockerRegistry": "CONTAINER_REGISTRY"
+    }
+  }
+}
