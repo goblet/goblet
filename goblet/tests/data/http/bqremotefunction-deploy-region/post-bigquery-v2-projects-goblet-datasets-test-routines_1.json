@@ -1,0 +1,38 @@
+{
+  "headers": {},
+  "body": {
+    "etag": "Ma1wKIk3sltP7OvGILgmFA==",
+    "routineReference": {
+      "projectId": "goblet",
+      "datasetId": "test",
+      "routineId": "bq_test_region_string_test_blogs_1"
+    },
+    "routineType": "SCALAR_FUNCTION",
+    "creationTime": "1689950002339",
+    "lastModifiedTime": "1689950002339",
+    "arguments": [
+      {
+        "name": "x",
+        "dataType": {
+          "typeKind": "STRING"
+        }
+      },
+      {
+        "name": "y",
+        "dataType": {
+          "typeKind": "STRING"
+        }
+      }
+    ],
+    "returnType": {
+      "typeKind": "STRING"
+    },
+    "remoteFunctionOptions": {
+      "endpoint": "https://us-central1-goblet.cloudfunctions.net/bq-test-region",
+      "connection": "projects/goblet/locations/us/connections/bq-test-region",
+      "userDefinedContext": {
+        "X-Goblet-Name": "bq_test_region_string_test_blogs_1"
+      }
+    }
+  }
+}

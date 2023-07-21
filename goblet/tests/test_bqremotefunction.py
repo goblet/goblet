@@ -165,7 +165,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
-        monkeypatch.setenv("G_HTTP_TEST", "RECORD")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bq-test-region"
         app = Goblet(function_name=test_name)
@@ -209,9 +209,7 @@ class TestBqRemoteFunction:
         assert len(routines) == 1
         routine = routines[0]
         remote_function_options = routine["remoteFunctionOptions"]
-        user_defined_context = (
-            '{"X-Goblet-Name": "bqremotefunction_test_string_test_blogs_1"}'
-        )
+        user_defined_context = '{"X-Goblet-Name": "bq_test_region_string_test_blogs_1"}'
         assert (
             "connection" in remote_function_options
             and test_name in remote_function_options["connection"]
@@ -219,7 +217,6 @@ class TestBqRemoteFunction:
         assert user_defined_context == json.dumps(
             remote_function_options["userDefinedContext"]
         )
-
 
     def test_destroy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-destroy"
@@ -258,7 +255,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
-        monkeypatch.setenv("G_HTTP_TEST", "RECORD")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
         app = Goblet(function_name=test_name)

@@ -1,0 +1,17 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 404,
+      "message": "Not found: Routine goblet:test.bqremotefunction_test_string_test_blogs_1",
+      "errors": [
+        {
+          "message": "Not found: Routine goblet:test.bqremotefunction_test_string_test_blogs_1",
+          "domain": "global",
+          "reason": "notFound"
+        }
+      ],
+      "status": "NOT_FOUND"
+    }
+  }
+}

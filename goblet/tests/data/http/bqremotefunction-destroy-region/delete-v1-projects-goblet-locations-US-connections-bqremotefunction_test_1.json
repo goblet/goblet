@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 404,
+      "message": "Not found: Connection bqremotefunction_test",
+      "status": "NOT_FOUND"
+    }
+  }
+}
