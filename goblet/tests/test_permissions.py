@@ -24,7 +24,7 @@ class TestPermissions:
 
     def test_get_permissions(self):
         app = Goblet(function_name="goblet_example")
-        app.topic("test")(dummy_function)
+        app.pubsub_topic("test")(dummy_function)
         permissions = app.get_permissions()
 
         assert all(p in permissions for p in PubSub.permissions)
@@ -41,7 +41,7 @@ class TestPermissions:
         reset_replay_count()
 
         app = Goblet(function_name="goblet-create-service-account")
-        app.topic("test")(dummy_function)
+        app.pubsub_topic("test")(dummy_function)
         permissions = app.get_permissions()
         role_policy = create_custom_role_policy(app.function_name, permissions)
         app.create_service_account(role_policy)
@@ -95,7 +95,7 @@ class TestPermissions:
                 },
             },
         )
-        app.topic("test")(dummy_function)
+        app.pubsub_topic("test")(dummy_function)
         app.schedule("* * * * *")(dummy_function)
 
         app.deploy(force=True, skip_backend=True)
