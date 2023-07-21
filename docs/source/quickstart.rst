@@ -5,15 +5,15 @@ Quickstart
 Getting Started
 ***************
 
-In this tutorial, you'll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.7. You can find the latest versions of python on the Python download page.
+In this tutorial, you'll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.10. You can find the latest versions of python on the Python download page.
 
-To install Goblet, we'll first create and activate a virtual environment in python3.7:
+To install Goblet, we'll first create and activate a virtual environment in python3.10:
 
 .. code::
 
     $ python3 --version
-    Python 3.7.3
-    $ python3 -m venv venv37
+    Python 3.10.10
+    $ python3 -m venv venv310
     $ . venv37/bin/activate
 
 Next we'll install Goblet using pip:
