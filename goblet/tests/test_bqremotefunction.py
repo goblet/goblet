@@ -159,13 +159,15 @@ class TestBqRemoteFunction:
             remote_function_options["userDefinedContext"]
         )
 
-    def test_deploy_bqremotefunction_region(self, monkeypatch):
+    def test_deploy_bqremotefunction_region(self, monkeypatch, requests_mock):
         test_deploy_name = "bqremotefunction-deploy-region"
 
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         test_name = "bq-test-region"
         app = Goblet(function_name=test_name)
