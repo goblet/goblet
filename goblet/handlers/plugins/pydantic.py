@@ -32,7 +32,7 @@ class PydanticPlugin(BasePlugin):
                 if k not in self.spec.components.schemas:
                     self.spec.components.schema(k, v)
             del schema["$defs"]
-
+        self.resolve_schema(schema)
         return schema
 
     def operation_helper(self, path=None, operations=None, **kwargs) -> None:
@@ -50,6 +50,25 @@ class PydanticPlugin(BasePlugin):
                 operation["parameters"] = self.resolve_parameters(
                     operation["parameters"]
                 )
+
+    def resolve_schema(self, schema):
+        if isinstance(schema, dict):
+            return self._resolve_schema_values(schema)
+
+    def _resolve_schema_values(self, schema: dict):
+        if schema.get("type") == "object" and "properties" in schema:
+            schema["properties"] = {
+                k: self._resolve_schema_values(v)
+                for k, v in schema.get("properties", {}).items()
+            }
+        if schema.get("type") == "array" and "items" in schema:
+            schema["items"] = self._resolve_schema_values(schema["items"])
+
+        for op in ["anyOf", "oneOf", "allOf"]:
+            if op in schema:
+                schema["type"] = schema.get(op)[0]["type"]
+                del schema[op]
+        return schema
 
     def resolve_parameters(self, parameters):
         """

@@ -43,6 +43,17 @@ class PydanticModelDuplicate(BaseModel):
     nested: NestedModel
 
 
+class PydanticModelReturnComplex(BaseModel):
+    id: int
+    nested: NestedModel
+    opt: Optional[int | str]
+    obj: List[str | int]
+
+
+def dummy_pydantic_return() -> PydanticModelReturnComplex:
+    pass
+
+
 class TestOpenApiSpec:
     def test_add_route(self):
         route = RouteEntry(dummy, "route", "/home", "GET")
@@ -529,3 +540,21 @@ class TestOpenApiSpec:
             "type": "string",
             "required": True,
         } in spec_dict["paths"]["/home"]["get"]["parameters"]
+
+    def test_query_params_class_pydantic_return(self):
+        route = RouteEntry(
+            dummy_pydantic_return,
+            "route",
+            "/home/{id}",
+            "GET",
+            query_params=[{"in": "query", "schema": PydanticModelSimpleOptional}],
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec_dict = spec.component_spec.to_dict()
+
+        return_obj_props = spec_dict["definitions"]["PydanticModelReturnComplex"][
+            "properties"
+        ]
+        assert return_obj_props["opt"]["type"] == "integer"
+        assert return_obj_props["obj"]["items"]["type"] == "string"

@@ -22,7 +22,7 @@ VERSION = os.environ.get("VERSION")
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "apispec<6.0.0",
+    "apispec",
     "click",
     "google-api-python-client",
     "functions-framework",

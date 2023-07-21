@@ -1,7 +1,7 @@
-apispec==5.1.1
+apispec==6.3.0
 click==8.0.4
 functions-framework==3.0.0
-marshmallow==3.15.0
+marshmallow==3.19.0
 pydantic==2.0.2
 PyYAML==6.0
 google-cloud-logging==3.5.0
