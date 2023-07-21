@@ -46,8 +46,8 @@ class PydanticModelDuplicate(BaseModel):
 class PydanticModelReturnComplex(BaseModel):
     id: int
     nested: NestedModel
-    opt: Optional[int | str]
-    obj: List[str | int]
+    opt: Optional[int]
+    obj: List[str]
 
 
 def dummy_pydantic_return() -> PydanticModelReturnComplex:
