@@ -44,7 +44,21 @@ class BigQueryRemoteFunction(Handler):
         "bigquery.connections.delete",
         *gcp_generic_resource_permissions("bigquery", "routines"),
     ]
-    connection_locations = set()
+
+    def __init__(
+        self,
+        name,
+        backend,
+        versioned_clients=None,
+        resources=None,
+    ):
+        super(BigQueryRemoteFunction, self).__init__(
+            name=name,
+            versioned_clients=versioned_clients,
+            resources=resources,
+            backend=backend,
+        )
+        self.connection_locations = set()
 
     def register(self, name, func, kwargs):
         """

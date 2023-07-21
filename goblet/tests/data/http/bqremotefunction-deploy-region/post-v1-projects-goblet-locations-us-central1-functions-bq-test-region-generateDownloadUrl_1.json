@@ -1,6 +1,6 @@
 {
   "headers": {},
   "body": {
-    "downloadUrl": "https://storage.googleapis.com/gcf-sources-98058317567-us-central1/bq-test-region-3fb6e435-5b83-4277-be01-cbec65cb7a23/version-4/function-source.zip?GoogleAccessId=service-98058317567@gcf-admin-robot.iam.gserviceaccount.com&Expires=1689951710&Signature=VgDZ7qBeGFK0BiK0pPFZN%2FpSiZf93pciO2mA0%2FsY9kNCjj6UXsekJnS2Tmvx11JBIHOKxKLcUzepDDE2ayseUPT4Nv%2Fbd62v35VHZkiTXNTsXgP0C3PnvrQkuI52vgk0fSAJs6jm7vJJtplZ%2BQl7190y1LOd8%2FLByMb%2B3wbZUdb363D9xK3sMaRbGX06O7pF6LPmZs7LeR8We25mT2T4lNuuCNv3SjzBkelKRkkHRbMC9j72Av0L14goegouvFKzbG0CV%2FYISUasEbl%2FlwqkwL1Po8VgnbiXZA6Ho5CeBvJCalTxbDGTlt6yBBBjzEKt4M9UVzJFYU0alrW71uaMOw%3D%3D"
+    "downloadUrl": "https://storage.googleapis.com/mock"
   }
 }
