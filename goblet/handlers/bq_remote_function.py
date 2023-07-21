@@ -249,18 +249,19 @@ class BigQueryRemoteFunction(Handler):
         :return:
         """
         client = self.versioned_clients.bigquery_connections
-        try:
-            client.execute(
-                "delete",
-                params={"name": client.parent + "/connections/" + self.name},
-                parent=False,
-            )
-        except HttpError as exception:
-            if exception.resp.status == 404:
-                log.info(f"Connection {self.name} already destroyed")
-            else:
-                raise exception
-        return True
+        for location in self.connection_locations:
+            try:
+                client.execute(
+                    "delete",
+                    params={"name": f"projects/{get_default_project()}/locations/{location}" + "/connections/" + self.name},
+                    parent=False,
+                )
+            except HttpError as exception:
+                if exception.resp.status == 404:
+                    log.info(f"Connection {self.name} already destroyed")
+                else:
+                    raise exception
+            return True
 
     def destroy_routine(self, dataset_id, routine_id):
         """
