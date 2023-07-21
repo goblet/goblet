@@ -1,0 +1,24 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/functions/bq-test-region",
+    "description": "created by goblet",
+    "httpsTrigger": {
+      "url": "https://us-central1-goblet.cloudfunctions.net/bq-test-region",
+      "securityLevel": "SECURE_OPTIONAL"
+    },
+    "status": "ACTIVE",
+    "entryPoint": "goblet_entrypoint",
+    "timeout": "60s",
+    "availableMemoryMb": 256,
+    "serviceAccountEmail": "goblet@appspot.gserviceaccount.com",
+    "updateTime": "2023-07-21T14:02:11.431Z",
+    "versionId": "4",
+    "sourceUploadUrl": "https://storage.googleapis.com/uploads-225494038240.us-central1.cloudfunctions.appspot.com/8992057d-c843-4438-a5dc-0488a3b666ca.zip",
+    "runtime": "python310",
+    "ingressSettings": "ALLOW_ALL",
+    "buildId": "66cd77f9-a98c-4b8e-b12e-6b0b3b7f94b6",
+    "buildName": "projects/goblet/locations/us-central1/builds/66cd77f9-a98c-4b8e-b12e-6b0b3b7f94b6",
+    "dockerRegistry": "CONTAINER_REGISTRY"
+  }
+}
