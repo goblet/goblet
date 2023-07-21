@@ -67,7 +67,7 @@ You will also need to install `gcloud cli`_ for authentication
 
 .. note::
 
-    Goblet requires python version 3.7 or higher.
+    Goblet requires python version 3.8 or higher.
 
 .. _gcloud cli: https://cloud.google.com/sdk/docs/install
 
