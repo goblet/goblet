@@ -253,7 +253,11 @@ class BigQueryRemoteFunction(Handler):
             try:
                 client.execute(
                     "delete",
-                    params={"name": f"projects/{get_default_project()}/locations/{location}" + "/connections/" + self.name},
+                    params={
+                        "name": f"projects/{get_default_project()}/locations/{location}"
+                        + "/connections/"
+                        + self.name
+                    },
                     parent=False,
                 )
             except HttpError as exception:
