@@ -176,7 +176,7 @@ class TestBqRemoteFunction:
         def string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
 
-        app.deploy()
+        app.deploy(force=True)
         responses = get_responses(test_deploy_name)
         assert len(responses) > 0
         # Check Connection
