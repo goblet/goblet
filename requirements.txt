@@ -1,6 +1,6 @@
 apispec==6.3.0
 click==8.0.4
-functions-framework==3.0.0
+functions-framework==3.4.0
 marshmallow==3.19.0
 pydantic==2.0.2
 PyYAML==6.0
