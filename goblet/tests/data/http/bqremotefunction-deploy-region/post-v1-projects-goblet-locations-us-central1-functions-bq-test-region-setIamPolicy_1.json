@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "version": 1,
+    "etag": "BwYBACWfhPk=",
+    "bindings": [
+      {
+        "role": "roles/cloudfunctions.invoker",
+        "members": [
+          "serviceAccount:bqcx-98058317567-20d5@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
+        ]
+      }
+    ]
+  }
+}

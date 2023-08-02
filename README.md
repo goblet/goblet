@@ -120,14 +120,14 @@ You will also need to install [gcloud cli](https://cloud.google.com/sdk/docs/ins
 
 ## QuickStart
 
-In this tutorial, you'll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.7. You can find the latest versions of python on the Python download page.
+In this tutorial, you'll use the goblet command line utility to create and deploy a basic REST API. This quickstart uses Python 3.10. You can find the latest versions of python on the Python download page.
 
-To install Goblet, we'll first create and activate a virtual environment in python3.7:
+To install Goblet, we'll first create and activate a virtual environment in python3.10:
 
 ```sh
 $ python3 --version
-Python 3.7.3
-$ python3 -m venv venv37
+Python 3.10.10
+$ python3 -m venv venv310
 $ . venv37/bin/activate
 ```
 
@@ -268,6 +268,8 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Tutorial: Low Usage Alerting On Slack for Google Cloud Platform](https://engineering.premise.com/tutorial-low-usage-alerting-on-slack-for-google-cloud-platform-gcp-cc68ac8ca4d)
 
+[Easily Manage IAM Policies for Serverless REST Applications in GCP with Goblet](https://engineering.premise.com/easily-manage-iam-policies-for-serverless-rest-applications-in-gcp-with-goblet-f1580a97b74)
+
 ## Examples
 
 [Goblet Examples](https://github.com/goblet/goblet/blob/main/examples/main.py)
@@ -300,6 +302,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; [BQ Remote Functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/remote-functions) \
  &#9745; Deploy API Gateway from existing openapi spec \
  &#9745; Deploy arbitrary Dockerfile to Cloudrun \
+ &#9745; [Multi Container Deployments](https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments) \
  &#9745; Create Deployment Service Accounts \
  &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers
 

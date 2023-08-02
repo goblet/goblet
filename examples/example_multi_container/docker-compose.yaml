@@ -1,0 +1,16 @@
+services:
+  api_server:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - G_MOCK_CREDENTIALS=true
+      - PORT=80
+    volumes:
+      - ~/.config:/root/.config
+  nginx:
+    image: nginx:1.20.0-alpine
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/etc/nginx/

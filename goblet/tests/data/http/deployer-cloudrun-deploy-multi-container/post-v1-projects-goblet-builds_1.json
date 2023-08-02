@@ -1,0 +1,62 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/build/goblet/NDRmZjAxOWMtYjM0Ni00ZGM2LTg1ZTktNzNmNTU3MGI3MTY2",
+    "metadata": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
+      "build": {
+        "id": "44ff019c-b346-4dc6-85e9-73f5570b7166",
+        "status": "QUEUED",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-central1",
+            "object": "cd8e9af1-794a-4ec5-ac7b-ec027cfcba85.zip"
+          }
+        },
+        "createTime": "2023-07-18T16:01:46.292119258Z",
+        "steps": [
+          {
+            "name": "gcr.io/cloud-builders/docker",
+            "args": [
+              "build",
+              "--network=cloudbuild",
+              "-t",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/multi-container",
+              "--cache-from",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/multi-container",
+              "."
+            ]
+          }
+        ],
+        "timeout": "3600s",
+        "images": [
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/multi-container"
+        ],
+        "projectId": "goblet",
+        "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-central1",
+            "object": "cd8e9af1-794a-4ec5-ac7b-ec027cfcba85.zip",
+            "generation": "1689696105454907"
+          }
+        },
+        "options": {
+          "logging": "LEGACY",
+          "pool": {}
+        },
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/44ff019c-b346-4dc6-85e9-73f5570b7166?project=123456789",
+        "tags": [
+          "goblet-build-multi-container"
+        ],
+        "artifacts": {
+          "images": [
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/multi-container"
+          ]
+        },
+        "queueTtl": "3600s",
+        "name": "projects/goblet/locations/global/builds/44ff019c-b346-4dc6-85e9-73f5570b7166"
+      }
+    }
+  }
+}

@@ -159,6 +159,67 @@ class TestBqRemoteFunction:
             remote_function_options["userDefinedContext"]
         )
 
+    def test_deploy_bqremotefunction_region(self, monkeypatch, requests_mock):
+        test_deploy_name = "bqremotefunction-deploy-region"
+
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+
+        test_name = "bq-test-region"
+        app = Goblet(function_name=test_name)
+
+        @app.bqremotefunction(dataset_id="test", location="US")
+        def string_test_blogs_1(x: str, y: str) -> str:
+            return f"Passed parameters x:{x}  y:{y}"
+
+        app.deploy(force=True)
+        responses = get_responses(test_deploy_name)
+        assert len(responses) > 0
+        # Check Connection
+        connections = list(
+            request["body"]
+            for request in responses
+            if "cloudResource" in request["body"]
+        )
+        assert len(connections) == 1
+        assert "serviceAccountId" in connections[0]["cloudResource"]
+        assert "bigquery" in connections[0]["cloudResource"]["serviceAccountId"]
+        assert test_name in connections[0]["name"]
+
+        # Check policy
+        bindings = list(
+            request["body"]["bindings"]
+            for request in responses
+            if "bindings" in request["body"]
+        )
+        assert len(bindings) == 1
+        assert "members" in bindings[0][0]
+        members = bindings[0][0]["members"]
+        assert len(members) == 1 and "serviceAccount" in members[0]
+        assert "role" in bindings[0][0]
+        assert bindings[0][0]["role"] == "roles/cloudfunctions.invoker"
+
+        routines = list(
+            request["body"]
+            for request in responses
+            if "remoteFunctionOptions" in request["body"]
+        )
+        assert len(routines) == 1
+        routine = routines[0]
+        remote_function_options = routine["remoteFunctionOptions"]
+        user_defined_context = '{"X-Goblet-Name": "bq_test_region_string_test_blogs_1"}'
+        assert (
+            "connection" in remote_function_options
+            and test_name in remote_function_options["connection"]
+        )
+        assert user_defined_context == json.dumps(
+            remote_function_options["userDefinedContext"]
+        )
+
     def test_destroy_bqremotefunction(self, monkeypatch):
         test_deploy_name = "bqremotefunction-destroy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -170,6 +231,38 @@ class TestBqRemoteFunction:
         app = Goblet(function_name=test_name)
 
         @app.bqremotefunction(dataset_id="blogs")
+        def string_test_blogs_1(x: str, y: str) -> str:
+            return f"Passed parameters x:{x}  y:{y}"
+
+        app.destroy()
+        responses = get_responses(test_deploy_name)
+
+        assert len(responses) != 0
+
+        bodies = list(response["body"] for response in responses)
+
+        deleted_function = list(
+            body["metadata"]
+            for body in bodies
+            if "metadata" in body
+            and "type" in body["metadata"]
+            and "type" in body["metadata"]
+            and "DELETE_FUNCTION" == body["metadata"]["type"]
+        )
+        assert len(deleted_function) == 1
+        assert f"functions/{test_name}" in deleted_function[0]["target"]
+
+    def test_destroy_bqremotefunction_region(self, monkeypatch):
+        test_deploy_name = "bqremotefunction-destroy-region"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        test_name = "bqremotefunction_test"
+        app = Goblet(function_name=test_name)
+
+        @app.bqremotefunction(dataset_id="test", location="US")
         def string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
 

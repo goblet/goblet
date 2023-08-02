@@ -1,0 +1,11 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us/connections/bq-test-region",
+    "creationTime": "1689950001197",
+    "lastModifiedTime": "1689950001197",
+    "cloudResource": {
+      "serviceAccountId": "bqcx-98058317567-20d5@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
+    }
+  }
+}

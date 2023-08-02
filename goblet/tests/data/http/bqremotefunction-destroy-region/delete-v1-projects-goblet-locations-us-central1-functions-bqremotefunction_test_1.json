@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1kYXRhLXBsYXRmb3JtLWRldi91cy1jZW50cmFsMS9icXJlbW90ZWZ1bmN0aW9uX3Rlc3QvRFRFeTJLSl9mcDA",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/goblet/locations/us-central1/functions/bqremotefunction_test",
+      "type": "DELETE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.protobuf.Empty"
+      },
+      "updateTime": "2023-07-21T14:46:44Z"
+    }
+  }
+}
