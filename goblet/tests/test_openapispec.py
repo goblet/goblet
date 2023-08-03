@@ -46,8 +46,8 @@ class PydanticModelDuplicate(BaseModel):
 class PydanticModelReturnComplex(BaseModel):
     id: int
     nested: NestedModel
-    opt: Optional[int]
-    obj: List[str]
+    option: Optional[int]
+    objects: List[str]
 
 
 def dummy_pydantic_return() -> PydanticModelReturnComplex:
@@ -556,5 +556,5 @@ class TestOpenApiSpec:
         return_obj_props = spec_dict["definitions"]["PydanticModelReturnComplex"][
             "properties"
         ]
-        assert return_obj_props["opt"]["type"] == "integer"
-        assert return_obj_props["obj"]["items"]["type"] == "string"
+        assert return_obj_props["option"]["type"] == "integer"
+        assert return_obj_props["objects"]["items"]["type"] == "string"

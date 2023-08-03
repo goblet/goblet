@@ -32,7 +32,7 @@ class PydanticPlugin(BasePlugin):
                 if k not in self.spec.components.schemas:
                     self.spec.components.schema(k, v)
             del schema["$defs"]
-        
+
         return self.resolve_schema(schema)
 
     def operation_helper(self, path=None, operations=None, **kwargs) -> None:
@@ -54,8 +54,10 @@ class PydanticPlugin(BasePlugin):
     def resolve_schema(self, schema):
         if isinstance(schema, dict):
             return self._resolve_schema_values(schema)
+        return schema
 
     def _resolve_schema_values(self, schema: dict):
+        """Extract properties from pydantic schema"""
         if schema.get("type") == "object" and "properties" in schema:
             schema["properties"] = {
                 k: self._resolve_schema_values(v)
@@ -73,7 +75,7 @@ class PydanticPlugin(BasePlugin):
 
     def resolve_parameters(self, parameters):
         """
-        Handle Pydantic class paramters
+        Handle Pydantic class parameters
         """
         resolved = []
         for parameter in parameters:
@@ -94,16 +96,16 @@ class PydanticPlugin(BasePlugin):
         Extract Properties from pydantic model and convert into query params
         """
         schema = model.model_json_schema()
+        resolved_schema = self.resolve_schema(schema)
         params = []
-        for key, value in schema["properties"].items():
-            resolved_properties = self._resolve_schema_values(value)
+        for key, value in resolved_schema["properties"].items():
             param = {
                 "in": "query",
                 "name": key,
-                "type": resolved_properties["type"],
+                "type": value["type"],
                 "required": key in schema.get("required", []),
             }
-            if resolved_properties["type"] == "array":
-                param["items"] = resolved_properties["items"]
+            if value["type"] == "array":
+                param["items"] = value["items"]
             params.append(param)
         return params
