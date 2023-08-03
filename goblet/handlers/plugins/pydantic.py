@@ -66,7 +66,8 @@ class PydanticPlugin(BasePlugin):
 
         for op in ["anyOf", "oneOf", "allOf"]:
             if op in schema:
-                schema["type"] = schema.get(op)[0]["type"]
+                for k,v in schema.get(op)[0].items():
+                    schema[k] = v
                 del schema[op]
         return schema
 
@@ -95,18 +96,14 @@ class PydanticPlugin(BasePlugin):
         schema = model.model_json_schema()
         params = []
         for key, value in schema["properties"].items():
+            resolved_properties = self._resolve_schema_values(value)
             param = {
                 "in": "query",
                 "name": key,
+                "type": resolved_properties["type"],
                 "required": key in schema.get("required", []),
             }
-            if values := value.get("anyOf"):
-                param["type"] = values[0]["type"]
-                if param["type"] == "array":
-                    param["items"] = values[0]["items"]
-            else:
-                param["type"] = value["type"]
-                if param["type"] == "array":
-                    param["items"] = value["items"]
+            if resolved_properties["type"] == "array":
+                param["items"] = resolved_properties["items"]
             params.append(param)
         return params
