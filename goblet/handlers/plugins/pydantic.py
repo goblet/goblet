@@ -32,8 +32,8 @@ class PydanticPlugin(BasePlugin):
                 if k not in self.spec.components.schemas:
                     self.spec.components.schema(k, v)
             del schema["$defs"]
-        self.resolve_schema(schema)
-        return schema
+        
+        return self.resolve_schema(schema)
 
     def operation_helper(self, path=None, operations=None, **kwargs) -> None:
         self.resolve_operation_parameters(operations)
