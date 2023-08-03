@@ -66,7 +66,7 @@ class PydanticPlugin(BasePlugin):
 
         for op in ["anyOf", "oneOf", "allOf"]:
             if op in schema:
-                for k,v in schema.get(op)[0].items():
+                for k, v in schema.get(op)[0].items():
                     schema[k] = v
                 del schema[op]
         return schema
