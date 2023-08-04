@@ -104,7 +104,9 @@ class Scheduler(Handler):
         if self.backend.resource_type == "cloudrun":
             # dont get target in scheduler is needed only for jobs
             cloudrun_target = None
-            if self.config.cloudrun_revision and self.config.cloudrun_revision.get("serviceAccount"):
+            if self.config.cloudrun_revision and self.config.cloudrun_revision.get(
+                "serviceAccount"
+            ):
                 service_account = self.config.cloudrun_revision.get("serviceAccount")
             elif self.config.scheduler and self.config.scheduler.get("serviceAccount"):
                 service_account = self.config.scheduler.get("serviceAccount")
