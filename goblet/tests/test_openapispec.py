@@ -23,14 +23,14 @@ class NestedModel(BaseModel):
 
 
 class PydanticModelSimple(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     flt: float
-    idlist: Optional[List[int]]
+    idlist: Optional[List[int]] = None
 
 
 class PydanticModelSimpleOptional(BaseModel):
-    id: Optional[int]
-    flt: Optional[float]
+    id: Optional[int] = None
+    flt: Optional[float] = None
 
 
 class PydanticModel(BaseModel):
@@ -41,6 +41,17 @@ class PydanticModel(BaseModel):
 class PydanticModelDuplicate(BaseModel):
     id: int
     nested: NestedModel
+
+
+class PydanticModelReturnComplex(BaseModel):
+    id: int
+    nested: NestedModel
+    option: Optional[int]
+    objects: List[str]
+
+
+def dummy_pydantic_return() -> PydanticModelReturnComplex:
+    pass
 
 
 class TestOpenApiSpec:
@@ -529,3 +540,21 @@ class TestOpenApiSpec:
             "type": "string",
             "required": True,
         } in spec_dict["paths"]["/home"]["get"]["parameters"]
+
+    def test_query_params_class_pydantic_return(self):
+        route = RouteEntry(
+            dummy_pydantic_return,
+            "route",
+            "/home/{id}",
+            "GET",
+            query_params=[{"in": "query", "schema": PydanticModelSimpleOptional}],
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec_dict = spec.component_spec.to_dict()
+
+        return_obj_props = spec_dict["definitions"]["PydanticModelReturnComplex"][
+            "properties"
+        ]
+        assert return_obj_props["option"]["type"] == "integer"
+        assert return_obj_props["objects"]["items"]["type"] == "string"

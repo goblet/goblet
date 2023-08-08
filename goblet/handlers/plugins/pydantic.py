@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from apispec import BasePlugin, APISpec
 from pydantic import BaseModel
-from pydantic.main import ModelMetaclass
+from pydantic._internal._model_construction import ModelMetaclass
 import copy
 
 
@@ -20,20 +20,20 @@ class PydanticPlugin(BasePlugin):
         name: str,
         definition: dict,
         model: Optional[BaseModel] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ):
         if model is None:
             return None
 
-        org_schema = model.schema(ref_template="#/definitions/{model}")
+        org_schema = model.model_json_schema(ref_template="#/definitions/{model}")
         schema = copy.deepcopy(org_schema)
-        if "definitions" in schema:
-            for k, v in schema["definitions"].items():
+        if "$defs" in schema:
+            for k, v in schema["$defs"].items():
                 if k not in self.spec.components.schemas:
                     self.spec.components.schema(k, v)
-            del schema["definitions"]
+            del schema["$defs"]
 
-        return schema
+        return self.resolve_schema(schema)
 
     def operation_helper(self, path=None, operations=None, **kwargs) -> None:
         self.resolve_operation_parameters(operations)
@@ -51,9 +51,31 @@ class PydanticPlugin(BasePlugin):
                     operation["parameters"]
                 )
 
+    def resolve_schema(self, schema):
+        if isinstance(schema, dict):
+            return self._resolve_schema_values(schema)
+        return schema
+
+    def _resolve_schema_values(self, schema: dict):
+        """Extract properties from pydantic schema"""
+        if schema.get("type") == "object" and "properties" in schema:
+            schema["properties"] = {
+                k: self._resolve_schema_values(v)
+                for k, v in schema.get("properties", {}).items()
+            }
+        if schema.get("type") == "array" and "items" in schema:
+            schema["items"] = self._resolve_schema_values(schema["items"])
+
+        for op in ["anyOf", "oneOf", "allOf"]:
+            if op in schema:
+                for k, v in schema.get(op)[0].items():
+                    schema[k] = v
+                del schema[op]
+        return schema
+
     def resolve_parameters(self, parameters):
         """
-        Handle Pydantic class paramters
+        Handle Pydantic class parameters
         """
         resolved = []
         for parameter in parameters:
@@ -73,9 +95,10 @@ class PydanticPlugin(BasePlugin):
         """
         Extract Properties from pydantic model and convert into query params
         """
-        schema = model.schema()
+        schema = model.model_json_schema()
+        resolved_schema = self.resolve_schema(schema)
         params = []
-        for key, value in schema["properties"].items():
+        for key, value in resolved_schema["properties"].items():
             param = {
                 "in": "query",
                 "name": key,
