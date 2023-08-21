@@ -104,12 +104,14 @@ class Scheduler(Handler):
         if self.backend.resource_type == "cloudrun":
             # dont get target in scheduler is needed only for jobs
             cloudrun_target = None
-            if self.config.cloudrun and self.config.cloudrun.get("service-account"):
-                service_account = self.config.cloudrun.get("service-account")
+            if self.config.cloudrun_revision and self.config.cloudrun_revision.get(
+                "serviceAccount"
+            ):
+                service_account = self.config.cloudrun_revision.get("serviceAccount")
             elif self.config.scheduler and self.config.scheduler.get("serviceAccount"):
                 service_account = self.config.scheduler.get("serviceAccount")
-            elif self.config.job and self.config.job.get("serviceAccount"):
-                service_account = self.config.job.get("serviceAccount")
+            elif self.config.job_spec and self.config.job_spec.get("serviceAccount"):
+                service_account = self.config.job_spec.get("serviceAccount")
             else:
                 raise ValueError(
                     "Service account not found in cloudrun. You can set `serviceAccount` field in config.json under `scheduler`"
