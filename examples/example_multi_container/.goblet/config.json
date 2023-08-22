@@ -1,0 +1,48 @@
+{
+    "cloudrun": {
+        "launchStage": "BETA"
+    },
+    "cloudrun_container": {
+        "env": [
+            {
+                "name": "PORT",
+                "value": "80"
+            }
+        ],
+        "ports": []
+    },
+    "cloudrun_container_extra": [
+        {
+            "name": "nginx",
+            "image": "nginx:1.20.0-alpine",
+            "volumeMounts": [
+                {
+                    "mountPath": "/etc/nginx/",
+                    "name": "nginx"
+                }
+            ],
+            "ports": [
+                {
+                    "containerPort": 8080
+                }
+            ]
+        }
+    ],
+    "cloudrun_revision": {
+        "serviceAccount": "SERVICE_ACCOUNT",
+        "volumes": [
+            {
+                "name": "nginx",
+                "secret": {
+                    "secret": "nginx",
+                    "items": [
+                        {
+                            "version": "latest",
+                            "path": "nginx.conf"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

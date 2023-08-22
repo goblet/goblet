@@ -104,6 +104,7 @@ class TestEventArc:
                     "region": "us-central1",
                     "name": "bucket_get",
                     "func": None,
+                    "event_data_content_type": "application/json",
                 }
             ],
         )
@@ -149,6 +150,7 @@ class TestEventArc:
                     "region": "us-central1",
                     "name": "bucket_get",
                     "func": None,
+                    "event_data_content_type": "application/json",
                 }
             ],
         )
@@ -190,6 +192,7 @@ class TestEventArc:
                     "region": "us-central1",
                     "name": "bucket_get",
                     "func": None,
+                    "event_data_content_type": "application/json",
                 }
             ],
         )
@@ -225,6 +228,7 @@ class TestEventArc:
                     "region": "us-central1",
                     "name": "bucket_get",
                     "func": None,
+                    "event_data_content_type": "application/json",
                 }
             ],
         )

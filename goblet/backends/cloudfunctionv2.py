@@ -23,12 +23,14 @@ class CloudFunctionV2(Backend):
     config_key = "cloudfunction"
     monitoring_type = "cloud_function"
     monitoring_label_key = "function_name"
-    required_apis = ["cloudfunctions", "cloudresourcemanager"]
+    required_apis = ["cloudfunctions", "cloudresourcemanager", "cloudbuild"]
     permissions = [
         "cloudfunctions.functions.getIamPolicy",
         "cloudfunctions.functions.setIamPolicy",
         "cloudfunctions.operations.get",
         "cloudfunctions.functions.sourceCodeSet",
+        "cloudresourcemanager.projects.get",
+        "iam.serviceaccounts.actAs",
         *gcp_generic_resource_permissions("cloudfunctions", "functions"),
     ]
 

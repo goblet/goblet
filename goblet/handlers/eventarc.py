@@ -40,6 +40,9 @@ class EventArc(Handler):
     def register(self, name, func, kwargs):
         event_filters = kwargs.get("event_filters")
         region = kwargs.get("kwargs", {}).get("region", get_default_location())
+        event_data_content_type = kwargs.get("kwargs", {}).get(
+            "event_data_content_type", "application/json"
+        )
         if kwargs.get("topic"):
             event_filters = [
                 {
@@ -55,6 +58,7 @@ class EventArc(Handler):
                 "region": region,
                 "name": name,
                 "func": func,
+                "event_data_content_type": event_data_content_type,
             }
         )
 
@@ -114,6 +118,7 @@ class EventArc(Handler):
                     }
                 },
                 "labels": self.config.labels,
+                "eventDataContentType": trigger["event_data_content_type"],
                 **topic,
             }
             create_eventarc_trigger(
