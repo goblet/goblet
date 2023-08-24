@@ -76,7 +76,7 @@ class TestDeployer:
         app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-cloudrun-deploy")
-        assert len(responses) == 9
+        assert len(responses) == 10
 
     def test_deploy_cloudrun_multi_container(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

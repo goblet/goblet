@@ -87,7 +87,7 @@ class TestJobs:
         app.deploy(force=True)
 
         responses = get_responses("job-deploy")
-        assert len(responses) == 6
+        assert len(responses) == 7
         assert "test-job-test" in responses[4]["body"]["metadata"]["name"]
 
     def test_deploy_job_schedule(self, monkeypatch, requests_mock):
