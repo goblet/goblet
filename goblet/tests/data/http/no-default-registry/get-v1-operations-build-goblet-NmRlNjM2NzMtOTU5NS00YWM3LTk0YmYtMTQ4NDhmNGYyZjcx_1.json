@@ -1,0 +1,239 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/build/goblet/NmRlNjM2NzMtOTU5NS00YWM3LTk0YmYtMTQ4NDhmNGYyZjcx",
+    "metadata": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
+      "build": {
+        "id": "6de63673-9595-4ac7-94bf-14848f4f2f71",
+        "status": "SUCCESS",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-east1",
+            "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip"
+          }
+        },
+        "createTime": "2023-08-24T17:51:39.067645471Z",
+        "startTime": "2023-08-24T17:51:39.878333680Z",
+        "finishTime": "2023-08-24T17:52:37.779841Z",
+        "results": {
+          "images": [
+            {
+              "name": "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+              "digest": "sha256:a5f4cd1ffe9686d3b5b870f29d7418c1fd2bfcbf9e41b33de73fa7489a2211ae",
+              "pushTiming": {
+                "startTime": "2023-08-24T17:52:19.844782880Z",
+                "endTime": "2023-08-24T17:52:36.684159531Z"
+              }
+            },
+            {
+              "name": "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet:latest",
+              "digest": "sha256:a5f4cd1ffe9686d3b5b870f29d7418c1fd2bfcbf9e41b33de73fa7489a2211ae",
+              "pushTiming": {
+                "startTime": "2023-08-24T17:52:19.844782880Z",
+                "endTime": "2023-08-24T17:52:36.684159531Z"
+              }
+            }
+          ],
+          "buildStepImages": [
+            "sha256:d20e3b795df87e5c8b37a09d8ae680a8f0395357ab9b1bce6b408f6ef98779ce"
+          ],
+          "buildStepOutputs": [
+            ""
+          ]
+        },
+        "steps": [
+          {
+            "name": "gcr.io/cloud-builders/docker",
+            "args": [
+              "build",
+              "--network=cloudbuild",
+              "-t",
+              "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+              "--cache-from",
+              "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+              "."
+            ],
+            "timing": {
+              "startTime": "2023-08-24T17:51:49.964422446Z",
+              "endTime": "2023-08-24T17:52:19.798256813Z"
+            },
+            "status": "SUCCESS",
+            "pullTiming": {
+              "startTime": "2023-08-24T17:51:49.964422446Z",
+              "endTime": "2023-08-24T17:51:49.969170300Z"
+            }
+          }
+        ],
+        "timeout": "3600s",
+        "images": [
+          "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet"
+        ],
+        "projectId": "goblet",
+        "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-east1",
+            "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip",
+            "generation": "1692899490940214"
+          },
+          "fileHashes": {
+            "gs://gcf-v2-uploads-123456789-us-east1/9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip#1692899490940214": {
+              "fileHash": [
+                {
+                  "type": "MD5",
+                  "value": "/Kr3c5n8mubaA6+9MNgCbA=="
+                }
+              ]
+            }
+          }
+        },
+        "options": {
+          "logging": "LEGACY",
+          "pool": {}
+        },
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/6de63673-9595-4ac7-94bf-14848f4f2f71?project=123456789",
+        "tags": [
+          "goblet-build-goblet"
+        ],
+        "timing": {
+          "FETCHSOURCE": {
+            "startTime": "2023-08-24T17:51:40.532608743Z",
+            "endTime": "2023-08-24T17:51:49.322264377Z"
+          },
+          "BUILD": {
+            "startTime": "2023-08-24T17:51:49.322358946Z",
+            "endTime": "2023-08-24T17:52:19.844620973Z"
+          },
+          "PUSH": {
+            "startTime": "2023-08-24T17:52:19.844781262Z",
+            "endTime": "2023-08-24T17:52:36.684224661Z"
+          }
+        },
+        "artifacts": {
+          "images": [
+            "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet"
+          ]
+        },
+        "queueTtl": "3600s",
+        "name": "projects/goblet/locations/global/builds/6de63673-9595-4ac7-94bf-14848f4f2f71"
+      }
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.Build",
+      "id": "6de63673-9595-4ac7-94bf-14848f4f2f71",
+      "status": "SUCCESS",
+      "source": {
+        "storageSource": {
+          "bucket": "gcf-v2-uploads-123456789-us-east1",
+          "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip"
+        }
+      },
+      "createTime": "2023-08-24T17:51:39.067645471Z",
+      "startTime": "2023-08-24T17:51:39.878333680Z",
+      "finishTime": "2023-08-24T17:52:37.779841Z",
+      "results": {
+        "images": [
+          {
+            "name": "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+            "digest": "sha256:a5f4cd1ffe9686d3b5b870f29d7418c1fd2bfcbf9e41b33de73fa7489a2211ae",
+            "pushTiming": {
+              "startTime": "2023-08-24T17:52:19.844782880Z",
+              "endTime": "2023-08-24T17:52:36.684159531Z"
+            }
+          },
+          {
+            "name": "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet:latest",
+            "digest": "sha256:a5f4cd1ffe9686d3b5b870f29d7418c1fd2bfcbf9e41b33de73fa7489a2211ae",
+            "pushTiming": {
+              "startTime": "2023-08-24T17:52:19.844782880Z",
+              "endTime": "2023-08-24T17:52:36.684159531Z"
+            }
+          }
+        ],
+        "buildStepImages": [
+          "sha256:d20e3b795df87e5c8b37a09d8ae680a8f0395357ab9b1bce6b408f6ef98779ce"
+        ],
+        "buildStepOutputs": [
+          ""
+        ]
+      },
+      "steps": [
+        {
+          "name": "gcr.io/cloud-builders/docker",
+          "args": [
+            "build",
+            "--network=cloudbuild",
+            "-t",
+            "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+            "--cache-from",
+            "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+            "."
+          ],
+          "timing": {
+            "startTime": "2023-08-24T17:51:49.964422446Z",
+            "endTime": "2023-08-24T17:52:19.798256813Z"
+          },
+          "status": "SUCCESS",
+          "pullTiming": {
+            "startTime": "2023-08-24T17:51:49.964422446Z",
+            "endTime": "2023-08-24T17:51:49.969170300Z"
+          }
+        }
+      ],
+      "timeout": "3600s",
+      "images": [
+        "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet"
+      ],
+      "projectId": "goblet",
+      "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
+      "sourceProvenance": {
+        "resolvedStorageSource": {
+          "bucket": "gcf-v2-uploads-123456789-us-east1",
+          "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip",
+          "generation": "1692899490940214"
+        },
+        "fileHashes": {
+          "gs://gcf-v2-uploads-123456789-us-east1/9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip#1692899490940214": {
+            "fileHash": [
+              {
+                "type": "MD5",
+                "value": "/Kr3c5n8mubaA6+9MNgCbA=="
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "logging": "LEGACY",
+        "pool": {}
+      },
+      "logUrl": "https://console.cloud.google.com/cloud-build/builds/6de63673-9595-4ac7-94bf-14848f4f2f71?project=123456789",
+      "tags": [
+        "goblet-build-goblet"
+      ],
+      "timing": {
+        "FETCHSOURCE": {
+          "startTime": "2023-08-24T17:51:40.532608743Z",
+          "endTime": "2023-08-24T17:51:49.322264377Z"
+        },
+        "BUILD": {
+          "startTime": "2023-08-24T17:51:49.322358946Z",
+          "endTime": "2023-08-24T17:52:19.844620973Z"
+        },
+        "PUSH": {
+          "startTime": "2023-08-24T17:52:19.844781262Z",
+          "endTime": "2023-08-24T17:52:36.684224661Z"
+        }
+      },
+      "artifacts": {
+        "images": [
+          "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet"
+        ]
+      },
+      "queueTtl": "3600s",
+      "name": "projects/goblet/locations/global/builds/6de63673-9595-4ac7-94bf-14848f4f2f71"
+    }
+  }
+}
