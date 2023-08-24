@@ -131,7 +131,7 @@ class TestDeployer:
             "post-v2-projects-goblet-locations-us-central1-services_1.json",
         )
 
-        assert get_replay_count() == 8
+        assert get_replay_count() == 9
         assert len(service["body"]["metadata"]["template"]["containers"]) == 2
         assert (
             service["body"]["metadata"]["template"]["containers"][1]["name"] == "nginx"
