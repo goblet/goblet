@@ -48,6 +48,8 @@ class CloudRun(Backend):
         "cloudresourcemanager.projects.get",
         "iam.serviceaccounts.actAs",
         "cloudfunctions.functions.sourceCodeSet",
+        "artifactregistry.repositories.create",
+        "artifactregistry.repositories.get"
     ]
 
     def __init__(self, app):
