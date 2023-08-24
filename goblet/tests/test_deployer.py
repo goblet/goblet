@@ -336,11 +336,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-
-        app = Goblet(
-            function_name="goblet",
-            backend="cloudrun"
-        )
+        app = Goblet(function_name="goblet", backend="cloudrun")
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"] = HTTP("name", app, resources=[{}])
@@ -348,12 +344,17 @@ class TestDeployer:
         app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         artifact_response = get_response(
-            G_TEST_NAME, "get-v1-projects-goblet-locations-us-east1-repositories-cloud-run-source-deploy_1.json"
+            G_TEST_NAME,
+            "get-v1-projects-goblet-locations-us-east1-repositories-cloud-run-source-deploy_1.json",
         )
 
         artifact_create_response = get_response(
-            G_TEST_NAME, "post-v1-projects-goblet-locations-us-east1-repositories_1.json"
+            G_TEST_NAME,
+            "post-v1-projects-goblet-locations-us-east1-repositories_1.json",
         )
 
         assert artifact_response["body"]["error"]["code"] == 404
-        assert "projects/goblet/locations/us-east1" in artifact_create_response["body"]["name"]
+        assert (
+            "projects/goblet/locations/us-east1"
+            in artifact_create_response["body"]["name"]
+        )

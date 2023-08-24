@@ -319,6 +319,7 @@ class MissingArtifact(Exception):
 def getDefaultRegistry(artifactName):
     return f"{get_default_location()}-docker.pkg.dev/{get_default_project()}/cloud-run-source-deploy/{artifactName}"
 
+
 def getDefaultRegistryName():
     return f"projects/{get_default_project()}/locations/{get_default_location()}/repositories/cloud-run-source-deploy"
 

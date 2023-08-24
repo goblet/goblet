@@ -23,7 +23,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "serviceusage": "v1",
     "iam": "v1",
     "cloudresourcemanager": "v3",
-    "artifactregistry": "v1"
+    "artifactregistry": "v1",
 }
 
 
