@@ -7,7 +7,7 @@
       {
         "role": "roles/cloudfunctions.invoker",
         "members": [
-          "serviceAccount:bqcx-98058317567-20d5@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
+          "serviceAccount:bqcx-123456789-20d5@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
         ]
       }
     ]

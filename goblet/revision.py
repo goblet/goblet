@@ -149,7 +149,7 @@ class RevisionSpec:
                 params={},
             )
 
-            for service in resp["services"]:
+            for service in resp.get("services", []):
                 if service["name"].rpartition("/")[-1] == self.name:
                     serviceConfig = self.getServiceConfig()
                     self.modifyTraffic(serviceConfig)
