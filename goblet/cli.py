@@ -19,20 +19,21 @@ logging.basicConfig()
 
 SUPPORTED_BACKENDS = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
 SUPPORTED_HANDLERS = [
+    "bqremotefunction",
     "cloudtasktarget",
-    "pubsub",
-    "storage",
     "eventarc",
     "jobs",
+    "pubsub",
+    "storage",
     "schedule",
-    "bqremotefunction",
 ]
 SUPPORTED_INFRASTRUCTURES = [
-    "cloudtaskqueue",
-    "redis",
-    "vpcconnector",
     "alerts",
     "apigateway",
+    "cloudtaskqueue",
+    "pubsub",
+    "redis",
+    "vpcconnector",
 ]
 
 
