@@ -1,0 +1,9 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-east1/operations/49614f5f-2233-46fa-ad8f-483ed27b761c",
+    "metadata": {
+      "@type": "type.googleapis.com/google.devtools.artifactregistry.v1.OperationMetadata"
+    }
+  }
+}

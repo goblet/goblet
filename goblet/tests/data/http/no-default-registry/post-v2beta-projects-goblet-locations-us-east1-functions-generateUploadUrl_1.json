@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "uploadUrl": "https://storage.googleapis.com/gcf-v2-uploads-123456789-us-east1/9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip?GoogleAccessId=service-123456789@gcf-admin-robot.iam.gserviceaccount.com&Expires=1692901290&Signature=C6PQiCnfjAB0xAaze2sjJP%2Fi2Mv4RJA5X%2Ba2lZu6EZAfmSDP3xSF27mbIOv4VP2rePwSyCCPi1OoK7pjTJFvnfJL3oVIZxrO4r1Kx2mQKbJCwumNlLy%2FKTWw61U1QIou%2FAKaaoRVUyFt32%2F9PZk9FWh8JrRBSuC5JycJoqDzn1%2B4Exg95hxPNVvk3FhC1G0toWfSwbsaBUQCsJQdYOy%2B6GuDWqhW6EtPOo%2B51RmFf95wUsYTAxwQLx4x18gV%2FvRFSJ7SKfYALU5l3h4gHkkLwxlOSxdNNQnhGFEBPGcmdJhFPQE2J1LdFQ6Fl78%2BGvLqwnIrKNpwgJLUS156Szhs1Q%3D%3D",
+    "storageSource": {
+      "bucket": "gcf-v2-uploads-123456789-us-east1",
+      "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip"
+    }
+  }
+}

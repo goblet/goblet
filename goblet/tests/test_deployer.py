@@ -76,7 +76,7 @@ class TestDeployer:
         app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-cloudrun-deploy")
-        assert len(responses) == 9
+        assert len(responses) == 10
 
     def test_deploy_cloudrun_multi_container(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -131,7 +131,7 @@ class TestDeployer:
             "post-v2-projects-goblet-locations-us-central1-services_1.json",
         )
 
-        assert get_replay_count() == 8
+        assert get_replay_count() == 9
         assert len(service["body"]["metadata"]["template"]["containers"]) == 2
         assert (
             service["body"]["metadata"]["template"]["containers"][1]["name"] == "nginx"
@@ -327,4 +327,34 @@ class TestDeployer:
         assert (
             artifact_tag
             in response["body"]["response"]["template"]["containers"][0]["image"]
+        )
+
+    def test_cloudrun_no_default_registry(self, monkeypatch):
+        G_TEST_NAME = "no-default-registry"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-east1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet", backend="cloudrun")
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        artifact_response = get_response(
+            G_TEST_NAME,
+            "get-v1-projects-goblet-locations-us-east1-repositories-cloud-run-source-deploy_1.json",
+        )
+
+        artifact_create_response = get_response(
+            G_TEST_NAME,
+            "post-v1-projects-goblet-locations-us-east1-repositories_1.json",
+        )
+
+        assert artifact_response["body"]["error"]["code"] == 404
+        assert (
+            "projects/goblet/locations/us-east1"
+            in artifact_create_response["body"]["name"]
         )

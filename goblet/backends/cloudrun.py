@@ -4,6 +4,7 @@ import base64
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
+from googleapiclient.errors import HttpError
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients
@@ -19,6 +20,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     get_cloudrun_url,
     getDefaultRegistry,
+    getDefaultRegistryName,
 )
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
@@ -46,6 +48,8 @@ class CloudRun(Backend):
         "cloudresourcemanager.projects.get",
         "iam.serviceaccounts.actAs",
         "cloudfunctions.functions.sourceCodeSet",
+        "artifactregistry.repositories.create",
+        "artifactregistry.repositories.get",
     ]
 
     def __init__(self, app):
@@ -128,6 +132,33 @@ class CloudRun(Backend):
         build_configs = self.config.cloudbuild.copy() if self.config.cloudbuild else {}
         registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
         build_configs.pop("artifact_registry", None)
+
+        # check if default registry exists
+        if not build_configs.get("artifact_registry"):
+            registry_client = VersionedClients().artifactregistry_repositories
+            try:
+                registry_client.execute(
+                    "get", parent_key="name", parent_schema=getDefaultRegistryName()
+                )
+            except HttpError as e:
+                # Registry doesn't exist
+                if e.resp.status == 404:
+                    # create registry
+                    self.log.info(
+                        f"Default registry doesn't exist. Creating registry {getDefaultRegistryName()}"
+                    )
+                    resp = registry_client.execute(
+                        "create",
+                        params={
+                            "body": {
+                                "name": getDefaultRegistryName(),
+                                "format": "DOCKER",
+                                "mode": "STANDARD_REPOSITORY",
+                            },
+                            "repositoryId": "cloud-run-source-deploy",
+                        },
+                    )
+                registry_client.wait_for_operation(resp["name"])
 
         if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):
             build_options = build_configs.get("options", {})

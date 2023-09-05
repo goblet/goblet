@@ -5,7 +5,7 @@
     "creationTime": "1689950001197",
     "lastModifiedTime": "1689950001197",
     "cloudResource": {
-      "serviceAccountId": "bqcx-98058317567-20d5@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
+      "serviceAccountId": "bqcx-123456789-20d5@gcp-sa-bigquery-condel.iam.gserviceaccount.com"
     }
   }
 }
