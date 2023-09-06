@@ -67,7 +67,7 @@ class CloudFunctionV2(Backend):
             destroy_cloudfunction_artifacts(self.name)
 
     def _get_upload_params(self, source):
-        user_configs = self.config.cloudfunction or {}
+        user_configs = self.config.cloudfunction_v2 or {}
         build_configs = user_configs.get("buildConfig", {})
         if build_configs:
             del user_configs["buildConfig"]

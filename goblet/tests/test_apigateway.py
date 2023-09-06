@@ -26,7 +26,7 @@ class TestApiGatewayConfig:
         gw = Routes("test", backend=CloudFunctionV2(Goblet()))
         assert (
             gw.get_timeout(
-                GConfig({"cloudfunction": {"serviceConfig": {"timeoutSeconds": 300}}})
+                GConfig({"cloudfunction_v2": {"serviceConfig": {"timeoutSeconds": 300}}})
             )
             == 300
         )

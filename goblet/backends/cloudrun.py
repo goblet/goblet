@@ -79,11 +79,11 @@ class CloudRun(Backend):
             )
             write_dockerfile()
 
-        artifact_tag = (
-            self.config.cloudbuild.get("artifact_tag", None)
-            if self.config.cloudbuild
-            else None
-        )
+        try:
+            artifact_tag = self.config.deploy.get("artifact_tag")
+        except AttributeError:
+            artifact_tag = None
+
         if artifact_tag:
             source, changes = None, False
             self.log.info(
@@ -130,11 +130,14 @@ class CloudRun(Backend):
     def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
         build_configs = self.config.cloudbuild.copy() if self.config.cloudbuild else {}
-        registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
-        build_configs.pop("artifact_registry", None)
+
+        try:
+            registry = self.config.deploy.get("artifact_registry") or getDefaultRegistry(name)
+        except AttributeError:
+            registry = getDefaultRegistry(name)
 
         # check if default registry exists
-        if not build_configs.get("artifact_registry"):
+        if registry == getDefaultRegistry(name):
             registry_client = VersionedClients().artifactregistry_repositories
             try:
                 registry_client.execute(

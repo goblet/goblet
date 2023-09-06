@@ -166,7 +166,7 @@ class Routes(Handler):
             deadline = (config.cloudfunction or {}).get("timeout")
         if self.backend.resource_type == "cloudfunctionv2" and not deadline:
             deadline = (
-                (config.cloudfunction or {})
+                (config.cloudfunction_v2 or {})
                 .get("serviceConfig", {})
                 .get("timeoutSeconds")
             )

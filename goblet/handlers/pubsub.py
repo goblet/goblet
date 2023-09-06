@@ -130,7 +130,7 @@ class PubSub(Handler):
             service_account = self.config.cloudrun_revision.get("serviceAccount")
         elif (
             self.backend.resource_type.startswith("cloudfunction")
-            and self.config.cloudfunction
+            and (self.config.cloudfunction or self.config.cloudfunction_v2)
         ):
             service_account = self.config.pubsub.get("serviceAccountEmail")
         else:
@@ -183,8 +183,8 @@ class PubSub(Handler):
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
-        user_configs = self.config.cloudfunction or {}
         if self.versioned_clients.cloudfunctions.version == "v1":
+            user_configs = self.config.cloudfunction or {}
             req_body = {
                 "name": function_name,
                 "description": self.config.description or "created by goblet",
@@ -204,6 +204,7 @@ class PubSub(Handler):
                 self.versioned_clients.cloudfunctions, {"body": req_body}
             )
         elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
+            user_configs = self.config.cloudfunction_v2 or {}
             params = {
                 "body": {
                     "name": function_name,

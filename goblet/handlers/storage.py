@@ -85,12 +85,12 @@ class Storage(Handler):
             return
 
         log.info("deploying storage functions......")
-        user_configs = self.config.cloudfunction or {}
         for bucket in self.resources:
             function_name = f"{self.cloudfunction}-storage-{bucket['name']}-{bucket['event_type']}".replace(
                 ".", "-"
             )
             if self.versioned_clients.cloudfunctions.version == "v1":
+                user_configs = self.config.cloudfunction or {}
                 req_body = {
                     "name": function_name,
                     "description": self.config.description or "created by goblet",
@@ -108,6 +108,7 @@ class Storage(Handler):
                     self.versioned_clients.cloudfunctions, {"body": req_body}
                 )
             elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
+                user_configs = self.config.cloudfunction_v2 or {}
                 params = {
                     "body": {
                         "name": function_name,

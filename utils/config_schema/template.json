@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "__gobletProperties__": "__gobletProperties__",
+    "stages": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "type": "object",
+          "properties": {
+            "__gobletProperties__": "__gobletProperties__"
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": "%(definitions)s"
+}

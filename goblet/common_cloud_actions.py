@@ -333,10 +333,10 @@ def getCloudbuildArtifact(client, artifactName, config):
 
     # search for latest build with artifactName
     latestArtifact = None
-    build_configs = config.cloudbuild or {}
-    registry = build_configs.get("artifact_registry") or getDefaultRegistry(
-        artifactName
-    )
+    try:
+        registry = config.deploy.get("artifact_registry") or getDefaultRegistry(artifactName)
+    except AttributeError:
+        registry = getDefaultRegistry(artifactName)
 
     for build in resp["builds"]:
         # pending builds will not have results field.
@@ -345,7 +345,7 @@ def getCloudbuildArtifact(client, artifactName, config):
             and build["results"].get("images")
             and registry == build["results"]["images"][0]["name"]
         ):
-            latestArtifact = latestArtifact = (
+            latestArtifact = (
                 build["results"]["images"][0]["name"]
                 + "@"
                 + build["results"]["images"][0]["digest"]
