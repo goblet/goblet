@@ -118,7 +118,7 @@ class PubSub(Handler):
     def _deploy_subscription(self, topic_name, topic):
         sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
-        
+
         if os.environ.get("X_GOBLET_LOCAL"):
             push_url = os.environ.get("GOBLET_LOCAL_URL", "http://localhost:8080")
         else:

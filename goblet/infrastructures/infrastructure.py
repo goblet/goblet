@@ -32,7 +32,7 @@ class Infrastructure:
             pass
         else:
             self._deploy(**kwargs)
-    
+
     def _deploy(self):
         raise NotImplementedError("deploy")
 

@@ -194,6 +194,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         log.info("deploying handlers")
         self.deploy_handlers(source)
 
+
 def jsonify(*args, **kwargs):
     """
     Helper based on flask jsonify and helps convert lists and dicts into valid reponses.
