@@ -409,7 +409,7 @@ def create_pubsub_subscription(client, sub_name, req_body, force_update=False):
         if "filter" in keys:
             keys.remove("filter")
         if "labels" in keys:
-            if keys["labels"] == {}:
+            if req_body["labels"] == {}:
                 keys.remove("labels")
         if "enableMessageOrdering" in keys:
             keys.remove("enableMessageOrdering")
