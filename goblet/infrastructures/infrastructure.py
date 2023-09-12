@@ -27,11 +27,11 @@ class Infrastructure:
     def register(self, name, kwargs):
         raise NotImplementedError("register")
 
-    def deploy(self, kwargs={}):
+    def deploy(self):
         if not self.supports_local:
             pass
         else:
-            self._deploy(**kwargs)
+            self._deploy()
 
     def _deploy(self):
         raise NotImplementedError("deploy")

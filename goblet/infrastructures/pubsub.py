@@ -54,10 +54,9 @@ class PubSubTopic(Infrastructure):
         }
         return PubSubClient(topic=self.resources[resource_id]["name"])
 
-    def _deploy(self, config={}):
+    def _deploy(self):
         if not self.resources:
             return
-        self.config.update_g_config(values=config)
 
         for resource_id, resource in self.resources.items():
             params = {"name": resource["name"]}
