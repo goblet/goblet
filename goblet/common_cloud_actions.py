@@ -378,7 +378,7 @@ def create_pubsub_subscription(client, sub_name, req_body, force_update=False):
     response = get_pubsub_subscription(client, sub_name, req_body)
     if response and response["topic"] != req_body["topic"]:
         log.info(
-            f"Pubsub subscription projects do not match. {req_body['name']} is currently subscribed to {response['topic']}, but defined to be {req_body['topic']}."
+            f"Pubsub subscription projects do not match. {sub_name} is currently subscribed to {response['topic']}, but defined to be {req_body['topic']}."
         )
         if force_update:
             log.info("force_update is set to True. Deleting existing subscrition...")
@@ -405,10 +405,12 @@ def create_pubsub_subscription(client, sub_name, req_body, force_update=False):
         # Setup update mask
         keys = list(req_body.keys())
         # Remove keys that cannot be updated
-        keys.remove("name")
         keys.remove("topic")
         if "filter" in keys:
             keys.remove("filter")
+        if "labels" in keys:
+            if keys["labels"] == {}: 
+                keys.remove("labels")
         if "enableMessageOrdering" in keys:
             keys.remove("enableMessageOrdering")
         updateMask = ",".join(keys)

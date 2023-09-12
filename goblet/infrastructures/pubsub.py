@@ -37,6 +37,7 @@ class PubSubTopic(Infrastructure):
     resource_type = "pubsub_topic"
     required_apis = ["pubsub"]
     permissions = gcp_generic_resource_permissions("pubsub", "topics")
+    supports_local = True
 
     def register(self, name, kwargs):
         resource_id = name
@@ -53,7 +54,7 @@ class PubSubTopic(Infrastructure):
         }
         return PubSubClient(topic=self.resources[resource_id]["name"])
 
-    def deploy(self, config={}):
+    def _deploy(self, config={}):
         if not self.resources:
             return
         self.config.update_g_config(values=config)

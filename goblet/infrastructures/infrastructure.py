@@ -8,6 +8,7 @@ class Infrastructure:
 
     resource_type = ""
     can_sync = False
+    supports_local = False
     required_apis = []
     permissions = []
 
@@ -26,7 +27,13 @@ class Infrastructure:
     def register(self, name, kwargs):
         raise NotImplementedError("register")
 
-    def deploy(self):
+    def deploy(self, kwargs={}):
+        if not self.supports_local:
+            pass
+        else:
+            self._deploy(**kwargs)
+    
+    def _deploy(self):
         raise NotImplementedError("deploy")
 
     def destroy(self):

@@ -31,7 +31,7 @@ class ApiGateway(Infrastructure):
             "openapi_dict": kwargs["openapi_dict"],
         }
 
-    def deploy(self):
+    def _deploy(self):
         if not self.resources:
             return
         goblet_spec = OpenApiSpec(

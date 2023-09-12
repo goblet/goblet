@@ -20,7 +20,7 @@ class Redis(Infrastructure):
     def register(self, name, kwargs):
         self.resources = {"name": name}
 
-    def deploy(self):
+    def _deploy(self):
         if not self.resources:
             return
         redis_config = self.config.redis or {}

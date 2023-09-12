@@ -17,6 +17,7 @@ class Handler:
     resources = None
     resource_type = ""
     can_sync = False
+    supports_local = False
     required_apis = []
     permissions = []
     service_accounts = []
@@ -45,6 +46,8 @@ class Handler:
             )
             return
         if not self.resources:
+            return
+        if not self.supports_local:
             return
         self._deploy(source, entrypoint)
         try:
