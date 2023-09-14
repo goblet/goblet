@@ -29,7 +29,7 @@ class Infrastructure:
         raise NotImplementedError("register")
 
     def deploy(self):
-        if not self.supports_local and os.getenv("X_GOBLET_LOCAL", False):
+        if (self.supports_local and os.getenv("X_GOBLET_LOCAL", False)) or not os.getenv("G_HTTP_TEST") == "REPLAY":
             pass
         else:
             self._deploy()
