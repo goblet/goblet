@@ -1,3 +1,4 @@
+import os
 from goblet.client import VersionedClients
 import goblet.globals as g
 from goblet.common_cloud_actions import check_or_enable_service
@@ -28,7 +29,7 @@ class Infrastructure:
         raise NotImplementedError("register")
 
     def deploy(self):
-        if not self.supports_local:
+        if not self.supports_local and os.getenv("X_GOBLET_LOCAL", False):
             pass
         else:
             self._deploy()

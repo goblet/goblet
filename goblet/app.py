@@ -184,14 +184,13 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         self.backend.zip()
 
     def deploy_local(self):
-        g.config.update_g_config(values={"labels": self.labels})
         source = None
 
-        log.info("deploying infrastructure")
+        log.info("deploying infrastructure locally...")
         self.deploy_infrastructure()
 
         self.backend.skip_deployment()
-        log.info("deploying handlers")
+        log.info("deploying handlers locally...")
         self.deploy_handlers(source)
 
 
