@@ -334,7 +334,9 @@ def getCloudbuildArtifact(client, artifactName, config):
     # search for latest build with artifactName
     latestArtifact = None
     try:
-        registry = config.deploy.get("artifact_registry") or getDefaultRegistry(artifactName)
+        registry = config.deploy.get("artifact_registry") or getDefaultRegistry(
+            artifactName
+        )
     except AttributeError:
         registry = getDefaultRegistry(artifactName)
 

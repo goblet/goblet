@@ -128,9 +128,8 @@ class PubSub(Handler):
             and self.config.cloudrun_revision.get("serviceAccount")
         ):
             service_account = self.config.cloudrun_revision.get("serviceAccount")
-        elif (
-            self.backend.resource_type.startswith("cloudfunction")
-            and (self.config.cloudfunction or self.config.cloudfunction_v2)
+        elif self.backend.resource_type.startswith("cloudfunction") and (
+            self.config.cloudfunction or self.config.cloudfunction_v2
         ):
             service_account = self.config.pubsub.get("serviceAccountEmail")
         else:

@@ -132,7 +132,9 @@ class CloudRun(Backend):
         build_configs = self.config.cloudbuild.copy() if self.config.cloudbuild else {}
 
         try:
-            registry = self.config.deploy.get("artifact_registry") or getDefaultRegistry(name)
+            registry = self.config.deploy.get(
+                "artifact_registry"
+            ) or getDefaultRegistry(name)
         except AttributeError:
             registry = getDefaultRegistry(name)
 
