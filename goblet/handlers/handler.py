@@ -47,7 +47,9 @@ class Handler:
             return
         if not self.resources:
             return
-        if (self.supports_local and os.getenv("X_GOBLET_LOCAL", False)) or not os.getenv("G_HTTP_TEST") == "REPLAY":
+        if (
+            not self.supports_local and os.getenv("X_GOBLET_LOCAL", False)
+        ) and not os.getenv("G_HTTP_TEST") == "REPLAY":
             return
         self._deploy(source, entrypoint)
         try:
