@@ -1,0 +1,5 @@
+services:
+  pubsub-emulator:
+    image: nthingsm/pubsub-emulator:latest
+    ports:
+      - "8085:8085"
