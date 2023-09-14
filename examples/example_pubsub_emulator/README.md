@@ -7,7 +7,7 @@ docker compose up -d
 export PUBSUB_EMULATOR_HOST="localhost:8085"
 export GOBLET_LOCAL_URL="http://host.docker.internal:8080"
 ```
-Make sure to have docker running on your machine. And ports `8085`, `9010`, and `9020` open.
+Make sure to have docker running on your machine. And port `8085` open.
 
 ## Running Example
 ```bash
