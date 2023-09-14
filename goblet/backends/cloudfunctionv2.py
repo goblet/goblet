@@ -20,7 +20,7 @@ class CloudFunctionV2(Backend):
 
     resource_type = "cloudfunctionv2"
     supported_versions = ["v2alpha", "v2beta", "v2"]
-    config_key = "cloudfunction"
+    config_key = "cloudfunction_v2"
     monitoring_type = "cloud_function"
     monitoring_label_key = "function_name"
     required_apis = ["cloudfunctions", "cloudresourcemanager", "cloudbuild"]
@@ -145,7 +145,7 @@ class CloudFunctionV2(Backend):
 
     def get_environment_vars(self):
         return (
-            self.config.config.get("cloudfunction", {})
+            self.config.config.get("cloudfunction_v2", {})
             .get("serviceConfig", {})
             .get("environmentVariables", {})
         )
