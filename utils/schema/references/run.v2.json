@@ -1,13 +1,18 @@
 {
-  "auth": {
-    "oauth2": {
-      "scopes": {
-        "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
-        }
-      }
-    }
-  },
+  "description": "Deploy and manage user provided container images that scale automatically based on incoming requests. The Cloud Run Admin API v1 follows the Knative Serving API specification, while v2 is aligned with Google Cloud AIP-based API standards, as described in https://google.aip.dev/.",
+  "version_module": true,
+  "title": "Cloud Run Admin API",
+  "servicePath": "",
+  "name": "run",
+  "ownerName": "Google",
+  "basePath": "",
+  "id": "run:v2",
+  "kind": "discovery#restDescription",
+  "ownerDomain": "google.com",
+  "canonicalName": "Cloud Run",
+  "revision": "20230910",
+  "rootUrl": "https://run.googleapis.com/",
+  "documentationLink": "https://cloud.google.com/run/",
   "parameters": {
     "access_token": {
       "type": "string",
@@ -85,15 +90,7 @@
       "location": "query"
     }
   },
-  "icons": {
-    "x16": "http://www.google.com/images/icons/product/search-16.gif",
-    "x32": "http://www.google.com/images/icons/product/search-32.gif"
-  },
-  "name": "run",
-  "canonicalName": "Cloud Run",
-  "documentationLink": "https://cloud.google.com/run/",
-  "title": "Cloud Run Admin API",
-  "batchPath": "batch",
+  "mtlsRootUrl": "https://run.mtls.googleapis.com/",
   "resources": {
     "projects": {
       "resources": {
@@ -1105,20 +1102,14 @@
       }
     }
   },
-  "protocol": "rest",
-  "basePath": "",
-  "servicePath": "",
-  "rootUrl": "https://run.googleapis.com/",
-  "description": "Deploy and manage user provided container images that scale automatically based on incoming requests. The Cloud Run Admin API v1 follows the Knative Serving API specification, while v2 is aligned with Google Cloud AIP-based API standards, as described in https://google.aip.dev/.",
-  "discoveryVersion": "v1",
-  "id": "run:v2",
-  "ownerDomain": "google.com",
-  "revision": "20230910",
-  "version": "v2",
-  "version_module": true,
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+  },
+  "batchPath": "batch",
+  "baseUrl": "https://run.googleapis.com/",
   "fullyEncodeReservedExpansion": true,
-  "mtlsRootUrl": "https://run.mtls.googleapis.com/",
-  "ownerName": "Google",
+  "discoveryVersion": "v1",
   "schemas": {
     "GoogleLongrunningListOperationsResponse": {
       "id": "GoogleLongrunningListOperationsResponse",
@@ -3341,6 +3332,15 @@
       }
     }
   },
-  "kind": "discovery#restDescription",
-  "baseUrl": "https://run.googleapis.com/"
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "protocol": "rest",
+  "version": "v2"
 }

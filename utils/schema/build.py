@@ -3,7 +3,7 @@ import os
 
 import requests
 
-raw_url = 'https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references'
+raw_url = 'https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references'
 references = set()
 
 
@@ -16,7 +16,7 @@ def get_references(d):
                 references.add(v.split('#')[0])
 
 
-with open('schema.base.json', 'r') as f:
+with open('base.json', 'r') as f:
     schema_base = ''.join(f.readlines())
     get_references(json.loads(schema_base))
 
