@@ -201,11 +201,20 @@ Make sure Docker Desktop and Docker CLI is installed, more information located h
 
 Refresh local credentials by running: `gcloud auth application-default login`
 
+Set the GOOGLE_APPLICATION_CREDENTIALS variable by running: `export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/application_default_credentials.json`
+
 To build container run: `docker build . -t <tag>`
 
-To start container run: `docker run -p 8080:8080 <tag>:latest`
+To start container run:
 
-**If service needs access to Artifact Registry for requirements install or access to GCP services additional configuration is required**
+```zsh
+    docker run -p 8080:8080 \
+        -v ~/.config/gcloud/application_default_credentials.json:/tmp/application_default_credentials.json:ro \
+        -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/application_default_credentials.json \
+        -e GCLOUD_PROJECT=<gcp-project> <tag>:latest
+```
+
+#### Installing private packages during Docker Build
 
 To install a private package located with GCP Artifact Registry, credentials will need to be mounted during the build process. Add this line to Dockerfile before requirements install:
 
@@ -214,20 +223,7 @@ RUN --mount=type=secret,id=gcloud_creds,target=/app/google_adc.json export GOOGL
     && pip install -r requirements.txt
 ```
 
-Set the GOOGLE_APPLICATION_CREDENTIALS variable by running:
-
-`export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/application_default_credentials.json`
-
 To build container run: `docker build . --secret id=gcloud_creds,src="$GOOGLE_APPLICATION_CREDENTIALS" -t <tag>`
-
-To run container with the ability to access GCP Services:
-
- ```zsh
-    docker run -p 8080:8080 \
-        -v ~/.config/gcloud/application_default_credentials.json:/tmp/application_default_credentials.json:ro \
-        -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/application_default_credentials.json \
-        -e GCLOUD_PROJECT=<gcp-project> <tag>:latest
-```
 
 ### Deploying
 
