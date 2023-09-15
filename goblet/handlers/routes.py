@@ -290,6 +290,7 @@ class OpenApiSpec:
 
         if entry.form_data:
             params.append({"in": "formData", "name": "file", "type": "file"})
+            entry.content_types = ["multipart/form-data"]
 
         if entry.query_params:
             method_spec["parameters"] = []
