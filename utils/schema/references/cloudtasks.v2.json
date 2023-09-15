@@ -1,20 +1,21 @@
 {
-  "ownerName": "Google",
-  "revision": "20230906",
-  "rootUrl": "https://cloudtasks.googleapis.com/",
-  "id": "cloudtasks:v2",
-  "servicePath": "",
-  "fullyEncodeReservedExpansion": true,
-  "icons": {
-    "x16": "http://www.google.com/images/icons/product/search-16.gif",
-    "x32": "http://www.google.com/images/icons/product/search-32.gif"
-  },
-  "title": "Cloud Tasks API",
-  "ownerDomain": "google.com",
-  "canonicalName": "Cloud Tasks",
-  "kind": "discovery#restDescription",
-  "description": "Manages the execution of large numbers of distributed requests.",
   "basePath": "",
+  "ownerDomain": "google.com",
+  "servicePath": "",
+  "id": "cloudtasks:v2",
+  "version": "v2",
+  "discoveryVersion": "v1",
+  "mtlsRootUrl": "https://cloudtasks.mtls.googleapis.com/",
+  "canonicalName": "Cloud Tasks",
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
   "schemas": {
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
@@ -698,22 +699,11 @@
       }
     }
   },
-  "batchPath": "batch",
-  "documentationLink": "https://cloud.google.com/tasks/",
-  "name": "cloudtasks",
+  "kind": "discovery#restDescription",
   "protocol": "rest",
-  "mtlsRootUrl": "https://cloudtasks.mtls.googleapis.com/",
-  "version_module": true,
-  "baseUrl": "https://cloudtasks.googleapis.com/",
-  "auth": {
-    "oauth2": {
-      "scopes": {
-        "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
-        }
-      }
-    }
-  },
+  "rootUrl": "https://cloudtasks.googleapis.com/",
+  "ownerName": "Google",
+  "revision": "20230906",
   "resources": {
     "projects": {
       "resources": {
@@ -1295,8 +1285,15 @@
       }
     }
   },
-  "version": "v2",
-  "discoveryVersion": "v1",
+  "title": "Cloud Tasks API",
+  "batchPath": "batch",
+  "name": "cloudtasks",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+  },
+  "documentationLink": "https://cloud.google.com/tasks/",
+  "baseUrl": "https://cloudtasks.googleapis.com/",
   "parameters": {
     "access_token": {
       "type": "string",
@@ -1373,5 +1370,8 @@
       ],
       "location": "query"
     }
-  }
+  },
+  "description": "Manages the execution of large numbers of distributed requests.",
+  "fullyEncodeReservedExpansion": true,
+  "version_module": true
 }

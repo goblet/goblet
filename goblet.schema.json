@@ -11,7 +11,11 @@
       }
     }
   },
-  "$ref": "#/definitions/goblet",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/goblet"
+    }
+  ],
   "definitions": {
     "securityDefinitions": {
       "type": "object",
