@@ -82,43 +82,43 @@
           }
         },
         "cloudrun_revision": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Revision"
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Revision"
         },
         "cloudrun_container": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Container"
         },
         "cloudrun_container_extra": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Container"
         },
         "cloudfunction": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v1.json.json#/schemas/CloudFunction"
+          "$ref": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v1#/schemas/CloudFunction"
         },
         "cloudfunction_v2": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v2.json.json#/schemas/Function"
+          "$ref": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v2#/schemas/Function"
         },
         "cloudbuild": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudbuild.v1.json.json#/schemas/Build"
+          "$ref": "https://cloudbuild.googleapis.com/$discovery/rest?version=v1#/schemas/Build"
         },
         "apiConfig": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/apigateway.v1.json.json#/schemas/ApigatewayApiConfig"
+          "$ref": "https://apigateway.googleapis.com/$discovery/rest?version=v1#/schemas/ApigatewayApiConfig"
         },
         "bindings": {
           "type": "array",
           "items": {
-            "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v1.json.json#/schemas/Binding"
+            "$ref": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v1#/schemas/Binding"
           }
         },
         "redis": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/redis.v1.json.json#/schemas/Instance"
+          "$ref": "https://redis.googleapis.com/$discovery/rest?version=v1#/schemas/Instance"
         },
         "vpcconnector": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/vpcaccess.v1.json.json#/schemas/Connector"
+          "$ref": "https://vpcaccess.googleapis.com/$discovery/rest?version=v1#/schemas/Connector"
         },
         "job_spec": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2TaskTemplate"
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2TaskTemplate"
         },
         "job_container": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Container"
         },
         "cloudtask": {
           "type": "object",
@@ -133,7 +133,7 @@
           "type": "object",
           "patternProperties": {
             "^.+$": {
-              "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudtasks.v2.json.json#/schemas/Queue"
+              "$ref": "https://cloudtasks.googleapis.com/$discovery/rest?version=v2#/schemas/Queue"
             }
           }
         },
