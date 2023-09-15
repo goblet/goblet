@@ -1,6 +1,24 @@
 {
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+  },
   "version": "v2",
+  "canonicalName": "Cloud Functions",
+  "servicePath": "",
+  "discoveryVersion": "v1",
+  "revision": "20230907",
+  "rootUrl": "https://cloudfunctions.googleapis.com/",
+  "ownerDomain": "google.com",
+  "title": "Cloud Functions API",
+  "name": "cloudfunctions",
+  "kind": "discovery#restDescription",
+  "id": "cloudfunctions:v2",
+  "basePath": "",
   "mtlsRootUrl": "https://cloudfunctions.mtls.googleapis.com/",
+  "fullyEncodeReservedExpansion": true,
+  "description": "Manages lightweight user-provided functions executed in response to events.",
   "resources": {
     "projects": {
       "resources": {
@@ -468,10 +486,6 @@
       }
     }
   },
-  "batchPath": "batch",
-  "baseUrl": "https://cloudfunctions.googleapis.com/",
-  "protocol": "rest",
-  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -549,12 +563,7 @@
       "location": "query"
     }
   },
-  "name": "cloudfunctions",
-  "revision": "20230907",
   "version_module": true,
-  "canonicalName": "Cloud Functions",
-  "ownerDomain": "google.com",
-  "kind": "discovery#restDescription",
   "auth": {
     "oauth2": {
       "scopes": {
@@ -563,19 +572,6 @@
         }
       }
     }
-  },
-  "servicePath": "",
-  "documentationLink": "https://cloud.google.com/functions",
-  "title": "Cloud Functions API",
-  "ownerName": "Google",
-  "id": "cloudfunctions:v2",
-  "rootUrl": "https://cloudfunctions.googleapis.com/",
-  "description": "Manages lightweight user-provided functions executed in response to events.",
-  "basePath": "",
-  "discoveryVersion": "v1",
-  "icons": {
-    "x16": "http://www.google.com/images/icons/product/search-16.gif",
-    "x32": "http://www.google.com/images/icons/product/search-32.gif"
   },
   "schemas": {
     "ListOperationsResponse": {
@@ -2141,5 +2137,9 @@
         }
       }
     }
-  }
+  },
+  "protocol": "rest",
+  "batchPath": "batch",
+  "documentationLink": "https://cloud.google.com/functions",
+  "baseUrl": "https://cloudfunctions.googleapis.com/"
 }

@@ -82,43 +82,43 @@
           }
         },
         "cloudrun_revision": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Revision"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json#/schemas/GoogleCloudRunV2Revision"
         },
         "cloudrun_container": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },
         "cloudrun_container_extra": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },
         "cloudfunction": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v1.json.json#/schemas/CloudFunction"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v1.json#/schemas/CloudFunction"
         },
         "cloudfunction_v2": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v2.json.json#/schemas/Function"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v2.json#/schemas/Function"
         },
         "cloudbuild": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudbuild.v1.json.json#/schemas/Build"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudbuild.v1.json#/schemas/Build"
         },
         "apiConfig": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/apigateway.v1.json.json#/schemas/ApigatewayApiConfig"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/apigateway.v1.json#/schemas/ApigatewayApiConfig"
         },
         "bindings": {
           "type": "array",
           "items": {
-            "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v1.json.json#/schemas/Binding"
+            "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudfunctions.v1.json#/schemas/Binding"
           }
         },
         "redis": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/redis.v1.json.json#/schemas/Instance"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/redis.v1.json#/schemas/Instance"
         },
         "vpcconnector": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/vpcaccess.v1.json.json#/schemas/Connector"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/vpcaccess.v1.json#/schemas/Connector"
         },
         "job_spec": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2TaskTemplate"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json#/schemas/GoogleCloudRunV2TaskTemplate"
         },
         "job_container": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },
         "cloudtask": {
           "type": "object",
@@ -133,7 +133,7 @@
           "type": "object",
           "patternProperties": {
             "^.+$": {
-              "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudtasks.v2.json.json#/schemas/Queue"
+              "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/config_schema/references/cloudtasks.v2.json#/schemas/Queue"
             }
           }
         },

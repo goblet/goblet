@@ -23,7 +23,7 @@ with open('schema.base.json', 'r') as f:
 for reference in references:
     reference_json = json.loads(requests.get(url=reference).text.replace('"$ref": "', '"$ref": "#/schemas/'))
     reference_filename = f"{reference_json['id'].replace(':', '.')}.json"
-    reference_raw_url = f"{raw_url}/{reference_filename}.json"
+    reference_raw_url = f"{raw_url}/{reference_filename}"
     with open(f"references/{reference_filename}", 'w') as f:
         f.write(json.dumps(reference_json, indent=2))
 
