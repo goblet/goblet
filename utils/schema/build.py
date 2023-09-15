@@ -25,10 +25,10 @@ for reference in references:
     reference_filename = f"{reference_json['id'].replace(':', '.')}.json"
     reference_raw_url = f"{raw_url}/{reference_filename}"
     with open(f"references/{reference_filename}", 'w') as f:
-        f.write(json.dumps(reference_json, indent=2))
+        f.write(json.dumps(reference_json, indent=2, sort_keys=True))
 
     schema_base = schema_base.replace(reference, reference_raw_url)
 
 with open(f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/../../goblet.schema.json", "w") as f:
-    f.write(json.dumps(json.loads(schema_base), indent=2))
+    f.write(json.dumps(json.loads(schema_base), indent=2, sort_keys=True))
 
