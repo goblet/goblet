@@ -195,6 +195,40 @@ def home():
 Then run `goblet local`
 Now you can hit your functions endpoint at `localhost:8080` with your routes. For example `localhost:8080/home`
 
+### Building and Running locally using Docker
+
+Make sure Docker Desktop and Docker CLI is installed, more information located here: <https://docs.docker.com/desktop/>
+
+Refresh local credentials by running: `gcloud auth application-default login`
+
+To build container run: `docker build . -t <tag>`
+
+To start container run: `docker run -p 8080:8080 <tag>:latest`
+
+**If service needs access to Artifact Registry for requirements install or access to GCP services additional configuration is required**
+
+To install a private package located with GCP Artifact Registry, credentials will need to be mounted during the build process. Add this line to Dockerfile before requirements install:
+
+```Dockerfile
+RUN --mount=type=secret,id=gcloud_creds,target=/app/google_adc.json export GOOGLE_APPLICATION_CREDENTIALS=/app/google_adc.json \  
+    && pip install -r requirements.txt
+```
+
+Set the GOOGLE_APPLICATION_CREDENTIALS variable by running:
+
+`export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/application_default_credentials.json`
+
+To build container run: `docker build . --secret id=gcloud_creds,src="$GOOGLE_APPLICATION_CREDENTIALS" -t <tag>`
+
+To run container with the ability to access GCP Services:
+
+ ```zsh
+    docker run -p 8080:8080 \
+        -v ~/.config/gcloud/application_default_credentials.json:/tmp/application_default_credentials.json:ro \
+        -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/application_default_credentials.json \
+        -e GCLOUD_PROJECT=<gcp-project> <tag>:latest
+```
+
 ### Deploying
 
 Let's deploy this app. Make sure you're in the app directory and run goblet deploy making sure to specify the desired location:
