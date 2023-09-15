@@ -29,7 +29,7 @@ GOOGLE_APIS = [
 
 def get_template():
     with open(
-        f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/template.json", "r"
+            f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/template.json", "r"
     ) as f:
         template = "".join(f.readlines())
 
@@ -43,7 +43,7 @@ def get_template():
 def get_goblet_properties():
     properties = []
     with open(
-        f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/properties.json", "r"
+            f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/properties.json", "r"
     ) as f:
         for property_name, property_object in json.loads("".join(f.readlines()))[
             "properties"
@@ -79,9 +79,34 @@ def scrub(obj, bad_key="_this_is_bad"):
         pass
 
 
+def getSecurityDefinitions():
+    return {
+        "type": "object",
+        "oneOf": [
+            {
+                "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/basicAuthenticationSecurity"
+            },
+            {
+                "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/apiKeySecurity"
+            },
+            {
+                "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2ImplicitSecurity"
+            },
+            {
+                "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2PasswordSecurity"
+            },
+            {
+                "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2ApplicationSecurity"
+            },
+            {
+                "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2AccessCodeSecurity"
+            }
+        ]
+    }
+
+
 def gcp_definitions():
     definitions = {}
-    prefixed_service_schemas = {}
     for url in GOOGLE_APIS:
         service_id, service_schemas = fetch_schemas(url=url)
         for name, definition in service_schemas.items():
@@ -101,19 +126,19 @@ def gcp_definitions():
                     "google-datetime", "date-time"
                 ).replace("google-duration", "duration")
 
-            prefixed_service_schemas[f"{service_id}:{name}"] = json.loads(
+            definitions[f"{service_id}:{name}"] = json.loads(
                 json_definition
             )
 
-        definitions.update(prefixed_service_schemas)
+    definitions["securityDefinitions"] = getSecurityDefinitions()
     return definitions
 
 
 def write_json_schema():
     definitions = gcp_definitions()
     with open(
-        f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/../../goblet.schema.json",
-        "w",
+            f"{'/'.join(os.path.realpath(__file__).split('/')[:-1])}/../../goblet.schema.json",
+            "w",
     ) as f:
         f.write(
             json.dumps(

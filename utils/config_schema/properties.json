@@ -79,6 +79,17 @@
     },
     "job_container": {
       "$ref": "#/definitions/run:v2:GoogleCloudRunV2Container"
+    },
+    "securityDefinitions": {
+      "type": "object",
+      "properties": {
+        "service-account": {
+          "$ref": "#/definitions/securityDefinitions"
+        },
+        "firebase": {
+          "$ref": "#/definitions/securityDefinitions"
+        }
+      }
     }
   }
 }
