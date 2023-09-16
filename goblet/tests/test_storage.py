@@ -101,6 +101,7 @@ class TestStorage:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
         requests_mock.register_uri("POST", "https://oauth2.googleapis.com/token")
+
         def storage(event):
             app.log.info(event)
 
@@ -122,17 +123,4 @@ class TestStorage:
         app.deploy(force=True)
 
         responses = get_responses("storage-deploy-cloudfunctionv2")
-        # assert len(responses) == 3
-        # assert responses[2]["body"]["metadata"]["target"].endswith(
-        #     "goblet_storage-storage-test-finalize"
-        # )
-        # assert (
-        #         responses[2]["body"]["metadata"]["request"]["eventTrigger"]["resource"]
-        #         == "projects/goblet/buckets/test"
-        # )
-        # assert (
-        #         responses[2]["body"]["metadata"]["request"]["eventTrigger"]["eventType"]
-        #         == "google.storage.object.finalize"
-        # )
-
-
+        assert len(responses) == 3
