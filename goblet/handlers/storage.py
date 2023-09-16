@@ -133,7 +133,7 @@ class Storage(Handler):
                     },
                     "functionId": function_name.split("/")[-1],
                 }
-                params['body'] = nested_update(params['body'], user_configs)
+                params["body"] = nested_update(params["body"], user_configs)
                 create_cloudfunctionv2(self.versioned_clients.cloudfunctions, params)
             else:
                 raise
