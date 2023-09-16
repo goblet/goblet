@@ -9,6 +9,7 @@ from goblet.common_cloud_actions import (
     create_cloudfunctionv1,
     destroy_cloudfunction,
 )
+from goblet.utils import nested_update
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -128,11 +129,11 @@ class Storage(Handler):
                                 }
                             ],
                         },
-                        **user_configs,
+                        "labels": self.config.labels,
                     },
-                    "labels": self.config.labels,
                     "functionId": function_name.split("/")[-1],
                 }
+                params['body'] = nested_update(params['body'], user_configs)
                 create_cloudfunctionv2(self.versioned_clients.cloudfunctions, params)
             else:
                 raise

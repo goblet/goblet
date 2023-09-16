@@ -1,0 +1,134 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/test_project/locations/us-central1/operations/operation-1694828915033-605701b6f85bd-9f637ec5-b4801dd4",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.OperationMetadata",
+      "createTime": "2023-09-16T01:48:35.455809080Z",
+      "endTime": "2023-09-16T01:50:12.100939882Z",
+      "target": "projects/test_project/locations/us-central1/functions/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+      "verb": "create",
+      "cancelRequested": false,
+      "apiVersion": "v2",
+      "requestResource": {
+        "@type": "type.googleapis.com/google.cloud.functions.v2.Function",
+        "name": "projects/test_project/locations/us-central1/functions/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+        "description": "created by goblet",
+        "buildConfig": {
+          "runtime": "python38",
+          "entryPoint": "goblet_entrypoint",
+          "source": {
+            "storageSource": {
+              "bucket": "gcf-v2-sources-963616447866-us-central1",
+              "object": "storage-deploy-cloudfunctionv2-storage-storage-finalized/function-source.zip",
+              "generation": "1694828915194296"
+            }
+          }
+        },
+        "serviceConfig": {
+          "service": "projects/test_project/locations/us-central1/services/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+          "timeoutSeconds": 60,
+          "maxInstanceCount": 100,
+          "ingressSettings": "ALLOW_ALL",
+          "serviceAccountEmail": "963616447866-compute@developer.gserviceaccount.com",
+          "availableMemory": "256M",
+          "maxInstanceRequestConcurrency": 1
+        },
+        "eventTrigger": {
+          "trigger": "projects/test_project/locations/us-central1/triggers/storage-deploy-cloudfunctionv2-storage-storage-finalized-324231",
+          "triggerRegion": "us-central1",
+          "eventType": "google.cloud.storage.object.v1.finalized",
+          "eventFilters": [
+            {
+              "attribute": "bucket",
+              "value": "storage-deploy-cloudfunctionv2"
+            }
+          ],
+          "serviceAccountEmail": "cloudfunctionv2@goblet.iam.gserviceaccount.com",
+          "retryPolicy": "RETRY_POLICY_DO_NOT_RETRY"
+        },
+        "environment": "GEN_2"
+      },
+      "stages": [
+        {
+          "name": "BUILD",
+          "message": "Build finished",
+          "state": "COMPLETE",
+          "resource": "projects/test_project/locations/us-central1/builds/c9577a37-11e4-4897-8bf4-0095a63be90f",
+          "resourceUri": "https://console.cloud.google.com/cloud-build/builds;region=us-central1/c9577a37-11e4-4897-8bf4-0095a63be90f?project=963616447866"
+        },
+        {
+          "name": "SERVICE",
+          "message": "Creating Cloud Run service",
+          "state": "COMPLETE",
+          "resource": "projects/test_project/locations/us-central1/services/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+          "resourceUri": "https://console.cloud.google.com/run/detail/us-central1/storage-deploy-cloudfunctionv2-storage-storage-finalized?project=goblet"
+        },
+        {
+          "name": "TRIGGER",
+          "message": "Creating Eventarc trigger",
+          "state": "COMPLETE",
+          "resource": "projects/test_project/locations/us-central1/triggers/storage-deploy-cloudfunctionv2-storage-storage-finalized-324231"
+        }
+      ],
+      "sourceToken": "Cldwcm9qZWN0cy85NjM2MTY0NDc4NjYvbG9jYXRpb25zL3VzLWNlbnRyYWwxL2J1aWxkcy9jOTU3N2EzNy0xMWU0LTQ4OTctOGJmNC0wMDk1YTYzYmU5MGYSjAF1cy1jZW50cmFsMS1kb2NrZXIucGtnLmRldi9wcmVtaXNlLWRldmVsb3Blci1wb3J0YWwtcmQvZ2NmLWFydGlmYWN0cy9zdG9yYWdlLS1kZXBsb3ktLWNsb3VkZnVuY3Rpb252Mi0tc3RvcmFnZS0tc3RvcmFnZS0tZmluYWxpemVkOnZlcnNpb25fMRj6upDghRwifXByb2plY3RzL3ByZW1pc2UtZGV2ZWxvcGVyLXBvcnRhbC1yZC9sb2NhdGlvbnMvdXMtY2VudHJhbDEvZnVuY3Rpb25zL3N0b3JhZ2UtZGVwbG95LWNsb3VkZnVuY3Rpb252Mi1zdG9yYWdlLXN0b3JhZ2UtZmluYWxpemVkKgsItpOUqAYQwPWOETIIcHl0aG9uMzg="
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.Function",
+      "name": "projects/test_project/locations/us-central1/functions/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+      "description": "created by goblet",
+      "buildConfig": {
+        "build": "projects/test_project/locations/us-central1/builds/c9577a37-11e4-4897-8bf4-0095a63be90f",
+        "runtime": "python38",
+        "entryPoint": "goblet_entrypoint",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-sources-963616447866-us-central1",
+            "object": "storage-deploy-cloudfunctionv2-storage-storage-finalized/function-source.zip",
+            "generation": "1694828915194296"
+          }
+        },
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-sources-963616447866-us-central1",
+            "object": "storage-deploy-cloudfunctionv2-storage-storage-finalized/function-source.zip",
+            "generation": "1694828915194296"
+          }
+        },
+        "dockerRegistry": "ARTIFACT_REGISTRY"
+      },
+      "serviceConfig": {
+        "service": "projects/test_project/locations/us-central1/services/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+        "timeoutSeconds": 60,
+        "maxInstanceCount": 100,
+        "ingressSettings": "ALLOW_ALL",
+        "uri": "https://storage-deploy-cloudfunctionv2-storage-storage-fi-zlczwy7vmq-uc.a.run.app",
+        "serviceAccountEmail": "963616447866-compute@developer.gserviceaccount.com",
+        "availableMemory": "256M",
+        "allTrafficOnLatestRevision": true,
+        "revision": "storage-deploy-cloudfunctionv2-storage-storage-finali-00001-nup",
+        "maxInstanceRequestConcurrency": 1,
+        "availableCpu": "0.1666"
+      },
+      "eventTrigger": {
+        "trigger": "projects/test_project/locations/us-central1/triggers/storage-deploy-cloudfunctionv2-storage-storage-finalized-324231",
+        "triggerRegion": "us-central1",
+        "eventType": "google.cloud.storage.object.v1.finalized",
+        "eventFilters": [
+          {
+            "attribute": "bucket",
+            "value": "storage-deploy-cloudfunctionv2"
+          }
+        ],
+        "pubsubTopic": "projects/test_project/topics/eventarc-us-central1-storage-deploy-cloudfunctionv2-storage-storage-finalized-324231-017",
+        "serviceAccountEmail": "deployer@goblet.iam.gserviceaccount.com",
+        "retryPolicy": "RETRY_POLICY_DO_NOT_RETRY"
+      },
+      "state": "ACTIVE",
+      "updateTime": "2023-09-16T01:48:35.451386250Z",
+      "environment": "GEN_2",
+      "url": "https://us-central1-goblet.cloudfunctions.net/storage-deploy-cloudfunctionv2-storage-storage-finalized"
+    }
+  }
+}
