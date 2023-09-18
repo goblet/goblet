@@ -1,5 +1,7 @@
 services:
   pubsub-emulator:
-    image: nthingsm/pubsub-emulator:latest
+    build:
+      context: .
+      dockerfile: pubsub-emulator.Dockerfile
     ports:
       - "8085:8085"

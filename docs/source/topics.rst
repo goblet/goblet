@@ -311,21 +311,23 @@ To test a pubsub topic locally you will need to include the subscription in the 
         "body": base64.b64encode(json.dumps({"key":"value"}).encode())
     } 
 
-When creating topics and subscriptions in your goblet application using the `@app.pubsub_topic` and `@app.pubsub_subscription` decorators you can pass the flag ``--extras`` to deploy them using the emulator.
+When creating topics and subscriptions in your goblet application using the `@app.pubsub_topic` and `@app.pubsub_subscription` decorators you can pass the flag ``--extras`` to deploy them using the emulator while running goblet locally.
 
 Pubsub Emulator
 ^^^^^^^^^^^^^^^
 
 Google has a pubsub emulator that you can use to test your pubsub functions locally. You can install and run the emulator with gcloud as shown in the docs `here <https://cloud.google.com/pubsub/docs/emulator>`_.
-Or if you prefer you can also use docker compose to run the emulator with the following docker-compose.yml file:
+Or if you prefer you can also use docker. There's a Dockerfile and docker-compose.yml files on the examples to run the emulator:
 .. code:: yaml
     services:
         pubsub-emulator:
-            image: nthingsm/pubsub-emulator:latest
+            build:
+                context: .
+                dockerfile: pubsub-emulator.Dockerfile
             ports:
             - "8085:8085"
 
-Run the emulator with ``docker-compose up``. Then set the environment variables ``PUBSUB_EMULATOR_HOST=localhost:8085`` and ``GOBLET_LOCAL_URL=http://host.docker.internal:8080`` to use the emulator with goblet.
+Run the emulator with ``docker-compose up``. Then set the environment variables ``PUBSUB_EMULATOR_HOST=localhost:8085`` and ``GOBLET_LOCAL_URL=http://host.docker.internal:8080`` to use the emulator with goblet. You can run `goblet local --extras` to deploy topics and subscriptions to the emulator and also start a local function that listens to the subscription messages.
 
 Cloud Task
 ##########
