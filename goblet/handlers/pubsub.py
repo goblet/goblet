@@ -30,6 +30,7 @@ class PubSub(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
+    supports_local = True
     required_apis = ["pubsub"]
     permissions = gcp_generic_resource_permissions("pubsub", "subscriptions")
 
@@ -118,7 +119,10 @@ class PubSub(Handler):
         sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
 
-        push_url = self.backend.http_endpoint
+        if os.environ.get("X_GOBLET_LOCAL"):
+            push_url = os.environ.get("GOBLET_LOCAL_URL", "http://localhost:8080")
+        else:
+            push_url = self.backend.http_endpoint
 
         if self.config.pubsub and self.config.pubsub.get("serviceAccountEmail"):
             service_account = self.config.pubsub.get("serviceAccountEmail")
@@ -140,7 +144,6 @@ class PubSub(Handler):
 
         self.service_accounts = [service_account]
         req_body = {
-            "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
             "filter": topic["filter"] or "",
             "pushConfig": {}

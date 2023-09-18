@@ -1,3 +1,4 @@
+import os
 from goblet.client import VersionedClients
 import goblet.globals as g
 from goblet.common_cloud_actions import check_or_enable_service
@@ -8,6 +9,7 @@ class Infrastructure:
 
     resource_type = ""
     can_sync = False
+    supports_local = False
     required_apis = []
     permissions = []
 
@@ -27,6 +29,14 @@ class Infrastructure:
         raise NotImplementedError("register")
 
     def deploy(self):
+        if (
+            not self.supports_local and os.getenv("X_GOBLET_LOCAL", False)
+        ) and not os.getenv("G_HTTP_TEST") == "REPLAY":
+            pass
+        else:
+            self._deploy()
+
+    def _deploy(self):
         raise NotImplementedError("deploy")
 
     def destroy(self):

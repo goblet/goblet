@@ -1,0 +1,16 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/subscriptions/goblet-topic-subscription-test",
+    "topic": "projects/goblet/topics/test",
+    "pushConfig": {
+      "pushEndpoint": "http://localhost:8080",
+      "oidcToken": {
+        "serviceAccountEmail": "SERVICE_ACCOUNT@developer.gserviceaccount.com",
+        "audience": "http://localhost:8080"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s"
+  }
+}

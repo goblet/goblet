@@ -1,6 +1,10 @@
 from goblet import Goblet
-from goblet_gcp_client import get_response
 from goblet.infrastructures.pubsub import PubSubClient
+from goblet_gcp_client import (
+    get_response,
+    get_replay_count,
+    reset_replay_count,
+)
 
 
 class TestPubSub:
@@ -111,3 +115,23 @@ class TestPubSub:
         assert pubsub_topic.resources["test"]["config"] == {
             "messageRetentionDuration": "3600s"
         }
+
+    def test_deploy_local(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-local")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("PUBSUB_EMULATOR_HOST", "localhost:8085")
+        reset_replay_count()
+
+        app = Goblet(function_name="goblet_example")
+
+        app.pubsub_topic(name="test")  # noqa: F841
+
+        app.deploy_local()
+
+        pubsub_topic = app.infrastructure["pubsub_topic"]
+
+        assert pubsub_topic.resources["test"]["id"] == "test"
+        assert pubsub_topic.supports_local is True
+        assert get_replay_count() == 1

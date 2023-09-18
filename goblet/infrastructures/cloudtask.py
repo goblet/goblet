@@ -104,7 +104,7 @@ class CloudTaskQueue(Infrastructure):
             backend=self.backend,
         )
 
-    def deploy(self):
+    def _deploy(self):
         if not self.resources:
             return
 
