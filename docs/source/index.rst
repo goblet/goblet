@@ -87,6 +87,14 @@ Topics
 
    topics
 
+Local
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   local
+
 Handlers
 --------
 
