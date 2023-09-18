@@ -6,6 +6,7 @@ from goblet_gcp_client import (
     reset_replay_count,
 )
 
+
 class TestPubSub:
     def test_add_pubsub_topics(self):
         app = Goblet(function_name="goblet_example")

@@ -553,7 +553,7 @@ class TestPubSubSubscription:
         )
 
         assert get_replay_count() == 14
-    
+
     def test_deploy_local(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
@@ -568,9 +568,7 @@ class TestPubSubSubscription:
             config={"pubsub": {"serviceAccountEmail": service_account}},
         )
 
-        app.pubsub_subscription(
-            "test", use_subscription=True
-        )(dummy_function)
+        app.pubsub_subscription("test", use_subscription=True)(dummy_function)
 
         app.deploy_local()
 
