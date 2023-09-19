@@ -1,0 +1,15 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/test_project/locations/us-central1/operations/operation-1694828915033-605701b6f85bd-9f637ec5-b4801dd4",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v2.OperationMetadata",
+      "createTime": "2023-09-16T01:48:35.455809080Z",
+      "target": "projects/test_project/locations/us-central1/functions/storage-deploy-cloudfunctionv2-storage-storage-finalized",
+      "verb": "create",
+      "cancelRequested": false,
+      "apiVersion": "v2"
+    },
+    "done": false
+  }
+}

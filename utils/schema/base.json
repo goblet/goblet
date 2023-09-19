@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "stages": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/definitions/goblet"
+        }
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/definitions/goblet"
+    }
+  ],
+  "definitions": {
+    "securityDefinitions": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/basicAuthenticationSecurity"
+        },
+        {
+          "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/apiKeySecurity"
+        },
+        {
+          "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2ImplicitSecurity"
+        },
+        {
+          "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2PasswordSecurity"
+        },
+        {
+          "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2ApplicationSecurity"
+        },
+        {
+          "$ref": "https://json.schemastore.org/swagger-2.0.json#/definitions/oauth2AccessCodeSecurity"
+        }
+      ]
+    },
+    "goblet": {
+      "type": "object",
+      "properties": {
+        "function_name": {
+          "type": "string"
+        },
+        "dockerfile": {
+          "type": "string"
+        },
+        "custom_files": {
+          "type": "object",
+          "properties": {
+            "include": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exclude": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "deploy": {
+          "type": "object",
+          "properties": {
+            "environmentVariables": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "type": "string"
+                }
+              }
+            },
+            "artifact_tag": {
+              "type": "string"
+            },
+            "artifact_registry": {
+              "type": "string"
+            }
+          }
+        },
+        "cloudrun_revision": {
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Revision"
+        },
+        "cloudrun_container": {
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Container"
+        },
+        "cloudrun_container_extra": {
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Container"
+        },
+        "cloudfunction": {
+          "$ref": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v1#/schemas/CloudFunction"
+        },
+        "cloudfunction_v2": {
+          "$ref": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v2#/schemas/Function"
+        },
+        "cloudbuild": {
+          "$ref": "https://cloudbuild.googleapis.com/$discovery/rest?version=v1#/schemas/Build"
+        },
+        "apiConfig": {
+          "$ref": "https://apigateway.googleapis.com/$discovery/rest?version=v1#/schemas/ApigatewayApiConfig"
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v1#/schemas/Binding"
+          }
+        },
+        "redis": {
+          "$ref": "https://redis.googleapis.com/$discovery/rest?version=v1#/schemas/Instance"
+        },
+        "vpcconnector": {
+          "$ref": "https://vpcaccess.googleapis.com/$discovery/rest?version=v1#/schemas/Connector"
+        },
+        "job_spec": {
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2TaskTemplate"
+        },
+        "job_container": {
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Container"
+        },
+        "cloudtask": {
+          "type": "object",
+          "properties": {
+            "serviceAccount": {
+              "type": "string",
+              "description": "cloudtask@{PROJECT}.iam.gserviceaccount.com"
+            }
+          }
+        },
+        "cloudtaskqueue": {
+          "type": "object",
+          "patternProperties": {
+            "^.+$": {
+              "$ref": "https://cloudtasks.googleapis.com/$discovery/rest?version=v2#/schemas/Queue"
+            }
+          }
+        },
+        "securityDefinitions": {
+          "type": "object",
+          "properties": {
+            "service-account": {
+              "$ref": "#/definitions/securityDefinitions"
+            },
+            "firebase": {
+              "$ref": "#/definitions/securityDefinitions"
+            }
+          }
+        }
+      }
+    }
+  }
+}

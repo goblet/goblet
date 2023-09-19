@@ -53,7 +53,12 @@ Config
 ^^^^^^
 
 You can provide custom configurations for your cloudfunction or cloudrun goblet deployments by using the config.json file which should be 
-located in the .goblet folder. If one doesn't exist then you should add one. 
+located in the .goblet folder. If one doesn't exist then you should add one.
+
+Auto-completion of `config.json` in IDEs should work out of the box for IDEs that use the `SchemaStore`_. PyCharm and Visual Studio Code are examples of this. To learn more about Goblet's JSON Schema definition or to extend the definition, go to `Goblet JSON Schema README`_
+
+.. _SchemaStore: https://www.schemastore.org/json
+.. _Goblet JSON Schema README: https://github.com/goblet/goblet/blob/main/utils/schema/README.md
 
 To provide custom values for the cloudfunction configuration pass in your desired overrides in the ``cloudfunction`` key. See below for example.
 
