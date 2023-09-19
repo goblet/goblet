@@ -24,7 +24,7 @@ class VPCConnector(Infrastructure):
         if not vpcconnector_config.get("ipCidrRange"):
             raise ValueError("ipCidrRange not specified in config")
 
-    def deploy(self):
+    def _deploy(self):
         if not self.resources:
             return
         vpcconnector_config = self.config.vpcconnector or {}

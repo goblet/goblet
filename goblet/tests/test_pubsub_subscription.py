@@ -553,3 +553,34 @@ class TestPubSubSubscription:
         )
 
         assert get_replay_count() == 14
+
+    def test_deploy_local(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-local")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("PUBSUB_EMULATOR_HOST", "localhost:8085")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+        reset_replay_count()
+
+        app = Goblet(
+            function_name="goblet-topic-subscription",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+
+        app.pubsub_subscription("test", use_subscription=True)(dummy_function)
+
+        app.deploy_local()
+
+        pubsub_subscription = app.handlers["pubsub"]
+
+        assert pubsub_subscription.supports_local is True
+        assert get_replay_count() == 4
+
+        pubsub_response = get_response(
+            "pubsub-deploy-subscription-local",
+            "put-v1-projects-goblet-subscriptions-goblet-topic-subscription-test_1.json",
+        )
+        assert pubsub_response["body"]["pushConfig"]["pushEndpoint"] == (
+            "http://localhost:8080"
+        )

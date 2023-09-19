@@ -52,7 +52,7 @@ class Alerts(Infrastructure):
                 self._gcp_deployed_alerts[alert["displayName"]] = alert
         return self._gcp_deployed_alerts
 
-    def deploy(self, source=None, entrypoint=None):
+    def _deploy(self, source=None, entrypoint=None):
         if not self.resources:
             return
         config_notification_channels = []

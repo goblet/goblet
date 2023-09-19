@@ -92,6 +92,7 @@ class VersionedClients:
             self.client_versions.get("pubsub", "v1"),
             calls="projects.subscriptions",
             parent_schema="projects/{project_id}",
+            emulator_host=os.environ.get("PUBSUB_EMULATOR_HOST"),
         )
 
     @property
@@ -101,6 +102,7 @@ class VersionedClients:
             self.client_versions.get("pubsub", "v1"),
             calls="projects.topics",
             parent_schema="projects/{project_id}",
+            emulator_host=os.environ.get("PUBSUB_EMULATOR_HOST"),
         )
 
     @property
