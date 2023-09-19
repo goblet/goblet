@@ -9,31 +9,31 @@
     "goblet": {
       "properties": {
         "apiConfig": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/apigateway.v1.json#/schemas/ApigatewayApiConfig"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/apigateway.v1.json#/schemas/ApigatewayApiConfig"
         },
         "bindings": {
           "items": {
-            "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/cloudfunctions.v1.json#/schemas/Binding"
+            "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/cloudfunctions.v1.json#/schemas/Binding"
           },
           "type": "array"
         },
         "cloudbuild": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/cloudbuild.v1.json#/schemas/Build"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/cloudbuild.v1.json#/schemas/Build"
         },
         "cloudfunction": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/cloudfunctions.v1.json#/schemas/CloudFunction"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/cloudfunctions.v1.json#/schemas/CloudFunction"
         },
         "cloudfunction_v2": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/cloudfunctions.v2.json#/schemas/Function"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/cloudfunctions.v2.json#/schemas/Function"
         },
         "cloudrun_container": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },
         "cloudrun_container_extra": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },
         "cloudrun_revision": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Revision"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Revision"
         },
         "cloudtask": {
           "properties": {
@@ -47,7 +47,7 @@
         "cloudtaskqueue": {
           "patternProperties": {
             "^.+$": {
-              "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/cloudtasks.v2.json#/schemas/Queue"
+              "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/cloudtasks.v2.json#/schemas/Queue"
             }
           },
           "type": "object"
@@ -95,13 +95,13 @@
           "type": "string"
         },
         "job_container": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },
         "job_spec": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2TaskTemplate"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2TaskTemplate"
         },
         "redis": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/redis.v1.json#/schemas/Instance"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/redis.v1.json#/schemas/Instance"
         },
         "securityDefinitions": {
           "properties": {
@@ -115,7 +115,7 @@
           "type": "object"
         },
         "vpcconnector": {
-          "$ref": "https://raw.githubusercontent.com/mauriciowittenberg/goblet/feature/json-schema/utils/schema/references/vpcaccess.v1.json#/schemas/Connector"
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/vpcaccess.v1.json#/schemas/Connector"
         }
       },
       "type": "object"
