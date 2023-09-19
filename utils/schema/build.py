@@ -11,7 +11,7 @@ def get_references(d):
         if isinstance(v, dict):
             get_references(v)
         else:
-            if k == "$ref" and v.startswith("https://"):
+            if k == "$ref" and v.startswith("https://") and 'googleapis.com' in v:
                 references.add(v.split("#")[0])
 
 
