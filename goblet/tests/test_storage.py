@@ -112,7 +112,7 @@ class TestStorage:
                 "runtime": "python38",
                 "cloudfunction_v2": {
                     "eventTrigger": {
-                        "serviceAccountEmail": "deployer@premise-developer-portal-rd.iam.gserviceaccount.com"
+                        "serviceAccountEmail": "goblet@goblet.iam.gserviceaccount.com"
                     },
                 },
             },
@@ -124,3 +124,14 @@ class TestStorage:
 
         responses = get_responses("storage-deploy-cloudfunctionv2")
         assert len(responses) == 3
+        assert responses[0]["body"]["metadata"]["target"].endswith(
+            "storage-deploy-cloudfunctionv2-storage-storage-finalized"
+        )
+        assert (
+            responses[0]["body"]["response"]["eventTrigger"]["eventFilters"][0]["value"]
+            == "storage-deploy-cloudfunctionv2"
+        )
+        assert (
+            responses[0]["body"]["response"]["eventTrigger"]["eventType"]
+            == "google.cloud.storage.object.v1.finalized"
+        )

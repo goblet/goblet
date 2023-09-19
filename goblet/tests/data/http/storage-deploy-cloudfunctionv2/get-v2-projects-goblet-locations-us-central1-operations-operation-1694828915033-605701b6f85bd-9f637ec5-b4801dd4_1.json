@@ -44,7 +44,7 @@
               "value": "storage-deploy-cloudfunctionv2"
             }
           ],
-          "serviceAccountEmail": "cloudfunctionv2@goblet.iam.gserviceaccount.com",
+          "serviceAccountEmail": "goblet@goblet.iam.gserviceaccount.com",
           "retryPolicy": "RETRY_POLICY_DO_NOT_RETRY"
         },
         "environment": "GEN_2"
@@ -122,7 +122,7 @@
           }
         ],
         "pubsubTopic": "projects/test_project/topics/eventarc-us-central1-storage-deploy-cloudfunctionv2-storage-storage-finalized-324231-017",
-        "serviceAccountEmail": "deployer@goblet.iam.gserviceaccount.com",
+        "serviceAccountEmail": "goblet@goblet.iam.gserviceaccount.com",
         "retryPolicy": "RETRY_POLICY_DO_NOT_RETRY"
       },
       "state": "ACTIVE",
