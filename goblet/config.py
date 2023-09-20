@@ -7,12 +7,19 @@ log = logging.getLogger("goblet.config")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 
-class GConfig:
+class GConfig(dict):
     """Config class used to get variables from config.json or from the environment. If stage is set as an environment level
     if will parse the corresponding section in config.json and return those config values
     """
 
-    def __init__(self, config=None, stage=None):
+    def __init__(self, config=None, stage=None, init=True):
+        if config:
+            dict.__init__(self, **config)
+
+        if not init:
+            self.config = config
+            return
+
         self.config = self.get_g_config()
         if config:
             self.config = nested_update(self.config, config)
@@ -52,13 +59,44 @@ class GConfig:
             )
             return {}
 
+    def keys(self):
+        return self.config.keys()
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def __setitem__(self, key, value):
+        self.config[key] = value
+
     def __getattr__(self, name):
         if os.environ.get(name):
             return os.environ.get(name)
         attr = self.config.get(name)
+        if type(attr) == dict and len(attr) > 0:
+            return GConfig(config=attr, init=False)
+        if attr is None:
+            return GConfig(config={}, init=False)
         if attr or attr == {}:
             return attr
         return None
+
+    def __eq__(self, other):
+        if self.config == other:
+            return True
+        return False
+
+    def __bool__(self):
+        if self.config == {}:
+            return False
+        return True
+
+    def get(self, key, default=None):
+        try:
+            return self.config[key]
+        except TypeError:
+            return default
+        except KeyError:
+            return default
 
     def __setattr__(self, name, value):
         if name not in ["config", "stage"]:
