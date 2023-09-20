@@ -30,7 +30,7 @@ class TestBackend:
 
     def test_get_env_cloudfunction_v2(self):
         test_env = {
-            "cloudfunction": {
+            "cloudfunction_v2": {
                 "serviceConfig": {"environmentVariables": {"TEST": "VALUE"}}
             }
         }

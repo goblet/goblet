@@ -264,11 +264,13 @@ class TestDeployer:
             function_name="goblet",
             backend="cloudrun",
             config={
+                "deploy": {
+                    "artifact_registry": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet"
+                },
                 "cloudrun_revision": {
                     "serviceAccount": "test@goblet.iam.gserviceaccount.com"
                 },
                 "cloudbuild": {
-                    "artifact_registry": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet",
                     "serviceAccount": "projects/goblet/serviceAccounts/test@goblet.iam.gserviceaccount.com",
                 },
             },
@@ -306,11 +308,13 @@ class TestDeployer:
             function_name="goblet",
             backend="cloudrun",
             config={
+                "deploy": {
+                    "artifact_tag": artifact_tag,
+                    "artifact_registry": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/single-registry",
+                },
                 "cloudrun_revision": {"serviceAccount": "service-accont@goblet.com"},
                 "cloudbuild": {
-                    "artifact_registry": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/single-registry",
-                    "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com",
-                    "artifact_tag": artifact_tag,
+                    "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com"
                 },
             },
         )

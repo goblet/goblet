@@ -1,4 +1,4 @@
-from goblet import Goblet
+from goblet import Goblet, goblet_entrypoint
 from goblet.handlers.storage import Storage
 from goblet_gcp_client import get_responses
 from goblet.test_utils import dummy_function, mock_dummy_function
@@ -91,4 +91,47 @@ class TestStorage:
         assert responses[0]["body"]["metadata"]["type"] == "DELETE_FUNCTION"
         assert responses[0]["body"]["metadata"]["target"].endswith(
             "goblet_storage-storage-test-finalize"
+        )
+
+    def test_deploy_storage_cloudfunction_v2(self, monkeypatch, requests_mock):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "storage-deploy-cloudfunctionv2")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+        requests_mock.register_uri("POST", "https://oauth2.googleapis.com/token")
+
+        def storage(event):
+            app.log.info(event)
+
+        app = Goblet(
+            function_name="storage-deploy-cloudfunctionv2",
+            backend="cloudfunctionv2",
+            config={
+                "runtime": "python38",
+                "cloudfunction_v2": {
+                    "eventTrigger": {
+                        "serviceAccountEmail": "goblet@goblet.iam.gserviceaccount.com"
+                    },
+                },
+            },
+        )
+        goblet_entrypoint(app)
+
+        app.storage("storage-deploy-cloudfunctionv2", "finalized")(storage)
+        app.deploy(force=True)
+
+        responses = get_responses("storage-deploy-cloudfunctionv2")
+        assert len(responses) == 3
+        assert responses[0]["body"]["metadata"]["target"].endswith(
+            "storage-deploy-cloudfunctionv2-storage-storage-finalized"
+        )
+        assert (
+            responses[0]["body"]["response"]["eventTrigger"]["eventFilters"][0]["value"]
+            == "storage-deploy-cloudfunctionv2"
+        )
+        assert (
+            responses[0]["body"]["response"]["eventTrigger"]["eventType"]
+            == "google.cloud.storage.object.v1.finalized"
         )
