@@ -248,7 +248,7 @@ class TestOpenApiSpec:
         spec_dict = spec.component_spec.to_dict()
 
         params = spec_dict["paths"]["/home"]["get"]["parameters"][0]
-        assert params == {"in": "formData", "name": "file", "type": "file"}
+        assert params == {"in": "formData", "name": "file", "type": "string"}
         assert spec_dict["paths"]["/home"]["get"]["consumes"] == ["multipart/form-data"]
 
     def test_query_params(self):
