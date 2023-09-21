@@ -72,7 +72,7 @@ class GConfig(dict):
         if os.environ.get(name):
             return os.environ.get(name)
         attr = self.config.get(name)
-        if type(attr) == dict and len(attr) > 0:
+        if isinstance(attr, dict) and len(attr) > 0:
             return GConfig(config=attr, init=False)
         if attr is None:
             return GConfig(config={}, init=False)
