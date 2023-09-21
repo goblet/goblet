@@ -60,3 +60,55 @@ class TestGConfig:
         config = GConfig(test_config)
         config.update_g_config(stage="dev")
         assert config.cloudfunction["environmentVariables"]["key"] == "dev"
+
+    def test_config_assignment(self):
+        config = GConfig(test_config)
+        config.cloudfunction = "new_value"
+        assert config.cloudfunction == "new_value"
+        assert config["cloudfunction"] == "new_value"
+
+        config = GConfig(test_config)
+        config["cloudfunction"] = "new_value"
+        assert config.cloudfunction == "new_value"
+        assert config["cloudfunction"] == "new_value"
+
+        config = GConfig(test_config)
+        config.cloudfunction = {"new_key": "value"}
+        config.cloudfunction.new_key = "new_value"
+        assert config["cloudfunction"]["new_key"] == "new_value"
+
+    def test_unpacking(self):
+        config = GConfig(test_config)
+        new_dict = {**config}
+
+        assert new_dict.get("cloudfunction", False).get(
+            "environmentVariables", False
+        ) == {"key": "value"}
+        assert new_dict["cloudfunction"]["environmentVariables"] == {"key": "value"}
+
+        new_dict = {**config["cloudfunction"]}
+        assert new_dict.get("environmentVariables", False) == {"key": "value"}
+        assert new_dict["environmentVariables"] == {"key": "value"}
+
+        new_dict = {**config.cloudfunction}
+        assert new_dict.get("environmentVariables", False) == {"key": "value"}
+        assert new_dict["environmentVariables"] == {"key": "value"}
+
+    def test_compare(self):
+        config1 = GConfig(test_config)
+        config2 = GConfig(test_config)
+
+        assert id(config1) != id(config2)
+        assert config1 == config2
+        assert config1.stage == config2.stage
+
+    def test_json_dumps(self):
+        import json
+
+        config = GConfig(test_config)
+        assert json.dumps(config, sort_keys=True) == json.dumps(
+            test_config, sort_keys=True
+        )
+        assert json.dumps(config.cloudfunction, sort_keys=True) == json.dumps(
+            test_config["cloudfunction"], sort_keys=True
+        )
