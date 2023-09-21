@@ -59,9 +59,6 @@ class GConfig(dict):
             )
             return {}
 
-    def keys(self):
-        return self.config.keys()
-
     def __getitem__(self, item):
         return getattr(self, item)
 
@@ -79,24 +76,6 @@ class GConfig(dict):
         if attr or attr == {}:
             return attr
         return None
-
-    def __eq__(self, other):
-        if self.config == other:
-            return True
-        return False
-
-    def __bool__(self):
-        if self.config == {}:
-            return False
-        return True
-
-    def get(self, key, default=None):
-        try:
-            return self.config[key]
-        except TypeError:
-            return default
-        except KeyError:
-            return default
 
     def __setattr__(self, name, value):
         if name not in ["config", "stage"]:
