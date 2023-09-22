@@ -198,6 +198,7 @@ class OpenApiSpec:
         self.deadline = deadline
         self.options["swagger"] = "2.0"
         if security_definitions:
+            security_definitions = {**security_definitions}
             self.options["securityDefinitions"] = security_definitions
             self.options["security"] = security or list(
                 map(lambda s: {s: []}, security_definitions)
