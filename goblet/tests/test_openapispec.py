@@ -1,5 +1,7 @@
 from typing import List, Optional
 from marshmallow import Schema, fields
+
+from goblet.config import GConfig
 from goblet.handlers.routes import OpenApiSpec, RouteEntry
 from pydantic import BaseModel
 
@@ -106,15 +108,17 @@ class TestOpenApiSpec:
         assert spec_dict["paths"]["/home"].get("get")
 
     def test_security_definitions(self):
-        security_def = {
-            "your_custom_auth_id": {
-                "authorizationUrl": "",
-                "flow": "implicit",
-                "type": "oauth2",
-                "x-google-issuer": "issuer of the token",
-                "x-google-jwks_uri": "url to the public key",
+        security_def = GConfig(
+            config={
+                "your_custom_auth_id": {
+                    "authorizationUrl": "",
+                    "flow": "implicit",
+                    "type": "oauth2",
+                    "x-google-issuer": "issuer of the token",
+                    "x-google-jwks_uri": "url to the public key",
+                }
             }
-        }
+        )
         spec = OpenApiSpec(
             "test", "xyz.cloudfunction", security_definitions=security_def
         )
@@ -124,15 +128,17 @@ class TestOpenApiSpec:
         assert spec_dict["security"] == [{"your_custom_auth_id": []}]
 
     def test_security_config(self):
-        security_def = {
-            "your_custom_auth_id": {
-                "authorizationUrl": "",
-                "flow": "implicit",
-                "type": "oauth2",
-                "x-google-issuer": "issuer of the token",
-                "x-google-jwks_uri": "url to the public key",
+        security_def = GConfig(
+            config={
+                "your_custom_auth_id": {
+                    "authorizationUrl": "",
+                    "flow": "implicit",
+                    "type": "oauth2",
+                    "x-google-issuer": "issuer of the token",
+                    "x-google-jwks_uri": "url to the public key",
+                }
             }
-        }
+        )
         spec = OpenApiSpec(
             "test",
             "xyz.cloudfunction",
@@ -143,6 +149,53 @@ class TestOpenApiSpec:
 
         assert spec_dict["securityDefinitions"] == security_def
         assert spec_dict["security"] == [{"custom": []}]
+
+    def test_write_config(self):
+        import io
+
+        security_def = GConfig(
+            config={
+                "your_custom_auth_id": {
+                    "authorizationUrl": "",
+                    "flow": "implicit",
+                    "type": "oauth2",
+                    "x-google-issuer": "issuer of the token",
+                    "x-google-jwks_uri": "url to the public key",
+                }
+            }
+        )
+
+        expected_yaml = """swagger: '2.0'
+securityDefinitions:
+  your_custom_auth_id:
+    authorizationUrl: ''
+    flow: implicit
+    type: oauth2
+    x-google-issuer: issuer of the token
+    x-google-jwks_uri: url to the public key
+security:
+- custom: []
+schemes:
+- https
+produces:
+- application/json
+paths: {}
+info:
+  title: test
+  version: 1.0.0
+"""
+
+        spec = OpenApiSpec(
+            "test",
+            "xyz.cloudfunction",
+            security_definitions=security_def,
+            security=[{"custom": []}],
+        )
+        output = io.StringIO()
+        spec.write(output)
+        output.seek(0)
+        writen_yaml = "".join(output.readlines())
+        assert writen_yaml == expected_yaml
 
     def test_security_method(self):
         route = RouteEntry(
