@@ -16,9 +16,15 @@ $ python3 build.py
 
 ### How do I use this in my IDE? ### 
 
-`goblet.schema.json` is included in the [SchemaStore Catalog](https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json). If your IDE already uses the Schema Store for auto-completion, chances are it is already working in your `.goblet/config.json` file.
+`goblet.schema.json` is included in the [SchemaStore Catalog](https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json).
 
-If it isn't working, or you want use a local version of `goblet.schema.json` with new definitions or references, you can manually add a Json Schema mapping to your IDE.
+If your IDE already uses the Schema Store for auto-completion, chances are it is already working in your `.goblet/config.json` file.
+
+To use with *Visual Studio Code* you just need to install the [JSON Schema Store Catalog](https://marketplace.visualstudio.com/items?itemName=remcohaszing.schemastore)
+
+To use with *PyCharm*, click on the **No JSON schema** tab located at the bottom right of the window and search for **Goblet**
+
+If want to use a local version of `goblet.schema.json` with new definitions or references, you can manually add a Json Schema mapping to your IDE.
 
 Here is how to do it in [PyCharm](https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom) and [Visual Studio Code](https://code.visualstudio.com/docs/languages/json#_mapping-in-the-user-settings)
 
