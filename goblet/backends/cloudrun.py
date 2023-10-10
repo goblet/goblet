@@ -80,9 +80,9 @@ class CloudRun(Backend):
             write_dockerfile()
 
         try:
-            artifact_tag = self.config.deploy.get("artifact_tag")
+            artifact_tag = os.environ.get("GOBLET_ARTIFACT_TAG")
         except AttributeError:
-            artifact_tag = None
+            artifact_tag = self.config.deploy.get("artifact_tag", None)
 
         if artifact_tag:
             source, changes = None, False
@@ -173,27 +173,37 @@ class CloudRun(Backend):
                 self.log.info(
                     "service account given but no logging bucket so defaulting to cloud logging only"
                 )
+        
+        images = [f"{registry}:latest"]
+        # Add environment variable tags
+        build_tags = os.environ.get("GOBLET_BUILD_TAGS", None)
+        if build_tags:
+            images += list(map(lambda tag: f"{registry}:{tag}", build_tags.split(",")))
 
         req_body = {
             "source": {"storageSource": source["storageSource"]},
             "steps": [
                 {
                     "name": "gcr.io/cloud-builders/docker",
-                    "args": [
-                        "build",
-                        "--network=cloudbuild",
-                        "-t",
-                        registry,
-                        "--cache-from",
-                        registry,
-                        ".",
-                    ],
+                    "args": 
+                        [
+                            "build",
+                            "--network=cloudbuild",
+                        ]
+                        +
+                        list(map(lambda image: ["-t", image], images))
+                        +
+                        [
+                            "--cache-from",
+                            registry,
+                            ".",
+                        ],
                 }
             ],
-            "images": [registry],
+            "images": images,
             **build_configs,
         }
-
+        
         req_body["tags"] = build_configs.get("tags", []) + [f"goblet-build-{self.name}"]
 
         create_cloudbuild(client, req_body)
