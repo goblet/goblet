@@ -332,7 +332,7 @@ class TestDeployer:
             artifact_tag
             in response["body"]["response"]["template"]["containers"][0]["image"]
         )
-    
+
     def test_cloudrun_artifact_tag_from_env(self, monkeypatch):
         G_TEST_NAME = "single-registry"
         artifact_tag = (
@@ -427,9 +427,7 @@ class TestDeployer:
 
         app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
-        response = get_response(
-            G_TEST_NAME, "post-v1-projects-goblet-builds_1.json"
-        )
+        response = get_response(G_TEST_NAME, "post-v1-projects-goblet-builds_1.json")
 
         for image in response["body"]["metadata"]["build"]["images"]:
-            assert any(tag in image for tag in tags.split(','))
+            assert any(tag in image for tag in tags.split(","))
