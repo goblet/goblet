@@ -80,8 +80,8 @@ class CloudRun(Backend):
             write_dockerfile()
 
         try:
-            artifact_tag = os.environ.get("GOBLET_ARTIFACT_TAG")
-        except AttributeError:
+            artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+        except KeyError:
             artifact_tag = self.config.deploy.get("artifact_tag", None)
 
         if artifact_tag:

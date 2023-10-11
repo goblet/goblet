@@ -109,8 +109,8 @@ class RevisionSpec:
 
         # Get artifact tag from env variable or config
         try:
-            artifact_tag = os.environ.get("GOBLET_ARTIFACT_TAG")
-        except AttributeError:
+            artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+        except KeyError:
             artifact_tag = self.config.deploy.get("artifact_tag", None)
 
         if artifact_tag:
