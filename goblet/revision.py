@@ -107,10 +107,11 @@ class RevisionSpec:
         region = get_default_location()
         project = get_default_project_number()
 
+        # Get artifact tag from env variable or config
         try:
-            artifact_tag = self.config.deploy.get("artifact_tag")
-        except AttributeError:
-            artifact_tag = None
+            artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+        except KeyError:
+            artifact_tag = self.config.deploy.get("artifact_tag", None)
 
         if artifact_tag:
             artifact_registry = self.config.deploy.get(

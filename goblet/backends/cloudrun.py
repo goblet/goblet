@@ -80,9 +80,9 @@ class CloudRun(Backend):
             write_dockerfile()
 
         try:
-            artifact_tag = self.config.deploy.get("artifact_tag")
-        except AttributeError:
-            artifact_tag = None
+            artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+        except KeyError:
+            artifact_tag = self.config.deploy.get("artifact_tag", None)
 
         if artifact_tag:
             source, changes = None, False
@@ -174,6 +174,12 @@ class CloudRun(Backend):
                     "service account given but no logging bucket so defaulting to cloud logging only"
                 )
 
+        images = [f"{registry}:latest"]
+        # Add environment variable tags
+        build_tags = os.environ.get("GOBLET_BUILD_TAGS", None)
+        if build_tags:
+            images += list(map(lambda tag: f"{registry}:{tag}", build_tags.split(",")))
+
         req_body = {
             "source": {"storageSource": source["storageSource"]},
             "steps": [
@@ -182,15 +188,16 @@ class CloudRun(Backend):
                     "args": [
                         "build",
                         "--network=cloudbuild",
-                        "-t",
-                        registry,
+                    ]
+                    + list(map(lambda image: ["-t", image], images))
+                    + [
                         "--cache-from",
                         registry,
                         ".",
                     ],
                 }
             ],
-            "images": [registry],
+            "images": images,
             **build_configs,
         }
 
