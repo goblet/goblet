@@ -23,6 +23,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "serviceusage": "v1",
     "iam": "v1",
     "cloudresourcemanager": "v3",
+    "artifactregistry": "v1",
 }
 
 
@@ -91,6 +92,7 @@ class VersionedClients:
             self.client_versions.get("pubsub", "v1"),
             calls="projects.subscriptions",
             parent_schema="projects/{project_id}",
+            emulator_host=os.environ.get("PUBSUB_EMULATOR_HOST"),
         )
 
     @property
@@ -100,6 +102,7 @@ class VersionedClients:
             self.client_versions.get("pubsub", "v1"),
             calls="projects.topics",
             parent_schema="projects/{project_id}",
+            emulator_host=os.environ.get("PUBSUB_EMULATOR_HOST"),
         )
 
     @property
@@ -271,4 +274,13 @@ class VersionedClients:
             self.client_versions.get("cloudresourcemanager", "v3"),
             calls="projects",
             parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def artifactregistry_repositories(self):
+        return Client(
+            "artifactregistry",
+            self.client_versions.get("artifactregistry", "v1"),
+            calls="projects.locations.repositories",
+            parent_schema="projects/{project_id}/locations/{location_id}",
         )

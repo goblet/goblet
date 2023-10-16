@@ -183,6 +183,16 @@ class Goblet(Goblet_Decorators, Resource_Manager):
     def package(self):
         self.backend.zip()
 
+    def deploy_local(self):
+        source = None
+
+        log.info("deploying infrastructure locally...")
+        self.deploy_infrastructure()
+
+        self.backend.skip_deployment()
+        log.info("deploying handlers locally...")
+        self.deploy_handlers(source)
+
 
 def jsonify(*args, **kwargs):
     """

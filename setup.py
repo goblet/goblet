@@ -13,7 +13,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "goblet-gcp"
-DESCRIPTION = "Google Cloud functions wrapper"
+DESCRIPTION = "Framework for writing serverless rest apis in python in google cloud."
 URL = "https://github.com/goblet/goblet"
 EMAIL = "austen.novis@gmail.com"
 AUTHOR = "Austen"

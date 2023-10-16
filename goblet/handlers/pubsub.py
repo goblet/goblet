@@ -30,6 +30,7 @@ class PubSub(Handler):
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
     resource_type = "pubsub"
     can_sync = True
+    supports_local = True
     required_apis = ["pubsub"]
     permissions = gcp_generic_resource_permissions("pubsub", "subscriptions")
 
@@ -118,7 +119,10 @@ class PubSub(Handler):
         sub_name = f"{self.name}-{topic_name}"
         log.info(f"deploying pubsub subscription {sub_name}......")
 
-        push_url = self.backend.http_endpoint
+        if os.environ.get("X_GOBLET_LOCAL"):
+            push_url = os.environ.get("GOBLET_LOCAL_URL", "http://localhost:8080")
+        else:
+            push_url = self.backend.http_endpoint
 
         if self.config.pubsub and self.config.pubsub.get("serviceAccountEmail"):
             service_account = self.config.pubsub.get("serviceAccountEmail")
@@ -128,9 +132,8 @@ class PubSub(Handler):
             and self.config.cloudrun_revision.get("serviceAccount")
         ):
             service_account = self.config.cloudrun_revision.get("serviceAccount")
-        elif (
-            self.backend.resource_type.startswith("cloudfunction")
-            and self.config.cloudfunction
+        elif self.backend.resource_type.startswith("cloudfunction") and (
+            self.config.cloudfunction or self.config.cloudfunction_v2
         ):
             service_account = self.config.pubsub.get("serviceAccountEmail")
         else:
@@ -140,7 +143,6 @@ class PubSub(Handler):
 
         self.service_accounts = [service_account]
         req_body = {
-            "name": sub_name,
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
             "filter": topic["filter"] or "",
             "pushConfig": {}
@@ -183,8 +185,8 @@ class PubSub(Handler):
     def _deploy_trigger(self, topic_name, source=None, entrypoint=None):
         function_name = f"{self.cloudfunction}-topic-{topic_name}"
         log.info(f"deploying topic function {function_name}......")
-        user_configs = self.config.cloudfunction or {}
         if self.versioned_clients.cloudfunctions.version == "v1":
+            user_configs = self.config.cloudfunction or {}
             req_body = {
                 "name": function_name,
                 "description": self.config.description or "created by goblet",
@@ -204,6 +206,7 @@ class PubSub(Handler):
                 self.versioned_clients.cloudfunctions, {"body": req_body}
             )
         elif self.versioned_clients.cloudfunctions.version.startswith("v2"):
+            user_configs = self.config.cloudfunction_v2 or {}
             params = {
                 "body": {
                     "name": function_name,

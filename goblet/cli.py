@@ -19,20 +19,21 @@ logging.basicConfig()
 
 SUPPORTED_BACKENDS = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
 SUPPORTED_HANDLERS = [
+    "bqremotefunction",
     "cloudtasktarget",
-    "pubsub",
-    "storage",
     "eventarc",
     "jobs",
+    "pubsub",
+    "storage",
     "schedule",
-    "bqremotefunction",
 ]
 SUPPORTED_INFRASTRUCTURES = [
-    "cloudtaskqueue",
-    "redis",
-    "vpcconnector",
     "alerts",
     "apigateway",
+    "cloudtaskqueue",
+    "pubsub",
+    "redis",
+    "vpcconnector",
 ]
 
 
@@ -318,7 +319,8 @@ def openapi(cloudfunction, stage, version):
 @click.option("-s", "--stage", "stage", envvar="STAGE")
 @click.option("-p", "--port", "port", envvar="PORT", default=8080)
 @click.option("--set-env", "set_env", is_flag=True)
-def local(local_arg, stage, port, set_env):
+@click.option("--extras", "extras", is_flag=True)
+def local(local_arg, stage, port, set_env, extras):
     """
     Requires the local argument to be set in the Goblet class. The default is local.
 
@@ -337,6 +339,9 @@ def local(local_arg, stage, port, set_env):
             env_dict = app.backend.get_environment_vars()
             for k, v in env_dict.items():
                 os.environ[k] = v
+        if extras:
+            app = get_goblet_app(source)
+            app.deploy_local()
         subprocess.check_output(
             [
                 "functions-framework",

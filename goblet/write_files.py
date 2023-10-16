@@ -80,5 +80,8 @@ RUN pip install -r requirements.txt
 
 # Copy local code to the container image.
 COPY . .
+
+# Run the web service on container startup.
+CMD exec functions-framework --target=goblet_entrypoint
 """
         )

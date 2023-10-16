@@ -107,13 +107,14 @@ class RevisionSpec:
         region = get_default_location()
         project = get_default_project_number()
 
-        artifact_tag = (
-            self.config.cloudbuild.get("artifact_tag", None)
-            if self.config.cloudbuild
-            else None
-        )
+        # Get artifact tag from env variable or config
+        try:
+            artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+        except KeyError:
+            artifact_tag = self.config.deploy.get("artifact_tag", None)
+
         if artifact_tag:
-            artifact_registry = self.config.cloudbuild.get(
+            artifact_registry = self.config.deploy.get(
                 "artifact_registry", None
             ) or getDefaultRegistry(self.name)
             self.artifactToDeploy = (
@@ -149,7 +150,7 @@ class RevisionSpec:
                 params={},
             )
 
-            for service in resp["services"]:
+            for service in resp.get("services", []):
                 if service["name"].rpartition("/")[-1] == self.name:
                     serviceConfig = self.getServiceConfig()
                     self.modifyTraffic(serviceConfig)

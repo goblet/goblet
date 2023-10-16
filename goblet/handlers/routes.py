@@ -166,7 +166,7 @@ class Routes(Handler):
             deadline = (config.cloudfunction or {}).get("timeout")
         if self.backend.resource_type == "cloudfunctionv2" and not deadline:
             deadline = (
-                (config.cloudfunction or {})
+                (config.cloudfunction_v2 or {})
                 .get("serviceConfig", {})
                 .get("timeoutSeconds")
             )
@@ -198,6 +198,7 @@ class OpenApiSpec:
         self.deadline = deadline
         self.options["swagger"] = "2.0"
         if security_definitions:
+            security_definitions = {**security_definitions}
             self.options["securityDefinitions"] = security_definitions
             self.options["security"] = security or list(
                 map(lambda s: {s: []}, security_definitions)
@@ -289,7 +290,8 @@ class OpenApiSpec:
             )
 
         if entry.form_data:
-            params.append({"in": "formData", "name": "file", "type": "file"})
+            params.append({"in": "formData", "name": "file", "type": "string"})
+            entry.content_types = ["multipart/form-data"]
 
         if entry.query_params:
             method_spec["parameters"] = []

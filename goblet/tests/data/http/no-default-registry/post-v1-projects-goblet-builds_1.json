@@ -1,0 +1,62 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/build/goblet/NmRlNjM2NzMtOTU5NS00YWM3LTk0YmYtMTQ4NDhmNGYyZjcx",
+    "metadata": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
+      "build": {
+        "id": "6de63673-9595-4ac7-94bf-14848f4f2f71",
+        "status": "QUEUED",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-east1",
+            "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip"
+          }
+        },
+        "createTime": "2023-08-24T17:51:39.067645471Z",
+        "steps": [
+          {
+            "name": "gcr.io/cloud-builders/docker",
+            "args": [
+              "build",
+              "--network=cloudbuild",
+              "-t",
+              "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+              "--cache-from",
+              "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet",
+              "."
+            ]
+          }
+        ],
+        "timeout": "3600s",
+        "images": [
+          "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet"
+        ],
+        "projectId": "goblet",
+        "logsBucket": "gs://123456789.cloudbuild-logs.googleusercontent.com",
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-uploads-123456789-us-east1",
+            "object": "9fa3389c-8e58-4de3-b625-1a643cb0a2c4.zip",
+            "generation": "1692899490940214"
+          }
+        },
+        "options": {
+          "logging": "LEGACY",
+          "pool": {}
+        },
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/6de63673-9595-4ac7-94bf-14848f4f2f71?project=123456789",
+        "tags": [
+          "goblet-build-goblet"
+        ],
+        "artifacts": {
+          "images": [
+            "us-east1-docker.pkg.dev/goblet/cloud-run-source-deploy/goblet"
+          ]
+        },
+        "queueTtl": "3600s",
+        "name": "projects/goblet/locations/global/builds/6de63673-9595-4ac7-94bf-14848f4f2f71"
+      }
+    }
+  }
+}

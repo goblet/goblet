@@ -4,6 +4,7 @@ import base64
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
+from googleapiclient.errors import HttpError
 
 from goblet.backends.backend import Backend
 from goblet.client import VersionedClients
@@ -19,6 +20,7 @@ from goblet.common_cloud_actions import (
     destroy_cloudfunction_artifacts,
     get_cloudrun_url,
     getDefaultRegistry,
+    getDefaultRegistryName,
 )
 from goblet.revision import RevisionSpec
 from goblet.utils import get_dir
@@ -46,6 +48,8 @@ class CloudRun(Backend):
         "cloudresourcemanager.projects.get",
         "iam.serviceaccounts.actAs",
         "cloudfunctions.functions.sourceCodeSet",
+        "artifactregistry.repositories.create",
+        "artifactregistry.repositories.get",
     ]
 
     def __init__(self, app):
@@ -75,11 +79,11 @@ class CloudRun(Backend):
             )
             write_dockerfile()
 
-        artifact_tag = (
-            self.config.cloudbuild.get("artifact_tag", None)
-            if self.config.cloudbuild
-            else None
-        )
+        try:
+            artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+        except KeyError:
+            artifact_tag = self.config.deploy.get("artifact_tag", None)
+
         if artifact_tag:
             source, changes = None, False
             self.log.info(
@@ -126,8 +130,40 @@ class CloudRun(Backend):
     def create_build(self, client, source=None, name="goblet"):
         """Creates http cloudbuild"""
         build_configs = self.config.cloudbuild.copy() if self.config.cloudbuild else {}
-        registry = build_configs.get("artifact_registry") or getDefaultRegistry(name)
-        build_configs.pop("artifact_registry", None)
+
+        try:
+            registry = self.config.deploy.get(
+                "artifact_registry"
+            ) or getDefaultRegistry(name)
+        except AttributeError:
+            registry = getDefaultRegistry(name)
+
+        # check if default registry exists
+        if registry == getDefaultRegistry(name):
+            registry_client = VersionedClients().artifactregistry_repositories
+            try:
+                registry_client.execute(
+                    "get", parent_key="name", parent_schema=getDefaultRegistryName()
+                )
+            except HttpError as e:
+                # Registry doesn't exist
+                if e.resp.status == 404:
+                    # create registry
+                    self.log.info(
+                        f"Default registry doesn't exist. Creating registry {getDefaultRegistryName()}"
+                    )
+                    resp = registry_client.execute(
+                        "create",
+                        params={
+                            "body": {
+                                "name": getDefaultRegistryName(),
+                                "format": "DOCKER",
+                                "mode": "STANDARD_REPOSITORY",
+                            },
+                            "repositoryId": "cloud-run-source-deploy",
+                        },
+                    )
+                registry_client.wait_for_operation(resp["name"])
 
         if build_configs.get("serviceAccount") and not build_configs.get("logsBucket"):
             build_options = build_configs.get("options", {})
@@ -138,6 +174,12 @@ class CloudRun(Backend):
                     "service account given but no logging bucket so defaulting to cloud logging only"
                 )
 
+        images = [f"{registry}:latest"]
+        # Add environment variable tags
+        build_tags = os.environ.get("GOBLET_BUILD_TAGS", None)
+        if build_tags:
+            images += list(map(lambda tag: f"{registry}:{tag}", build_tags.split(",")))
+
         req_body = {
             "source": {"storageSource": source["storageSource"]},
             "steps": [
@@ -146,15 +188,16 @@ class CloudRun(Backend):
                     "args": [
                         "build",
                         "--network=cloudbuild",
-                        "-t",
-                        registry,
+                    ]
+                    + list(map(lambda image: ["-t", image], images))
+                    + [
                         "--cache-from",
                         registry,
                         ".",
                     ],
                 }
             ],
-            "images": [registry],
+            "images": images,
             **build_configs,
         }
 

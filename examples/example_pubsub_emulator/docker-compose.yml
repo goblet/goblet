@@ -1,0 +1,7 @@
+services:
+  pubsub-emulator:
+    build:
+      context: .
+      dockerfile: pubsub-emulator.Dockerfile
+    ports:
+      - "8085:8085"

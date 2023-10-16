@@ -76,7 +76,7 @@ class TestDeployer:
         app.deploy(skip_handlers=True, skip_infra=True, force=True)
 
         responses = get_responses("deployer-cloudrun-deploy")
-        assert len(responses) == 9
+        assert len(responses) == 10
 
     def test_deploy_cloudrun_multi_container(self, monkeypatch, requests_mock):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -131,7 +131,7 @@ class TestDeployer:
             "post-v2-projects-goblet-locations-us-central1-services_1.json",
         )
 
-        assert get_replay_count() == 8
+        assert get_replay_count() == 9
         assert len(service["body"]["metadata"]["template"]["containers"]) == 2
         assert (
             service["body"]["metadata"]["template"]["containers"][1]["name"] == "nginx"
@@ -264,11 +264,13 @@ class TestDeployer:
             function_name="goblet",
             backend="cloudrun",
             config={
+                "deploy": {
+                    "artifact_registry": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet"
+                },
                 "cloudrun_revision": {
                     "serviceAccount": "test@goblet.iam.gserviceaccount.com"
                 },
                 "cloudbuild": {
-                    "artifact_registry": "us-central1-docker.pkg.dev/newgoblet/cloud-run-source-deploy/goblet",
                     "serviceAccount": "projects/goblet/serviceAccounts/test@goblet.iam.gserviceaccount.com",
                 },
             },
@@ -306,11 +308,13 @@ class TestDeployer:
             function_name="goblet",
             backend="cloudrun",
             config={
+                "deploy": {
+                    "artifact_tag": artifact_tag,
+                    "artifact_registry": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/single-registry",
+                },
                 "cloudrun_revision": {"serviceAccount": "service-accont@goblet.com"},
                 "cloudbuild": {
-                    "artifact_registry": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/single-registry",
-                    "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com",
-                    "artifact_tag": artifact_tag,
+                    "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com"
                 },
             },
         )
@@ -328,3 +332,102 @@ class TestDeployer:
             artifact_tag
             in response["body"]["response"]["template"]["containers"][0]["image"]
         )
+
+    def test_cloudrun_artifact_tag_from_env(self, monkeypatch):
+        G_TEST_NAME = "single-registry"
+        artifact_tag = (
+            "sha256:478c9c7b9b86d8ef6ae12998ef2ff6a0171c2163cf055c87969f0b886c6d67d7"
+        )
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_ARTIFACT_TAG", artifact_tag)
+
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
+            config={
+                "deploy": {
+                    "artifact_registry": "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/single-registry",
+                },
+                "cloudrun_revision": {"serviceAccount": "service-accont@goblet.com"},
+                "cloudbuild": {
+                    "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com"
+                },
+            },
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        response = get_response(
+            G_TEST_NAME, "post-v2-projects-goblet-locations-us-central1-services_1.json"
+        )
+
+        assert (
+            artifact_tag
+            in response["body"]["response"]["template"]["containers"][0]["image"]
+        )
+
+    def test_cloudrun_no_default_registry(self, monkeypatch):
+        G_TEST_NAME = "no-default-registry"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-east1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        app = Goblet(function_name="goblet", backend="cloudrun")
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        artifact_response = get_response(
+            G_TEST_NAME,
+            "get-v1-projects-goblet-locations-us-east1-repositories-cloud-run-source-deploy_1.json",
+        )
+
+        artifact_create_response = get_response(
+            G_TEST_NAME,
+            "post-v1-projects-goblet-locations-us-east1-repositories_1.json",
+        )
+
+        assert artifact_response["body"]["error"]["code"] == 404
+        assert (
+            "projects/goblet/locations/us-east1"
+            in artifact_create_response["body"]["name"]
+        )
+
+    def test_cloudrun_build_tags(self, monkeypatch):
+        G_TEST_NAME = "build-tags"
+        tags = "test,dev"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_BUILD_TAGS", tags)
+
+        app = Goblet(
+            function_name="goblet",
+            backend="cloudrun",
+            config={
+                "cloudrun_revision": {"serviceAccount": "service-account@goblet.com"},
+                "cloudbuild": {
+                    "serviceAccount": "projects/goblet/serviceAccounts/service-accont@goblet.com"
+                },
+            },
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        response = get_response(G_TEST_NAME, "post-v1-projects-goblet-builds_1.json")
+
+        for image in response["body"]["metadata"]["build"]["images"]:
+            assert any(tag in image for tag in tags.split(","))
