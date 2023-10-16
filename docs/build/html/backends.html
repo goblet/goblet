@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Backends &mdash; goblet 0.12.0 documentation</title>
+  <title>Backends &mdash; goblet 0.12.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -47,6 +47,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="local.html">Local</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
@@ -183,34 +186,47 @@ Having a custom Dockerfile if only needed if you would like to customize you con
 </pre></div>
 </div>
 <p>For <a class="reference external" href="https://cloud.google.com/build/docs/api/reference/rest/v1/projects.builds">Cloud Build configurations</a>, pass values into <cite>cloudbuild</cite></p>
-<p>In order to set a custom artifact registry, use the <cite>artifact_registry</cite> configuration. If you would like to use an artifact registry from a different project, a service account with storage permissions in the current project’s bucket and read + write in the other project’s artifact registry will be necessary.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;cloudbuild&quot;</span><span class="p">:{</span>
-<span class="w">        </span><span class="nt">&quot;artifact_registry&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;location-docker.pkg.dev/gcp_project/artifact/image&quot;</span>
-<span class="w">        </span><span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
 <p>To install packages from Artifact Registry ensure <cite>roles/artifactregistry.reader</cite> role has been added to cloudbuild service account and the artifact registry keyring backend install has been enabled within the Dockerfile</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">keyrings</span><span class="o">.</span><span class="n">google</span><span class="o">-</span><span class="n">artifactregistry</span><span class="o">-</span><span class="n">auth</span><span class="o">==</span><span class="mf">1.1.1</span>
 </pre></div>
 </div>
-<p>To use a previously built artifact, use the <cite>artifact_tag</cite> configuration. When using the <cite>artifact_tag</cite>, cloudbuild will not be called with the source code. <cite>artifact_tag</cite> can be any existing tag or digest in the default registry or the configured <cite>artifact_registry</cite>.</p>
+<p>To set a custom artifact registry where cloudbuild will push new images and from where cloudrun will pull images to deploy, use the <cite>artifact_registry</cite> configuration in the <cite>deploy</cite> configuration key.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;cloudbuild&quot;</span><span class="p">:{</span>
-<span class="w">        </span><span class="nt">&quot;artifact_tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;serviceAccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service-account@project.iam.gserviceaccount.com&quot;</span>
+<span class="w">    </span><span class="nt">&quot;deploy&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;artifact_registry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;location-docker.pkg.dev/gcp_project/artifact/image&quot;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>To deploy an artifact from <cite>project_a</cite> into a CloudRun Revision on <cite>project_b</cite> (with <cite>project_b_id</cite>) additional roles have to be granted in <cite>project_a</cite>.</p>
-<p>The Google managed service account <a class="reference external" href="mailto:service-project_b_id&#37;&#52;&#48;serverless-robot-prod&#46;iam&#46;gserviceaccount&#46;com">service-project_b_id<span>&#64;</span>serverless-robot-prod<span>&#46;</span>iam<span>&#46;</span>gserviceaccount<span>&#46;</span>com</a> must have <cite>roles/artifactregistry.reader</cite> in <cite>project_a</cite></p>
+<p>To use an artifact registry from a different project, the service account used in the <cite>cloudbuild</cite> configuration must have storage permissions in the current project’s bucket and read+write in the project from where artifact_registry belongs to.</p>
 <p>This can be done by running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gcloud<span class="w"> </span>projects<span class="w"> </span>add-iam-policy-binding<span class="w"> </span>project_a<span class="w"> </span><span class="se">\</span>
 --member<span class="o">=</span><span class="s2">&quot;serviceAccount:service-project_b_id@serverless-robot-prod.iam.gserviceaccount.com&quot;</span><span class="w"> </span><span class="se">\</span>
 --role<span class="o">=</span><span class="s2">&quot;roles/artifactregistry.reader&quot;</span>
+</pre></div>
+</div>
+<p>Here the service account from <cite>project_b</cite> is granted permissions to read from artifact registry en <cite>project_a</cite></p>
+<p>For adding custom tags to be created in cloud build and pushed to artifact registry, use the <cite>GOBLET_BUILD_TAGS</cite> environment variable with a comma-sepparated list of tags to be created:
+.. code:: bash</p>
+<blockquote>
+<div><p>GOBLET_BUILD_TAGS=tag1,tag2,tag3</p>
+</div></blockquote>
+<p>To use a previously built artifact, use the <cite>artifact_tag</cite> configuration in the <cite>deploy</cite> configuration key or use the <cite>GOBLET_ARTIFACT_TAG</cite> environment variable. When using <cite>artifact_tag</cite>, source code will not be uploaded and cloudbuild will not be called. <cite>artifact_tag</cite> can be any existing tag or digest in the default registry or the configured <cite>artifact_registry</cite>.
+.. code:: json</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><dl class="simple">
+<dt>“deploy”:{</dt><dd><p>“artifact_tag”: “latest”,</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GOBLET_ARTIFACT_TAG</span><span class="o">=</span>tag1
+<span class="c1"># or</span>
+<span class="nv">GOBLET_ARTIFACT_TAG</span><span class="o">=</span>sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
 </pre></div>
 </div>
 </section>

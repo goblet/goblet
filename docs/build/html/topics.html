@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Topics &mdash; goblet 0.12.0 documentation</title>
+  <title>Topics &mdash; goblet 0.12.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Handlers" href="handlers.html" />
+    <link rel="next" title="Local" href="local.html" />
     <link rel="prev" title="Quickstart" href="quickstart.html" /> 
 </head>
 
@@ -52,17 +52,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#private-python-libraries">Private Python Libraries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#permissions-and-service-accounts">Permissions and Service Accounts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#iam-bindings">IAM Bindings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#scheduled-job">Scheduled Job</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pubsub">Pubsub</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cloud-task">Cloud Task</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#eventarc">Eventarc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cloudrun-job">Cloudrun Job</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#bq-remote-function">BQ Remote Function</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#log-levels">Log Levels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#debugging-with-vscode">Debugging with VScode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#secrets">Secrets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#request">Request</a></li>
@@ -80,6 +69,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#multi-container-deployments">Multi Container Deployments</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="local.html">Local</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
@@ -172,6 +164,7 @@ The argument names for the view function must match the name of the captured arg
 <h2>Config<a class="headerlink" href="#config" title="Permalink to this heading">¶</a></h2>
 <p>You can provide custom configurations for your cloudfunction or cloudrun goblet deployments by using the config.json file which should be
 located in the .goblet folder. If one doesn’t exist then you should add one.</p>
+<p>Auto-completion of <cite>config.json</cite> in IDEs should work out of the box for IDEs that use the <a class="reference external" href="https://www.schemastore.org/json">SchemaStore</a>. PyCharm and Visual Studio Code are examples of this. To learn more about Goblet’s JSON Schema definition or to extend the definition, go to <a class="reference external" href="https://github.com/goblet/goblet/blob/main/utils/schema/README.md">Goblet JSON Schema README</a></p>
 <p>To provide custom values for the cloudfunction configuration pass in your desired overrides in the <code class="docutils literal notranslate"><span class="pre">cloudfunction</span></code> key. See below for example.</p>
 <p>Example fields include</p>
 <ul class="simple">
@@ -330,110 +323,6 @@ member <cite>allUsers</cite></p>
 <span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;roles/cloudfunctions.invoker&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">&quot;members&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-<section id="run-locally">
-<h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this heading">¶</a></h2>
-<p>Running your functions locally for testing and debugging is easy to do with the goblet command <cite>goblet local</cite>.
-You can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
-<p>You can have a custom local name by seting the local param in the goblet class</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code></p>
-<p>Note: If you have both <cite>http()</cite> and <cite>route(“/”)</cite> in order to test the route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">&#64;http()</span></code></p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>localhost:8080/endpoint
-</pre></div>
-</div>
-<p>The goblet app will run on port 8080 by default. You can specify a custom port with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet<span class="w"> </span><span class="nb">local</span><span class="w"> </span>-p<span class="w"> </span><span class="m">6000</span>
-</pre></div>
-</div>
-<p>You can set environment variables defined in your <cite>config.json</cite> locally by passing in the <cite>–set-env</cite> flag. Note that
-this will pass through environment variables set in a stage as well if you specify the <cite>–stage</cite> flag.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet<span class="w"> </span><span class="nb">local</span><span class="w"> </span>--set-env<span class="w"> </span>--stage<span class="w"> </span>dev
-</pre></div>
-</div>
-<section id="scheduled-job">
-<h3>Scheduled Job<a class="headerlink" href="#scheduled-job" title="Permalink to this heading">¶</a></h3>
-<p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
-<code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>X-Goblet-Type:schedule<span class="w"> </span>-H<span class="w"> </span>X-Goblet-Name:FUNCTION_NAME<span class="w"> </span>localhost:8080
-</pre></div>
-</div>
-</section>
-<section id="pubsub">
-<h3>Pubsub<a class="headerlink" href="#pubsub" title="Permalink to this heading">¶</a></h3>
-<p>To test a pubsub topic locally you will need to include the subscription in the payload as well as a base64 encoded string for the body.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;subscription&quot;</span><span class="p">:</span> <span class="s2">&quot;TOPIC_NAME&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;value&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-<section id="cloud-task">
-<h3>Cloud Task<a class="headerlink" href="#cloud-task" title="Permalink to this heading">¶</a></h3>
-<p>To test a cloudtask locally you will need to add the <code class="docutils literal notranslate"><span class="pre">User-Agent:Google-Cloud-Tasks</span></code> and <code class="docutils literal notranslate"><span class="pre">X-Goblet-CloudTask-Target:TARGET</span></code> headers</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>X-Goblet-CloudTask-Target:TARGET<span class="w"> </span>-H<span class="w"> </span>User-Agent:Google-Cloud-Tasks<span class="w"> </span>localhost:8080
-</pre></div>
-</div>
-</section>
-<section id="eventarc">
-<h3>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this heading">¶</a></h3>
-<p>To test an eventarc event locally you will need to add <code class="docutils literal notranslate"><span class="pre">Ce-Type</span></code> and <code class="docutils literal notranslate"><span class="pre">Ce-Source</span></code> headers</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>Ce-Type:google.cloud.pubsub.topic.v1.messagePublished<span class="w"> </span>-H<span class="w"> </span>Ce-Sourc://pubsub.googleapis.com/projects/goblet/topics/test<span class="w"> </span>localhost:8080
-</pre></div>
-</div>
-</section>
-<section id="cloudrun-job">
-<h3>Cloudrun Job<a class="headerlink" href="#cloudrun-job" title="Permalink to this heading">¶</a></h3>
-<p>To test a cloudrun job locally you can run <cite>goblet job run APP_NAME-JOB_NAME TASK_ID</cite></p>
-</section>
-<section id="bq-remote-function">
-<h3>BQ Remote Function<a class="headerlink" href="#bq-remote-function" title="Permalink to this heading">¶</a></h3>
-<p>To test an bqremotefunction locally you will need to add a <code class="docutils literal notranslate"><span class="pre">userDefinedContext</span></code> field to the body with a <code class="docutils literal notranslate"><span class="pre">X-Goblet-Name</span></code> field with the format of <code class="docutils literal notranslate"><span class="pre">APP_NAME</span></code> _ <code class="docutils literal notranslate"><span class="pre">FUNCTION_NAME</span></code>.
-You pass in the arguments to you function in a list in the <code class="docutils literal notranslate"><span class="pre">calls</span></code> field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;userDefinedContext&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="s2">&quot;bqremotefunction_test_function_test&quot;</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;calls&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="log-levels">
-<h2>Log Levels<a class="headerlink" href="#log-levels" title="Permalink to this heading">¶</a></h2>
-<p>You can set the log level by passing in the environent variable <cite>GOBLET_LOG_LEVEL</cite>. By default the log level is <cite>INFO</cite>. You can set the level
-to <cite>DEBUG</cite> by passing <cite>–debug</cite> after any goblet command.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">goblet --debug package</span>
-</pre></div>
-</div>
-</section>
-<section id="debugging-with-vscode">
-<h2>Debugging with VScode<a class="headerlink" href="#debugging-with-vscode" title="Permalink to this heading">¶</a></h2>
-<p>To debug your functions locally with Vscode you can use the following configuration. Replace LOCAL_NAME with the name you
-passed into <code class="docutils literal notranslate"><span class="pre">goblet(NAME,</span> <span class="pre">local=LOCAL_NAME)</span></code>. Make sure that there are no naming collisions with any function names used in your app.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Module&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;functions_framework&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="s2">&quot;--target&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s2">&quot;LOCAL_NAME&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s2">&quot;--debug&quot;</span>
-<span class="w">            </span><span class="p">]</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="p">}</span>
@@ -994,7 +883,7 @@ or <cite>ALPHA</cite>. Checkout the examples section for more details.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="handlers.html" class="btn btn-neutral float-right" title="Handlers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="local.html" class="btn btn-neutral float-right" title="Local" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
