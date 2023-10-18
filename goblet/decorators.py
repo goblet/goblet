@@ -345,11 +345,12 @@ class Goblet_Decorators:
             handler_type="vpcconnector",
             kwargs={"name": name, "kwargs": kwargs},
         )
-    
+
     def errorhandler(self, error):
         def _register_error_handler(error_handler):
             self.error_handlers[error] = error_handler
             return error_handler
+
         return _register_error_handler
 
     def stage(self, stage=None, stages=[]):

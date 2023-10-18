@@ -6,7 +6,7 @@ class Response(object):
     Generic Response class based on Flask Response
     """
 
-    def __init__(self, body:str, headers=None, status_code=200):
+    def __init__(self, body: str, headers=None, status_code=200):
         self.body = body
         if headers is None:
             headers = {"Content-type": "text/plain"}
@@ -21,6 +21,7 @@ class Response(object):
         headers = [(k, v) for k, v in self.headers.items()]
         start_response(status, headers)
         return [body]
+
 
 def default_missing_route(error):
     return Response(str(error), status_code=404)

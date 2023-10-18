@@ -227,7 +227,6 @@ class TestDecoraters:
         assert len(app.handlers["route"].resources) == 2
 
     def test_errorhandler_default(self):
-
         app = Goblet("test")
 
         mock_request = Mock()
@@ -238,9 +237,7 @@ class TestDecoraters:
 
         assert app(mock_request, {}).status_code == 404
 
-
     def test_errorhandler_custom(self):
-
         app = Goblet("test")
 
         mock_request = Mock()
@@ -252,7 +249,7 @@ class TestDecoraters:
         @app.errorhandler("ValueError")
         def handle_valueError(error):
             return str(error)
-        
+
         @app.route("/error")
         def dummy_function2():
             raise ValueError("test_error")

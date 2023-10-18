@@ -116,9 +116,7 @@ class Resource_Manager:
             "after": {},
         }
 
-        self.error_handlers = {
-            "GobletRouteNotFoundError": default_missing_route
-        }
+        self.error_handlers = {"GobletRouteNotFoundError": default_missing_route}
 
         self.current_request = None
         self.function_name = function_name
@@ -135,9 +133,11 @@ class Resource_Manager:
 
         event_type = self.get_event_type(request, context)
 
-        try: 
+        try:
             # call before request middleware
-            request = self._call_middleware(request, event_type, before_or_after="before")
+            request = self._call_middleware(
+                request, event_type, before_or_after="before"
+            )
             response = None
             if event_type not in EVENT_TYPES:
                 raise ValueError(f"{event_type} not a valid event type")
@@ -165,7 +165,9 @@ class Resource_Manager:
                 response = self.handlers["cloudtasktarget"](request)
 
             # call after request middleware
-            response = self._call_middleware(response, event_type, before_or_after="after")
+            response = self._call_middleware(
+                response, event_type, before_or_after="after"
+            )
 
         except Exception as e:
             if self.error_handlers.get(e.__class__.__name__):
