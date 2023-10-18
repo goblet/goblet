@@ -13,39 +13,44 @@ goblet_entrypoint(app)
 # Create pubsub topics
 client: PubSubClient = app.pubsub_topic("goblet-created-test-topic")
 
+
 # Route that publishes to pubsub topic
 @app.http()
 def publish(request):
     should_fail = request.args.get("should_fail", False)
     message = "failure" if should_fail else "success"
     response = client.publish(
-        message={
-            'message': message,
-            'time': datetime.datetime.now().isoformat()
-        }
+        message={"message": message, "time": datetime.datetime.now().isoformat()}
     )
     app.log.info(response)
     return {}
 
 
 # Triggered by pubsub topic. Simulates failure to trigger DLQ
-@app.pubsub_subscription("goblet-created-test-topic", dlq=True, dlq_alert=True, dlq_alert_config={
-    # Trigger alert if 10 messages fail within 1 minute
-    "trigger_value": 10,
-})
+@app.pubsub_subscription(
+    "goblet-created-test-topic",
+    dlq=True,
+    dlq_alert=True,
+    dlq_alert_config={
+        # Trigger alert if 10 messages fail within 1 minute
+        "trigger_value": 10,
+    },
+)
 def subscription(data: str):
     raise Exception("Simulating failure")
+
 
 # Backfill route to pull from DLQ
 @app.http(headers={"X-Backfill": "true"})
 def backfill(request):
     num_messages = request.headers.get("X-Backfill-Num-Messages", 1)
-    dlq_pull_subscription= request.headers.get("X-Backfill-DLQ-Pull-Subscription", "goblet-created-test-topic-dlq-pull-subscription")
-    
+    dlq_pull_subscription = request.headers.get(
+        "X-Backfill-DLQ-Pull-Subscription",
+        "goblet-created-test-topic-dlq-pull-subscription",
+    )
+
     pubsub_client = Client(
-        resource="pubsub",
-        version="v1",
-        calls="projects.subscriptions"
+        resource="pubsub", version="v1", calls="projects.subscriptions"
     )
 
     total_messages = 0
@@ -63,7 +68,7 @@ def backfill(request):
                 "body": {
                     "maxMessages": 10,
                 }
-            }
+            },
         )
 
         received_message_length = len(pull_response.received_messages)
@@ -89,16 +94,14 @@ def backfill(request):
                     "acknowledge",
                     parent_key="subscription",
                     parent_schema=f"projects/{app.config.project_id}/subscriptions/{dlq_pull_subscription}",
-                    params={
-                        "body": {
-                            "ackIds": [received_message.ack_id]
-                        }
-                    }
+                    params={"body": {"ackIds": [received_message.ack_id]}},
                 )
 
     app.log.info(
         f"Received {total_messages} messages: acknowledged {len(ack_ids)} messages and failed on {len(failed_ids)}"
     )
-    
-    return f"Received {total_messages} messages: acknowledged {len(ack_ids)} messages and failed on {len(failed_ids)}", 200
 
+    return (
+        f"Received {total_messages} messages: acknowledged {len(ack_ids)} messages and failed on {len(failed_ids)}",
+        200,
+    )
