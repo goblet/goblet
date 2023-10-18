@@ -226,11 +226,35 @@ class TestDecoraters:
 
         assert len(app.handlers["route"].resources) == 2
 
+    def test_errorhandler_default(self):
 
-# Causes tests to fail
-# class TestGoblet:
+        app = Goblet("test")
 
-#     def test_client_versions(self):
-#         app = Goblet(client_versions={"cloudfunctions":"v2"})
-#         assert app.client_versions["cloudfunctions"] == "v2"
-#         assert app.client_versions["pubsub"] == DEFAULT_CLIENT_VERSIONS["pubsub"]
+        mock_request = Mock()
+        mock_request.path = "/test"
+        mock_request.method = "GET"
+        mock_request.headers = {}
+        mock_request.json = {}
+
+        assert app(mock_request, {}).status_code == 404
+
+
+    def test_errorhandler_custom(self):
+
+        app = Goblet("test")
+
+        mock_request = Mock()
+        mock_request.path = "/error"
+        mock_request.method = "GET"
+        mock_request.headers = {}
+        mock_request.json = {}
+
+        @app.errorhandler("ValueError")
+        def handle_valueError(error):
+            return str(error)
+        
+        @app.route("/error")
+        def dummy_function2():
+            raise ValueError("test_error")
+
+        assert app(mock_request, {}) == "test_error"
