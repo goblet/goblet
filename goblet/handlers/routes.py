@@ -7,6 +7,7 @@ import re
 from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from enum import Enum
 
 import goblet
 
@@ -247,6 +248,8 @@ class OpenApiSpec:
             return {"type": "string"}
         if type_info in PRIMITIVE_MAPPINGS.keys():
             param_type = {"type": PRIMITIVE_MAPPINGS[type_info]}
+        elif issubclass(type_info, Enum):
+            param_type = {"type": "string", "enum": [e.value for e in type_info]}
         elif issubclass(type_info, Schema) and not only_primititves:
             self.add_component(type_info, schema=type_info)
             param_type = {"$ref": f"#/definitions/{type_info.__name__}"}

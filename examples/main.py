@@ -116,6 +116,11 @@ def traffic() -> TrafficStop:
 #         - yellow
 #         - red
 
+# Enum paramter 
+@app.route("/{color}")
+def prim_enum(color: StopLight):
+    return StopLight(color)
+
 # Pydantic Typing
 from pydantic import BaseModel
 
