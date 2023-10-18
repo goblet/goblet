@@ -941,7 +941,7 @@ You can specify additional containers by using the `cloudrun_container_extra` se
 or `ALPHA`. Checkout the examples section for more details. 
 
 Error Handling
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 Use the `errorhandler` decorator to handle errors based on its exception class. By default `GobletRouteNotFoundError` is handled by returning a 404 response code.
 
