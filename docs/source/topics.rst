@@ -939,3 +939,18 @@ Multi Container Deployments
 Additional containers are now supported in Cloudrun. See `Google annoucement <https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments>`__. 
 You can specify additional containers by using the `cloudrun_container_extra` section in `config.json`. Note you will also need to set the `launchStage` field in `cloudrun` to either `BETA`
 or `ALPHA`. Checkout the examples section for more details. 
+
+Error Handling
+^^^^^^^^^^^^^^
+
+Use the `errorhandler` decorator to handle errors based on its exception class. By default `GobletRouteNotFoundError` is handled by returning a 404 response code.
+
+..code:: python 
+
+   @app.errorhandler("GobletRouteNotFoundError")
+    def handle_missing_route(error):
+        return Response("Custom Error", status_code=404)
+
+    @app.errorhandler("ValueError")
+    def return_error_string(error):
+        return Response(str(error), status_code=200)
