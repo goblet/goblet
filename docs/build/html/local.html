@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local &mdash; goblet 0.12.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Handlers" href="handlers.html" />
+    <link rel="prev" title="Topics" href="topics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            goblet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="topics.html">Topics</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Local</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#run-locally">Run Locally</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-and-running-locally-using-docker">Building and Running locally using Docker</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installing-private-packages-during-docker-build">Installing private packages during Docker Build</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scheduled-job">Scheduled Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pubsub">Pubsub</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pubsub-emulator">Pubsub Emulator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cloud-task">Cloud Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eventarc">Eventarc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cloudrun-job">Cloudrun Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bq-remote-function">BQ Remote Function</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#log-levels">Log Levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-with-vscode">Debugging with VScode</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends.html">Backends</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="blogs.html">Blogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">goblet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Local</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/local.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="local">
+<h1>Local<a class="headerlink" href="#local" title="Permalink to this heading">¶</a></h1>
+<section id="run-locally">
+<h2>Run Locally<a class="headerlink" href="#run-locally" title="Permalink to this heading">¶</a></h2>
+<p>Running your functions locally for testing and debugging is easy to do with the goblet command <cite>goblet local</cite>.
+You can hit your functions endpoint at <code class="docutils literal notranslate"><span class="pre">localhost:8080</span></code>.</p>
+<p>You can have a custom local name by setting the local param in the goblet class</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;goblet_example&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then run <code class="docutils literal notranslate"><span class="pre">goblet</span> <span class="pre">local</span> <span class="pre">test</span></code></p>
+<p>Note: If you have both <cite>http()</cite> and <cite>route(“/”)</cite> in order to test the route locally make sure to add the header <code class="docutils literal notranslate"><span class="pre">X-Envoy-Original-Path</span></code>. Otherwise the route will default to <code class="docutils literal notranslate"><span class="pre">&#64;http()</span></code></p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>localhost:8080/endpoint
+</pre></div>
+</div>
+<p>The goblet app will run on port 8080 by default. You can specify a custom port with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet<span class="w"> </span><span class="nb">local</span><span class="w"> </span>-p<span class="w"> </span><span class="m">6000</span>
+</pre></div>
+</div>
+<p>You can set environment variables defined in your <cite>config.json</cite> locally by passing in the <cite>–set-env</cite> flag. Note that
+this will pass through environment variables set in a stage as well if you specify the <cite>–stage</cite> flag.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>goblet<span class="w"> </span><span class="nb">local</span><span class="w"> </span>--set-env<span class="w"> </span>--stage<span class="w"> </span>dev
+</pre></div>
+</div>
+<section id="building-and-running-locally-using-docker">
+<h3>Building and Running locally using Docker<a class="headerlink" href="#building-and-running-locally-using-docker" title="Permalink to this heading">¶</a></h3>
+<p>Make sure Docker Desktop and Docker CLI is installed, more information located here: &lt;<a class="reference external" href="https://docs.docker.com/desktop/">https://docs.docker.com/desktop/</a>&gt;</p>
+<p>Refresh local credentials by running: <cite>gcloud auth application-default login</cite></p>
+<p>Set the GOOGLE_APPLICATION_CREDENTIALS variable by running: <cite>export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/application_default_credentials.json</cite></p>
+<p>To build container run: <cite>docker build . -t &lt;tag&gt;</cite></p>
+<p>To start container run:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>~/.config/gcloud/application_default_credentials.json:/tmp/application_default_credentials.json:ro<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/tmp/application_default_credentials.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">GCLOUD_PROJECT</span><span class="o">=</span>&lt;gcp-project&gt;<span class="w"> </span>&lt;tag&gt;:latest
+</pre></div>
+</div>
+<section id="installing-private-packages-during-docker-build">
+<h4>Installing private packages during Docker Build<a class="headerlink" href="#installing-private-packages-during-docker-build" title="Permalink to this heading">¶</a></h4>
+<p>To install a private package located with GCP Artifact Registry, credentials will need to be mounted during the build process. Add this line to Dockerfile before requirements install:</p>
+<div class="highlight-Dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>--mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>secret,id<span class="o">=</span>gcloud_creds,target<span class="o">=</span>/app/google_adc.json<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/app/google_adc.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<p>To build container run: <cite>docker build . –secret id=gcloud_creds,src=”$GOOGLE_APPLICATION_CREDENTIALS” -t &lt;tag&gt;</cite></p>
+</section>
+</section>
+<section id="scheduled-job">
+<h3>Scheduled Job<a class="headerlink" href="#scheduled-job" title="Permalink to this heading">¶</a></h3>
+<p>To test a scheduled job locally you will need to include two headers in your request. One <code class="docutils literal notranslate"><span class="pre">X-Goblet-Type:schedule</span></code> and
+<code class="docutils literal notranslate"><span class="pre">X-Goblet-Name:FUNCTION_NAME</span></code> which is the name of your function.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>X-Goblet-Type:schedule<span class="w"> </span>-H<span class="w"> </span>X-Goblet-Name:FUNCTION_NAME<span class="w"> </span>localhost:8080
+</pre></div>
+</div>
+</section>
+<section id="pubsub">
+<h3>Pubsub<a class="headerlink" href="#pubsub" title="Permalink to this heading">¶</a></h3>
+<p>To test a pubsub topic locally you will need to include the subscription in the payload as well as a base64 encoded string for the body.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;subscription&quot;</span><span class="p">:</span> <span class="s2">&quot;TOPIC_NAME&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;value&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pubsub-emulator">
+<h2>Pubsub Emulator<a class="headerlink" href="#pubsub-emulator" title="Permalink to this heading">¶</a></h2>
+<p>Google has a pubsub emulator that you can use to test your pubsub functions locally. You can install and run the emulator with gcloud as shown in the docs <a class="reference external" href="https://cloud.google.com/pubsub/docs/emulator">here</a>.
+Or if you prefer you can also use docker. There’s a Dockerfile and docker-compose.yml files on the examples to run the emulator:
+.. code:: yaml</p>
+<blockquote>
+<div><dl>
+<dt>services:</dt><dd><dl>
+<dt>pubsub-emulator:</dt><dd><dl class="simple">
+<dt>build:</dt><dd><p>context: .
+dockerfile: pubsub-emulator.Dockerfile</p>
+</dd>
+</dl>
+<p>ports:
+- “8085:8085”</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>Run the emulator with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>. Then set the environment variables <code class="docutils literal notranslate"><span class="pre">PUBSUB_EMULATOR_HOST=localhost:8085</span></code> and <code class="docutils literal notranslate"><span class="pre">GOBLET_LOCAL_URL=http://host.docker.internal:8080</span></code> to use the emulator with goblet. You can run <cite>goblet local –extras</cite> to deploy topics and subscriptions to the emulator and also start a local function that listens to the subscription messages.</p>
+<section id="cloud-task">
+<h3>Cloud Task<a class="headerlink" href="#cloud-task" title="Permalink to this heading">¶</a></h3>
+<p>To test a cloudtask locally you will need to add the <code class="docutils literal notranslate"><span class="pre">User-Agent:Google-Cloud-Tasks</span></code> and <code class="docutils literal notranslate"><span class="pre">X-Goblet-CloudTask-Target:TARGET</span></code> headers</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>X-Goblet-CloudTask-Target:TARGET<span class="w"> </span>-H<span class="w"> </span>User-Agent:Google-Cloud-Tasks<span class="w"> </span>localhost:8080
+</pre></div>
+</div>
+</section>
+<section id="eventarc">
+<h3>Eventarc<a class="headerlink" href="#eventarc" title="Permalink to this heading">¶</a></h3>
+<p>To test an eventarc event locally you will need to add <code class="docutils literal notranslate"><span class="pre">Ce-Type</span></code> and <code class="docutils literal notranslate"><span class="pre">Ce-Source</span></code> headers</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-H<span class="w"> </span>Ce-Type:google.cloud.pubsub.topic.v1.messagePublished<span class="w"> </span>-H<span class="w"> </span>Ce-Sourc://pubsub.googleapis.com/projects/goblet/topics/test<span class="w"> </span>localhost:8080
+</pre></div>
+</div>
+</section>
+<section id="cloudrun-job">
+<h3>Cloudrun Job<a class="headerlink" href="#cloudrun-job" title="Permalink to this heading">¶</a></h3>
+<p>To test a cloudrun job locally you can run <cite>goblet job run APP_NAME-JOB_NAME TASK_ID</cite></p>
+</section>
+<section id="bq-remote-function">
+<h3>BQ Remote Function<a class="headerlink" href="#bq-remote-function" title="Permalink to this heading">¶</a></h3>
+<p>To test an bqremotefunction locally you will need to add a <code class="docutils literal notranslate"><span class="pre">userDefinedContext</span></code> field to the body with a <code class="docutils literal notranslate"><span class="pre">X-Goblet-Name</span></code> field with the format of <code class="docutils literal notranslate"><span class="pre">APP_NAME</span></code> _ <code class="docutils literal notranslate"><span class="pre">FUNCTION_NAME</span></code>.
+You pass in the arguments to you function in a list in the <code class="docutils literal notranslate"><span class="pre">calls</span></code> field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;userDefinedContext&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;X-Goblet-Name&quot;</span><span class="p">:</span> <span class="s2">&quot;bqremotefunction_test_function_test&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;calls&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="log-levels">
+<h2>Log Levels<a class="headerlink" href="#log-levels" title="Permalink to this heading">¶</a></h2>
+<p>You can set the log level by passing in the environent variable <cite>GOBLET_LOG_LEVEL</cite>. By default the log level is <cite>INFO</cite>. You can set the level
+to <cite>DEBUG</cite> by passing <cite>–debug</cite> after any goblet command.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">goblet --debug package</span>
+</pre></div>
+</div>
+</section>
+<section id="debugging-with-vscode">
+<h2>Debugging with VScode<a class="headerlink" href="#debugging-with-vscode" title="Permalink to this heading">¶</a></h2>
+<p>To debug your functions locally with Vscode you can use the following configuration. Replace LOCAL_NAME with the name you
+passed into <code class="docutils literal notranslate"><span class="pre">goblet(NAME,</span> <span class="pre">local=LOCAL_NAME)</span></code>. Make sure that there are no naming collisions with any function names used in your app.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Module&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;functions_framework&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;--target&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;LOCAL_NAME&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;--debug&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="topics.html" class="btn btn-neutral float-left" title="Topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="handlers.html" class="btn btn-neutral float-right" title="Handlers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, austen novis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

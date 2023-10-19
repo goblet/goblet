@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Topics &mdash; goblet 0.12.1.1 documentation</title>
+  <title>Topics &mdash; goblet 0.12.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -67,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#labels">Labels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deploying-arbitrary-services">Deploying Arbitrary Services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multi-container-deployments">Multi Container Deployments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
 </ul>
 </li>
 </ul>
@@ -875,6 +876,25 @@ Further fields can be customized in <cite>config.json</cite>. See the example <c
 <p>Additional containers are now supported in Cloudrun. See <a class="reference external" href="https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments">Google annoucement</a>.
 You can specify additional containers by using the <cite>cloudrun_container_extra</cite> section in <cite>config.json</cite>. Note you will also need to set the <cite>launchStage</cite> field in <cite>cloudrun</cite> to either <cite>BETA</cite>
 or <cite>ALPHA</cite>. Checkout the examples section for more details.</p>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Permalink to this heading">¶</a></h2>
+<p>Use the <cite>errorhandler</cite> decorator to handle errors based on its exception class. By default <cite>GobletRouteNotFoundError</cite> is handled by returning a 404 response code.</p>
+<p>..code:: python</p>
+<blockquote>
+<div><dl>
+<dt>&#64;app.errorhandler(“GobletRouteNotFoundError”)</dt><dd><dl class="simple">
+<dt>def handle_missing_route(error):</dt><dd><p>return Response(“Custom Error”, status_code=404)</p>
+</dd>
+</dl>
+<p>&#64;app.errorhandler(“ValueError”)
+def return_error_string(error):</p>
+<blockquote>
+<div><p>return Response(str(error), status_code=200)</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
 </section>
 </section>
 
