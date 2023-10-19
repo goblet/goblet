@@ -4,3 +4,7 @@ class GobletError(Exception):
 
 class GobletValidationError(Exception):
     pass
+
+
+class GobletRouteNotFoundError(Exception):
+    pass

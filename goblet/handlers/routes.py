@@ -7,6 +7,7 @@ import re
 from typing import get_type_hints
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from enum import Enum
 
 import goblet
 
@@ -15,7 +16,7 @@ from goblet.handlers.plugins.pydantic import PydanticPlugin
 from goblet.utils import get_g_dir
 from goblet.common_cloud_actions import deploy_apigateway, destroy_apigateway
 from goblet.permissions import gcp_generic_resource_permissions
-
+from goblet.errors import GobletRouteNotFoundError
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -98,7 +99,7 @@ class Routes(Handler):
                 if "{" in p and self._matched_path(p, path):
                     entry = self.resources.get(p, {}).get(method)
         if not entry:
-            raise ValueError(f"No route found for {path} with {method}")
+            raise GobletRouteNotFoundError(f"No route found for {path} with {method}")
         return entry(request)
 
     @staticmethod
@@ -247,6 +248,8 @@ class OpenApiSpec:
             return {"type": "string"}
         if type_info in PRIMITIVE_MAPPINGS.keys():
             param_type = {"type": PRIMITIVE_MAPPINGS[type_info]}
+        elif issubclass(type_info, Enum):
+            param_type = {"type": "string", "enum": [e.value for e in type_info]}
         elif issubclass(type_info, Schema) and not only_primititves:
             self.add_component(type_info, schema=type_info)
             param_type = {"$ref": f"#/definitions/{type_info.__name__}"}

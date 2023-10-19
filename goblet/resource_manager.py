@@ -26,6 +26,8 @@ from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
 
+from goblet.response import default_missing_route
+
 import goblet.globals as g
 
 from goblet.common_cloud_actions import deploy_custom_role, deploy_service_account
@@ -113,6 +115,9 @@ class Resource_Manager:
             "before": {},
             "after": {},
         }
+
+        self.error_handlers = {"GobletRouteNotFoundError": default_missing_route}
+
         self.current_request = None
         self.function_name = function_name
 
@@ -127,36 +132,48 @@ class Resource_Manager:
             added_app.request_context = context
 
         event_type = self.get_event_type(request, context)
-        # call before request middleware
-        request = self._call_middleware(request, event_type, before_or_after="before")
-        response = None
-        if event_type not in EVENT_TYPES:
-            raise ValueError(f"{event_type} not a valid event type")
-        if event_type == "job":
-            response = self.handlers["jobs"](request, context)
-        if event_type == "schedule":
-            response = self.handlers["schedule"](request)
-        if event_type == "pubsub":
-            response = self.handlers["pubsub"](request, context)
-        if event_type == "storage":
-            # Storage trigger can be made with @eventarc decorator
-            try:
-                response = self.handlers["storage"](request, context)
-            except ValueError:
-                event_type = "eventarc"
-        if event_type == "route":
-            response = self.handlers["route"](request)
-        if event_type == "http":
-            response = self.handlers["http"](request)
-        if event_type == "eventarc":
-            response = self.handlers["eventarc"](request)
-        if event_type == "bqremotefunction":
-            response = self.handlers["bqremotefunction"](request)
-        if event_type == "cloudtasktarget":
-            response = self.handlers["cloudtasktarget"](request)
 
-        # call after request middleware
-        response = self._call_middleware(response, event_type, before_or_after="after")
+        try:
+            # call before request middleware
+            request = self._call_middleware(
+                request, event_type, before_or_after="before"
+            )
+            response = None
+            if event_type not in EVENT_TYPES:
+                raise ValueError(f"{event_type} not a valid event type")
+            if event_type == "job":
+                response = self.handlers["jobs"](request, context)
+            if event_type == "schedule":
+                response = self.handlers["schedule"](request)
+            if event_type == "pubsub":
+                response = self.handlers["pubsub"](request, context)
+            if event_type == "storage":
+                # Storage trigger can be made with @eventarc decorator
+                try:
+                    response = self.handlers["storage"](request, context)
+                except ValueError:
+                    event_type = "eventarc"
+            if event_type == "route":
+                response = self.handlers["route"](request)
+            if event_type == "http":
+                response = self.handlers["http"](request)
+            if event_type == "eventarc":
+                response = self.handlers["eventarc"](request)
+            if event_type == "bqremotefunction":
+                response = self.handlers["bqremotefunction"](request)
+            if event_type == "cloudtasktarget":
+                response = self.handlers["cloudtasktarget"](request)
+
+            # call after request middleware
+            response = self._call_middleware(
+                response, event_type, before_or_after="after"
+            )
+
+        except Exception as e:
+            if self.error_handlers.get(e.__class__.__name__):
+                return self.error_handlers[e.__class__.__name__](e)
+            raise e
+
         return response
 
     def __add__(self, other):

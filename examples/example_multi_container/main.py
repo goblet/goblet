@@ -9,6 +9,6 @@ app = Goblet("multi-container", backend="cloudrun", routes_type="cloudrun")
 goblet_entrypoint(app)
 
 
-@app.route('/test', methods=["POST", "GET"])
+@app.route("/test", methods=["POST", "GET"])
 def test():
     return "api container"

@@ -116,6 +116,11 @@ def traffic() -> TrafficStop:
 #         - yellow
 #         - red
 
+# Enum paramter 
+@app.route("/{color}")
+def prim_enum(color: StopLight):
+    return StopLight(color)
+
 # Pydantic Typing
 from pydantic import BaseModel
 
@@ -376,15 +381,25 @@ client = app.cloudtaskqueue("queue", config={
     }
 })
 
+# Cloudtask HTTP Target
 @app.cloudtasktarget(name="target")
 def my_target_handler(request):
     ''' handle request '''
     return {}
 
-
+# Enqueue a message using the CloudTask Queue client
 @app.route("/enqueue", methods=["GET"])
 def enqueue():
     payload = {"message": {"title": "enqueue"}}
     client.enqueue(target="target", payload=payload)
     return {}
 
+# Example of handling the GobletRouteNotFoundError with a custom response
+@app.errorhandler("GobletRouteNotFoundError")
+def handle_missing_route(error):
+    return Response("Custom Error", status_code=404)
+
+# Example of handling ValueError.
+@app.errorhandler("ValueError")
+def return_error_string(error):
+    return Response(str(error), status_code=200)

@@ -1,5 +1,6 @@
 from typing import List, Optional
 from marshmallow import Schema, fields
+from enum import Enum
 
 from goblet.config import GConfig
 from goblet.handlers.routes import OpenApiSpec, RouteEntry
@@ -303,6 +304,30 @@ info:
         params = spec_dict["paths"]["/home"]["get"]["parameters"][0]
         assert params == {"in": "formData", "name": "file", "type": "string"}
         assert spec_dict["paths"]["/home"]["get"]["consumes"] == ["multipart/form-data"]
+
+    def test_enum_param(self):
+        class Color(Enum):
+            RED = "red"
+            GREEN = "green"
+            BLUE = "blue"
+
+        def prim_enum(color: Color):
+            return Color(color)
+
+        route = RouteEntry(prim_enum, "route", "/home/{color}", "GET")
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec_dict = spec.component_spec.to_dict()
+
+        params = spec_dict["paths"]["/home/{color}"]["get"]["parameters"]
+        assert len(params) == 1
+        assert params[0] == {
+            "in": "path",
+            "name": "color",
+            "required": True,
+            "type": "string",
+            "enum": ["red", "green", "blue"],
+        }
 
     def test_query_params(self):
         route = RouteEntry(
