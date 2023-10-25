@@ -26,6 +26,9 @@
         "cloudfunction_v2": {
           "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/cloudfunctions.v2.json#/schemas/Function"
         },
+        "cloudrun": {
+          "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Service"
+        },
         "cloudrun_container": {
           "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/run.v2.json#/schemas/GoogleCloudRunV2Container"
         },

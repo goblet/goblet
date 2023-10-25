@@ -85,6 +85,9 @@
             }
           }
         },
+        "cloudrun": {
+          "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Service"
+        },
         "cloudrun_revision": {
           "$ref": "https://run.googleapis.com/$discovery/rest?version=v2#/schemas/GoogleCloudRunV2Revision"
         },
