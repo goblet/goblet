@@ -300,6 +300,8 @@ INFO:goblet.deployer:deleting storage bucket......
 
 [Easily Manage IAM Policies for Serverless REST Applications in GCP with Goblet](https://engineering.premise.com/easily-manage-iam-policies-for-serverless-rest-applications-in-gcp-with-goblet-f1580a97b74)
 
+[Serverless Data Pipelines in GCP using Dataform and BigQuery Remote Functions](https://engineering.premise.com/serverless-data-pipelines-in-gcp-using-dataform-and-bigquery-remote-functions-9ee235d0cb18)
+
 ## Examples
 
 [Goblet Examples](https://github.com/goblet/goblet/blob/main/examples/main.py)
