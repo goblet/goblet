@@ -30,7 +30,7 @@ class PydanticPlugin(BasePlugin):
         if "$defs" in schema:
             for k, v in schema["$defs"].items():
                 if k not in self.spec.components.schemas:
-                    self.spec.components.schema(k, v)
+                    self.spec.components.schema(k, self.resolve_schema(v))
             del schema["$defs"]
 
         return self.resolve_schema(schema)

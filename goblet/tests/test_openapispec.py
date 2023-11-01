@@ -22,7 +22,7 @@ class DummySchemaRequired(Schema):
 
 
 class NestedModel(BaseModel):
-    text: str
+    text: Optional[str]
 
 
 class PydanticModelSimple(BaseModel):
@@ -51,6 +51,14 @@ class PydanticModelReturnComplex(BaseModel):
     nested: NestedModel
     option: Optional[int]
     objects: List[str]
+
+
+class PydanticModelNestedOptionalProps(BaseModel):
+    data: List[PydanticModelReturnComplex]
+
+
+def dummy_pydantic_return_nested_list() -> PydanticModelNestedOptionalProps:
+    pass
 
 
 def dummy_pydantic_return() -> PydanticModelReturnComplex:
@@ -637,3 +645,15 @@ info:
         ]
         assert return_obj_props["option"]["type"] == "integer"
         assert return_obj_props["objects"]["items"]["type"] == "string"
+
+    def test_nested_optional_field_pydantic_return(self):
+        route = RouteEntry(
+            dummy_pydantic_return_nested_list, "route", "/home/{id}", "GET"
+        )
+        spec = OpenApiSpec("test", "xyz.cloudfunction")
+        spec.add_route(route)
+        spec_dict = spec.component_spec.to_dict()
+        nested_return_props = spec_dict["definitions"]["PydanticModelReturnComplex"][
+            "properties"
+        ]
+        assert nested_return_props["option"]["type"] == "integer"
