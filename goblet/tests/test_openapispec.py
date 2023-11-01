@@ -22,7 +22,7 @@ class DummySchemaRequired(Schema):
 
 
 class NestedModel(BaseModel):
-    text: Optional[str]
+    text: str
 
 
 class PydanticModelSimple(BaseModel):
