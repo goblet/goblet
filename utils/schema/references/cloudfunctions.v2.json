@@ -571,7 +571,7 @@
       }
     }
   },
-  "revision": "20231012",
+  "revision": "20231026",
   "rootUrl": "https://cloudfunctions.googleapis.com/",
   "schemas": {
     "AuditConfig": {
