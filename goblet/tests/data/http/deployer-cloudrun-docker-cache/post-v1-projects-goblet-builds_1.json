@@ -1,0 +1,78 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/build/goblet/YTFiM2UzYjgtNTM1Yi00MGM1LTlhY2MtY2ZkZDNlZTc1ZGJh",
+    "metadata": {
+      "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
+      "build": {
+        "id": "a1b3e3b8-535b-40c5-9acc-cfdd3ee75dba",
+        "status": "QUEUED",
+        "source": {
+          "storageSource": {
+            "bucket": "gcf-v2-uploads-963616447866-us-central1",
+            "object": "28680c39-e274-4640-8be6-4d5fec431c2d.zip"
+          }
+        },
+        "createTime": "2023-11-02T18:25:48.351070259Z",
+        "steps": [
+          {
+            "name": "gcr.io/cloud-builders/docker",
+            "args": [
+              "-c",
+              "docker pull us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest || exit 0"
+            ],
+            "entrypoint": "bash"
+          },
+          {
+            "name": "gcr.io/cloud-builders/docker",
+            "args": [
+              "build",
+              "--network=cloudbuild",
+              "-t",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest",
+              "-t",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag1",
+              "-t",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag2",
+              "--cache-from",
+              "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest",
+              "."
+            ]
+          }
+        ],
+        "timeout": "3600s",
+        "images": [
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest",
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag1",
+          "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag2"
+        ],
+        "projectId": "goblet",
+        "logsBucket": "gs://963616447866.cloudbuild-logs.googleusercontent.com",
+        "sourceProvenance": {
+          "resolvedStorageSource": {
+            "bucket": "gcf-v2-uploads-963616447866-us-central1",
+            "object": "28680c39-e274-4640-8be6-4d5fec431c2d.zip",
+            "generation": "1698949544818897"
+          }
+        },
+        "options": {
+          "logging": "LEGACY",
+          "pool": {}
+        },
+        "logUrl": "https://console.cloud.google.com/cloud-build/builds/a1b3e3b8-535b-40c5-9acc-cfdd3ee75dba?project=963616447866",
+        "tags": [
+          "goblet-build-deployer-cloudrun-docker-cache"
+        ],
+        "artifacts": {
+          "images": [
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest",
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag1",
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag2"
+          ]
+        },
+        "queueTtl": "3600s",
+        "name": "projects/test_project/locations/global/builds/a1b3e3b8-535b-40c5-9acc-cfdd3ee75dba"
+      }
+    }
+  }
+}
