@@ -275,8 +275,9 @@ class CloudRun(Backend):
                     "entrypoint": "bash",
                     "args": [
                         "-c",
-                        f"docker pull {images[0]} && "
+                        f"docker pull {images[0]}"
                         + " && ".join(
+                            [''] +
                             [
                                 f"docker tag {images[0]} {build_tag_image}"
                                 for build_tag_image in images[1:]
