@@ -293,7 +293,7 @@ class CloudRun(Backend):
                             ]
                         ),
                     ],
-                }
+                },
             ]
 
         else:
