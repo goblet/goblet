@@ -431,3 +431,116 @@ class TestDeployer:
 
         for image in response["body"]["metadata"]["build"]["images"]:
             assert any(tag in image for tag in tags.split(","))
+
+    def test_cloudrun_default_docker_cache(self, monkeypatch):
+        G_TEST_NAME = "deployer-cloudrun-docker-cache"
+        tags = "tag1,tag2"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("GOBLET_BUILD_TAGS", tags)
+
+        app = Goblet(
+            function_name="deployer-cloudrun-docker-cache",
+            backend="cloudrun",
+            config={"deploy": {"cloudbuild_cache": "DOCKER_LATEST"}},
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+        response = get_response(G_TEST_NAME, "post-v1-projects-goblet-builds_1.json")
+
+        steps = response["body"]["metadata"]["build"]["steps"]
+        assert steps[0]["name"] == "gcr.io/cloud-builders/docker"
+        assert (
+            steps[0]["args"][1]
+            == "docker pull us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest || exit 0"
+        )
+        assert steps[1]["name"] == "gcr.io/cloud-builders/docker"
+
+        assert (
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest"
+            in steps[1]["args"]
+        )
+        assert (
+            "-t"
+            == steps[1]["args"][
+                steps[1]["args"].index(
+                    "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest"
+                )
+                - 1
+            ]
+        )
+
+        assert (
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag1"
+            in steps[1]["args"]
+        )
+        assert (
+            "-t"
+            == steps[1]["args"][
+                steps[1]["args"].index(
+                    "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag1"
+                )
+                - 1
+            ]
+        )
+
+        assert (
+            "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag2"
+            in steps[1]["args"]
+        )
+        assert (
+            "-t"
+            == steps[1]["args"][
+                steps[1]["args"].index(
+                    "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:tag2"
+                )
+                - 1
+            ]
+        )
+
+        assert "--cache-from" in steps[1]["args"]
+        assert (
+            steps[1]["args"][steps[1]["args"].index("--cache-from") + 1]
+            == "us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-docker-cache:latest"
+        )
+
+    def test_cloudrun_kaniko_cache(self, monkeypatch):
+        G_TEST_NAME = "deployer-cloudrun-kaniko-cache"
+        tags = "tag1,tag2"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("GOBLET_BUILD_TAGS", tags)
+
+        app = Goblet(
+            function_name="deployer-cloudrun-kaniko-cache",
+            backend="cloudrun",
+            config={"deploy": {"cloudbuild_cache": "KANIKO"}},
+        )
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        response = get_response(G_TEST_NAME, "post-v1-projects-goblet-builds_1.json")
+        steps = response["body"]["metadata"]["build"]["steps"]
+
+        assert steps[0]["name"] == "gcr.io/kaniko-project/executor:latest"
+        assert (
+            "--destination=us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-kaniko-cache:latest"
+            in steps[0]["args"][0]
+        )
+        assert steps[1]["name"] == "gcr.io/cloud-builders/docker"
+        assert (
+            steps[1]["args"][1]
+            == "docker pull us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-kaniko-cache:latest "
+            + "&& docker tag us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-kaniko-cache:latest us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-kaniko-cache:tag1 "
+            + "&& docker tag us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-kaniko-cache:latest us-central1-docker.pkg.dev/goblet/cloud-run-source-deploy/deployer-cloudrun-kaniko-cache:tag2"
+        )

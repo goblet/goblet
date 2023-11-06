@@ -1,0 +1,16 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us-central1/repositories/cloud-run-source-deploy",
+    "format": "DOCKER",
+    "labels": {
+      "description": "projects-goblet-locations-us-central1-repo",
+      "owner": "data-platform"
+    },
+    "createTime": "2022-11-01T23:25:37.889856Z",
+    "updateTime": "2023-08-02T04:07:38.106501Z",
+    "mode": "STANDARD_REPOSITORY",
+    "sizeBytes": "17046952009",
+    "cleanupPolicyDryRun": true
+  }
+}

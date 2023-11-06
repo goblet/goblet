@@ -82,6 +82,10 @@
             },
             "artifact_registry": {
               "type": "string"
+            },
+            "cloudbuild_cache": {
+              "type": "string",
+              "enum": ["KANIKO", "DOCKER_LATEST"]
             }
           }
         },
@@ -152,6 +156,24 @@
             },
             "firebase": {
               "$ref": "#/definitions/securityDefinitions"
+            }
+          }
+        },
+        "scheduler": {
+          "type": "object",
+          "properties": {
+            "serviceAccount": {
+              "type": "string",
+              "description": "scheduler@{PROJECT}.iam.gserviceaccount.com"
+            }
+          }
+        },
+        "eventarc": {
+          "type": "object",
+          "properties": {
+            "serviceAccount": {
+              "type": "string",
+              "description": "eventarc@{PROJECT}.iam.gserviceaccount.com"
             }
           }
         }
