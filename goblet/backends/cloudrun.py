@@ -239,6 +239,11 @@ class CloudRun(Backend):
 
     def _get_cloudbuild_steps(self, images):
         cloudbuild_cache = self.config.deploy.get("cloudbuild_cache", "DOCKER_LATEST")
+
+        build_args = os.environ.get("GOBLET_BUILD_ARGS", [])
+        if build_args:
+            build_args = build_args.split(",")
+
         if cloudbuild_cache == "DOCKER_LATEST":
             steps = [
                 {
@@ -253,6 +258,9 @@ class CloudRun(Backend):
                         "--network=cloudbuild",
                     ]
                     + list(map(lambda image: ["-t", image], images))
+                    + list(
+                        map(lambda build_arg: ["--build-arg", build_arg], build_args)
+                    )
                     + [
                         "--cache-from",
                         images[0],
@@ -268,7 +276,8 @@ class CloudRun(Backend):
                         f"--destination={images[0]}",
                         "--cache=true",
                         f"--cache-ttl={24*365*3}h",
-                    ],
+                    ]
+                    + [["--build-arg", f"{build_arg}"] for build_arg in build_args],
                 },
                 {
                     "name": "gcr.io/cloud-builders/docker",
@@ -286,6 +295,7 @@ class CloudRun(Backend):
                     ],
                 },
             ]
+
         else:
             raise Exception(f"Invalid cloudbuild_cache option {cloudbuild_cache}")
 
