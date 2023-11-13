@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Backends &mdash; goblet 0.12.3 documentation</title>
+  <title>Backends &mdash; goblet 0.12.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -206,27 +206,34 @@ Having a custom Dockerfile if only needed if you would like to customize you con
 </pre></div>
 </div>
 <p>Here the service account from <cite>project_b</cite> is granted permissions to read from artifact registry en <cite>project_a</cite></p>
-<p>For adding custom tags to be created in cloud build and pushed to artifact registry, use the <cite>GOBLET_BUILD_TAGS</cite> environment variable with a comma-sepparated list of tags to be created:
-.. code:: bash</p>
-<blockquote>
-<div><p>GOBLET_BUILD_TAGS=tag1,tag2,tag3</p>
-</div></blockquote>
-<p>To use a previously built artifact, use the <cite>artifact_tag</cite> configuration in the <cite>deploy</cite> configuration key or use the <cite>GOBLET_ARTIFACT_TAG</cite> environment variable. When using <cite>artifact_tag</cite>, source code will not be uploaded and cloudbuild will not be called. <cite>artifact_tag</cite> can be any existing tag or digest in the default registry or the configured <cite>artifact_registry</cite>.
-.. code:: json</p>
-<blockquote>
-<div><dl>
-<dt>{</dt><dd><dl class="simple">
-<dt>“deploy”:{</dt><dd><p>“artifact_tag”: “latest”,</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
+<p>For adding custom tags to be created in cloud build and pushed to artifact registry, use the <cite>GOBLET_BUILD_TAGS</cite> environment variable with a comma-sepparated list of tags to be created:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GOBLET_BUILD_TAGS</span><span class="o">=</span>tag1,tag2,tag3
+</pre></div>
+</div>
+<p>To use a previously built artifact, use the <cite>artifact_tag</cite> configuration in the <cite>deploy</cite> configuration key or use the <cite>GOBLET_ARTIFACT_TAG</cite> environment variable. When using <cite>artifact_tag</cite>, source code will not be uploaded and cloudbuild will not be called. <cite>artifact_tag</cite> can be any existing tag or digest in the default registry or the configured <cite>artifact_registry</cite>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;deploy&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;artifact_tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GOBLET_ARTIFACT_TAG</span><span class="o">=</span>tag1
 <span class="c1"># or</span>
 <span class="nv">GOBLET_ARTIFACT_TAG</span><span class="o">=</span>sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+</pre></div>
+</div>
+<p>To pass <a class="reference external" href="https://docs.docker.com/build/guide/build-args">Build Arg</a> to <cite>docker build</cite> during CloudBuild , use the environment variable <cite>GOBLET_BUILD_ARGS</cite>.</p>
+<p>For example, to set the <cite>FROM</cite> image tag in the Dockerfile</p>
+<p><cite>Dockefile</cite></p>
+<div class="highlight-Dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ARG</span><span class="w"> </span>PYTHON_VERSION
+<span class="k">FROM</span><span class="w"> </span><span class="s">python:${PYTHON_VERSION}-slim</span>
+
+<span class="c"># dockerfile instrutions...</span>
+</pre></div>
+</div>
+<p><cite>Goblet Deploy</cite></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nv">GOBLET_BUILD_ARGS</span><span class="o">=</span><span class="nv">PYTHON_VERSION</span><span class="o">=</span><span class="m">3</span>.10.8<span class="w"> </span>goblet<span class="w"> </span>deploy<span class="w"> </span>...
 </pre></div>
 </div>
 </section>

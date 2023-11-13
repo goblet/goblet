@@ -130,12 +130,14 @@ This can be done by running:
 
 Here the service account from `project_b` is granted permissions to read from artifact registry en `project_a`
 
-For adding custom tags to be created in cloud build and pushed to artifact registry, use the `GOBLET_BUILD_TAGS` environment variable with a comma-sepparated list of tags to be created: 
+For adding custom tags to be created in cloud build and pushed to artifact registry, use the `GOBLET_BUILD_TAGS` environment variable with a comma-sepparated list of tags to be created:
+
 .. code:: bash
 
     GOBLET_BUILD_TAGS=tag1,tag2,tag3 
 
-To use a previously built artifact, use the `artifact_tag` configuration in the `deploy` configuration key or use the `GOBLET_ARTIFACT_TAG` environment variable. When using `artifact_tag`, source code will not be uploaded and cloudbuild will not be called. `artifact_tag` can be any existing tag or digest in the default registry or the configured `artifact_registry`. 
+To use a previously built artifact, use the `artifact_tag` configuration in the `deploy` configuration key or use the `GOBLET_ARTIFACT_TAG` environment variable. When using `artifact_tag`, source code will not be uploaded and cloudbuild will not be called. `artifact_tag` can be any existing tag or digest in the default registry or the configured `artifact_registry`.
+
 .. code:: json
 
     {
@@ -149,3 +151,25 @@ To use a previously built artifact, use the `artifact_tag` configuration in the 
     GOBLET_ARTIFACT_TAG=tag1
     # or
     GOBLET_ARTIFACT_TAG=sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+
+
+To pass `Build Arg <https://docs.docker.com/build/guide/build-args>`__ to `docker build` during CloudBuild , use the environment variable `GOBLET_BUILD_ARGS`.
+
+For example, to set the `FROM` image tag in the Dockerfile
+
+
+
+`Dockefile`
+
+.. code:: Dockerfile
+
+    ARG PYTHON_VERSION
+    FROM python:${PYTHON_VERSION}-slim
+
+    # dockerfile instrutions...
+
+`Goblet Deploy`
+
+.. code:: bash
+
+    $ GOBLET_BUILD_ARGS=PYTHON_VERSION=3.10.8 goblet deploy ...
