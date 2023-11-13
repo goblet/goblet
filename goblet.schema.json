@@ -80,6 +80,13 @@
             "artifact_tag": {
               "type": "string"
             },
+            "cloudbuild_cache": {
+              "enum": [
+                "KANIKO",
+                "DOCKER_LATEST"
+              ],
+              "type": "string"
+            },
             "environmentVariables": {
               "patternProperties": {
                 "^.+$": {
@@ -94,6 +101,15 @@
         "dockerfile": {
           "type": "string"
         },
+        "eventarc": {
+          "properties": {
+            "serviceAccount": {
+              "description": "eventarc@{PROJECT}.iam.gserviceaccount.com",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "function_name": {
           "type": "string"
         },
@@ -105,6 +121,15 @@
         },
         "redis": {
           "$ref": "https://raw.githubusercontent.com/goblet/goblet/main/utils/schema/references/redis.v1.json#/schemas/Instance"
+        },
+        "scheduler": {
+          "properties": {
+            "serviceAccount": {
+              "description": "scheduler@{PROJECT}.iam.gserviceaccount.com",
+              "type": "string"
+            }
+          },
+          "type": "object"
         },
         "securityDefinitions": {
           "properties": {

@@ -180,23 +180,11 @@ class CloudRun(Backend):
         if build_tags:
             images += list(map(lambda tag: f"{registry}:{tag}", build_tags.split(",")))
 
+        steps = self._get_cloudbuild_steps(images)
+
         req_body = {
             "source": {"storageSource": source["storageSource"]},
-            "steps": [
-                {
-                    "name": "gcr.io/cloud-builders/docker",
-                    "args": [
-                        "build",
-                        "--network=cloudbuild",
-                    ]
-                    + list(map(lambda image: ["-t", image], images))
-                    + [
-                        "--cache-from",
-                        registry,
-                        ".",
-                    ],
-                }
-            ],
+            "steps": steps,
             "images": images,
             **build_configs,
         }
@@ -248,6 +236,70 @@ class CloudRun(Backend):
             return resp[0]["x-goog-hash"].split(",")[-1].split("=", 1)[-1]
         except KeyError:
             return 0
+
+    def _get_cloudbuild_steps(self, images):
+        cloudbuild_cache = self.config.deploy.get("cloudbuild_cache", "DOCKER_LATEST")
+
+        build_args = os.environ.get("GOBLET_BUILD_ARGS", [])
+        if build_args:
+            build_args = build_args.split(",")
+
+        if cloudbuild_cache == "DOCKER_LATEST":
+            steps = [
+                {
+                    "name": "gcr.io/cloud-builders/docker",
+                    "entrypoint": "bash",
+                    "args": ["-c", f"docker pull {images[0]} || exit 0"],
+                },
+                {
+                    "name": "gcr.io/cloud-builders/docker",
+                    "args": [
+                        "build",
+                        "--network=cloudbuild",
+                    ]
+                    + list(map(lambda image: ["-t", image], images))
+                    + list(
+                        map(lambda build_arg: ["--build-arg", build_arg], build_args)
+                    )
+                    + [
+                        "--cache-from",
+                        images[0],
+                        ".",
+                    ],
+                },
+            ]
+        elif cloudbuild_cache == "KANIKO":
+            steps = [
+                {
+                    "name": "gcr.io/kaniko-project/executor:latest",
+                    "args": [
+                        f"--destination={images[0]}",
+                        "--cache=true",
+                        f"--cache-ttl={24*365*3}h",
+                    ]
+                    + [["--build-arg", f"{build_arg}"] for build_arg in build_args],
+                },
+                {
+                    "name": "gcr.io/cloud-builders/docker",
+                    "entrypoint": "bash",
+                    "args": [
+                        "-c",
+                        f"docker pull {images[0]}"
+                        + " && ".join(
+                            [""]
+                            + [
+                                f"docker tag {images[0]} {build_tag_image}"
+                                for build_tag_image in images[1:]
+                            ]
+                        ),
+                    ],
+                },
+            ]
+
+        else:
+            raise Exception(f"Invalid cloudbuild_cache option {cloudbuild_cache}")
+
+        return steps
 
     def update_config(self, infra_configs=[], write_config=False, stage=None):
         config_updates = {}
