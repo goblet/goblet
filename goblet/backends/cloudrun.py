@@ -1,6 +1,7 @@
 import os
 import re
 import base64
+from functools import lru_cache
 from urllib.parse import quote_plus
 
 import google_auth_httplib2
@@ -332,6 +333,7 @@ class CloudRun(Backend):
         )
 
     @property
+    @lru_cache(maxsize=1)
     def http_endpoint(self):
         return get_cloudrun_url(self.client, self.name)
 
