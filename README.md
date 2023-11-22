@@ -341,7 +341,7 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
 
 ## Want to Contribute
 
-If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) submit a [pull request](https://github.com/goblet/goblet/pulls).
+If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) please follow the [contribution guide](CONTRIBUTING.md) and submit a [pull request](https://github.com/goblet/goblet/pulls).
 
 ## Want to Support
 
