@@ -324,6 +324,28 @@ def getDefaultRegistryName():
     return f"projects/{get_default_project()}/locations/{get_default_location()}/repositories/cloud-run-source-deploy"
 
 
+def get_artifact_image_name(client, artifact_name, config):
+    """retrieves name of image stored in artifact registry"""
+    # Get artifact tag from env variable or config
+    try:
+        artifact_tag = os.environ["GOBLET_ARTIFACT_TAG"]
+    except KeyError:
+        artifact_tag = config.deploy.get("artifact_tag", None)
+
+    if artifact_tag:
+        artifact_registry = config.deploy.get(
+            "artifact_registry", None
+        ) or getDefaultRegistry(artifact_name)
+        image_name = (
+            artifact_registry
+            + ("@" if "sha256" in artifact_tag else ":")
+            + artifact_tag
+        )
+    else:
+        image_name = getCloudbuildArtifact(client, artifact_name, config=config)
+    return image_name
+
+
 # calls latest build and checks for its artifact to avoid image:latest behavior with cloud run revisions
 def getCloudbuildArtifact(client, artifactName, config):
     defaultProject = get_default_project()
