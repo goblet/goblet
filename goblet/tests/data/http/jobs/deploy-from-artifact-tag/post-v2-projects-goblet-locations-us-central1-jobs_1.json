@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 409,
+      "message": "Resource 'goblet-jobs-test-artifact-tag' already exists.",
+      "status": "ALREADY_EXISTS"
+    }
+  }
+}

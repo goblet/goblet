@@ -2,7 +2,7 @@ import logging
 import os
 
 from goblet.handlers.handler import Handler
-from goblet.common_cloud_actions import getCloudbuildArtifact
+from goblet.common_cloud_actions import get_artifact_image_name
 from goblet.permissions import gcp_generic_resource_permissions
 
 from googleapiclient.errors import HttpError
@@ -57,7 +57,7 @@ class Jobs(Handler):
         if not self.resources:
             return
 
-        artifact = getCloudbuildArtifact(
+        artifact = get_artifact_image_name(
             self.versioned_clients.cloudbuild, self.name, config=self.config
         )
 
