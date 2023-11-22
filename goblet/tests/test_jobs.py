@@ -202,13 +202,13 @@ class TestJobs:
         )
         assert len(schedule_bindings["body"]["bindings"][0]["members"]) == 2
 
-    def test_deploy_job_from_artifact_tag(self, monkeypatch):
+    def test_deploy_jobs_from_artifact_tag(self, monkeypatch):
         artifact_tag = (
             "sha256:0a05e8ee3a7a3527dee34999247e29f19c4cf7941750a3267bb9b1a2f37b724a"
         )
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("G_TEST_NAME", "job/deploy-from-artifact-tag")
+        monkeypatch.setenv("G_TEST_NAME", "jobs/deploy-from-artifact-tag")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         monkeypatch.setenv("GOBLET_ARTIFACT_TAG", artifact_tag)
 
@@ -216,7 +216,7 @@ class TestJobs:
         app.job("test-artifact-tag")(dummy_function)
         app.deploy()
 
-        responses = get_responses("job/deploy-from-artifact-tag")
+        responses = get_responses("jobs/deploy-from-artifact-tag")
         assert len(responses) == 3
         assert (
             artifact_tag
