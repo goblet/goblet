@@ -18,6 +18,7 @@ from goblet.handlers.cloudtasktarget import CloudTaskTarget
 from goblet.handlers.storage import Storage
 from goblet.handlers.http import HTTP
 from goblet.handlers.jobs import Jobs
+from goblet.handlers.uptime import Uptime
 
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
@@ -48,6 +49,7 @@ EVENT_TYPES = [
     "job",
     "bqremotefunction",
     "cloudtasktarget",
+    "uptime",
 ]
 
 SUPPORTED_BACKENDS = {
@@ -91,6 +93,7 @@ class Resource_Manager:
             "jobs": Jobs(function_name, backend=backend),
             "schedule": Scheduler(function_name, backend=backend),
             "bqremotefunction": BigQueryRemoteFunction(function_name, backend=backend),
+            "uptime": Uptime(function_name, backend=backend, routes_type=routes_type),
         }
 
         self.infrastructure = {
@@ -163,6 +166,8 @@ class Resource_Manager:
                 response = self.handlers["bqremotefunction"](request)
             if event_type == "cloudtasktarget":
                 response = self.handlers["cloudtasktarget"](request)
+            if event_type == "uptime":
+                response = self.handlers["uptime"](request)
 
             # call after request middleware
             response = self._call_middleware(
@@ -193,6 +198,8 @@ class Resource_Manager:
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.headers.get("X-Goblet-Uptime-Name"):
+            return "uptime"
         if request.headers.get("User-Agent") == "Google-Cloud-Tasks":
             return "cloudtasktarget"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
@@ -349,6 +356,7 @@ class Resource_Manager:
             or self.handlers["pubsub"].is_http()
             or len(self.handlers["bqremotefunction"].resources) > 0
             or len(self.handlers["cloudtasktarget"].resources) > 0
+            or len(self.handlers["uptime"].resources) > 0
         ):
             return True
         return False

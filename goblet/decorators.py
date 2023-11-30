@@ -248,6 +248,15 @@ class Goblet_Decorators:
             },
         )
 
+    def uptime(self, **kwargs):
+        """Uptime trigger"""
+        return self._create_registration_function(
+            handler_type="uptime",
+            registration_kwargs={
+                "kwargs": kwargs,
+            },
+        )
+
     def http(self, headers={}):
         """Base http trigger"""
         return self._create_registration_function(
