@@ -1,5 +1,3 @@
-import json
-from unittest.mock import Mock
 from goblet import Goblet
 from goblet_gcp_client import get_responses, get_response
 from goblet.infrastructures.bq_spark_stored_procedure import (
