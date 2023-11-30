@@ -25,7 +25,9 @@ from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
-from goblet.infrastructures.bq_spark_stored_procedure import BigQuerySparkStoredProcedure
+from goblet.infrastructures.bq_spark_stored_procedure import (
+    BigQuerySparkStoredProcedure,
+)
 
 from goblet.response import default_missing_route
 
@@ -111,7 +113,9 @@ class Resource_Manager:
             "alerts": Alerts(function_name, backend=backend),
             "apigateway": ApiGateway(function_name, backend=backend),
             "pubsub_topic": PubSubTopic(function_name, backend=backend),
-            "bqsparkstoredprocedure": BigQuerySparkStoredProcedure(function_name, backend=backend),
+            "bqsparkstoredprocedure": BigQuerySparkStoredProcedure(
+                function_name, backend=backend
+            ),
         }
 
         self.middleware_handlers = {

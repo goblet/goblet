@@ -16,6 +16,7 @@ log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
 storage_client = storage.Client()
 
+
 class BigQuerySparkStoredProcedure(Infrastructure):
     """
     Cloud Big Query Spark Stored procedures.
@@ -25,6 +26,7 @@ class BigQuerySparkStoredProcedure(Infrastructure):
     https://cloud.google.com/bigquery/docs/spark-procedures#limitations
 
     """
+
     resource_type = "bqsparkstoredprocedure"
     required_apis = ["bigquery", "bigqueryconnection"]
     permissions = [
@@ -45,7 +47,11 @@ class BigQuerySparkStoredProcedure(Infrastructure):
         :param kwargs:
         :return:
         """
-        config = self.config.bqsparkstoredprocedure.copy() if self.config.bqsparkstoredprocedure else {}
+        config = (
+            self.config.bqsparkstoredprocedure.copy()
+            if self.config.bqsparkstoredprocedure
+            else {}
+        )
         # Routine names must contain only letters, numbers, and underscores, and be at most 256 characters long.
         routine_name = config.get("name", name).replace("-", "_")
         dataset_id = config.get("dataset_id", kwargs["dataset_id"])
@@ -53,9 +59,15 @@ class BigQuerySparkStoredProcedure(Infrastructure):
         # Func cannot be loaded from config file as it is a function
         func = kwargs.get("func")
         spark_file = config.get("spark_file", kwargs["spark_file"])
-        container_image = config.get("container_image", kwargs.get("container_image", None))
-        additional_python_files = config.get("additional_python_files", kwargs.get("additional_python_files", []))
-        additional_files = config.get("additional_files", kwargs.get("additional_files", []))
+        container_image = config.get(
+            "container_image", kwargs.get("container_image", None)
+        )
+        additional_python_files = config.get(
+            "additional_python_files", kwargs.get("additional_python_files", [])
+        )
+        additional_files = config.get(
+            "additional_files", kwargs.get("additional_files", [])
+        )
         properties = config.get("properties", kwargs.get("properties", {}))
 
         local_code = False
@@ -63,7 +75,9 @@ class BigQuerySparkStoredProcedure(Infrastructure):
             func = self.stringify_func(func)
             local_code = True
 
-        self.connection_location = config.get("location", kwargs.get("location", get_default_location()))
+        self.connection_location = config.get(
+            "location", kwargs.get("location", get_default_location())
+        )
         self.resources[routine_name] = {
             "routine_name": routine_name,
             "dataset_id": dataset_id,
@@ -85,14 +99,10 @@ class BigQuerySparkStoredProcedure(Infrastructure):
         log.info("Deploying bigquery remote functions")
 
         try:
-            self.deploy_bigquery_connection(
-                self.name, self.connection_location
-            )
+            self.deploy_bigquery_connection(self.name, self.connection_location)
         except HttpError as exception:
             if exception.resp.status == 409:
-                log.info(
-                    "Connection already created bigquery query: for %s", self.name
-                )
+                log.info("Connection already created bigquery query: for %s", self.name)
             else:
                 log.error("Create connection %s", exception.error_details)
                 raise exception
@@ -100,13 +110,19 @@ class BigQuerySparkStoredProcedure(Infrastructure):
         for _, resource in self.resources.items():
             if not resource["local_code"]:
                 self.deploy_bucket(self.name)
-                resource["spark_file"] = self.upload_file(resource["spark_file"], self.name)
+                resource["spark_file"] = self.upload_file(
+                    resource["spark_file"], self.name
+                )
                 if resource["additional_python_files"]:
                     for i in range(len(resource["additional_python_files"])):
-                        resource["additional_python_files"][i] = self.upload_file(resource["additional_python_files"][i], self.name)
+                        resource["additional_python_files"][i] = self.upload_file(
+                            resource["additional_python_files"][i], self.name
+                        )
                 if resource["additional_files"]:
                     for i in range(len(resource["additional_files"])):
-                        resource["additional_files"][i] = self.upload_file(resource["additional_files"][i], self.name)
+                        resource["additional_files"][i] = self.upload_file(
+                            resource["additional_files"][i], self.name
+                        )
 
             create_routine_query = self.create_routine_payload(resource)
             routine_name = resource["routine_name"]
@@ -268,13 +284,13 @@ class BigQuerySparkStoredProcedure(Infrastructure):
         if resource["local_code"]:
             query_request["definitionBody"] = resource["func"]
         else:
-            spark_options["mainFileUri"]= resource["spark_file"]
+            spark_options["mainFileUri"] = resource["spark_file"]
             query_request["sparkOptions"] = spark_options
 
         if resource["additional_python_files"]:
             spark_options["pyFileUris"] = resource["additional_python_files"]
             query_request["sparkOptions"] = spark_options
-        
+
         if resource["additional_files"]:
             spark_options["archiveUris"] = resource["additional_files"]
             query_request["sparkOptions"] = spark_options
@@ -283,7 +299,7 @@ class BigQuerySparkStoredProcedure(Infrastructure):
 
         return query_request
 
-    def deploy_bucket(self, bucket_name): 
+    def deploy_bucket(self, bucket_name):
         try:
             log.info(f"creating storage bucket {bucket_name}")
             storage_client.create_bucket(
@@ -294,7 +310,7 @@ class BigQuerySparkStoredProcedure(Infrastructure):
             log.info(f"bucket {bucket_name} created")
         except Conflict:
             log.info(f"storage bucket {bucket_name} already exists")
-    
+
     def upload_file(self, file, bucket_name):
         bucket = storage_client.bucket(bucket_name)
         destination_blob_name = file.split("/")[-1]
@@ -313,7 +329,7 @@ class BigQuerySparkStoredProcedure(Infrastructure):
             log.info(f"bucket {bucket_name} deleted")
         except NotFound:
             log.info(f"bucket {bucket_name} already deleted")
-    
+
     @staticmethod
     def stringify_func(func):
         lines, _ = inspect.getsourcelines(func)
