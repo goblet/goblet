@@ -5,7 +5,6 @@ from warnings import warn
 import logging
 
 from goblet_gcp_client.client import get_default_location, get_default_project
-from goblet.client import VersionedClients
 
 from goblet.backends.cloudfunctionv1 import CloudFunctionV1
 from goblet.backends.cloudfunctionv2 import CloudFunctionV2
