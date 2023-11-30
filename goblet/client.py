@@ -24,6 +24,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "iam": "v1",
     "cloudresourcemanager": "v3",
     "artifactregistry": "v1",
+    "storage": "v1",
 }
 
 
