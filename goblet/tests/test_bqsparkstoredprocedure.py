@@ -1,16 +1,21 @@
 import os
 from goblet import Goblet
-from goblet_gcp_client import get_responses, get_response
+from goblet_gcp_client import ( 
+    get_responses, 
+    get_response,
+    reset_replay_count,
+    get_replay_count,
+)
 from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
-
 
 class TestBqSparkStoredProcedure:
     def test_register_bqsparkstoredprocedure(self, monkeypatch):
         app = Goblet(function_name="bqsparkstoredprocedure_test")
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us")
+        reset_replay_count()
 
         test_dataset_id = "blogs"
 
@@ -43,6 +48,8 @@ class TestBqSparkStoredProcedure:
 
         for key, value in resources.items():
             assert expected_resources.get(key) == value
+        
+        assert 0 == get_replay_count()
 
     def test_deploy_bqsparkstoredprocedure(self, monkeypatch):
         test_deploy_name = "bqsparkstoredprocedure-deploy"
@@ -50,6 +57,7 @@ class TestBqSparkStoredProcedure:
         monkeypatch.setenv("GOOGLE_LOCATION", "us")
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        reset_replay_count()
 
         test_name = "bqsparkstoredprocedure_test"
         procedure_name = "test_spark_stored_procedure"
@@ -92,6 +100,7 @@ class TestBqSparkStoredProcedure:
             routine_response["body"]["sparkOptions"]["connection"]
             == connection_response["body"]["name"]
         )
+        assert 3 == get_replay_count()
 
     def test_destroy_bqsparkstoredprocedure(self, monkeypatch):
         test_deploy_name = "bqsparkstoredprocedure-destroy"
@@ -99,7 +108,8 @@ class TestBqSparkStoredProcedure:
         monkeypatch.setenv("GOOGLE_LOCATION", "us")
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
-
+        reset_replay_count()
+        
         test_name = "bqsparkstoredprocedure_test"
         app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
@@ -117,6 +127,7 @@ class TestBqSparkStoredProcedure:
         responses = get_responses(test_deploy_name)
 
         assert len(responses) != 0
+        assert 3 == get_replay_count()
 
     def test_deploy_bqsparkstoredprocedure_remote_code(self, monkeypatch):
         test_name = "bqsparkstoredprocedure-remote-deploy"
@@ -124,6 +135,7 @@ class TestBqSparkStoredProcedure:
         monkeypatch.setenv("GOOGLE_LOCATION", "us")
         monkeypatch.setenv("G_TEST_NAME", test_name)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        reset_replay_count()
 
         procedure_name = "test_spark_stored_procedure"
         app = Goblet(function_name=test_name)
@@ -173,6 +185,7 @@ class TestBqSparkStoredProcedure:
             routine_response["body"]["sparkOptions"]["mainFileUri"]
             == f"gs://{test_name}/spark.py"
         )
+        assert 5 == get_replay_count()
         os.remove("spark.py")
 
     def test_destroy_bqsparkstoredprocedure_remote_code(self, monkeypatch):
@@ -181,6 +194,7 @@ class TestBqSparkStoredProcedure:
         monkeypatch.setenv("GOOGLE_LOCATION", "us")
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        reset_replay_count()
 
         test_name = "bqsparkstoredprocedure-remote-deploy"
         procedure_name = "test_spark_stored_procedure"
@@ -197,3 +211,4 @@ class TestBqSparkStoredProcedure:
         responses = get_responses(test_deploy_name)
 
         assert len(responses) != 0
+        assert 6 == get_replay_count()
