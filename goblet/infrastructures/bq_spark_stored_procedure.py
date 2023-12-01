@@ -4,13 +4,17 @@ import inspect
 
 from googleapiclient.errors import HttpError
 from goblet.infrastructures.infrastructure import Infrastructure
-from goblet_gcp_client.client import get_default_project, get_default_location, get_credentials
+from goblet_gcp_client.client import (
+    get_default_project,
+    get_default_location,
+)
 from goblet.permissions import gcp_generic_resource_permissions
 from goblet.client import VersionedClients
 
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
+
 
 class BigQuerySparkStoredProcedure(Infrastructure):
     """

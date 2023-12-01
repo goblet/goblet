@@ -5,6 +5,7 @@ from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
 
+
 class TestBqSparkStoredProcedure:
     def test_register_bqsparkstoredprocedure(self, monkeypatch):
         app = Goblet(function_name="bqsparkstoredprocedure_test")
@@ -42,7 +43,7 @@ class TestBqSparkStoredProcedure:
 
         for key, value in resources.items():
             assert expected_resources.get(key) == value
-    
+
     def test_deploy_bqsparkstoredprocedure(self, monkeypatch):
         test_deploy_name = "bqsparkstoredprocedure-deploy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -116,7 +117,7 @@ class TestBqSparkStoredProcedure:
         responses = get_responses(test_deploy_name)
 
         assert len(responses) != 0
-    
+
     def test_deploy_bqsparkstoredprocedure_remote_code(self, monkeypatch):
         test_name = "bqsparkstoredprocedure-remote-deploy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -127,7 +128,7 @@ class TestBqSparkStoredProcedure:
         procedure_name = "test_spark_stored_procedure"
         app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
-        
+
         with open("spark.py", "w") as f:
             f.write(
                 """
@@ -173,7 +174,7 @@ class TestBqSparkStoredProcedure:
             == f"gs://{test_name}/spark.py"
         )
         os.remove("spark.py")
-        
+
     def test_destroy_bqsparkstoredprocedure_remote_code(self, monkeypatch):
         test_deploy_name = "bqsparkstoredprocedure-remote-deploy-destroy"
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
