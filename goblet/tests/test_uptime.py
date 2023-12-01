@@ -62,8 +62,6 @@ class TestUptime:
             kwargs={"kwargs": {}},
         )
 
-        reset_replay_count()
-
         uptime.deploy()
 
         responses = get_responses("uptime-deploy")

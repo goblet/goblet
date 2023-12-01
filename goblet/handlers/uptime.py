@@ -140,3 +140,6 @@ class Uptime(Handler):
             params={"filter": f"displayName=starts_with('{self.name}-')"},
         )
         return resp.get("uptimeCheckConfigs", [])
+
+    def set_invoker_permissions(self):
+        return
