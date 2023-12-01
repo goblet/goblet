@@ -18,7 +18,6 @@ class Uptime(Handler):
 
     resource_type = "uptime"
     valid_backends = ["cloudfunction", "cloudfunctionv2", "cloudrun"]
-    # can_sync = True
     required_apis = ["monitoring"]
     permissions = [
         *gcp_generic_resource_permissions("monitoring", "uptimeCheckConfigs")
