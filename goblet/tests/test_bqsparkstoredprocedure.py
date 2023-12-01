@@ -1,7 +1,7 @@
 import os
 from goblet import Goblet
-from goblet_gcp_client import ( 
-    get_responses, 
+from goblet_gcp_client import (
+    get_responses,
     get_response,
     reset_replay_count,
     get_replay_count,
@@ -9,6 +9,7 @@ from goblet_gcp_client import (
 from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
+
 
 class TestBqSparkStoredProcedure:
     def test_register_bqsparkstoredprocedure(self, monkeypatch):
@@ -48,7 +49,7 @@ class TestBqSparkStoredProcedure:
 
         for key, value in resources.items():
             assert expected_resources.get(key) == value
-        
+
         assert 0 == get_replay_count()
 
     def test_deploy_bqsparkstoredprocedure(self, monkeypatch):
@@ -109,7 +110,7 @@ class TestBqSparkStoredProcedure:
         monkeypatch.setenv("G_TEST_NAME", test_deploy_name)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         reset_replay_count()
-        
+
         test_name = "bqsparkstoredprocedure_test"
         app = Goblet(function_name=test_name)
         test_dataset_id = "blogs"
