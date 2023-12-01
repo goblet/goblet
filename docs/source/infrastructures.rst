@@ -141,3 +141,112 @@ PubSub Topics
     app.pubsub_topic("topic", config=config)
 
 To further configure your PubSub topic within Goblet, provide the config parameter base on the documentation. `Topic Resource <https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.topic>`_.
+
+BigQuery Spark Stored Procedures
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To deploy BigQuery stored procedures using Spark follow the example below. 
+BigQuery stored procedures documentation can be found `here <https://cloud.google.com/bigquery/docs/spark-procedures>`_.
+
+Using a function from the same python file:
+.. code:: python
+    import logging
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="create-bq-spark-stored-procedure")
+
+    app.log.setLevel(logging.DEBUG)  # configure goblet logger level
+    goblet_entrypoint(app)
+
+    # Create a bq spark stored procedure with the spark code and additional python files
+    def spark_handler():
+        from pyspark.sql import SparkSession
+        import pyspark.sql.functions as F
+        spark = SparkSession.builder.appName("spark-bigquery-demo").getOrCreate()
+
+        # Load data from BigQuery.
+        texts = spark.read.format("bigquery") \
+        .option("table", "tutorial.poc") \
+        .load()
+        texts.createOrReplaceTempView("words")
+
+        # Perform word count.
+        text_count = texts.select("id", "text", F.length("text").alias("sum_text_count"))
+        text_count.show()
+        text_count.printSchema()
+
+        # Saving the data to BigQuery
+        text_count.write.mode("append").format("bigquery") \
+        .option("writeMethod", "direct") \
+        .save("tutorial.wordcount_output")
+
+    app.bqsparkstoredprocedure(
+        name="count_words_procedure_external",
+        dataset_id="tutorial",
+        func=spark_handler,
+    )
+
+Using a function from a different python file and loading additional python files:
+`spark.py`:
+.. code:: python
+    def spark_handler():
+        from pyspark.sql import SparkSession
+        import pyspark.sql.functions as F
+        spark = SparkSession.builder.appName("spark-bigquery-demo").getOrCreate()
+
+        # Load data from BigQuery.
+        texts = spark.read.format("bigquery") \
+        .option("table", "tutorial.poc") \
+        .load()
+        texts.createOrReplaceTempView("words")
+
+        # Perform word count.
+        text_count = texts.select("id", "text", F.length("text").alias("sum_text_count"))
+        text_count.show()
+        text_count.printSchema()
+
+        # Saving the data to BigQuery
+        text_count.write.mode("append").format("bigquery") \
+        .option("writeMethod", "direct") \
+        .save("tutorial.wordcount_output")
+
+    if __name__ == "__main__":
+        spark_handler()
+
+`additional.py`:
+.. code:: python
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    def additional_func():
+        logger.info("additional_func")
+
+`main.py`:
+.. code:: python
+    import logging
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="create-bq-spark-stored-procedure")
+
+    app.log.setLevel(logging.DEBUG)  # configure goblet logger level
+    goblet_entrypoint(app)
+
+    # Create a bq spark stored procedure with the spark code and additional python files
+    app.bqsparkstoredprocedure(
+        name="count_words_procedure_external",
+        dataset_id="tutorial",
+        spark_file="spark.py",
+        additional_python_files=["additional.py"],
+    )
+
+Options that can be passed to the `bqsparkstoredprocedure` method are:
+- name: name of resource
+- dataset_id: dataset id where the routine will be created
+- func (optional): function/method to be executed
+- runtime_version (optional): runtime version of the spark code
+- container_image (optional): container image to use
+- spark_file (optional): file from local path with the spark code
+- additional_python_files (optional): List of files from local path with additional code (Ex: libraries)
+- additional_files (optional): List of files from local path with additional files (Ex: csvs)
+- properties (optional): Dictionary with additional properties. `Supported properties <https://spark.apache.org/docs/latest/configuration.html#spark-properties>`_

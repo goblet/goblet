@@ -1,0 +1,22 @@
+{
+  "headers": {},
+  "body": {
+    "kind": "storage#object",
+    "id": "bqsparkstoredprocedure-remote-deploy/spark.py/1701456256852863",
+    "selfLink": "https://www.googleapis.com/storage/v1/b/bqsparkstoredprocedure-remote-deploy/o/spark.py",
+    "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/bqsparkstoredprocedure-remote-deploy/o/spark.py?generation=1701456256852863&alt=media",
+    "name": "spark.py",
+    "bucket": "bqsparkstoredprocedure-remote-deploy",
+    "generation": "1701456256852863",
+    "metageneration": "1",
+    "contentType": "text/x-python",
+    "storageClass": "STANDARD",
+    "size": "26",
+    "md5Hash": "uPtlCcB2DsVh35EJS1MnOg==",
+    "crc32c": "tvHweQ==",
+    "etag": "CP/Gqb7y7oIDEAE=",
+    "timeCreated": "2023-12-01T18:44:16.878Z",
+    "updated": "2023-12-01T18:44:16.878Z",
+    "timeStorageClassUpdated": "2023-12-01T18:44:16.878Z"
+  }
+}

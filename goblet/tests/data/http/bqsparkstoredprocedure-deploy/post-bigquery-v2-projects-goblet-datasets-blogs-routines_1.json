@@ -1,0 +1,20 @@
+{
+  "headers": {},
+  "body": {
+    "etag": "Mg9Ctdrelv6gNGbkcZFsuQ==",
+    "routineReference": {
+      "projectId": "goblet",
+      "datasetId": "blogs",
+      "routineId": "test_spark_stored_procedure"
+    },
+    "routineType": "PROCEDURE",
+    "creationTime": "1701375036581",
+    "lastModifiedTime": "1701375036581",
+    "language": "PYTHON",
+    "definitionBody": "def spark_handler():\npass\n",
+    "sparkOptions": {
+      "connection": "projects/goblet/locations/us/connections/bqsparkstoredprocedure_test",
+      "runtimeVersion": "1.1"
+    }
+  }
+}
