@@ -15,6 +15,9 @@ from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
 from goblet.infrastructures.alerts import PubSubDLQCondition
+from goblet.infrastructures.bq_spark_stored_procedure import (
+    BigQuerySparkStoredProcedure,
+)
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
@@ -43,6 +46,7 @@ SUPPORTED_INFRASTRUCTURES = {
     "vpcconnector": VPCConnector,
     "cloudtaskqueue": CloudTaskQueue,
     "pubsub_topic": PubSubTopic,
+    "bqsparkstoredprocedure": BigQuerySparkStoredProcedure,
 }
 
 
@@ -344,6 +348,49 @@ class Goblet_Decorators:
         return self._register_infrastructure(
             handler_type="vpcconnector",
             kwargs={"name": name, "kwargs": kwargs},
+        )
+
+    def bqsparkstoredprocedure(
+        self,
+        name,
+        dataset_id,
+        runtime_version="1.1",
+        container_image=None,
+        func=None,
+        spark_file=None,
+        additional_python_files=None,
+        additional_files=None,
+        properties=None,
+        **kwargs,
+    ):
+        """
+        BigQuery Spark Stored Procedure trigger
+        :param name: name of resource
+        :param dataset_id: dataset id where the routine will be created
+        :param func (optional): function/method
+        :param runtime_version (optional): runtime version of the spark code
+        :param container_image (optional): container image to use
+        :param spark_file (optional): file from a local path with the spark code
+        :param additional_python_files (optional): List of files from a local path with additional code (Ex: libraries)
+        :param additional_files (optional): List of files from a local path with additional files (Ex: csvs)
+        :param properties (optional): Dictionary with additional properties. Supported properties: https://spark.apache.org/docs/latest/configuration.html#spark-properties
+        """
+        return self._register_infrastructure(
+            handler_type="bqsparkstoredprocedure",
+            kwargs={
+                "name": name,
+                "kwargs": {
+                    "dataset_id": dataset_id,
+                    "func": func,
+                    "runtime_version": runtime_version,
+                    "container_image": container_image,
+                    "spark_file": spark_file,
+                    "additional_python_files": additional_python_files,
+                    "additional_files": additional_files,
+                    "properties": properties,
+                    **kwargs,
+                },
+            },
         )
 
     def errorhandler(self, error):

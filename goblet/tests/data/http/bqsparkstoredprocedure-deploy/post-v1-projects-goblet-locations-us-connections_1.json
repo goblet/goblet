@@ -1,0 +1,11 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us/connections/bqsparkstoredprocedure_test",
+    "creationTime": "1701375034518",
+    "lastModifiedTime": "1701375034518",
+    "spark": {
+      "serviceAccountId": "bqcx-98058317567-d1ht@gcp-sa-bigquery-consp.iam.gserviceaccount.com"
+    }
+  }
+}

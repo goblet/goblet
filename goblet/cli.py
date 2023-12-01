@@ -34,6 +34,7 @@ SUPPORTED_INFRASTRUCTURES = [
     "pubsub",
     "redis",
     "vpcconnector",
+    "bqsparkstoredprocedure",
 ]
 
 

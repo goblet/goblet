@@ -1,0 +1,29 @@
+{
+  "headers": {},
+  "body": {
+    "kind": "storage#bucket",
+    "selfLink": "https://www.googleapis.com/storage/v1/b/bqsparkstoredprocedure-remote-deploy",
+    "id": "bqsparkstoredprocedure-remote-deploy",
+    "name": "bqsparkstoredprocedure-remote-deploy",
+    "projectNumber": "98058317567",
+    "metageneration": "1",
+    "location": "US",
+    "storageClass": "STANDARD",
+    "etag": "CAE=",
+    "timeCreated": "2023-12-01T18:44:15.380Z",
+    "updated": "2023-12-01T18:44:15.380Z",
+    "iamConfiguration": {
+      "bucketPolicyOnly": {
+        "enabled": true,
+        "lockedTime": "2024-02-29T18:44:15.380Z"
+      },
+      "uniformBucketLevelAccess": {
+        "enabled": true,
+        "lockedTime": "2024-02-29T18:44:15.380Z"
+      },
+      "publicAccessPrevention": "inherited"
+    },
+    "locationType": "multi-region",
+    "rpo": "DEFAULT"
+  }
+}
