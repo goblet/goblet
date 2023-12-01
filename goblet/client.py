@@ -24,6 +24,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "iam": "v1",
     "cloudresourcemanager": "v3",
     "artifactregistry": "v1",
+    "storage": "v1",
 }
 
 
@@ -283,4 +284,20 @@ class VersionedClients:
             self.client_versions.get("artifactregistry", "v1"),
             calls="projects.locations.repositories",
             parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+   
+    @property
+    def storage_buckets(self):
+        return Client(
+            "storage",
+            self.client_versions.get("storage", "v1"),
+            calls="buckets",
+        )
+    
+    @property
+    def storage_objects(self):
+        return Client(
+            "storage",
+            self.client_versions.get("storage", "v1"),
+            calls="objects",
         )

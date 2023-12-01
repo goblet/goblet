@@ -3,19 +3,14 @@ import os
 import inspect
 
 from googleapiclient.errors import HttpError
-
 from goblet.infrastructures.infrastructure import Infrastructure
-from goblet_gcp_client.client import get_default_project, get_default_location
+from goblet_gcp_client.client import get_default_project, get_default_location, get_credentials
 from goblet.permissions import gcp_generic_resource_permissions
-from google.cloud import storage
-from google.api_core.exceptions import Conflict, NotFound
+from goblet.client import VersionedClients
 
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
-
-storage_client = storage.Client()
-
 
 class BigQuerySparkStoredProcedure(Infrastructure):
     """
@@ -169,7 +164,8 @@ class BigQuerySparkStoredProcedure(Infrastructure):
         self.destroy_bigquery_connection()
         for _, resource in self.resources.items():
             self.destroy_routine(resource["dataset_id"], resource["routine_name"])
-            self.destroy_bucket(self.name)
+            if not resource["local_code"]:
+                self.destroy_bucket(self.name)
 
     def deploy_bigquery_connection(self, connection_name, location):
         """
@@ -302,33 +298,65 @@ class BigQuerySparkStoredProcedure(Infrastructure):
     def deploy_bucket(self, bucket_name):
         try:
             log.info(f"creating storage bucket {bucket_name}")
-            storage_client.create_bucket(
-                bucket_name,
-                project=get_default_project(),
-                location=get_default_location(),
+            VersionedClients().storage_buckets.execute(
+                "insert",
+                params={
+                    "project": get_default_project(),
+                    "body": {
+                        "name": bucket_name,
+                    },
+                },
             )
             log.info(f"bucket {bucket_name} created")
-        except Conflict:
-            log.info(f"storage bucket {bucket_name} already exists")
+        except HttpError as e:
+            if e.resp.status == 409:
+                log.info(f"storage bucket {bucket_name} already exists")
 
     def upload_file(self, file, bucket_name):
-        bucket = storage_client.bucket(bucket_name)
-        destination_blob_name = file.split("/")[-1]
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(file)
+        log.debug(f"gs://{bucket_name}/{file}")
+        VersionedClients().storage_objects.execute(
+            "insert",
+            params={
+                "bucket": bucket_name,
+                "uploadType": "media",
+                "media_body": file,
+                "body": {
+                    "name": file,
+                },
+            },
+        )
         log.info(f"uploaded file {file} to bucket {bucket_name}")
-        log.debug(f"gs://{bucket_name}/{destination_blob_name}")
-        return f"gs://{bucket_name}/{destination_blob_name}"
+        return f"gs://{bucket_name}/{file}"
 
     def destroy_bucket(self, bucket_name):
-        try:
-            bucket = storage_client.get_bucket(
-                bucket_name,
+        # Empty bucket
+        log.info(f"emptying storage bucket {bucket_name}")
+        objects = VersionedClients().storage_objects.execute(
+            "list",
+            params={
+                "bucket": bucket_name,
+            },
+        )["items"]
+        for obj in objects:
+            VersionedClients().storage_objects.execute(
+                "delete",
+                params={
+                    "bucket": bucket_name,
+                    "object": obj["name"],
+                },
             )
-            bucket.delete(force=True)
+        try:
+            log.info(f"deleting storage bucket {bucket_name}")
+            VersionedClients().storage_buckets.execute(
+                "delete",
+                params={
+                    "bucket": bucket_name,
+                },
+            )
             log.info(f"bucket {bucket_name} deleted")
-        except NotFound:
-            log.info(f"bucket {bucket_name} already deleted")
+        except HttpError as e:
+            if e.resp.status == 404:
+                log.info(f"storage bucket {bucket_name} already deleted")
 
     @staticmethod
     def stringify_func(func):

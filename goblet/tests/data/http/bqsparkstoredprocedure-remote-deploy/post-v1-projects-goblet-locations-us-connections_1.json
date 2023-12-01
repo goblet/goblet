@@ -1,0 +1,11 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/locations/us/connections/bqsparkstoredprocedure-remote-deploy",
+    "creationTime": "1701456253237",
+    "lastModifiedTime": "1701456253237",
+    "spark": {
+      "serviceAccountId": "bqcx-98058317567-w3og@gcp-sa-bigquery-consp.iam.gserviceaccount.com"
+    }
+  }
+}
