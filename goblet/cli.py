@@ -26,7 +26,7 @@ SUPPORTED_HANDLERS = [
     "pubsub",
     "storage",
     "schedule",
-    "uptime"
+    "uptime",
 ]
 SUPPORTED_INFRASTRUCTURES = [
     "alerts",
