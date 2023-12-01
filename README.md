@@ -100,6 +100,7 @@ $ curl https://api.uc.gateway.dev/home
 * cloudrun jobs
 * bq remote functions
 * cloudtasktarget
+* uptime checks
 
 ## Data Typing Frameworks Supported
 
@@ -336,7 +337,8 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Deploy arbitrary Dockerfile to Cloudrun \
  &#9745; [Multi Container Deployments](https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments) \
  &#9745; Create Deployment Service Accounts \
- &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers
+ &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers \
+ &#9745; [Uptime Checks](https://cloud.google.com/monitoring/uptime-checks)
 
 
 ## Want to Contribute

@@ -480,3 +480,21 @@ Another example using ``app.cloudtaskqueue`` to queue and handle tasks in the sa
         payload = {"message": {"title": "enqueue"}}
         client.enqueue(target="target", payload=payload)
         return {}
+
+
+Uptime Check
+^^^^^^^^^^^^
+
+You can create uptime checks for backends that are public using the `@app.uptime` decorator. 
+You can customize the check using all available fields found in the `uptime documentation <https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs#UptimeCheckConfig>`_
+
+.. code:: python
+
+    from goblet import Goblet, goblet_entrypoint
+
+    app = Goblet(function_name="uptime_example")
+    goblet_entrypoint(app)
+
+    @app.uptime(name="target")
+    def example_uptime():
+        return "success"
