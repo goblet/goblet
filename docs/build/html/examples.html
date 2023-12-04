@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples &mdash; goblet 0.12.4 documentation</title>
+  <title>Examples &mdash; goblet 0.12.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -503,6 +503,11 @@
 <span class="linenos">403</span><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="s2">&quot;ValueError&quot;</span><span class="p">)</span>
 <span class="linenos">404</span><span class="k">def</span> <span class="nf">return_error_string</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
 <span class="linenos">405</span>    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">),</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="linenos">406</span>
+<span class="linenos">407</span><span class="c1"># Example uptime check</span>
+<span class="linenos">408</span><span class="nd">@app</span><span class="o">.</span><span class="n">uptime</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="s2">&quot;30s&quot;</span><span class="p">)</span>
+<span class="linenos">409</span><span class="k">def</span> <span class="nf">uptime_check</span><span class="p">():</span>
+<span class="linenos">410</span>    <span class="k">return</span> <span class="s2">&quot;success&quot;</span>
 </pre></div>
 </div>
 </section>

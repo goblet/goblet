@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Handlers &mdash; goblet 0.12.4 documentation</title>
+  <title>Handlers &mdash; goblet 0.12.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -62,6 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#jobs">Jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bigquery-remote-functions">BigQuery Remote Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cloudtask-target">CloudTask Target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uptime-check">Uptime Check</a></li>
 </ul>
 </li>
 </ul>
@@ -499,6 +500,21 @@ the following headers:</p>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;enqueue&quot;</span><span class="p">}}</span>
     <span class="n">client</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+</div>
+</section>
+<section id="uptime-check">
+<h2>Uptime Check<a class="headerlink" href="#uptime-check" title="Permalink to this heading">¶</a></h2>
+<p>You can create uptime checks for backends that are public using the <cite>&#64;app.uptime</cite> decorator.
+You can customize the check using all available fields found in the <a class="reference external" href="https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs#UptimeCheckConfig">uptime documentation</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet</span> <span class="kn">import</span> <span class="n">Goblet</span><span class="p">,</span> <span class="n">goblet_entrypoint</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">(</span><span class="n">function_name</span><span class="o">=</span><span class="s2">&quot;uptime_example&quot;</span><span class="p">)</span>
+<span class="n">goblet_entrypoint</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">uptime</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">example_uptime</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;success&quot;</span>
 </pre></div>
 </div>
 </section>

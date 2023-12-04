@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Infrastructure &mdash; goblet 0.12.4 documentation</title>
+  <title>Infrastructure &mdash; goblet 0.12.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -65,6 +65,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#api-gateway">Api Gateway</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cloudtask-queue">CloudTask Queue</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pubsub-topics">PubSub Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bigquery-spark-stored-procedures">BigQuery Spark Stored Procedures</a></li>
 </ul>
 </li>
 </ul>
@@ -229,6 +230,104 @@ The configuration can be provided inline when declaring the queue, or in your co
 </pre></div>
 </div>
 <p>To further configure your PubSub topic within Goblet, provide the config parameter base on the documentation. <a class="reference external" href="https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.topic">Topic Resource</a>.</p>
+</section>
+<section id="bigquery-spark-stored-procedures">
+<h2>BigQuery Spark Stored Procedures<a class="headerlink" href="#bigquery-spark-stored-procedures" title="Permalink to this heading">¶</a></h2>
+<p>To deploy BigQuery stored procedures using Spark follow the example below.
+BigQuery stored procedures documentation can be found <a class="reference external" href="https://cloud.google.com/bigquery/docs/spark-procedures">here</a>.</p>
+<p>Using a function from the same python file:
+.. code:: python</p>
+<blockquote>
+<div><p>import logging
+from goblet import Goblet, goblet_entrypoint</p>
+<p>app = Goblet(function_name=”create-bq-spark-stored-procedure”)</p>
+<p>app.log.setLevel(logging.DEBUG)  # configure goblet logger level
+goblet_entrypoint(app)</p>
+<p># Create a bq spark stored procedure with the spark code and additional python files
+def spark_handler():</p>
+<blockquote>
+<div><p>from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
+spark = SparkSession.builder.appName(“spark-bigquery-demo”).getOrCreate()</p>
+<p># Load data from BigQuery.
+texts = spark.read.format(“bigquery”) .option(“table”, “tutorial.poc”) .load()
+texts.createOrReplaceTempView(“words”)</p>
+<p># Perform word count.
+text_count = texts.select(“id”, “text”, F.length(“text”).alias(“sum_text_count”))
+text_count.show()
+text_count.printSchema()</p>
+<p># Saving the data to BigQuery
+text_count.write.mode(“append”).format(“bigquery”) .option(“writeMethod”, “direct”) .save(“tutorial.wordcount_output”)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>app.bqsparkstoredprocedure(</dt><dd><p>name=”count_words_procedure_external”,
+dataset_id=”tutorial”,
+func=spark_handler,</p>
+</dd>
+</dl>
+<p>)</p>
+</div></blockquote>
+<p>Using a function from a different python file and loading additional python files:
+<cite>spark.py</cite>:
+.. code:: python</p>
+<blockquote>
+<div><dl>
+<dt>def spark_handler():</dt><dd><p>from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
+spark = SparkSession.builder.appName(“spark-bigquery-demo”).getOrCreate()</p>
+<p># Load data from BigQuery.
+texts = spark.read.format(“bigquery”) .option(“table”, “tutorial.poc”) .load()
+texts.createOrReplaceTempView(“words”)</p>
+<p># Perform word count.
+text_count = texts.select(“id”, “text”, F.length(“text”).alias(“sum_text_count”))
+text_count.show()
+text_count.printSchema()</p>
+<p># Saving the data to BigQuery
+text_count.write.mode(“append”).format(“bigquery”) .option(“writeMethod”, “direct”) .save(“tutorial.wordcount_output”)</p>
+</dd>
+<dt>if __name__ == “__main__”:</dt><dd><p>spark_handler()</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><cite>additional.py</cite>:
+.. code:: python</p>
+<blockquote>
+<div><p>import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)</p>
+<dl class="simple">
+<dt>def additional_func():</dt><dd><p>logger.info(“additional_func”)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><cite>main.py</cite>:
+.. code:: python</p>
+<blockquote>
+<div><p>import logging
+from goblet import Goblet, goblet_entrypoint</p>
+<p>app = Goblet(function_name=”create-bq-spark-stored-procedure”)</p>
+<p>app.log.setLevel(logging.DEBUG)  # configure goblet logger level
+goblet_entrypoint(app)</p>
+<p># Create a bq spark stored procedure with the spark code and additional python files
+app.bqsparkstoredprocedure(</p>
+<blockquote>
+<div><p>name=”count_words_procedure_external”,
+dataset_id=”tutorial”,
+spark_file=”spark.py”,
+additional_python_files=[“additional.py”],</p>
+</div></blockquote>
+<p>)</p>
+</div></blockquote>
+<p>Options that can be passed to the <cite>bqsparkstoredprocedure</cite> method are:
+- name: name of resource
+- dataset_id: dataset id where the routine will be created
+- func (optional): function/method to be executed
+- runtime_version (optional): runtime version of the spark code
+- container_image (optional): container image to use
+- spark_file (optional): file from local path with the spark code
+- additional_python_files (optional): List of files from local path with additional code (Ex: libraries)
+- additional_files (optional): List of files from local path with additional files (Ex: csvs)
+- properties (optional): Dictionary with additional properties. <a class="reference external" href="https://spark.apache.org/docs/latest/configuration.html#spark-properties">Supported properties</a></p>
 </section>
 </section>
 
