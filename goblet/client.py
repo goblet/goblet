@@ -24,6 +24,8 @@ DEFAULT_CLIENT_VERSIONS = {
     "iam": "v1",
     "cloudresourcemanager": "v3",
     "artifactregistry": "v1",
+    "monitoring": "v3",
+    "storage": "v1",
 }
 
 
@@ -223,6 +225,15 @@ class VersionedClients:
         )
 
     @property
+    def monitoring_uptime(self):
+        return Client(
+            "monitoring",
+            self.client_versions.get("monitoring", "v3"),
+            calls="projects.uptimeCheckConfigs",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
     def logging_metric(self):
         return Client(
             "logging",
@@ -283,4 +294,20 @@ class VersionedClients:
             self.client_versions.get("artifactregistry", "v1"),
             calls="projects.locations.repositories",
             parent_schema="projects/{project_id}/locations/{location_id}",
+        )
+
+    @property
+    def storage_buckets(self):
+        return Client(
+            "storage",
+            self.client_versions.get("storage", "v1"),
+            calls="buckets",
+        )
+
+    @property
+    def storage_objects(self):
+        return Client(
+            "storage",
+            self.client_versions.get("storage", "v1"),
+            calls="objects",
         )

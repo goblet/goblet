@@ -100,6 +100,7 @@ $ curl https://api.uc.gateway.dev/home
 * cloudrun jobs
 * bq remote functions
 * cloudtasktarget
+* uptime checks
 
 ## Data Typing Frameworks Supported
 
@@ -336,12 +337,13 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Deploy arbitrary Dockerfile to Cloudrun \
  &#9745; [Multi Container Deployments](https://cloud.google.com/blog/products/serverless/cloud-run-now-supports-multi-container-deployments) \
  &#9745; Create Deployment Service Accounts \
- &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers
+ &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers \
+ &#9745; [Uptime Checks](https://cloud.google.com/monitoring/uptime-checks)
 
 
 ## Want to Contribute
 
-If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) submit a [pull request](https://github.com/goblet/goblet/pulls).
+If you would like to contribute to the library (e.g. by improving the documentation, solving a bug or adding a cool new feature) please follow the [contribution guide](CONTRIBUTING.md) and submit a [pull request](https://github.com/goblet/goblet/pulls).
 
 ## Want to Support
 

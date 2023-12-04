@@ -18,6 +18,7 @@ from goblet.handlers.cloudtasktarget import CloudTaskTarget
 from goblet.handlers.storage import Storage
 from goblet.handlers.http import HTTP
 from goblet.handlers.jobs import Jobs
+from goblet.handlers.uptime import Uptime
 
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
@@ -25,6 +26,9 @@ from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
+from goblet.infrastructures.bq_spark_stored_procedure import (
+    BigQuerySparkStoredProcedure,
+)
 
 from goblet.response import default_missing_route
 
@@ -48,6 +52,7 @@ EVENT_TYPES = [
     "job",
     "bqremotefunction",
     "cloudtasktarget",
+    "uptime",
 ]
 
 SUPPORTED_BACKENDS = {
@@ -61,6 +66,7 @@ SUPPORTED_INFRASTRUCTURES = {
     "vpcconnector": VPCConnector,
     "cloudtaskqueue": CloudTaskQueue,
     "pubsub_topic": PubSubTopic,
+    "bqsparkstoredprocedure": BigQuerySparkStoredProcedure,
 }
 
 
@@ -91,6 +97,7 @@ class Resource_Manager:
             "jobs": Jobs(function_name, backend=backend),
             "schedule": Scheduler(function_name, backend=backend),
             "bqremotefunction": BigQueryRemoteFunction(function_name, backend=backend),
+            "uptime": Uptime(function_name, backend=backend, routes_type=routes_type),
         }
 
         self.infrastructure = {
@@ -109,6 +116,9 @@ class Resource_Manager:
             "alerts": Alerts(function_name, backend=backend),
             "apigateway": ApiGateway(function_name, backend=backend),
             "pubsub_topic": PubSubTopic(function_name, backend=backend),
+            "bqsparkstoredprocedure": BigQuerySparkStoredProcedure(
+                function_name, backend=backend
+            ),
         }
 
         self.middleware_handlers = {
@@ -163,6 +173,8 @@ class Resource_Manager:
                 response = self.handlers["bqremotefunction"](request)
             if event_type == "cloudtasktarget":
                 response = self.handlers["cloudtasktarget"](request)
+            if event_type == "uptime":
+                response = self.handlers["uptime"](request)
 
             # call after request middleware
             response = self._call_middleware(
@@ -193,6 +205,8 @@ class Resource_Manager:
             return context.event_type.split(".")[1].split("/")[0]
         if request.headers.get("X-Goblet-Type") == "schedule":
             return "schedule"
+        if request.headers.get("X-Goblet-Uptime-Name"):
+            return "uptime"
         if request.headers.get("User-Agent") == "Google-Cloud-Tasks":
             return "cloudtasktarget"
         if request.headers.get("Ce-Type") and request.headers.get("Ce-Source"):
@@ -349,6 +363,7 @@ class Resource_Manager:
             or self.handlers["pubsub"].is_http()
             or len(self.handlers["bqremotefunction"].resources) > 0
             or len(self.handlers["cloudtasktarget"].resources) > 0
+            or len(self.handlers["uptime"].resources) > 0
         ):
             return True
         return False

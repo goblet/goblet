@@ -1,0 +1,20 @@
+{
+  "headers": {},
+  "body": {
+    "etag": "G3aGhxZhhdd0NxWe7/aYag==",
+    "routineReference": {
+      "projectId": "goblet",
+      "datasetId": "blogs",
+      "routineId": "test_spark_stored_procedure"
+    },
+    "routineType": "PROCEDURE",
+    "creationTime": "1701456259115",
+    "lastModifiedTime": "1701456259115",
+    "language": "PYTHON",
+    "sparkOptions": {
+      "connection": "projects/goblet/locations/us/connections/bqsparkstoredprocedure-remote-deploy",
+      "runtimeVersion": "1.1",
+      "mainFileUri": "gs://bqsparkstoredprocedure-remote-deploy/spark.py"
+    }
+  }
+}

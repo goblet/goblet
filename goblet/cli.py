@@ -26,6 +26,7 @@ SUPPORTED_HANDLERS = [
     "pubsub",
     "storage",
     "schedule",
+    "uptime",
 ]
 SUPPORTED_INFRASTRUCTURES = [
     "alerts",
@@ -34,6 +35,7 @@ SUPPORTED_INFRASTRUCTURES = [
     "pubsub",
     "redis",
     "vpcconnector",
+    "bqsparkstoredprocedure",
 ]
 
 
