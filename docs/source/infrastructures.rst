@@ -143,15 +143,19 @@ PubSub Topics
 To further configure your PubSub topic within Goblet, provide the config parameter base on the documentation. `Topic Resource <https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.topic>`_.
 
 BigQuery Spark Stored Procedures
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 To deploy BigQuery stored procedures using Spark follow the example below. 
 BigQuery stored procedures documentation can be found `here <https://cloud.google.com/bigquery/docs/spark-procedures>`_.
 
 Using a function from the same python file:
 .. code:: python
+
     import logging
     from goblet import Goblet, goblet_entrypoint
+    import pyspark.sql.functions as F
+    from pyspark.sql import SparkSession
 
     app = Goblet(function_name="create-bq-spark-stored-procedure")
 
@@ -160,8 +164,7 @@ Using a function from the same python file:
 
     # Create a bq spark stored procedure with the spark code and additional python files
     def spark_handler():
-        from pyspark.sql import SparkSession
-        import pyspark.sql.functions as F
+
         spark = SparkSession.builder.appName("spark-bigquery-demo").getOrCreate()
 
         # Load data from BigQuery.
@@ -183,12 +186,12 @@ Using a function from the same python file:
     app.bqsparkstoredprocedure(
         name="count_words_procedure_external",
         dataset_id="tutorial",
-        func=spark_handler,
-    )
+        func=spark_handler)
 
 Using a function from a different python file and loading additional python files:
 `spark.py`:
 .. code:: python
+
     def spark_handler():
         from pyspark.sql import SparkSession
         import pyspark.sql.functions as F
@@ -215,6 +218,7 @@ Using a function from a different python file and loading additional python file
 
 `additional.py`:
 .. code:: python
+
     import logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -224,6 +228,7 @@ Using a function from a different python file and loading additional python file
 
 `main.py`:
 .. code:: python
+
     import logging
     from goblet import Goblet, goblet_entrypoint
 
@@ -233,12 +238,8 @@ Using a function from a different python file and loading additional python file
     goblet_entrypoint(app)
 
     # Create a bq spark stored procedure with the spark code and additional python files
-    app.bqsparkstoredprocedure(
-        name="count_words_procedure_external",
-        dataset_id="tutorial",
-        spark_file="spark.py",
-        additional_python_files=["additional.py"],
-    )
+    app.bqsparkstoredprocedure(name="count_words_procedure_external", dataset_id="tutorial", spark_file="spark.py", additional_python_files=["additional.py"])
+
 
 Options that can be passed to the `bqsparkstoredprocedure` method are:
 - name: name of resource
