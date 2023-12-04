@@ -24,6 +24,7 @@ DEFAULT_CLIENT_VERSIONS = {
     "iam": "v1",
     "cloudresourcemanager": "v3",
     "artifactregistry": "v1",
+    "monitoring": "v3",
     "storage": "v1",
 }
 
@@ -220,6 +221,15 @@ class VersionedClients:
             "monitoring",
             self.client_versions.get("monitoring", "v3"),
             calls="projects.alertPolicies",
+            parent_schema="projects/{project_id}",
+        )
+
+    @property
+    def monitoring_uptime(self):
+        return Client(
+            "monitoring",
+            self.client_versions.get("monitoring", "v3"),
+            calls="projects.uptimeCheckConfigs",
             parent_schema="projects/{project_id}",
         )
 

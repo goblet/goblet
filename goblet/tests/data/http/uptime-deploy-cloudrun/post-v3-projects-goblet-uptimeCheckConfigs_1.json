@@ -1,0 +1,29 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/uptimeCheckConfigs/test-uptime-cloudrun-eR4tvksJ3ss",
+    "displayName": "test-uptime-cloudrun",
+    "monitoredResource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "goblet",
+        "revision_name": "",
+        "location": "us-central1",
+        "service_name": "test-uptime",
+        "configuration_name": ""
+      }
+    },
+    "httpCheck": {
+      "useSsl": true,
+      "path": "/",
+      "port": 443,
+      "headers": {
+        "X-Goblet-Uptime-Name": "cloudrun"
+      },
+      "requestMethod": "GET"
+    },
+    "period": "60s",
+    "timeout": "10s",
+    "checkerType": "STATIC_IP_CHECKERS"
+  }
+}

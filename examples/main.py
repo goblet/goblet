@@ -403,3 +403,8 @@ def handle_missing_route(error):
 @app.errorhandler("ValueError")
 def return_error_string(error):
     return Response(str(error), status_code=200)
+
+# Example uptime check
+@app.uptime(timeout="30s")
+def uptime_check():
+    return "success"
