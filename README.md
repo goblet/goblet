@@ -82,6 +82,7 @@ $ curl https://api.uc.gateway.dev/home
 * api gateway
 * cloudtaskqueue
 * pubsub topics
+* bq spark stored procedures
 
 #### Backends
 * cloudfunction
@@ -99,7 +100,7 @@ $ curl https://api.uc.gateway.dev/home
 * eventarc
 * cloudrun jobs
 * bq remote functions
-* cloudtasktarget
+* cloudtask target
 * uptime checks
 
 ## Data Typing Frameworks Supported
