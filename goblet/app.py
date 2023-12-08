@@ -1,16 +1,17 @@
 import json
 import logging
-import sys
 import os
+import sys
+from typing import List
 
-from goblet.config import GConfig
-import goblet.globals as g
-from goblet.decorators import Goblet_Decorators
-from goblet.resource_manager import Resource_Manager
-
+from goblet_gcp_client.client import get_default_project
 from google.cloud.logging.handlers import StructuredLogHandler
 from google.cloud.logging_v2.handlers import setup_logging
-from typing import List
+
+import goblet.globals as g
+from goblet.config import GConfig
+from goblet.decorators import Goblet_Decorators
+from goblet.resource_manager import Resource_Manager
 
 logging.basicConfig()
 
@@ -71,7 +72,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.log = logging.getLogger("werkzeug")
         elif not os.environ.get("X-GOBLET-DEPLOY"):
             self.log.handlers.clear()
-            handler = StructuredLogHandler()
+            handler = StructuredLogHandler(project_id=get_default_project())
             setup_logging(
                 handler,
                 log_level=logging.getLevelName(
