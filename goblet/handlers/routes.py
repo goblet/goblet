@@ -460,11 +460,13 @@ class CORSConfig(object):
     """A cors configuration to attach to a route."""
 
     _REQUIRED_HEADERS = ["Content-Type", "Authorization"]
+    _ALLOW_METHODS = "GET, POST, PUT, DELETE, PATCH, OPTIONS"
 
     def __init__(
         self,
         allow_origin="*",
         allow_headers=None,
+        allow_methods=None,
         expose_headers=None,
         max_age=None,
         allow_credentials=None,
@@ -476,6 +478,8 @@ class CORSConfig(object):
         else:
             allow_headers = set(allow_headers + self._REQUIRED_HEADERS)
         self._allow_headers = allow_headers
+
+        self._allow_methods = allow_methods or self._ALLOW_METHODS
 
         if expose_headers is None:
             expose_headers = []
@@ -492,6 +496,7 @@ class CORSConfig(object):
         headers = {
             "Access-Control-Allow-Origin": self.allow_origin,
             "Access-Control-Allow-Headers": self.allow_headers,
+            "Access-Control-Allow-Methods": self._allow_methods,
         }
         if self._expose_headers:
             headers.update(
