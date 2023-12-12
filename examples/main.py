@@ -5,6 +5,7 @@ from goblet.infrastructures.alerts import (
     LogMatchCondition,
     CustomMetricCondition,
 )
+from goblet.handlers.routes import CORSConfig
 import asyncio
 import logging
 
@@ -173,6 +174,12 @@ def response():
         {"failed": 400}, headers={"Content-Type": "application/json"}, status_code=400
     )
 
+
+# Example CORS
+
+@app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost', allow_methods=["GET"], extra_headers={"X-TEST":"X-HEADER-VALUE"}))
+def custom_cors():
+    return jsonify('localhost is allowed with GET method')
 
 # Scheduled job
 @app.schedule("5 * * * *")
