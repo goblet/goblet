@@ -507,10 +507,10 @@ class CORSConfig(object):
             headers.update({"Access-Control-Allow-Credentials": "true"})
         if self._allow_methods:
             headers.update(
-                {"Access-Control-Allow-Methods": ",".join(self._expose_headers)}
+                {"Access-Control-Allow-Methods": ",".join(self._allow_methods)}
             )
         if self._extra_headers:
-            headers.update(self._expose_headers)
+            headers.update(self._extra_headers)
 
         return headers
 
