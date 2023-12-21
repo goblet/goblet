@@ -239,6 +239,7 @@ def destroy(
 @click.option("-d", "--dryrun", "dryrun", is_flag=True)
 @click.option("--skip-infra", "skip_infra", is_flag=True)
 @click.option("--skip-handlers", "skip_handlers", is_flag=True)
+@click.option("--skip-alerts", "skip_alerts", is_flag=True)
 @click.option(
     "-h", "--handler", "handler", type=click.Choice(SUPPORTED_HANDLERS), multiple=True
 )
@@ -256,6 +257,7 @@ def sync(
     dryrun,
     skip_infra,
     skip_handlers,
+    skip_alerts,
     handler,
     infra,
 ):
@@ -277,7 +279,7 @@ def sync(
         if stage:
             os.environ["STAGE"] = stage
         app = get_goblet_app(GConfig().main_file or "main.py")
-        app.sync(dryrun, skip_infra, skip_handlers, handler, infra)
+        app.sync(dryrun, skip_infra, skip_handlers, skip_alerts, handler, infra)
 
     except FileNotFoundError as not_found:
         click.echo(

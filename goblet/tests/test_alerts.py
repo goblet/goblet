@@ -10,6 +10,7 @@ from goblet.backends import CloudFunctionV1
 
 from goblet_gcp_client import (
     get_response,
+    get_responses,
     reset_replay_count,
     get_replay_count,
 )
@@ -160,82 +161,60 @@ class TestAlerts:
 
         assert get_replay_count() == 6
 
-    def test_deploy_pubsub_dql_alert(self, monkeypatch):
-        monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
+    def test_destroy_alerts(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-        monkeypatch.setenv("G_TEST_NAME", "alerts-deploy-pubsub-dlq")
-        monkeypatch.setenv("G_HTTP_TEST", "RECORD")
+        monkeypatch.setenv("G_TEST_NAME", "alerts-destroy")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         reset_replay_count()
 
-        app = Goblet(function_name="alerts-test-pubsub-dlq")
+        app = Goblet(function_name="alerts-test")
 
-        # app.alert(
-        #     "pubsubdlq",
-        #     conditions=[
-        #         PubSubDLQCondition(
-        #             "pubsubdlq",
-        #             subscription_id="pubsub-deploy-subscription",
-        #         )
-        #     ],
-        # )
-
-        app.deploy(skip_infra=True, skip_handlers=True, skip_backend=True)
-
-        post_alert_custom_metric = get_response(
-            "alerts-deploy",
-            "post-v2-projects-goblet-metrics_1.json",
+        metric_alert = BackendAlert(
+            "metric",
+            conditions=[
+                MetricCondition(
+                    "test",
+                    metric="cloudfunctions.googleapis.com/function/execution_count",
+                    value=10,
+                )
+            ],
+        )
+        log_alert = BackendAlert(
+            "error",
+            conditions=[LogMatchCondition("error", "severity>=ERROR")],
+        )
+        custom_alert = BackendAlert(
+            "custom",
+            conditions=[
+                CustomMetricCondition(
+                    "custom",
+                    metric_filter="severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)",
+                    value=10,
+                )
+            ],
         )
 
-        assert (
-            post_alert_custom_metric["body"]["metricDescriptor"]["type"]
-            == "logging.googleapis.com/user/alerts-test-custom"
+        pubsub_dlq = PubSubDLQAlert(
+            "pubsubdlq",
+            conditions=[
+                PubSubDLQCondition(
+                    "pubsubdlq",
+                    subscription_id="pubsub-deploy-subscription",
+                )
+            ],
+            extras={"topic": "subscription"},
         )
 
-    # def test_destroy_alerts(self, monkeypatch):
-    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-    #     monkeypatch.setenv("G_TEST_NAME", "alerts-destroy")
-    #     monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        app.alert(metric_alert)
+        app.alert(log_alert)
+        app.alert(custom_alert)
+        app.alert(pubsub_dlq)
 
-    #     app = Goblet(function_name="alerts-test")
+        app.destroy()
 
-    #     app.alert(
-    #         "metric",
-    #         conditions=[
-    #             MetricCondition(
-    #                 "metric",
-    #                 metric="cloudfunctions.googleapis.com/function/execution_count",
-    #                 value=10,
-    #             )
-    #         ],
-    #     )
-    #     app.alert("error", conditions=[LogMatchCondition("error", "severity>=ERROR")])
-    #     app.alert(
-    #         "custom",
-    #         conditions=[
-    #             CustomMetricCondition(
-    #                 "custom",
-    #                 metric_filter="severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)",
-    #                 value=10,
-    #             )
-    #         ],
-    #     )
-    #     app.alert(
-    #         "pubsubdlq",
-    #         conditions=[
-    #             PubSubDLQCondition(
-    #                 "pubsubdlq",
-    #                 subscription_id="pubsub-deploy-subscription",
-    #             )
-    #         ],
-    #     )
-
-    #     app.destroy()
-
-    #     responses = get_responses("alerts-destroy")
-
-    #     assert len(responses) == 7
+        assert get_replay_count() == 7
 
     # def test_sync_alerts(self, monkeypatch):
     #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

@@ -174,6 +174,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         dryrun=False,
         skip_infra=False,
         skip_handlers=False,
+        skip_alerts=False,
         handlers: List[str] = None,
         infras: List[str] = None,
     ):
@@ -183,6 +184,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         if handlers or not skip_handlers:
             log.info("syncing handlers")
             self.sync_handlers(dryrun, handlers)
+        if not skip_alerts:
+            log.info("syncing alerts")
+            self.alerts.sync()
 
     def check_or_enable_services(self, enable=False):
         self.backend._check_or_enable_service(enable)
