@@ -108,7 +108,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         backend.update_config(infra_config, write_config, stage)
 
         if not skip_backend:
-            log.info(f"preparing to deploy with backend {self.backend.alert_type}")
+            log.info(f"preparing to deploy with backend {self.backend.resource_type}")
             source = backend.deploy(force=force)
 
         if not skip_alerts:
