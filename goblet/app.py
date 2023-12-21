@@ -85,8 +85,8 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         self,
         skip_handlers=False,
         skip_backend=False,
-        skip_alerts=False,
         skip_infra=False,
+        skip_alerts=False,
         force=False,
         write_config=False,
         stage=None,
@@ -101,15 +101,18 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.info("deploying infrastructure")
             self.deploy_infrastructure(infras)
 
+        if not skip_alerts:
+            self.deploy_alerts(alert_type="infra")
+
         infra_config = self.get_infrastructure_config()
         backend.update_config(infra_config, write_config, stage)
 
         if not skip_backend:
-            log.info(f"preparing to deploy with backend {self.backend.resource_type}")
+            log.info(f"preparing to deploy with backend {self.backend.alert_type}")
             source = backend.deploy(force=force)
 
         if not skip_alerts:
-            self.deploy_alerts(resource_type="backend")
+            self.deploy_alerts(alert_type="backend")
 
         registered_handlers = self.get_registered_handler_resource_types()
 
@@ -129,7 +132,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.deploy_handlers(source, handlers)
 
         if not skip_alerts:
-            self.deploy_alerts(resource_type="handler")
+            self.deploy_alerts(alert_type="handler")
 
     def destroy(
         self,
@@ -137,6 +140,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         skip_infra=False,
         skip_handlers=False,
         skip_backend=False,
+        skip_alerts=False,
         handlers: List[str] = None,
         infras: List[str] = None,
     ):
@@ -146,12 +150,24 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.info("destroying handlers")
             self.destroy_handlers(handlers)
 
+            if not skip_alerts:
+                log.info("destroying handler alerts")
+                self.destroy_alerts("handler")
+
         if not skip_backend:
             self.backend.destroy(all=all)
+
+            if not skip_alerts:
+                log.info("destroying backend alerts")
+                self.destroy_alerts("backend")
 
         if infras or not skip_infra:
             log.info("destroying infrastructure")
             self.destroy_infrastructure(infras)
+
+            if not skip_alerts:
+                log.info("destroying infra alerts")
+                self.destroy_alerts("infra")
 
     def sync(
         self,

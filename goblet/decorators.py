@@ -184,9 +184,7 @@ class Goblet_Decorators:
                 kwargs["config"] = dlq_policy
 
             for dlq_alert in dlq_alerts:
-                dlq_alert.update_extras({
-                    "topic": topic
-                })
+                dlq_alert.update_extras({"topic": topic})
                 self.alerts.register(dlq_alert)
 
         return self._create_registration_function(
@@ -303,11 +301,13 @@ class Goblet_Decorators:
 
     def alert(self, alert):
         """Alert Resource"""
-        alert.update_extras({
-            "monitoring_type": self.backend.monitoring_type,
-            "resource_name": self.backend.name,
-            "monitoring_label_key": self.backend.monitoring_label_key,
-        })
+        alert.update_extras(
+            {
+                "monitoring_type": self.backend.monitoring_type,
+                "resource_name": self.backend.name,
+                "monitoring_label_key": self.backend.monitoring_label_key,
+            }
+        )
         return self.alerts.register(alert)
 
     def cloudtaskqueue(self, name, config=None, **kwargs):

@@ -2,7 +2,8 @@ from goblet import Goblet
 from goblet.alerts.alert_conditions import (
     MetricCondition,
     LogMatchCondition,
-    CustomMetricCondition,PubSubDLQCondition
+    CustomMetricCondition,
+    PubSubDLQCondition,
 )
 from goblet.alerts.alerts import BackendAlert, PubSubDLQAlert
 from goblet.backends import CloudFunctionV1
@@ -12,6 +13,7 @@ from goblet_gcp_client import (
     reset_replay_count,
     get_replay_count,
 )
+
 
 class TestAlerts:
     def test_add_alert(self):
@@ -103,15 +105,16 @@ class TestAlerts:
             ],
         )
 
-        pubsub_dlq = PubSubDLQAlert( "pubsubdlq",
+        pubsub_dlq = PubSubDLQAlert(
+            "pubsubdlq",
             conditions=[
                 PubSubDLQCondition(
                     "pubsubdlq",
                     subscription_id="pubsub-deploy-subscription",
                 )
             ],
-            extras={"topic":"subscription"}
-            )
+            extras={"topic": "subscription"},
+        )
 
         app.alert(metric_alert)
         app.alert(log_alert)
@@ -157,7 +160,6 @@ class TestAlerts:
 
         assert get_replay_count() == 6
 
-
     def test_deploy_pubsub_dql_alert(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
@@ -167,8 +169,6 @@ class TestAlerts:
         reset_replay_count()
 
         app = Goblet(function_name="alerts-test-pubsub-dlq")
-
-
 
         # app.alert(
         #     "pubsubdlq",

@@ -9,6 +9,8 @@ from goblet.test_utils import (
     dummy_function,
     mock_dummy_function,
 )
+from goblet.alerts.alerts import PubSubDLQAlert
+from goblet.alerts.alert_conditions import PubSubDLQCondition
 from goblet.backends import CloudRun, CloudFunctionV1
 from goblet_gcp_client import (
     get_responses,
@@ -516,7 +518,21 @@ class TestPubSubSubscription:
         )
         setattr(app, "entrypoint", "app")
 
-        app.pubsub_subscription("test", dlq=True, dlq_alert=True)(dummy_function)
+        app.pubsub_subscription(
+            "test",
+            dlq=True,
+            dlq_alerts=[
+                PubSubDLQAlert(
+                    "pubsubdlq",
+                    conditions=[
+                        PubSubDLQCondition(
+                            "pubsubdlq",
+                            subscription_id="pubsub-deploy-subscription",
+                        )
+                    ],
+                )
+            ],
+        )(dummy_function)
 
         app.deploy(force=True, skip_backend=True)
 

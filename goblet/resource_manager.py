@@ -355,11 +355,11 @@ class Resource_Manager:
                         continue
                     raise e
 
-    def deploy_alerts(self, resource_type):
-        self.alerts.deploy(resource_type)
+    def deploy_alerts(self, alert_type):
+        self.alerts.deploy(alert_type)
 
-    def destroy_alerts(self, resource_type):
-        self.alerts.destroy(resource_type)
+    def destroy_alerts(self, alert_type):
+        self.alerts.destroy(alert_type)
 
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own

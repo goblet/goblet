@@ -68,6 +68,7 @@ def version():
 @click.option("--skip-handlers", "skip_handlers", is_flag=True)
 @click.option("--skip-backend", "skip_backend", is_flag=True)
 @click.option("--skip-infra", "skip_infra", is_flag=True)
+@click.option("--skip-alerts", "skip_alerts", is_flag=True)
 @click.option("--config-from-json-string", "config")
 @click.option("-f", "--force", "force", is_flag=True)
 @click.option("--write-config", "write_config", is_flag=True)
@@ -88,6 +89,7 @@ def deploy(
     skip_handlers,
     skip_backend,
     skip_infra,
+    skip_alerts,
     config,
     force,
     write_config,
@@ -139,6 +141,7 @@ def deploy(
             skip_handlers,
             skip_backend,
             skip_infra,
+            skip_alerts,
             force=force,
             stage=stage,
             write_config=write_config,
@@ -161,6 +164,7 @@ def deploy(
 @click.option("--skip-infra", "skip_infra", is_flag=True)
 @click.option("--skip-handlers", "skip_handlers", is_flag=True)
 @click.option("--skip-backend", "skip_backend", is_flag=True)
+@click.option("--skip-alerts", "skip_alerts", is_flag=True)
 @click.option(
     "-h", "--handler", "handler", type=click.Choice(SUPPORTED_HANDLERS), multiple=True
 )
@@ -179,6 +183,7 @@ def destroy(
     skip_infra,
     skip_handlers,
     skip_backend,
+    skip_alerts,
     handler,
     infra,
 ):
@@ -215,6 +220,7 @@ def destroy(
             skip_infra,
             skip_handlers,
             skip_backend,
+            skip_alerts,
             handlers=list(set(handler)),
             infras=list(set(infra)),
         )
