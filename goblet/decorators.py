@@ -14,7 +14,6 @@ from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
-from goblet.alerts.alert_conditions import PubSubDLQCondition
 from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )

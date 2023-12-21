@@ -1,6 +1,5 @@
 import logging
 import os
-import goblet.globals as g
 
 from goblet_gcp_client.client import get_default_project
 

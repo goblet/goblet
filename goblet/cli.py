@@ -29,7 +29,6 @@ SUPPORTED_HANDLERS = [
     "uptime",
 ]
 SUPPORTED_INFRASTRUCTURES = [
-    "alerts",
     "apigateway",
     "cloudtaskqueue",
     "pubsub",

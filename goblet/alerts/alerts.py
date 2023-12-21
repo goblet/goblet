@@ -2,11 +2,8 @@ import logging
 import os
 import goblet.globals as g
 
-# from goblet_gcp_client.client import get_default_project
 from goblet.permissions import gcp_generic_resource_permissions
 from goblet.client import VersionedClients
-from goblet.backends.backend import Backend
-from goblet.handlers.pubsub import PubSub
 from goblet.errors import GobletValidationError
 
 from googleapiclient.errors import HttpError
@@ -70,11 +67,15 @@ class Alerts:
         if not self.resources:
             return
         filtered_alerts = [
-            alert for _, alert in self.resources.items() if alert.alert_type == alert_type
+            alert
+            for _, alert in self.resources.items()
+            if alert.alert_type == alert_type
         ]
 
         for alert in filtered_alerts:
-            alert.destroy(self.name, self.gcp_deployed_alerts[f"{self.name}-{alert.name}"]["name"])
+            alert.destroy(
+                self.name, self.gcp_deployed_alerts[f"{self.name}-{alert.name}"]["name"]
+            )
 
     def sync(self, dryrun=False):
         # Does not sync custom metrics
@@ -156,7 +157,7 @@ class Alert:
         self.app_name = app_name
         for condition in self.conditions:
             condition.format_filter_or_query(**self._condition_arguments())
-    
+
         self._destroy_alert(full_alert_name)
 
     def _destroy_alert(self, full_alert_name):
