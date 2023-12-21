@@ -1,6 +1,6 @@
 from urllib import request
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
-from goblet.infrastructures.alerts import (
+from goblet.alerts.alert_conditions import (
     MetricCondition,
     LogMatchCondition,
     CustomMetricCondition,
@@ -9,7 +9,7 @@ from goblet.handlers.routes import CORSConfig
 import asyncio
 import logging
 
-app = Goblet(function_name="goblet-example", region="us-central-1")
+app = Goblet(function_name="goblet-example")
 app.log.setLevel(logging.INFO)  # configure goblet logger level
 goblet_entrypoint(app)
 
@@ -18,13 +18,13 @@ from marshmallow import Schema, fields
 
 # Example http trigger
 @app.http()
-def main(request):
+def main_http(request):
     return jsonify(request.json)
 
 
 # Example http trigger that contains header
 @app.http(headers={"X-Github-Event"})
-def main(request):
+def main_header(request):
     return jsonify(request.json)
 
 

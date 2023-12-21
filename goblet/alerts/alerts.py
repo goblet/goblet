@@ -6,6 +6,7 @@ import goblet.globals as g
 from goblet.permissions import gcp_generic_resource_permissions
 from goblet.client import VersionedClients
 from goblet.backends.backend import Backend
+from goblet.handlers.pubsub import PubSub
 from goblet.errors import GobletValidationError
 
 from googleapiclient.errors import HttpError
@@ -25,6 +26,7 @@ class Alerts:
     ]
     required_apis = ["logging"]
     can_sync = True
+    checked_alerts = False
     _gcp_deployed_alerts = {}
 
     def __init__(self, name, resources=None) -> None:
@@ -41,7 +43,8 @@ class Alerts:
         """
         List of deployed gcp alerts, since we need to get unique id's from alerts in order to patch or avoid creating duplicates
         """
-        if not self._gcp_deployed_alerts:
+        if not self.checked_alerts:
+            self.checked_alerts = True
             alerts = self.versioned_clients.monitoring_alert.execute(
                 "list",
                 parent_key="name",
@@ -59,7 +62,7 @@ class Alerts:
         ]
 
         for alert in filtered_alerts:
-            alert.deploy(self.versioned_clients, self.gcp_deployed_alerts)
+            alert.deploy(self.gcp_deployed_alerts)
 
     def destroy(self, alert_type):
         if not self.resources:
@@ -87,22 +90,23 @@ class Alert:
     """
 
     alert_type = None
+    extras = {}
 
-    def __init__(self, name, resource, conditions, channels=[], **kwargs) -> None:
+    def __init__(self, name, conditions, channels=[], extras=None, **kwargs) -> None:
         self.config = g.config
         self.versioned_clients = VersionedClients()
         self.name = name
-        self.resource = resource
-        if not self.validate_resource_type():
-            raise GobletValidationError("Not a valid resource for this type of alert")
-
         self.conditions = conditions
         self.notification_channels = self.config.alerts.get(
             "notification_channels", channels
         )
         self.kwargs = kwargs
+        if extras:
+            self.extras = extras
 
     def deploy(self, gcp_deployed_alerts):
+        if not self.validate_extras():
+            raise GobletValidationError("Missing extra fields needed for this alert")
         formatted_conditions = []
         default_alert_kwargs = {}
         for condition in self.conditions:
@@ -163,23 +167,38 @@ class Alert:
         for condition in self.conditions:
             condition.destroy_extra(self.versioned_clients)
 
-    def validate_resource_type(self):
+    def validate_extras(self):
         return True
 
     def _condition_arguments(self):
-        return {"name": self.name}
+        return {"app_name": self.name}
 
+    def update_extras(self, extras):
+        self.extras.update(extras)
+        return
 
 class BackendAlert(Alert):
     type = "backend"
 
-    def validate_resource_type(self):
-        return isinstance(self.resource, Backend)
+    def validate_extras(self):
+        return list(self.extras.keys()) == ["monitoring_type","resource_name","monitoring_label_key"]
 
     def _condition_arguments(self):
         return {
             "app_name": self.name,
-            "monitoring_type": self.resource.monitoring_type,
-            "resource_name": self.resource.name,
-            "monitoring_label_key": self.resource.monitoring_label_key,
+            "monitoring_type": self.extras["monitoring_type"],
+            "resource_name": self.extras["resource_name"],
+            "monitoring_label_key": self.extras["monitoring_label_key"],
+        }
+
+class PubSubDLQAlert(Alert):
+    type = "pubsub"
+
+    def validate_extras(self):
+        return "topic" in self.extras.keys()
+
+    def _condition_arguments(self):
+        return {
+            "app_name": self.name,
+            "subscription_id": f"{self.name}-{self.extras['topic']}"
         }

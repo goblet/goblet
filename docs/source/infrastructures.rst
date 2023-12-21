@@ -23,7 +23,7 @@ For `LogMatchCondition` you can completely replace the filter if necessary by se
 
 .. code:: python
 
-    from goblet.infrastructures.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
+    from goblet.alerts.alert_conditions import MetricCondition,LogMatchCondition,CustomMetricCondition
     app = Goblet()
     
     # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10

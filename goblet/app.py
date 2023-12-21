@@ -85,6 +85,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         self,
         skip_handlers=False,
         skip_backend=False,
+        skip_alerts=False,
         skip_infra=False,
         force=False,
         write_config=False,
@@ -106,6 +107,8 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         if not skip_backend:
             log.info(f"preparing to deploy with backend {self.backend.resource_type}")
             source = backend.deploy(force=force)
+
+        if not skip_alerts:
             self.deploy_alerts(resource_type="backend")
 
         registered_handlers = self.get_registered_handler_resource_types()

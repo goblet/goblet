@@ -23,7 +23,6 @@ from goblet.handlers.uptime import Uptime
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 
-# from goblet.infrastructures.alerts import Alerts
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
@@ -31,7 +30,7 @@ from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
 
-from goblet.alerts.alerts import Alerts
+from goblet.alerts import Alerts
 
 from goblet.response import default_missing_route
 
@@ -332,7 +331,7 @@ class Resource_Manager:
         if infras:
             for infra in infras:
                 log.info(f"destroying {infra}")
-                self.infrastructure.get(infra).destroy()
+                self.infrastructure[infra].destroy()
         else:
             for k, v in self.infrastructure.items():
                 log.info(f"destroying {k}")
@@ -342,7 +341,7 @@ class Resource_Manager:
         if infras:
             for infra in infras:
                 try:
-                    self.infrastructure.get(infra).sync(dryrun)
+                    self.infrastructure[infra].sync(dryrun)
                 except HttpError as e:
                     if e.resp.status == 403:
                         continue
