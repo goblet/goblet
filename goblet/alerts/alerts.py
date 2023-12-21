@@ -64,17 +64,17 @@ class Alerts:
         ]
 
         for alert in filtered_alerts:
-            alert.deploy(self.gcp_deployed_alerts)
+            alert.deploy(self.name, self.gcp_deployed_alerts)
 
     def destroy(self, alert_type):
         if not self.resources:
             return
         filtered_alerts = [
-            alert for _, alert in self.resources.items() if alert.type == alert_type
+            alert for _, alert in self.resources.items() if alert.alert_type == alert_type
         ]
 
         for alert in filtered_alerts:
-            alert.destroy(self.versioned_clients, self.gcp_deployed_alerts)
+            alert.destroy(self.name, self.gcp_deployed_alerts[f"{self.name}-{alert.name}"]["name"])
 
     def sync(self, dryrun=False):
         # Does not sync custom metrics
@@ -98,6 +98,7 @@ class Alert:
         self.config = g.config
         self.versioned_clients = VersionedClients()
         self.name = name
+        self.app_name = ""
         self.conditions = conditions
         self.notification_channels = self.config.alerts.get(
             "notification_channels", channels
@@ -106,7 +107,8 @@ class Alert:
         if extras:
             self.extras = extras
 
-    def deploy(self, gcp_deployed_alerts):
+    def deploy(self, app_name, gcp_deployed_alerts):
+        self.app_name = app_name
         if not self.validate_extras():
             raise GobletValidationError("Missing extra fields needed for this alert")
         formatted_conditions = []
@@ -150,7 +152,11 @@ class Alert:
             )
             log.info(f"created alert: {self.name}")
 
-    def destroy(self, full_alert_name):
+    def destroy(self, app_name, full_alert_name):
+        self.app_name = app_name
+        for condition in self.conditions:
+            condition.format_filter_or_query(**self._condition_arguments())
+    
         self._destroy_alert(full_alert_name)
 
     def _destroy_alert(self, full_alert_name):
@@ -173,7 +179,7 @@ class Alert:
         return True
 
     def _condition_arguments(self):
-        return {"app_name": self.name}
+        return {"app_name": self.app_name}
 
     def update_extras(self, extras):
         self.extras.update(extras)
@@ -192,7 +198,7 @@ class BackendAlert(Alert):
 
     def _condition_arguments(self):
         return {
-            "app_name": self.name,
+            "app_name": self.app_name,
             "monitoring_type": self.extras["monitoring_type"],
             "resource_name": self.extras["resource_name"],
             "monitoring_label_key": self.extras["monitoring_label_key"],
@@ -207,6 +213,6 @@ class PubSubDLQAlert(Alert):
 
     def _condition_arguments(self):
         return {
-            "app_name": self.name,
+            "app_name": self.app_name,
             "subscription_id": f"{self.name}-{self.extras['topic']}",
         }

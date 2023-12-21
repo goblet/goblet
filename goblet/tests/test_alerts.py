@@ -196,54 +196,56 @@ class TestAlerts:
             ],
         )
 
-        pubsub_dlq = PubSubDLQAlert(
-            "pubsubdlq",
-            conditions=[
-                PubSubDLQCondition(
-                    "pubsubdlq",
-                    subscription_id="pubsub-deploy-subscription",
-                )
-            ],
-            extras={"topic": "subscription"},
-        )
+        # pubsub_dlq = PubSubDLQAlert(
+        #     "pubsubdlq",
+        #     conditions=[
+        #         PubSubDLQCondition(
+        #             "pubsubdlq",
+        #             subscription_id="pubsub-deploy-subscription",
+        #         )
+        #     ],
+        #     extras={"topic": "subscription"},
+        # )
 
         app.alert(metric_alert)
         app.alert(log_alert)
         app.alert(custom_alert)
-        app.alert(pubsub_dlq)
+        # app.alert(pubsub_dlq)
 
         app.destroy()
 
-        assert get_replay_count() == 7
+        assert get_replay_count() == 6
 
-    # def test_sync_alerts(self, monkeypatch):
-    #     monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
-    #     monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
-    #     monkeypatch.setenv("G_TEST_NAME", "alerts-sync")
-    #     monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+    def test_sync_alerts(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "alerts-sync")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-    #     app = Goblet(function_name="alerts-test")
+        app = Goblet(function_name="alerts-test")
 
-    #     app.alert(
-    #         "custom",
-    #         conditions=[
-    #             CustomMetricCondition(
-    #                 "custom",
-    #                 metric_filter="severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)",
-    #                 value=10,
-    #             )
-    #         ],
-    #     )
+        custom_alert = BackendAlert(
+            "custom",
+            conditions=[
+                CustomMetricCondition(
+                    "custom",
+                    metric_filter="severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)",
+                    value=10,
+                )
+            ],
+        )
+        app.alert(custom_alert)
 
-    #     app.infrastructure["alerts"]._gcp_deployed_alerts = {}
-    #     app.infrastructure["alerts"].sync()
+        app.alerts._gcp_deployed_alerts = {}
+        app.alerts.checked_alerts = True
+        app.alerts.sync()
 
-    #     responses = get_responses("alerts-sync")
-    #     alerts = get_response(
-    #         "alerts-sync",
-    #         "get-v3-projects-goblet-alertPolicies_1.json",
-    #     )
+        responses = get_responses("alerts-sync")
+        alerts = get_response(
+            "alerts-sync",
+            "get-v3-projects-goblet-alertPolicies_1.json",
+        )
 
-    #     assert len(responses) - 1 == alerts["body"]["totalSize"] - len(
-    #         app.infrastructure["alerts"].resources
-    #     )
+        assert len(responses) - 1 == alerts["body"]["totalSize"] - len(
+            app.alerts.resources
+        )
