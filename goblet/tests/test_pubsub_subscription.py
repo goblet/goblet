@@ -568,7 +568,7 @@ class TestPubSubSubscription:
             "pubsub-deploy-subscription-dlq-alert"
         )
 
-        assert get_replay_count() == 14
+        assert get_replay_count() == 15
 
     def test_deploy_local(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
