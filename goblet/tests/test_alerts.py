@@ -2,10 +2,9 @@ from goblet import Goblet
 from goblet.alerts.alert_conditions import (
     MetricCondition,
     LogMatchCondition,
-    CustomMetricCondition,
-    PubSubDLQCondition,
+    CustomMetricCondition,PubSubDLQCondition
 )
-from goblet.alerts.alerts import BackendAlert
+from goblet.alerts.alerts import BackendAlert, PubSubDLQAlert
 from goblet.backends import CloudFunctionV1
 
 from goblet_gcp_client import (
@@ -69,7 +68,7 @@ class TestAlerts:
             == 'resource.type="cloud_function" AND resource.labels.function_name="name" AND metric.type = "cloudfunctions.googleapis.com/function/execution_count"'
         )
 
-    def test_deploy_backend_alerts(self, monkeypatch):
+    def test_deploy_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", "alerts-deploy")
@@ -104,19 +103,20 @@ class TestAlerts:
             ],
         )
 
+        pubsub_dlq = PubSubDLQAlert( "pubsubdlq",
+            conditions=[
+                PubSubDLQCondition(
+                    "pubsubdlq",
+                    subscription_id="pubsub-deploy-subscription",
+                )
+            ],
+            extras={"topic":"subscription"}
+            )
+
         app.alert(metric_alert)
         app.alert(log_alert)
         app.alert(custom_alert)
-
-        # app.alert(
-        #     "pubsubdlq",
-        #     conditions=[
-        #         PubSubDLQCondition(
-        #             "pubsubdlq",
-        #             subscription_id="pubsub-deploy-subscription",
-        #         )
-        #     ],
-        # )
+        app.alert(pubsub_dlq)
 
         app.deploy(skip_infra=True, skip_handlers=True, skip_backend=True)
 
@@ -146,16 +146,17 @@ class TestAlerts:
         )
         assert post_alert_custom["body"]["displayName"] == "alerts-test-custom"
 
-        assert get_replay_count() == 5
+        post_alert_dlq = get_response(
+            "alerts-deploy",
+            "post-v3-projects-goblet-alertPolicies_4.json",
+        )
+        assert (
+            post_alert_dlq["body"]["displayName"]
+            == "alerts-test-subscription-dlq-alert"
+        )
 
-        # post_alert_dlq = get_response(
-        #     "alerts-deploy",
-        #     "post-v3-projects-goblet-alertPolicies_4.json",
-        # )
-        # assert (
-        #     post_alert_dlq["body"]["displayName"]
-        #     == "pubsub-deploy-subscription-dlq-alert"
-        # )
+        assert get_replay_count() == 6
+
 
     def test_deploy_pubsub_dql_alert(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "premise-data-platform-dev")

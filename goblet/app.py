@@ -128,6 +128,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.info("deploying handlers")
             self.deploy_handlers(source, handlers)
 
+        if not skip_alerts:
+            self.deploy_alerts(resource_type="handler")
+
     def destroy(
         self,
         all=False,

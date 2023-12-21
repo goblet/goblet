@@ -58,7 +58,7 @@ class Alerts:
         if not self.resources:
             return
         filtered_alerts = [
-            alert for _, alert in self.resources.items() if alert.type == alert_type
+            alert for _, alert in self.resources.items() if alert.alert_type == alert_type
         ]
 
         for alert in filtered_alerts:
@@ -178,7 +178,7 @@ class Alert:
         return
 
 class BackendAlert(Alert):
-    type = "backend"
+    alert_type = "backend"
 
     def validate_extras(self):
         return list(self.extras.keys()) == ["monitoring_type","resource_name","monitoring_label_key"]
@@ -192,7 +192,7 @@ class BackendAlert(Alert):
         }
 
 class PubSubDLQAlert(Alert):
-    type = "pubsub"
+    alert_type = "handler"
 
     def validate_extras(self):
         return "topic" in self.extras.keys()
