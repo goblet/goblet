@@ -73,9 +73,11 @@ class Alerts:
         ]
 
         for alert in filtered_alerts:
-            alert.destroy(
-                self.name, self.gcp_deployed_alerts[f"{self.name}-{alert.name}"]["name"]
-            )
+            if self.gcp_deployed_alerts.get(f"{self.name}-{alert.name}"):
+                alert.destroy(
+                    self.name,
+                    self.gcp_deployed_alerts[f"{self.name}-{alert.name}"]["name"],
+                )
 
     def sync(self, dryrun=False):
         # Does not sync custom metrics
