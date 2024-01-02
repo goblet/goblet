@@ -233,11 +233,12 @@ class Goblet_Decorators:
     def uptime(self, **kwargs):
         """Uptime trigger"""
         uptime_alerts = kwargs.pop("alerts", [])
+        additional_kwargs = kwargs
 
-        def _register_handler(user_handler, **kwargs):
+        def _register_handler(user_handler):
             if user_handler:
                 handler_name = user_handler.__name__
-                kwargs = kwargs or {}
+                kwargs = additional_kwargs or {}
                 self._register_handler("uptime", handler_name, user_handler, kwargs)
 
                 # Register alerts

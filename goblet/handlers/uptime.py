@@ -122,9 +122,6 @@ class Uptime(Handler):
             self._destroy_uptime_check(check)
 
     def _destroy_uptime_check(self, check):
-        import pdb
-
-        pdb.set_trace()
         try:
             self.versioned_clients.monitoring_uptime.execute(
                 "delete", parent_key="name", parent_schema=check["name"]

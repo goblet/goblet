@@ -15,7 +15,7 @@ from goblet.alerts import UptimeAlert, UptimeCondition
 
 
 class TestUptime:
-    def test_add_schedule(self, monkeypatch):
+    def test_add_uptime(self, monkeypatch):
         app = Goblet(function_name="test-uptime")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
