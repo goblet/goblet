@@ -4,8 +4,10 @@ from goblet.alerts.alert_conditions import (
     MetricCondition,
     LogMatchCondition,
     CustomMetricCondition,
+    UptimeCondition, 
+    PubSubDLQCondition
 )
-from goblet.alerts.alerts import BackendAlert
+from goblet.alerts.alerts import BackendAlert, UptimeAlert, PubSubDLQAlert
 from goblet.handlers.routes import CORSConfig
 import asyncio
 import logging
@@ -236,11 +238,16 @@ def pubsub_subscription_filter(data):
 @app.pubsub_subscription(
     "goblet-created-test-topic",
     dlq=True,
-    dlq_alert=True,
-    dlq_alert_config={
-        # Trigger alert if 10 messages fail within 1 minute
-        "trigger_value": 10,
-    },
+    dlq_alerts=[
+        PubSubDLQAlert(
+            "pubsubdlq",
+            conditions=[
+                PubSubDLQCondition(
+                    "pubsublq-condition"
+                )
+            ],
+        )
+    ]
 )
 def failed_subscription(data):
     raise Exception("Simulating failure")
@@ -439,4 +446,10 @@ def return_error_string(error):
 # Example uptime check
 @app.uptime(timeout="30s")
 def uptime_check():
+    return "success"
+
+# Example uptime check with alert
+@app.uptime(timeout="30s",alerts=[UptimeAlert("uptime", conditions=[UptimeCondition("uptime")])])
+def uptime_check_with_alert():
+    app.log.info("success")
     return "success"
