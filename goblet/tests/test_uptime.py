@@ -11,6 +11,7 @@ from goblet_gcp_client import (
     get_replay_count,
     reset_replay_count,
 )
+from goblet.alerts import UptimeAlert, UptimeCondition
 
 
 class TestUptime:
@@ -82,6 +83,38 @@ class TestUptime:
             "headers": {"X-Goblet-Uptime-Name": "test"},
             "requestMethod": "GET",
         }
+
+    def test_deploy_uptime_cloudfunction_alert(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "uptime-deploy-alert")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+
+        reset_replay_count()
+
+        app = Goblet(function_name="test-alerts", backend="cloudfunction")
+
+        @app.uptime(
+            timeout="30s",
+            alerts=[UptimeAlert("uptime", conditions=[UptimeCondition("uptime")])],
+        )
+        def uptime_check():
+            return "success"
+
+        app.deploy(skip_backend=True, skip_handlers=True, skip_infra=True)
+
+        responses = get_responses("uptime-deploy-alert")
+
+        assert get_replay_count() == 3
+
+        uptime_check_name = responses[1]["body"]["uptimeCheckConfigs"][0]["name"].split(
+            "/"
+        )[-1]
+
+        assert (
+            uptime_check_name
+            in responses[2]["body"]["conditions"][0]["conditionThreshold"]["filter"]
+        )
 
     def test_deploy_uptime_cloudrun(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")

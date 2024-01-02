@@ -46,7 +46,7 @@ class AlertCondition:
         if self._condition.get("query"):
             self._condition["query"] = self.query
         return {
-            "displayName": f"{self.app_name}-{self.name}",
+            "displayName": f"{self.name}",
             self.condition_key: self._condition,
         }
 
@@ -222,23 +222,23 @@ class PubSubDLQCondition(MetricCondition):
 
 class UptimeCondition(MetricCondition):
     """
-    Creates and deploys an alert for failed uptime checks.
+    Creates and deploys an alert condition for failed uptime checks.
     Supports `uptime_url` or `cloud_run_revision`
     """
 
-    def __init__(self, name, check_id, resource_type, value=1, **kwargs) -> None:
+    def __init__(self, name, value=0.5, **kwargs) -> None:
         super().__init__(
             name=name,
             metric="monitoring.googleapis.com/uptime_check/check_passed",
             value=value,
-            filter='metric.labels.check_id = "{check_id}" AND resource.type = "{resource_type}" AND metric.type = "monitoring.googleapis.com/uptime_check/check_passed"'.format(
-                check_id=check_id, resource_type=resource_type
-            ),
+            filter='resource.type = "uptime_url" AND metric.labels.check_id = "{check_id}" AND metric.type = "monitoring.googleapis.com/uptime_check/check_passed"',
             aggregations=[
                 {
                     "alignmentPeriod": "1200s",
-                    "crossSeriesReducer": "REDUCE_COUNT_FALSE",
+                    "crossSeriesReducer": "REDUCE_NONE",
+                    "perSeriesAligner": "ALIGN_FRACTION_TRUE",
                 }
             ],
+            comparison="COMPARISON_LT",
             **kwargs,
         )

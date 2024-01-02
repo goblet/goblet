@@ -126,7 +126,6 @@ class Resource_Manager:
             "before": {},
             "after": {},
         }
-
         self.alerts = Alerts(function_name)
 
         self.error_handlers = {"GobletRouteNotFoundError": default_missing_route}

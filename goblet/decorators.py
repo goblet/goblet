@@ -32,6 +32,7 @@ EVENT_TYPES = [
     "job",
     "bqremotefunction",
     "cloudtasktarget",
+    "uptime",
 ]
 
 SUPPORTED_BACKENDS = {
@@ -183,7 +184,7 @@ class Goblet_Decorators:
                 kwargs["config"] = dlq_policy
 
             for dlq_alert in dlq_alerts:
-                dlq_alert.update_extras({"topic": topic})
+                dlq_alert.update_extras({"topic": dlq_topic_name})
                 self.alerts.register(dlq_alert)
 
         return self._create_registration_function(
@@ -231,12 +232,24 @@ class Goblet_Decorators:
 
     def uptime(self, **kwargs):
         """Uptime trigger"""
-        return self._create_registration_function(
-            handler_type="uptime",
-            registration_kwargs={
-                "kwargs": kwargs,
-            },
-        )
+        uptime_alerts = kwargs.pop("alerts", [])
+
+        def _register_handler(user_handler, **kwargs):
+            if user_handler:
+                handler_name = user_handler.__name__
+                kwargs = kwargs or {}
+                self._register_handler("uptime", handler_name, user_handler, kwargs)
+
+                # Register alerts
+                for uptime_alert in uptime_alerts:
+                    uptime_alert.update_extras(
+                        {"check_name": f"{self.function_name}-{handler_name}"}
+                    )
+                    self.alerts.register(uptime_alert)
+
+            return user_handler
+
+        return _register_handler
 
     def http(self, headers={}):
         """Base http trigger"""

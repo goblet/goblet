@@ -5,6 +5,7 @@ from goblet.alerts.alert_conditions import (
     LogMatchCondition,
     CustomMetricCondition,
 )
+from goblet.alerts.alerts import BackendAlert
 from goblet.handlers.routes import CORSConfig
 import asyncio
 import logging
@@ -201,28 +202,28 @@ def scheduled_job():
     return jsonify("success")
 
 
-# Pubsub topic
-@app.topic("test")
-def topic(data):
+# Pubsub Subscription
+@app.pubsub_subscription("test")
+def test_subscription(data):
     app.log.info(data)
     return
 
 
 # Pubsub topic with matching message attributes
-@app.topic("test", attributes={"key": "value"})
+@app.pubsub_subscription("test", attributes={"key": "value"})
 def pubsub_attributes(data):
     app.log.info(data)
     return
 
 
 # create a pubsub subscription instead of pubsub triggered function
-@app.topic("test", use_subscription=True)
+@app.pubsub_subscription("test", use_subscription=True)
 def pubsub_subscription_use_subscription(data):
     return
 
 
 # create a pubsub subscription instead of pubsub triggered function and add filter
-@app.topic(
+@app.pubsub_subscription(
     "test",
     use_subscription=True,
     filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"',
@@ -230,6 +231,24 @@ def pubsub_subscription_use_subscription(data):
 def pubsub_subscription_filter(data):
     return
 
+# Pubsub Subscription with DLQ and alert
+# Triggered by pubsub topic. Simulates failure to trigger DLQ
+@app.pubsub_subscription(
+    "goblet-created-test-topic",
+    dlq=True,
+    dlq_alert=True,
+    dlq_alert_config={
+        # Trigger alert if 10 messages fail within 1 minute
+        "trigger_value": 10,
+    },
+)
+def failed_subscription(data):
+    raise Exception("Simulating failure")
+
+# Create a pubsub topic
+app.pubsub_topic(
+    "test-topic"
+)
 
 # Example Storage trigger on the create/finalize event
 @app.storage("BUCKET_NAME", "finalize")
@@ -327,19 +346,20 @@ app.redis("redis-test")
 app.vpcconnector("vpc-conn-test")
 
 # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
-app.alert(
+metric_alert = BackendAlert(
     "metric",
     conditions=[
         MetricCondition(
             "test",
             metric="cloudfunctions.googleapis.com/function/execution_count",
-            value=10,
+            value=10
         )
     ],
 )
+app.alert(metric_alert)
 
-# Example Metric Alert for the cloudfunction metric execution_times with a Delta type with a threshold of 1000 ms
-app.alert(
+# Example Metric Alert for the cloudfunction metric execution_times with a custom aggregation
+metric_alert_2 = BackendAlert(
     "metric",
     conditions=[
         MetricCondition(
@@ -356,12 +376,17 @@ app.alert(
         )
     ],
 )
+app.alert(metric_alert_2)
 
 # Example Log Match metric that will trigger an incendent off of any Error logs
-app.alert("error", conditions=[LogMatchCondition("error", "severity>=ERROR")])
+log_alert = BackendAlert(
+    "error",
+    conditions=[LogMatchCondition("error", "severity>=ERROR")],
+)
+app.alert(log_alert)
 
 # Example Metric Alert that creates a custom metric for severe errors with http code in the 500's and creates an alert with a threshold of 10
-app.alert(
+custom_alert = BackendAlert(
     "custom",
     conditions=[
         CustomMetricCondition(
@@ -371,7 +396,7 @@ app.alert(
         )
     ],
 )
-
+app.alert(custom_alert)
 
 # Example CloudTask Queue + CloudTask HTTP Target
 client = app.cloudtaskqueue("queue", config={

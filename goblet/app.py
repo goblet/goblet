@@ -157,9 +157,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         if not skip_backend:
             self.backend.destroy(all=all)
 
-            if not skip_alerts:
-                log.info("destroying backend alerts")
-                self.destroy_alerts("backend")
+        if not skip_alerts:
+            log.info("destroying backend alerts")
+            self.destroy_alerts("backend")
 
         if infras or not skip_infra:
             log.info("destroying infrastructure")

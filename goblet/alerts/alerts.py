@@ -127,7 +127,7 @@ class Alert:
         default_alert_kwargs.update(self.kwargs)
 
         body = {
-            "displayName": self.name,
+            "displayName": f"{self.app_name}-{self.name}",
             "conditions": formatted_conditions,
             "notificationChannels": self.notification_channels,
             "combiner": "OR",
@@ -215,5 +215,40 @@ class PubSubDLQAlert(Alert):
     def _condition_arguments(self):
         return {
             "app_name": self.app_name,
-            "subscription_id": f"{self.name}-{self.extras['topic']}",
+            "subscription_id": f"{self.extras['topic']}-pull-subscription",
+        }
+
+
+class UptimeAlert(Alert):
+    alert_type = "handler"
+
+    def validate_extras(self):
+        return "check_name" in self.extras.keys()
+
+    def list_uptime_checks(self):
+        resp = self.versioned_clients.monitoring_uptime.execute(
+            "list",
+            parent_key="parent",
+            params={
+                "filter": f"displayName=starts_with('{self.extras['check_name']}')"
+            },
+        )
+        return resp.get("uptimeCheckConfigs", [])
+
+    def get_uptime_check_id(self):
+        check = [
+            check
+            for check in self.list_uptime_checks()
+            if check["displayName"] == self.extras["check_name"]
+        ]
+        if len(check) != 1:
+            raise GobletValidationError(
+                f"Uptime check {self.extras['check_name']} not found"
+            )
+        return check[0]["name"].split("/")[-1]
+
+    def _condition_arguments(self):
+        return {
+            "app_name": self.app_name,
+            "check_id": self.get_uptime_check_id(),
         }
