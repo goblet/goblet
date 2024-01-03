@@ -1,154 +1,12 @@
 import logging
 import os
 
-from goblet.infrastructures.infrastructure import Infrastructure
 from goblet_gcp_client.client import get_default_project
-from goblet.permissions import gcp_generic_resource_permissions
 
 from googleapiclient.errors import HttpError
 
 log = logging.getLogger("goblet.deployer")
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
-
-
-class Alerts(Infrastructure):
-    """Cloud Monitoring Alert Policies that can trigger notification channels based on built in or custom metrics.
-    https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies. Alerts and Alert conditions contain a
-    few common defaults, that are used by GCP. These can be overriden by passing in the correct params.
-    """
-
-    resource_type = "alerts"
-    can_sync = True
-    _gcp_deployed_alerts = {}
-    required_apis = ["logging"]
-    permissions = [
-        *gcp_generic_resource_permissions("monitoring", "alertPolicies"),
-        *gcp_generic_resource_permissions("logging", "logMetrics"),
-    ]
-
-    def register(self, name, **kwargs):
-        kwargs = kwargs.get("kwargs", {})
-        conditions = kwargs.pop("conditions")
-        notification_channels = kwargs.pop("notification_channels", [])
-        self.resources[f"{self.name}-{name}"] = {
-            "name": f"{self.name}-{name}",
-            "conditions": conditions,
-            "notification_channels": notification_channels,
-            "kwargs": kwargs,
-        }
-
-    @property
-    def gcp_deployed_alerts(self):
-        """
-        List of deployed gcp alerts, since we need to get unique id's from alerts in order to patch or avoid creating duplicates
-        """
-        if not self._gcp_deployed_alerts:
-            alerts = self.versioned_clients.monitoring_alert.execute(
-                "list",
-                parent_key="name",
-                params={"filter": f'display_name=starts_with("{self.name}-")'},
-            )
-            for alert in alerts.get("alertPolicies", []):
-                self._gcp_deployed_alerts[alert["displayName"]] = alert
-        return self._gcp_deployed_alerts
-
-    def _deploy(self, source=None, entrypoint=None):
-        if not self.resources:
-            return
-        config_notification_channels = []
-        if self.config.alerts:
-            config_notification_channels = self.config.alerts.get(
-                "notification_channels", []
-            )
-
-        log.info("deploying alerts......")
-        for alert_name, alert in self.resources.items():
-            self.deploy_alert(alert_name, alert, config_notification_channels)
-
-    def deploy_alert(self, alert_name, alert, notification_channels):
-        formatted_conditions = []
-        default_alert_kwargs = {}
-        for condition in alert["conditions"]:
-            condition.format_filter_or_query(
-                self.name,
-                self.backend.monitoring_type,
-                self.backend.name,
-                self.backend.monitoring_label_key,
-            )
-            default_alert_kwargs.update(condition.default_alert_kwargs)
-            formatted_conditions.append(condition.condition)
-
-            # deploy custom metrics if needed
-            condition.deploy_extra(self.versioned_clients)
-
-        default_alert_kwargs.update(alert["kwargs"])
-        alert["notification_channels"].extend(notification_channels)
-
-        body = {
-            "displayName": alert_name,
-            "conditions": formatted_conditions,
-            "notificationChannels": alert["notification_channels"],
-            "combiner": "OR",
-            **default_alert_kwargs,
-        }
-        # check if exists
-        if alert_name in self.gcp_deployed_alerts:
-            # patch
-            self.versioned_clients.monitoring_alert.execute(
-                "patch",
-                parent_key="name",
-                parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
-                params={"updateMask": ",".join(body.keys()), "body": body},
-            )
-
-            log.info(f"updated alert: {alert_name}")
-        else:
-            # deploy
-            self.versioned_clients.monitoring_alert.execute(
-                "create",
-                parent_key="name",
-                params={"body": body},
-            )
-            log.info(f"created alert: {alert_name}")
-
-    def _sync(self, dryrun=False):
-        # Does not sync custom metrics
-        for alert_name in self.gcp_deployed_alerts.keys():
-            if not self.resources.get(alert_name):
-                log.info(f"Detected unused alert {alert_name}")
-                if not dryrun:
-                    self._destroy_alert(alert_name)
-
-    def destroy(self):
-        if not self.resources:
-            return
-        for alert_name in self.resources.keys():
-            self._destroy_alert(alert_name)
-
-    def _destroy_alert(self, alert_name):
-        if not self.gcp_deployed_alerts.get(alert_name):
-            log.info(f"Alert {alert_name} already destroyed")
-        else:
-            try:
-                self.versioned_clients.monitoring_alert.execute(
-                    "delete",
-                    parent_key="name",
-                    parent_schema=self.gcp_deployed_alerts[alert_name]["name"],
-                )
-                log.info(f"Destroying alert {alert_name}......")
-            except HttpError as e:
-                if e.resp.status == 404:
-                    log.info(f"Alert {alert_name} already destroyed")
-                else:
-                    raise e
-        for condition in self.resources.get(alert_name, {}).get("conditions", []):
-            condition.format_filter_or_query(
-                self.name,
-                self.backend.monitoring_type,
-                self.backend.name,
-                self.backend.monitoring_label_key,
-            )
-            condition.destroy_extra(self.versioned_clients)
 
 
 class AlertCondition:
@@ -188,19 +46,12 @@ class AlertCondition:
         if self._condition.get("query"):
             self._condition["query"] = self.query
         return {
-            "displayName": f"{self.app_name}-{self.name}",
+            "displayName": f"{self.name}",
             self.condition_key: self._condition,
         }
 
-    def format_filter_or_query(
-        self, app_name, monitoring_type, resource_name, monitoring_label_key
-    ):
-        self.app_name = app_name
-        self.filter = self.filter.format(
-            monitoring_type=monitoring_type,
-            resource_name=resource_name,
-            monitoring_label_key=monitoring_label_key,
-        )
+    def format_filter_or_query(self, **kwargs):
+        self.filter = self.filter.format(**kwargs)
         return
 
     def deploy_extra(self, versioned_clients):
@@ -359,37 +210,35 @@ class PubSubDLQCondition(MetricCondition):
     Creates and deploys an alert for dead letter queue messages in a pubsub subscription.
     """
 
-    def __init__(self, name, subscription_id, value=0, **kwargs) -> None:
+    def __init__(self, name, value=0, **kwargs) -> None:
         super().__init__(
             name=name,
             metric="pubsub.googleapis.com/subscription/dead_letter_message_count",
             value=value,
-            filter='resource.labels.subscription_id = "{subscription_id}" AND resource.type = "pubsub_subscription" AND metric.type = "pubsub.googleapis.com/subscription/dead_letter_message_count"'.format(
-                subscription_id=subscription_id
-            ),
+            filter='resource.labels.subscription_id = "{subscription_id}" AND resource.type = "pubsub_subscription" AND metric.type = "pubsub.googleapis.com/subscription/dead_letter_message_count"',
             **kwargs,
         )
 
 
 class UptimeCondition(MetricCondition):
     """
-    Creates and deploys an alert for failed uptime checks.
+    Creates and deploys an alert condition for failed uptime checks.
     Supports `uptime_url` or `cloud_run_revision`
     """
 
-    def __init__(self, name, check_id, resource_type, value=1, **kwargs) -> None:
+    def __init__(self, name, value=0.5, **kwargs) -> None:
         super().__init__(
             name=name,
             metric="monitoring.googleapis.com/uptime_check/check_passed",
             value=value,
-            filter='metric.labels.check_id = "{check_id}" AND resource.type = "{resource_type}" AND metric.type = "monitoring.googleapis.com/uptime_check/check_passed"'.format(
-                check_id=check_id, resource_type=resource_type
-            ),
+            filter='resource.type = "uptime_url" AND metric.labels.check_id = "{check_id}" AND metric.type = "monitoring.googleapis.com/uptime_check/check_passed"',
             aggregations=[
                 {
                     "alignmentPeriod": "1200s",
-                    "crossSeriesReducer": "REDUCE_COUNT_FALSE",
+                    "crossSeriesReducer": "REDUCE_NONE",
+                    "perSeriesAligner": "ALIGN_FRACTION_TRUE",
                 }
             ],
+            comparison="COMPARISON_LT",
             **kwargs,
         )

@@ -36,7 +36,7 @@ class Uptime(Handler):
         self.routes_type = routes_type
 
     def register(self, name, func, kwargs):
-        self.resources[name] = {"func": func, "name": name, "kwargs": kwargs["kwargs"]}
+        self.resources[name] = {"func": func, "name": name, "kwargs": kwargs}
 
     def __call__(self, request, context=None):
         headers = request.headers or {}

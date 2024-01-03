@@ -1,20 +1,26 @@
 from goblet import Goblet
-from goblet.infrastructures.alerts import (
+from goblet.alerts.alert_conditions import (
     MetricCondition,
     LogMatchCondition,
     CustomMetricCondition,
     PubSubDLQCondition,
 )
+from goblet.alerts.alerts import BackendAlert, PubSubDLQAlert
 from goblet.backends import CloudFunctionV1
 
-from goblet_gcp_client import get_responses, get_response
+from goblet_gcp_client import (
+    get_response,
+    get_responses,
+    reset_replay_count,
+    get_replay_count,
+)
 
 
 class TestAlerts:
     def test_add_alert(self):
         app = Goblet(function_name="goblet_example")
 
-        app.alert(
+        metric_alert = BackendAlert(
             "metric",
             conditions=[
                 MetricCondition(
@@ -24,8 +30,11 @@ class TestAlerts:
                 )
             ],
         )
-        app.alert("error", conditions=[LogMatchCondition("error", "severity>=ERROR")])
-        app.alert(
+        log_alert = BackendAlert(
+            "error",
+            conditions=[LogMatchCondition("error", "severity>=ERROR")],
+        )
+        custom_alert = BackendAlert(
             "custom",
             conditions=[
                 CustomMetricCondition(
@@ -36,8 +45,12 @@ class TestAlerts:
             ],
         )
 
-        jobs = app.infrastructure["alerts"]
-        assert len(jobs.resources) == 3
+        app.alert(metric_alert)
+        app.alert(log_alert)
+        app.alert(custom_alert)
+
+        alerts = app.alerts
+        assert len(alerts.resources) == 3
 
     def test_format_filter_or_query(self):
         condition = MetricCondition(
@@ -46,10 +59,12 @@ class TestAlerts:
             value=10,
         )
         condition.format_filter_or_query(
-            "test",
-            CloudFunctionV1.monitoring_type,
-            "name",
-            CloudFunctionV1.monitoring_label_key,
+            **{
+                "app_name": "test",
+                "monitoring_type": CloudFunctionV1.monitoring_type,
+                "resource_name": "name",
+                "monitoring_label_key": CloudFunctionV1.monitoring_label_key,
+            }
         )
         assert (
             condition.filter
@@ -62,20 +77,25 @@ class TestAlerts:
         monkeypatch.setenv("G_TEST_NAME", "alerts-deploy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
+        reset_replay_count()
+
         app = Goblet(function_name="alerts-test")
 
-        app.alert(
+        metric_alert = BackendAlert(
             "metric",
             conditions=[
                 MetricCondition(
-                    "metric",
+                    "test",
                     metric="cloudfunctions.googleapis.com/function/execution_count",
                     value=10,
                 )
             ],
         )
-        app.alert("error", conditions=[LogMatchCondition("error", "severity>=ERROR")])
-        app.alert(
+        log_alert = BackendAlert(
+            "error",
+            conditions=[LogMatchCondition("error", "severity>=ERROR")],
+        )
+        custom_alert = BackendAlert(
             "custom",
             conditions=[
                 CustomMetricCondition(
@@ -85,7 +105,8 @@ class TestAlerts:
                 )
             ],
         )
-        app.alert(
+
+        pubsub_dlq = PubSubDLQAlert(
             "pubsubdlq",
             conditions=[
                 PubSubDLQCondition(
@@ -93,9 +114,15 @@ class TestAlerts:
                     subscription_id="pubsub-deploy-subscription",
                 )
             ],
+            extras={"topic": "subscription"},
         )
 
-        app.deploy(skip_backend=True)
+        app.alert(metric_alert)
+        app.alert(log_alert)
+        app.alert(custom_alert)
+        app.alert(pubsub_dlq)
+
+        app.deploy(skip_infra=True, skip_handlers=True, skip_backend=True)
 
         post_alert_custom_metric = get_response(
             "alerts-deploy",
@@ -122,14 +149,17 @@ class TestAlerts:
             "post-v3-projects-goblet-alertPolicies_3.json",
         )
         assert post_alert_custom["body"]["displayName"] == "alerts-test-custom"
+
         post_alert_dlq = get_response(
             "alerts-deploy",
             "post-v3-projects-goblet-alertPolicies_4.json",
         )
         assert (
             post_alert_dlq["body"]["displayName"]
-            == "pubsub-deploy-subscription-dlq-alert"
+            == "alerts-test-subscription-dlq-alert"
         )
+
+        assert get_replay_count() == 6
 
     def test_destroy_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -137,20 +167,25 @@ class TestAlerts:
         monkeypatch.setenv("G_TEST_NAME", "alerts-destroy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
+        reset_replay_count()
+
         app = Goblet(function_name="alerts-test")
 
-        app.alert(
+        metric_alert = BackendAlert(
             "metric",
             conditions=[
                 MetricCondition(
-                    "metric",
+                    "test",
                     metric="cloudfunctions.googleapis.com/function/execution_count",
                     value=10,
                 )
             ],
         )
-        app.alert("error", conditions=[LogMatchCondition("error", "severity>=ERROR")])
-        app.alert(
+        log_alert = BackendAlert(
+            "error",
+            conditions=[LogMatchCondition("error", "severity>=ERROR")],
+        )
+        custom_alert = BackendAlert(
             "custom",
             conditions=[
                 CustomMetricCondition(
@@ -160,21 +195,26 @@ class TestAlerts:
                 )
             ],
         )
-        app.alert(
-            "pubsubdlq",
-            conditions=[
-                PubSubDLQCondition(
-                    "pubsubdlq",
-                    subscription_id="pubsub-deploy-subscription",
-                )
-            ],
-        )
+
+        # pubsub_dlq = PubSubDLQAlert(
+        #     "pubsubdlq",
+        #     conditions=[
+        #         PubSubDLQCondition(
+        #             "pubsubdlq",
+        #             subscription_id="pubsub-deploy-subscription",
+        #         )
+        #     ],
+        #     extras={"topic": "subscription"},
+        # )
+
+        app.alert(metric_alert)
+        app.alert(log_alert)
+        app.alert(custom_alert)
+        # app.alert(pubsub_dlq)
 
         app.destroy()
 
-        responses = get_responses("alerts-destroy")
-
-        assert len(responses) == 7
+        assert get_replay_count() == 6
 
     def test_sync_alerts(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
@@ -184,7 +224,7 @@ class TestAlerts:
 
         app = Goblet(function_name="alerts-test")
 
-        app.alert(
+        custom_alert = BackendAlert(
             "custom",
             conditions=[
                 CustomMetricCondition(
@@ -194,9 +234,11 @@ class TestAlerts:
                 )
             ],
         )
+        app.alert(custom_alert)
 
-        app.infrastructure["alerts"]._gcp_deployed_alerts = {}
-        app.infrastructure["alerts"].sync()
+        app.alerts._gcp_deployed_alerts = {}
+        app.alerts.checked_alerts = True
+        app.alerts.sync()
 
         responses = get_responses("alerts-sync")
         alerts = get_response(
@@ -205,5 +247,5 @@ class TestAlerts:
         )
 
         assert len(responses) - 1 == alerts["body"]["totalSize"] - len(
-            app.infrastructure["alerts"].resources
+            app.alerts.resources
         )

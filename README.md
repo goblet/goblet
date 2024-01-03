@@ -78,7 +78,6 @@ $ curl https://api.uc.gateway.dev/home
 #### Infrastructure
 * vpc connector
 * redis
-* alerts
 * api gateway
 * cloudtaskqueue
 * pubsub topics
@@ -102,6 +101,11 @@ $ curl https://api.uc.gateway.dev/home
 * bq remote functions
 * cloudtask target
 * uptime checks
+
+#### Alerts
+* Backend Alerts
+* Uptime Alerts
+* PubSub DLQ Alerts
 
 ## Data Typing Frameworks Supported
 

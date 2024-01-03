@@ -1,0 +1,35 @@
+{
+  "headers": {},
+  "body": {
+    "name": "projects/goblet/alertPolicies/4770481451235574612",
+    "displayName": "test-alerts-uptime",
+    "combiner": "OR",
+    "creationRecord": {
+      "mutateTime": "2024-01-02T18:02:19.582486969Z",
+      "mutatedBy": "austen.novis@premise.com"
+    },
+    "mutationRecord": {
+      "mutateTime": "2024-01-02T18:02:19.582486969Z",
+      "mutatedBy": "austen.novis@premise.com"
+    },
+    "conditions": [
+      {
+        "conditionThreshold": {
+          "filter": "resource.type = \"uptime_url\" AND metric.labels.check_id = \"test-alerts-uptime-check-JGTnuwvFMqw\" AND metric.type = \"monitoring.googleapis.com/uptime_check/check_passed\"",
+          "comparison": "COMPARISON_LT",
+          "thresholdValue": 0.5,
+          "duration": "60s",
+          "aggregations": [
+            {
+              "alignmentPeriod": "1200s",
+              "perSeriesAligner": "ALIGN_FRACTION_TRUE"
+            }
+          ]
+        },
+        "displayName": "uptime",
+        "name": "projects/goblet/alertPolicies/4770481451235574612/conditions/4770481451235574019"
+      }
+    ],
+    "enabled": true
+  }
+}

@@ -14,7 +14,6 @@ from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
-from goblet.infrastructures.alerts import PubSubDLQCondition
 from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
@@ -33,6 +32,7 @@ EVENT_TYPES = [
     "job",
     "bqremotefunction",
     "cloudtasktarget",
+    "uptime",
 ]
 
 SUPPORTED_BACKENDS = {
@@ -139,8 +139,7 @@ class Goblet_Decorators:
         """Pubsub topic trigger"""
         dlq = kwargs.pop("dlq", False)
         dlq_topic_config = kwargs.pop("dlq_topic_config", {})
-        dlq_alert = kwargs.pop("dlq_alert", False)
-        dlq_alert_config = kwargs.pop("dlq_alert_config", {})
+        dlq_alerts = kwargs.pop("dlq_alerts", [])
         if dlq:
             log.info(f"DLQ enabled use of subscription will be forced to topic {topic}")
             kwargs["use_subscription"] = True
@@ -184,30 +183,9 @@ class Goblet_Decorators:
             else:
                 kwargs["config"] = dlq_policy
 
-            if dlq_alert:
-                sub_name = f"{self.function_name}-{topic}"
-                log.info(f"DLQ alert enabled for subscription {sub_name}")
-                dlq_alert_name = (
-                    f"{sub_name}-dlq-alert"
-                    if "name" not in dlq_alert_config
-                    else dlq_alert_config.pop("name")
-                )
-                dlq_alert_trigger_value = (
-                    0
-                    if "trigger_value" not in dlq_alert_config
-                    else dlq_alert_config.pop("trigger_value")
-                )
-                dlq_alert_config["conditions"] = [
-                    PubSubDLQCondition(
-                        "pubsub",
-                        subscription_id=sub_name,
-                        value=dlq_alert_trigger_value,
-                    )
-                ]
-                self._register_infrastructure(
-                    handler_type="alerts",
-                    kwargs={"name": dlq_alert_name, "kwargs": dlq_alert_config},
-                )
+            for dlq_alert in dlq_alerts:
+                dlq_alert.update_extras({"topic": dlq_topic_name})
+                self.alerts.register(dlq_alert)
 
         return self._create_registration_function(
             handler_type="pubsub",
@@ -254,12 +232,25 @@ class Goblet_Decorators:
 
     def uptime(self, **kwargs):
         """Uptime trigger"""
-        return self._create_registration_function(
-            handler_type="uptime",
-            registration_kwargs={
-                "kwargs": kwargs,
-            },
-        )
+        uptime_alerts = kwargs.pop("alerts", [])
+        additional_kwargs = kwargs
+
+        def _register_handler(user_handler):
+            if user_handler:
+                handler_name = user_handler.__name__
+                kwargs = additional_kwargs or {}
+                self._register_handler("uptime", handler_name, user_handler, kwargs)
+
+                # Register alerts
+                for uptime_alert in uptime_alerts:
+                    uptime_alert.update_extras(
+                        {"check_name": f"{self.function_name}-{handler_name}"}
+                    )
+                    self.alerts.register(uptime_alert)
+
+            return user_handler
+
+        return _register_handler
 
     def http(self, headers={}):
         """Base http trigger"""
@@ -321,13 +312,16 @@ class Goblet_Decorators:
             },
         )
 
-    def alert(self, name, conditions, **kwargs):
+    def alert(self, alert):
         """Alert Resource"""
-        kwargs["conditions"] = conditions
-        return self._register_infrastructure(
-            handler_type="alerts",
-            kwargs={"name": name, "kwargs": kwargs},
+        alert.update_extras(
+            {
+                "monitoring_type": self.backend.monitoring_type,
+                "resource_name": self.backend.name,
+                "monitoring_label_key": self.backend.monitoring_label_key,
+            }
         )
+        return self.alerts.register(alert)
 
     def cloudtaskqueue(self, name, config=None, **kwargs):
         """CloudTask Queue Infrastructure"""
