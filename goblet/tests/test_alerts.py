@@ -196,21 +196,9 @@ class TestAlerts:
             ],
         )
 
-        # pubsub_dlq = PubSubDLQAlert(
-        #     "pubsubdlq",
-        #     conditions=[
-        #         PubSubDLQCondition(
-        #             "pubsubdlq",
-        #             subscription_id="pubsub-deploy-subscription",
-        #         )
-        #     ],
-        #     extras={"topic": "subscription"},
-        # )
-
         app.alert(metric_alert)
         app.alert(log_alert)
         app.alert(custom_alert)
-        # app.alert(pubsub_dlq)
 
         app.destroy()
 
