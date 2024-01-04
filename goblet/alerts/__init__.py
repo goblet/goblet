@@ -4,6 +4,8 @@ from goblet.alerts.alerts import (
     BackendAlert,
     PubSubDLQAlert,
     UptimeAlert,
+    AlertType,
+    Alert,
 )
 from goblet.alerts.alert_conditions import (
     MetricCondition,

@@ -2,6 +2,8 @@ import logging
 import os
 import goblet.globals as g
 
+from enum import Enum
+
 from goblet.permissions import gcp_generic_resource_permissions
 from goblet.client import VersionedClients
 from goblet.errors import GobletValidationError
@@ -81,20 +83,40 @@ class Alerts:
 
     def sync(self, dryrun=False):
         # Does not sync custom metrics
-        for alert_name, alert in self.gcp_deployed_alerts.values():
+        for alert_name, alert in self.gcp_deployed_alerts.items():
             if not self.resources.get(alert_name):
                 log.info(f"Detected unused alert {alert_name}")
                 if not dryrun:
-                    self.resources[alert_name].destroy(alert["name"])
+                    try:
+                        self.versioned_clients.monitoring_alert.execute(
+                            "delete",
+                            parent_key="name",
+                            parent_schema=alert["name"],
+                        )
+                        log.info(f"Destroying alert {self.name}......")
+                    except HttpError as e:
+                        if e.resp.status == 404:
+                            log.info(f"Alert {self.name} already destroyed")
+                        else:
+                            raise e
+
+
+class AlertType(Enum):
+    INFRA = "infra"
+    BACKEND = "backend"
+    HANDLER = "handler"
+    DEFAULT = "default"
 
 
 class Alert:
     """Cloud Monitoring Alert Policies that can trigger notification channels based on built in or custom metrics.
     https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies. Alerts and Alert conditions contain a
     few common defaults, that are used by GCP. These can be overriden by passing in the correct params.
+
+    The default alert_type is Default
     """
 
-    alert_type = None
+    alert_type = AlertType.DEFAULT
     extras = {}
 
     def __init__(self, name, conditions, channels=[], extras=None, **kwargs) -> None:
@@ -128,24 +150,26 @@ class Alert:
 
         default_alert_kwargs.update(self.kwargs)
 
+        alert_name = f"{self.app_name}-{self.name}"
+
         body = {
-            "displayName": f"{self.app_name}-{self.name}",
+            "displayName": alert_name,
             "conditions": formatted_conditions,
             "notificationChannels": self.notification_channels,
             "combiner": "OR",
             **default_alert_kwargs,
         }
         # check if exists
-        if self.name in gcp_deployed_alerts:
+        if alert_name in gcp_deployed_alerts:
             # patch
             self.versioned_clients.monitoring_alert.execute(
                 "patch",
                 parent_key="name",
-                parent_schema=gcp_deployed_alerts[self.name]["name"],
+                parent_schema=gcp_deployed_alerts[alert_name]["name"],
                 params={"updateMask": ",".join(body.keys()), "body": body},
             )
 
-            log.info(f"updated alert: {self.name}")
+            log.info(f"updated alert: {alert_name}")
         else:
             # deploy
             self.versioned_clients.monitoring_alert.execute(
@@ -153,7 +177,7 @@ class Alert:
                 parent_key="name",
                 params={"body": body},
             )
-            log.info(f"created alert: {self.name}")
+            log.info(f"created alert: {alert_name}")
 
     def destroy(self, app_name, full_alert_name):
         self.app_name = app_name
@@ -190,7 +214,7 @@ class Alert:
 
 
 class BackendAlert(Alert):
-    alert_type = "backend"
+    alert_type = AlertType.BACKEND
 
     def validate_extras(self):
         return list(self.extras.keys()) == [
@@ -209,7 +233,7 @@ class BackendAlert(Alert):
 
 
 class PubSubDLQAlert(Alert):
-    alert_type = "handler"
+    alert_type = AlertType.HANDLER
 
     def validate_extras(self):
         return "topic" in self.extras.keys()
@@ -222,7 +246,7 @@ class PubSubDLQAlert(Alert):
 
 
 class UptimeAlert(Alert):
-    alert_type = "handler"
+    alert_type = AlertType.HANDLER
 
     def validate_extras(self):
         return "check_name" in self.extras.keys()
