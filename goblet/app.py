@@ -12,6 +12,7 @@ import goblet.globals as g
 from goblet.config import GConfig
 from goblet.decorators import Goblet_Decorators
 from goblet.resource_manager import Resource_Manager
+from goblet.alerts import AlertType
 
 logging.basicConfig()
 
@@ -102,7 +103,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.deploy_infrastructure(infras)
 
         if not skip_alerts:
-            self.deploy_alerts(alert_type="infra")
+            self.deploy_alerts(alert_type=AlertType.INFRA)
 
         infra_config = self.get_infrastructure_config()
         backend.update_config(infra_config, write_config, stage)
@@ -112,7 +113,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             source = backend.deploy(force=force)
 
         if not skip_alerts:
-            self.deploy_alerts(alert_type="backend")
+            self.deploy_alerts(alert_type=AlertType.BACKEND)
 
         registered_handlers = self.get_registered_handler_resource_types()
 
@@ -132,7 +133,8 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.deploy_handlers(source, handlers)
 
         if not skip_alerts:
-            self.deploy_alerts(alert_type="handler")
+            self.deploy_alerts(alert_type=AlertType.HANDLER)
+            self.deploy_alerts(alert_type=AlertType.DEFAULT)
 
     def destroy(
         self,
@@ -151,15 +153,18 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.destroy_handlers(handlers)
 
             if not skip_alerts:
+                log.info("destroying default alerts")
+                self.destroy_alerts(AlertType.DEFAULT)
+
                 log.info("destroying handler alerts")
-                self.destroy_alerts("handler")
+                self.destroy_alerts(AlertType.HANDLER)
 
         if not skip_backend:
             self.backend.destroy(all=all)
 
         if not skip_alerts:
             log.info("destroying backend alerts")
-            self.destroy_alerts("backend")
+            self.destroy_alerts(AlertType.BACKEND)
 
         if infras or not skip_infra:
             log.info("destroying infrastructure")
@@ -167,7 +172,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
 
             if not skip_alerts:
                 log.info("destroying infra alerts")
-                self.destroy_alerts("infra")
+                self.destroy_alerts(AlertType.INFRA)
 
     def sync(
         self,
@@ -186,7 +191,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.sync_handlers(dryrun, handlers)
         if not skip_alerts:
             log.info("syncing alerts")
-            self.alerts.sync()
+            self.alerts.sync(dryrun=dryrun)
 
     def check_or_enable_services(self, enable=False):
         self.backend._check_or_enable_service(enable)
