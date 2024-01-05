@@ -94,14 +94,43 @@ class Backend:
     def _checksum(self):
         raise NotImplementedError("_checksum")
 
-    def _gcs_upload(self, client, headers, upload_client=None, force=False):
+    def _gcs_upload(self, client, headers, upload_client=None, force=False, tag=None):
         self.log.info("zipping source code")
         self.zip()
         if not force and self.get() and not self.delta():
             self.log.info("No changes detected....")
             return None, False
         self.log.info("uploading source zip to gs......")
+
+        if tag:
+            return self._upload_tagged_zip(upload_client or client, tag, headers), True
+
         return self._upload_zip(upload_client or client, headers), True
+
+    def _upload_tagged_zip(self, client, tag, headers=None) -> dict:
+        self.zipf.close()
+        bucket_name = os.environ["GOBLET_UPLOAD_BUCKET"]
+        try:
+            client.execute(
+                "insert",
+                params={
+                    "bucket": bucket_name,
+                    "uploadType": "media",
+                    "media_body": f".goblet/{self.name}.zip",
+                    "media_mime_type": "application/zip",
+                    "body": {
+                        "name": f"{self.name}-{tag}.zip",
+                    },
+                },
+            )
+
+        except requests.exceptions.HTTPError as e:
+            if not os.environ.get("G_HTTP_TEST") == "REPLAY":
+                raise e
+
+        self.log.info("source code uploaded")
+
+        return {"uploadUrl": f"gs://{bucket_name}/{self.name}-{tag}.zip"}
 
     def _upload_zip(self, client, headers=None) -> dict:
         """Uploads zipped cloudfunction using generateUploadUrl endpoint"""
