@@ -68,7 +68,9 @@ class CloudFunctionV1(Backend):
             return None
 
         if self.app.is_http():
-            client, params = self._get_upload_params(source, upload_method=upload_method)
+            client, params = self._get_upload_params(
+                source, upload_method=upload_method
+            )
             create_cloudfunctionv1(client, params, config=self.config)
 
         return source
