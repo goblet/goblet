@@ -1,5 +1,3 @@
-import os
-
 from goblet import Goblet, goblet_entrypoint
 from goblet.handlers.http import HTTP
 from goblet_gcp_client import (
@@ -442,9 +440,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         monkeypatch.setenv("GOBLET_BUILD_TAGS", tags)
-        monkeypatch.setenv(
-            "GOBLET_UPLOAD_BUCKET", "bucket"
-        )
+        monkeypatch.setenv("GOBLET_UPLOAD_BUCKET", "bucket")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
         app = Goblet(function_name="cloudfunction-build-tags")
