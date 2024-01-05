@@ -1,4 +1,6 @@
-from goblet import Goblet
+import os
+
+from goblet import Goblet, goblet_entrypoint
 from goblet.handlers.http import HTTP
 from goblet_gcp_client import (
     get_responses,
@@ -431,3 +433,26 @@ class TestDeployer:
 
         for image in response["body"]["metadata"]["build"]["images"]:
             assert any(tag in image for tag in tags.split(","))
+
+    def test_cloudfunction_build_tags(self, monkeypatch, requests_mock):
+        G_TEST_NAME = "cloudfunction-build-tags"
+        tags = "test,dev"
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_BUILD_TAGS", tags)
+        monkeypatch.setenv(
+            "GOBLET_UPLOAD_BUCKET", "bucket"
+        )
+
+        requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
+        app = Goblet(function_name="cloudfunction-build-tags")
+        goblet_entrypoint(app)
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        responses = get_responses(G_TEST_NAME)
+        assert len(responses) == 4

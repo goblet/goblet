@@ -1,0 +1,22 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1kZXZlbG9wZXItcG9ydGFsLXJkL3VzLWNlbnRyYWwxL2Nsb3VkZnVuY3Rpb24tYnVpbGQtdGFncy83ZXFqdHhvcjBicw",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/test_project/locations/us-central1/functions/cloudfunction-build-tags",
+      "type": "UPDATE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+        "name": "projects/test_project/locations/us-central1/functions/cloudfunction-build-tags",
+        "description": "created by goblet",
+        "sourceArchiveUrl": "gs://bucket/cloudfunction-build-tags-test.zip",
+        "httpsTrigger": {},
+        "entryPoint": "goblet_entrypoint",
+        "runtime": "python310"
+      },
+      "versionId": "5",
+      "updateTime": "2024-01-05T19:25:56Z"
+    }
+  }
+}
