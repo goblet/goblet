@@ -49,23 +49,32 @@ class CloudFunctionV1(Backend):
             "content-type": "application/zip",
             "x-goog-content-length-range": "0,104857600",
         }
-        build_tag = os.getenv("GOBLET_BUILD_TAGS", None)
-        upload_client = None
-        upload_method = None
-        if build_tag:
-            build_tag = build_tag.split(",")[0]
-            upload_client = self.storage_client
-            upload_method = "sourceArchiveUrl"
 
-        source, changes = self._gcs_upload(
-            self.client,
-            put_headers,
-            force=force,
-            upload_client=upload_client,
-            tag=build_tag,
-        )
-        if not changes:
-            return None
+        artifact_tag = os.getenv("GOBLET_ARTIFACT_TAG", None)
+        if not artifact_tag:
+            build_tag = None
+            upload_client = None
+            upload_method = None
+            build_tags = os.getenv("GOBLET_BUILD_TAGS", None)
+            if build_tags:
+                build_tag = build_tags.split(",")[0]
+                upload_client = self.storage_client
+                upload_method = "sourceArchiveUrl"
+
+            source, changes = self._gcs_upload(
+                self.client,
+                put_headers,
+                force=force,
+                upload_client=upload_client,
+                tag=build_tag,
+            )
+            if not changes:
+                return None
+
+        else:
+            bucket_name = os.environ["GOBLET_SOURCE_BUCKET"]
+            source = {"uploadUrl": f"gs://{bucket_name}/{self.name}-{artifact_tag}.zip"}
+            upload_method = "sourceArchiveUrl"
 
         if self.app.is_http():
             client, params = self._get_upload_params(
