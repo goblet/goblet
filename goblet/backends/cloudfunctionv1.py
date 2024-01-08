@@ -74,7 +74,10 @@ class CloudFunctionV1(Backend):
             if not changes:
                 return None
         else:
-            bucket_name = self.config.deploy.artifact_bucket or os.environ["GOBLET_ARTIFACT_BUCKET"]
+            bucket_name = (
+                self.config.deploy.artifact_bucket
+                or os.environ["GOBLET_ARTIFACT_BUCKET"]
+            )
             source = {"uploadUrl": f"gs://{bucket_name}/{self.name}-{artifact_tag}.zip"}
             upload_method = "sourceArchiveUrl"
 
