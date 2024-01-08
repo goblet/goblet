@@ -452,3 +452,23 @@ class TestDeployer:
 
         responses = get_responses(G_TEST_NAME)
         assert len(responses) == 4
+
+    def test_cloudfunction_artifact_tag(self, monkeypatch):
+        G_TEST_NAME = "cloudfunction-artifact-tag"
+        artifact_tag = "test"
+        monkeypatch.setenv("GOOGLE_PROJECT", "test_project")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        monkeypatch.setenv("GOBLET_SOURCE_BUCKET", "bucket")
+        monkeypatch.setenv("GOBLET_ARTIFACT_TAG", artifact_tag)
+
+        app = Goblet(function_name="cloudfunction-build-tags")
+        goblet_entrypoint(app)
+        setattr(app, "entrypoint", "app")
+
+        app.handlers["http"] = HTTP("name", app, resources=[{}])
+        app.deploy(skip_handlers=True, skip_infra=True, force=True)
+
+        responses = get_responses(G_TEST_NAME)
+        assert len(responses) == 2

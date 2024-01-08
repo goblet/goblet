@@ -70,7 +70,6 @@ class CloudFunctionV1(Backend):
             )
             if not changes:
                 return None
-
         else:
             bucket_name = os.environ["GOBLET_SOURCE_BUCKET"]
             source = {"uploadUrl": f"gs://{bucket_name}/{self.name}-{artifact_tag}.zip"}
