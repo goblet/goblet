@@ -456,7 +456,7 @@ class TestDeployer:
     def test_cloudfunction_artifact_tag(self, monkeypatch):
         G_TEST_NAME = "cloudfunction-artifact-tag"
         artifact_tag = "test"
-        monkeypatch.setenv("GOOGLE_PROJECT", "test_project")
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
