@@ -440,7 +440,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
         monkeypatch.setenv("GOBLET_BUILD_TAGS", tags)
-        monkeypatch.setenv("GOBLET_SOURCE_BUCKET", "bucket")
+        monkeypatch.setenv("GOBLET_ARTIFACT_BUCKET", "bucket")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
         app = Goblet(function_name="cloudfunction-build-tags")
@@ -460,7 +460,7 @@ class TestDeployer:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
         monkeypatch.setenv("G_TEST_NAME", G_TEST_NAME)
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
-        monkeypatch.setenv("GOBLET_SOURCE_BUCKET", "bucket")
+        monkeypatch.setenv("GOBLET_ARTIFACT_BUCKET", "bucket")
         monkeypatch.setenv("GOBLET_ARTIFACT_TAG", artifact_tag)
 
         app = Goblet(function_name="cloudfunction-build-tags")
