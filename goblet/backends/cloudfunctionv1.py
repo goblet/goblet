@@ -50,7 +50,10 @@ class CloudFunctionV1(Backend):
             "x-goog-content-length-range": "0,104857600",
         }
 
-        artifact_tag = os.getenv("GOBLET_ARTIFACT_TAG", None)
+        artifact_tag = self.config.deploy.artifact_tag or os.getenv(
+            "GOBLET_ARTIFACT_TAG", None
+        )
+
         if not artifact_tag:
             build_tag = None
             upload_client = None
@@ -71,7 +74,7 @@ class CloudFunctionV1(Backend):
             if not changes:
                 return None
         else:
-            bucket_name = os.environ["GOBLET_ARTIFACT_BUCKET"]
+            bucket_name = self.config.deploy.artifact_bucket or os.environ["GOBLET_ARTIFACT_BUCKET"]
             source = {"uploadUrl": f"gs://{bucket_name}/{self.name}-{artifact_tag}.zip"}
             upload_method = "sourceArchiveUrl"
 

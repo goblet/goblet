@@ -109,7 +109,9 @@ class Backend:
 
     def _upload_tagged_zip(self, client, tag, headers=None) -> dict:
         self.zipf.close()
-        bucket_name = os.environ["GOBLET_ARTIFACT_BUCKET"]
+        bucket_name = (
+            self.config.deploy.artifact_bucket or os.environ["GOBLET_ARTIFACT_BUCKET"]
+        )
         try:
             client.execute(
                 "insert",
