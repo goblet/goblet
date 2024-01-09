@@ -465,9 +465,11 @@ class CORSConfig(object):
         self,
         allow_origin="*",
         allow_headers=None,
+        allow_methods=None,
         expose_headers=None,
         max_age=None,
         allow_credentials=None,
+        extra_headers=None,
     ):
         self.allow_origin = allow_origin
 
@@ -483,6 +485,8 @@ class CORSConfig(object):
 
         self._max_age = max_age
         self._allow_credentials = allow_credentials
+        self._allow_methods = allow_methods
+        self._extra_headers = extra_headers
 
     @property
     def allow_headers(self):
@@ -501,6 +505,12 @@ class CORSConfig(object):
             headers.update({"Access-Control-Max-Age": str(self._max_age)})
         if self._allow_credentials is True:
             headers.update({"Access-Control-Allow-Credentials": "true"})
+        if self._allow_methods:
+            headers.update(
+                {"Access-Control-Allow-Methods": ",".join(self._allow_methods)}
+            )
+        if self._extra_headers:
+            headers.update(self._extra_headers)
 
         return headers
 

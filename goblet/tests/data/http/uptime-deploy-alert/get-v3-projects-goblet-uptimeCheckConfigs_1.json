@@ -1,0 +1,31 @@
+{
+  "headers": {},
+  "body": {
+    "uptimeCheckConfigs": [
+      {
+        "name": "projects/goblet/uptimeCheckConfigs/test-alerts-uptime-check-JGTnuwvFMqw",
+        "displayName": "test-alerts-uptime_check",
+        "monitoredResource": {
+          "type": "uptime_url",
+          "labels": {
+            "project_id": "goblet",
+            "host": "us-central1-goblet.cloudfunctions.net"
+          }
+        },
+        "httpCheck": {
+          "useSsl": true,
+          "path": "/test-alerts",
+          "port": 443,
+          "headers": {
+            "X-Goblet-Uptime-Name": "uptime_check"
+          },
+          "requestMethod": "GET"
+        },
+        "period": "60s",
+        "timeout": "30s",
+        "checkerType": "STATIC_IP_CHECKERS"
+      }
+    ],
+    "totalSize": 1
+  }
+}

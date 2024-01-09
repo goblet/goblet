@@ -78,10 +78,10 @@ $ curl https://api.uc.gateway.dev/home
 #### Infrastructure
 * vpc connector
 * redis
-* alerts
 * api gateway
 * cloudtaskqueue
 * pubsub topics
+* bq spark stored procedures
 
 #### Backends
 * cloudfunction
@@ -99,8 +99,13 @@ $ curl https://api.uc.gateway.dev/home
 * eventarc
 * cloudrun jobs
 * bq remote functions
-* cloudtasktarget
+* cloudtask target
 * uptime checks
+
+#### Alerts
+* Backend Alerts
+* Uptime Alerts
+* PubSub DLQ Alerts
 
 ## Data Typing Frameworks Supported
 

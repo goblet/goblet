@@ -1,0 +1,10 @@
+{
+  "headers": {},
+  "body": {
+    "error": {
+      "code": 409,
+      "message": "Function cloudfunction-build-tags in region us-central1 in project goblet already exists",
+      "status": "ALREADY_EXISTS"
+    }
+  }
+}

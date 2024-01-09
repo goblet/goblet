@@ -1,16 +1,18 @@
 import json
 import logging
-import sys
 import os
+import sys
+from typing import List
 
-from goblet.config import GConfig
-import goblet.globals as g
-from goblet.decorators import Goblet_Decorators
-from goblet.resource_manager import Resource_Manager
-
+from goblet_gcp_client.client import get_default_project
 from google.cloud.logging.handlers import StructuredLogHandler
 from google.cloud.logging_v2.handlers import setup_logging
-from typing import List
+
+import goblet.globals as g
+from goblet.config import GConfig
+from goblet.decorators import Goblet_Decorators
+from goblet.resource_manager import Resource_Manager
+from goblet.alerts import AlertType
 
 logging.basicConfig()
 
@@ -71,7 +73,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             self.log = logging.getLogger("werkzeug")
         elif not os.environ.get("X-GOBLET-DEPLOY"):
             self.log.handlers.clear()
-            handler = StructuredLogHandler()
+            handler = StructuredLogHandler(project_id=get_default_project())
             setup_logging(
                 handler,
                 log_level=logging.getLevelName(
@@ -85,6 +87,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         skip_handlers=False,
         skip_backend=False,
         skip_infra=False,
+        skip_alerts=False,
         force=False,
         write_config=False,
         stage=None,
@@ -99,12 +102,18 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.info("deploying infrastructure")
             self.deploy_infrastructure(infras)
 
+        if not skip_alerts:
+            self.deploy_alerts(alert_type=AlertType.INFRA)
+
         infra_config = self.get_infrastructure_config()
         backend.update_config(infra_config, write_config, stage)
 
         if not skip_backend:
             log.info(f"preparing to deploy with backend {self.backend.resource_type}")
             source = backend.deploy(force=force)
+
+        if not skip_alerts:
+            self.deploy_alerts(alert_type=AlertType.BACKEND)
 
         registered_handlers = self.get_registered_handler_resource_types()
 
@@ -123,12 +132,17 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.info("deploying handlers")
             self.deploy_handlers(source, handlers)
 
+        if not skip_alerts:
+            self.deploy_alerts(alert_type=AlertType.HANDLER)
+            self.deploy_alerts(alert_type=AlertType.DEFAULT)
+
     def destroy(
         self,
         all=False,
         skip_infra=False,
         skip_handlers=False,
         skip_backend=False,
+        skip_alerts=False,
         handlers: List[str] = None,
         infras: List[str] = None,
     ):
@@ -138,18 +152,34 @@ class Goblet(Goblet_Decorators, Resource_Manager):
             log.info("destroying handlers")
             self.destroy_handlers(handlers)
 
+            if not skip_alerts:
+                log.info("destroying default alerts")
+                self.destroy_alerts(AlertType.DEFAULT)
+
+                log.info("destroying handler alerts")
+                self.destroy_alerts(AlertType.HANDLER)
+
         if not skip_backend:
             self.backend.destroy(all=all)
+
+        if not skip_alerts:
+            log.info("destroying backend alerts")
+            self.destroy_alerts(AlertType.BACKEND)
 
         if infras or not skip_infra:
             log.info("destroying infrastructure")
             self.destroy_infrastructure(infras)
+
+            if not skip_alerts:
+                log.info("destroying infra alerts")
+                self.destroy_alerts(AlertType.INFRA)
 
     def sync(
         self,
         dryrun=False,
         skip_infra=False,
         skip_handlers=False,
+        skip_alerts=False,
         handlers: List[str] = None,
         infras: List[str] = None,
     ):
@@ -159,6 +189,9 @@ class Goblet(Goblet_Decorators, Resource_Manager):
         if handlers or not skip_handlers:
             log.info("syncing handlers")
             self.sync_handlers(dryrun, handlers)
+        if not skip_alerts:
+            log.info("syncing alerts")
+            self.alerts.sync(dryrun=dryrun)
 
     def check_or_enable_services(self, enable=False):
         self.backend._check_or_enable_service(enable)

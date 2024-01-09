@@ -138,7 +138,14 @@ class TestRoutes:
         def mock_function_override():
             return Response("200")
 
-        @app.route("/test3", cors=CORSConfig(allow_origin="localhost"))
+        @app.route(
+            "/test3",
+            cors=CORSConfig(
+                allow_origin="localhost",
+                allow_methods=["GET", "PUT"],
+                extra_headers={"X-TEST": "X-VALUE"},
+            ),
+        )
         def mock_function3():
             return jsonify("200")
 
@@ -173,6 +180,8 @@ class TestRoutes:
         mock_event3.json = {}
         resp3 = app(mock_event3, None)
         assert resp3[2]["Access-Control-Allow-Origin"] == "localhost"
+        assert resp3[2]["Access-Control-Allow-Methods"] == "GET,PUT"
+        assert resp3[2]["X-TEST"] == "X-VALUE"
 
     def test_cors_options(self):
         app = Goblet(function_name="goblet_cors")

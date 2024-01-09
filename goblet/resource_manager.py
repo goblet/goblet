@@ -22,13 +22,15 @@ from goblet.handlers.uptime import Uptime
 
 from goblet.infrastructures.redis import Redis
 from goblet.infrastructures.vpcconnector import VPCConnector
-from goblet.infrastructures.alerts import Alerts
+
 from goblet.infrastructures.apigateway import ApiGateway
 from goblet.infrastructures.cloudtask import CloudTaskQueue
 from goblet.infrastructures.pubsub import PubSubTopic
 from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
+
+from goblet.alerts import Alerts
 
 from goblet.response import default_missing_route
 
@@ -113,7 +115,6 @@ class Resource_Manager:
                 function_name,
                 backend=backend,
             ),
-            "alerts": Alerts(function_name, backend=backend),
             "apigateway": ApiGateway(function_name, backend=backend),
             "pubsub_topic": PubSubTopic(function_name, backend=backend),
             "bqsparkstoredprocedure": BigQuerySparkStoredProcedure(
@@ -125,6 +126,7 @@ class Resource_Manager:
             "before": {},
             "after": {},
         }
+        self.alerts = Alerts(function_name)
 
         self.error_handlers = {"GobletRouteNotFoundError": default_missing_route}
 
@@ -328,7 +330,7 @@ class Resource_Manager:
         if infras:
             for infra in infras:
                 log.info(f"destroying {infra}")
-                self.infrastructure.get(infra).destroy()
+                self.infrastructure[infra].destroy()
         else:
             for k, v in self.infrastructure.items():
                 log.info(f"destroying {k}")
@@ -338,7 +340,7 @@ class Resource_Manager:
         if infras:
             for infra in infras:
                 try:
-                    self.infrastructure.get(infra).sync(dryrun)
+                    self.infrastructure[infra].sync(dryrun)
                 except HttpError as e:
                     if e.resp.status == 403:
                         continue
@@ -351,6 +353,12 @@ class Resource_Manager:
                     if e.resp.status == 403:
                         continue
                     raise e
+
+    def deploy_alerts(self, alert_type):
+        self.alerts.deploy(alert_type)
+
+    def destroy_alerts(self, alert_type):
+        self.alerts.destroy(alert_type)
 
     def is_http(self):
         """Is http determines if additional cloudfunctions will be needed since triggers other than http will require their own

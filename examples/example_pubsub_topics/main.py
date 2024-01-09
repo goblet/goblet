@@ -4,6 +4,8 @@ import logging
 from goblet import Goblet, goblet_entrypoint
 from goblet.infrastructures.pubsub import PubSubClient
 from goblet_gcp_client import Client
+from goblet.alerts.alerts import PubSubDLQAlert
+from goblet.alerts.alert_conditions import PubSubDLQCondition
 
 app = Goblet(function_name="create-pubsub-topic")
 
@@ -30,11 +32,12 @@ def publish(request):
 @app.pubsub_subscription(
     "goblet-created-test-topic",
     dlq=True,
-    dlq_alert=True,
-    dlq_alert_config={
-        # Trigger alert if 10 messages fail within 1 minute
-        "trigger_value": 10,
-    },
+    dlq_alerts=[
+        PubSubDLQAlert(
+            "pubsubdlq",
+            conditions=[PubSubDLQCondition("pubsublq-condition")],
+        )
+    ],
 )
 def subscription(data: str):
     raise Exception("Simulating failure")

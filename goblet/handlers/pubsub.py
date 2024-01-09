@@ -138,7 +138,7 @@ class PubSub(Handler):
             service_account = self.config.pubsub.get("serviceAccountEmail")
         else:
             raise ValueError(
-                "Service account not found in cloudrun or cloudfunction. You can set `serviceAccountEmail` field in config.json under `pubsub`"
+                "Service account not found in cloudrun_revision or cloudfunction. You can set also `serviceAccountEmail` field in config.json under `pubsub`"
             )
 
         self.service_accounts = [service_account]

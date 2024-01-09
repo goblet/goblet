@@ -1,14 +1,18 @@
 from urllib import request
 from goblet import Goblet, jsonify, Response, goblet_entrypoint
-from goblet.infrastructures.alerts import (
+from goblet.alerts.alert_conditions import (
     MetricCondition,
     LogMatchCondition,
     CustomMetricCondition,
+    UptimeCondition, 
+    PubSubDLQCondition
 )
+from goblet.alerts.alerts import BackendAlert, UptimeAlert, PubSubDLQAlert
+from goblet.handlers.routes import CORSConfig
 import asyncio
 import logging
 
-app = Goblet(function_name="goblet-example", region="us-central-1")
+app = Goblet(function_name="goblet-example")
 app.log.setLevel(logging.INFO)  # configure goblet logger level
 goblet_entrypoint(app)
 
@@ -17,13 +21,13 @@ from marshmallow import Schema, fields
 
 # Example http trigger
 @app.http()
-def main(request):
+def main_http(request):
     return jsonify(request.json)
 
 
 # Example http trigger that contains header
 @app.http(headers={"X-Github-Event"})
-def main(request):
+def main_header(request):
     return jsonify(request.json)
 
 
@@ -174,6 +178,12 @@ def response():
     )
 
 
+# Example CORS
+
+@app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost', allow_methods=["GET"], extra_headers={"X-TEST":"X-HEADER-VALUE"}))
+def custom_cors():
+    return jsonify('localhost is allowed with GET method')
+
 # Scheduled job
 @app.schedule("5 * * * *")
 def scheduled_job():
@@ -194,28 +204,28 @@ def scheduled_job():
     return jsonify("success")
 
 
-# Pubsub topic
-@app.topic("test")
-def topic(data):
+# Pubsub Subscription
+@app.pubsub_subscription("test")
+def test_subscription(data):
     app.log.info(data)
     return
 
 
 # Pubsub topic with matching message attributes
-@app.topic("test", attributes={"key": "value"})
+@app.pubsub_subscription("test", attributes={"key": "value"})
 def pubsub_attributes(data):
     app.log.info(data)
     return
 
 
 # create a pubsub subscription instead of pubsub triggered function
-@app.topic("test", use_subscription=True)
+@app.pubsub_subscription("test", use_subscription=True)
 def pubsub_subscription_use_subscription(data):
     return
 
 
 # create a pubsub subscription instead of pubsub triggered function and add filter
-@app.topic(
+@app.pubsub_subscription(
     "test",
     use_subscription=True,
     filter='attributes.name = "com" AND -attributes:"iana.org/language_tag"',
@@ -223,6 +233,29 @@ def pubsub_subscription_use_subscription(data):
 def pubsub_subscription_filter(data):
     return
 
+# Pubsub Subscription with DLQ and alert
+# Triggered by pubsub topic. Simulates failure to trigger DLQ
+@app.pubsub_subscription(
+    "goblet-created-test-topic",
+    dlq=True,
+    dlq_alerts=[
+        PubSubDLQAlert(
+            "pubsubdlq",
+            conditions=[
+                PubSubDLQCondition(
+                    "pubsublq-condition"
+                )
+            ],
+        )
+    ]
+)
+def failed_subscription(data):
+    raise Exception("Simulating failure")
+
+# Create a pubsub topic
+app.pubsub_topic(
+    "test-topic"
+)
 
 # Example Storage trigger on the create/finalize event
 @app.storage("BUCKET_NAME", "finalize")
@@ -320,19 +353,20 @@ app.redis("redis-test")
 app.vpcconnector("vpc-conn-test")
 
 # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
-app.alert(
+metric_alert = BackendAlert(
     "metric",
     conditions=[
         MetricCondition(
             "test",
             metric="cloudfunctions.googleapis.com/function/execution_count",
-            value=10,
+            value=10
         )
     ],
 )
+app.alert(metric_alert)
 
-# Example Metric Alert for the cloudfunction metric execution_times with a Delta type with a threshold of 1000 ms
-app.alert(
+# Example Metric Alert for the cloudfunction metric execution_times with a custom aggregation
+metric_alert_2 = BackendAlert(
     "metric",
     conditions=[
         MetricCondition(
@@ -349,12 +383,17 @@ app.alert(
         )
     ],
 )
+app.alert(metric_alert_2)
 
 # Example Log Match metric that will trigger an incendent off of any Error logs
-app.alert("error", conditions=[LogMatchCondition("error", "severity>=ERROR")])
+log_alert = BackendAlert(
+    "error",
+    conditions=[LogMatchCondition("error", "severity>=ERROR")],
+)
+app.alert(log_alert)
 
 # Example Metric Alert that creates a custom metric for severe errors with http code in the 500's and creates an alert with a threshold of 10
-app.alert(
+custom_alert = BackendAlert(
     "custom",
     conditions=[
         CustomMetricCondition(
@@ -364,7 +403,7 @@ app.alert(
         )
     ],
 )
-
+app.alert(custom_alert)
 
 # Example CloudTask Queue + CloudTask HTTP Target
 client = app.cloudtaskqueue("queue", config={
@@ -407,4 +446,10 @@ def return_error_string(error):
 # Example uptime check
 @app.uptime(timeout="30s")
 def uptime_check():
+    return "success"
+
+# Example uptime check with alert
+@app.uptime(timeout="30s",alerts=[UptimeAlert("uptime", conditions=[UptimeCondition("uptime")])])
+def uptime_check_with_alert():
+    app.log.info("success")
     return "success"

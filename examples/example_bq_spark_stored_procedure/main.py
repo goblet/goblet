@@ -1,5 +1,6 @@
 import logging
 from goblet import Goblet, goblet_entrypoint
+
 # from spark import spark_handler
 
 app = Goblet(function_name="create-bq-spark-stored-procedure")

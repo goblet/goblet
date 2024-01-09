@@ -1,0 +1,48 @@
+{
+  "headers": {},
+  "body": {
+    "name": "operations/cHJlbWlzZS1kZXZlbG9wZXItcG9ydGFsLXJkL3VzLWNlbnRyYWwxL2Nsb3VkZnVuY3Rpb24tYnVpbGQtdGFncy9BOGVQS3AtM3RHbw",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1",
+      "target": "projects/test_project/locations/us-central1/functions/cloudfunction-build-tags",
+      "type": "CREATE_FUNCTION",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+        "name": "projects/test_project/locations/us-central1/functions/cloudfunction-build-tags",
+        "description": "created by goblet",
+        "sourceArchiveUrl": "gs://bucket/cloudfunction-build-tags-test.zip",
+        "httpsTrigger": {},
+        "entryPoint": "goblet_entrypoint",
+        "runtime": "python310"
+      },
+      "versionId": "1",
+      "updateTime": "2024-01-08T05:38:30Z",
+      "buildId": "99ac93f2-6815-4c62-a3ca-48ee88350564",
+      "buildName": "projects/test_project/locations/us-central1/builds/99ac93f2-6815-4c62-a3ca-48ee88350564"
+    },
+    "done": true,
+    "response": {
+      "@type": "type.googleapis.com/google.cloud.functions.v1.CloudFunction",
+      "name": "projects/test_project/locations/us-central1/functions/cloudfunction-build-tags",
+      "description": "created by goblet",
+      "sourceArchiveUrl": "gs://bucket/cloudfunction-build-tags-test.zip",
+      "httpsTrigger": {
+        "url": "https://us-central1-test_project.cloudfunctions.net/cloudfunction-build-tags",
+        "securityLevel": "SECURE_OPTIONAL"
+      },
+      "status": "ACTIVE",
+      "entryPoint": "goblet_entrypoint",
+      "timeout": "60s",
+      "availableMemoryMb": 256,
+      "serviceAccountEmail": "test_project@appspot.gserviceaccount.com",
+      "updateTime": "2024-01-08T05:38:30.323Z",
+      "versionId": "1",
+      "runtime": "python310",
+      "ingressSettings": "ALLOW_ALL",
+      "buildId": "99ac93f2-6815-4c62-a3ca-48ee88350564",
+      "buildName": "projects/test_project/locations/us-central1/builds/99ac93f2-6815-4c62-a3ca-48ee88350564",
+      "dockerRegistry": "CONTAINER_REGISTRY",
+      "automaticUpdatePolicy": {}
+    }
+  }
+}

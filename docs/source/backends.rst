@@ -29,7 +29,48 @@ Goblet's default backend is first-generation cloud functions. However, Goblet su
 * For cloudfunctions v1, python version must be at least python3.8, and for cloudfunctionv2, python version must be at least python3.8.
   To specify a python version for your cloudfunction, you can set the runtime field in config.json as such:
 
-{"cloudfunction": {"runtime": "python38"}}
+.. code:: json
+
+    {"cloudfunction": {"runtime": "python38"}}
+
+
+To set a custom GCS Bucket to upload the Cloudfunction sourcecode, use the `artifact_bucket` configuration in the `deploy` configuration key.
+
+.. code:: json
+
+    {
+        "deploy":{
+            "artifact_bucket": "name-of-the-bucket"
+        }
+    }
+
+or the ``GOBLET_ARTIFACT_BUCKET`` environment variable.
+
+
+
+To tag the `.zip` file with the code uploaded to the GCS Bucket, use the ``GOBLET_BUILD_TAGS`` environment variable with the tag.
+The Cloudfunction will be created using the file uploaded to this custom location.
+
+.. code:: bash
+
+    GOBLET_BUILD_TAGS=1cac04f3b
+
+In order to use ``GOBLET_BUILD_TAGS``, ``GOBLET_ARTIFACT_BUCKET`` must also have a value.
+
+
+To deploy a Cloudfunction from a tagged `.zip` file use the `artifact_tag` configuration in the `deploy` configuration key
+
+.. code:: json
+
+    {
+        "deploy":{
+            "artifact_tag": "1cac04f3b",
+        }
+    }
+
+or use the ``GOBLET_ARTIFACT_TAG`` environment variable.
+When using an `artifact_tag` to deploy, ``GOBLET_ARTIFACT_BUCKET`` must also have a value.
+
 
 * Goblet does not currently support eventarc triggers for cloudfunctions
 
@@ -130,7 +171,7 @@ This can be done by running:
 
 Here the service account from `project_b` is granted permissions to read from artifact registry en `project_a`
 
-For adding custom tags to be created in cloud build and pushed to artifact registry, use the `GOBLET_BUILD_TAGS` environment variable with a comma-sepparated list of tags to be created:
+To set the tags used to tag the image created in CloudBuild and pushed to artifact registry, use the `GOBLET_BUILD_TAGS` environment variable with a comma-sepparated list of tags to be created:
 
 .. code:: bash
 
