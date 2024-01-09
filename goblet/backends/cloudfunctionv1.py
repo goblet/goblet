@@ -1,3 +1,5 @@
+import os
+
 from requests import request
 import base64
 
@@ -38,6 +40,7 @@ class CloudFunctionV1(Backend):
 
     def __init__(self, app):
         self.client = VersionedClients().cloudfunctions
+        self.storage_client = VersionedClients().storage_objects
         self.func_path = f"projects/{get_default_project()}/locations/{get_default_location()}/functions/{app.function_name}"
         super().__init__(app, self.client, self.func_path)
 
@@ -46,12 +49,42 @@ class CloudFunctionV1(Backend):
             "content-type": "application/zip",
             "x-goog-content-length-range": "0,104857600",
         }
-        source, changes = self._gcs_upload(self.client, put_headers, force=force)
-        if not changes:
-            return None
+
+        artifact_tag = self.config.deploy.artifact_tag or os.getenv(
+            "GOBLET_ARTIFACT_TAG", None
+        )
+
+        if not artifact_tag:
+            build_tag = None
+            upload_client = None
+            upload_method = None
+            build_tags = os.getenv("GOBLET_BUILD_TAGS", None)
+            if build_tags:
+                build_tag = build_tags.split(",")[0]
+                upload_client = self.storage_client
+                upload_method = "sourceArchiveUrl"
+
+            source, changes = self._gcs_upload(
+                self.client,
+                put_headers,
+                force=force,
+                upload_client=upload_client,
+                tag=build_tag,
+            )
+            if not changes:
+                return None
+        else:
+            bucket_name = (
+                self.config.deploy.artifact_bucket
+                or os.environ["GOBLET_ARTIFACT_BUCKET"]
+            )
+            source = {"uploadUrl": f"gs://{bucket_name}/{self.name}-{artifact_tag}.zip"}
+            upload_method = "sourceArchiveUrl"
 
         if self.app.is_http():
-            client, params = self._get_upload_params(source)
+            client, params = self._get_upload_params(
+                source, upload_method=upload_method
+            )
             create_cloudfunctionv1(client, params, config=self.config)
 
         return source
@@ -61,20 +94,23 @@ class CloudFunctionV1(Backend):
         if all:
             destroy_cloudfunction_artifacts(self.name)
 
-    def _get_upload_params(self, source):
+    def _get_upload_params(self, source, upload_method=None):
         user_configs = self.config.cloudfunction or {}
         params = {
             "body": {
                 "name": self.func_path,
                 "description": self.config.description or "created by goblet",
                 "entryPoint": "goblet_entrypoint",
-                "sourceUploadUrl": source["uploadUrl"],
                 "httpsTrigger": {},
                 "runtime": get_function_runtime(self.client, self.config),
                 "labels": {**self.config.labels},
                 **user_configs,
             }
         }
+        if not upload_method:
+            upload_method = "sourceUploadUrl"
+        params["body"][upload_method] = source["uploadUrl"]
+
         return self.client, params
 
     def _checksum(self):

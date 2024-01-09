@@ -1,0 +1,22 @@
+{
+  "headers": {},
+  "body": {
+    "kind": "storage#object",
+    "id": "bucket/cloudfunction-build-tags-test.zip/1704482754811322",
+    "selfLink": "https://www.googleapis.com/storage/v1/b/bucket/o/cloudfunction-build-tags-test.zip",
+    "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/bucket/o/cloudfunction-build-tags-test.zip?generation=1704482754811322&alt=media",
+    "name": "cloudfunction-build-tags-test.zip",
+    "bucket": "bucket",
+    "generation": "1704482754811322",
+    "metageneration": "1",
+    "contentType": "application/zip",
+    "storageClass": "STANDARD",
+    "size": "36054",
+    "md5Hash": "HBI8hp2fuAgx9tPZb7iOMw==",
+    "crc32c": "XV7ndg==",
+    "etag": "CLqrgYn9xoMDEAE=",
+    "timeCreated": "2024-01-05T19:25:54.964Z",
+    "updated": "2024-01-05T19:25:54.964Z",
+    "timeStorageClassUpdated": "2024-01-05T19:25:54.964Z"
+  }
+}
