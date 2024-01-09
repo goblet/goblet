@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Topics &mdash; goblet 0.12.5 documentation</title>
+  <title>Topics &mdash; goblet 0.13.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -82,6 +82,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alerts.html">Alerts</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
@@ -760,8 +763,8 @@ cloudfunction, specify the endpoint in the <cite>backend</cite> argment in <cite
     <span class="k">return</span> <span class="s2">&quot;cors headers&quot;</span>
 </pre></div>
 </div>
-<p>Use the <cite>CORSConfig</cite> class to set customized cors headers from the <cite>goblet.resources.routes</cite> class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet.resources.routes</span> <span class="kn">import</span> <span class="n">CORSConfig</span>
+<p>Use the <cite>CORSConfig</cite> class to set customized cors headers from the <cite>goblet.handlers.routes</cite> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet.handlers.routes</span> <span class="kn">import</span> <span class="n">CORSConfig</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/custom_cors&#39;</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="n">CORSConfig</span><span class="p">(</span><span class="n">allow_origin</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">custom_cors</span><span class="p">():</span>

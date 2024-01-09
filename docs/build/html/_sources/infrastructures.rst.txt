@@ -4,39 +4,8 @@
 Infrastructure
 ================
 
-You can now provision infrastructure within your Goblet code.
+You can  provision infrastructure within your Goblet code.
 
-Alerts
-^^^^^^
-
-You can deploy alerts related to your application by using the alert method. Each alert takes a name and a list of conditions. Notification channels
-can be added to the `alerts.notification_channel` key in `config.json` or explicity in the alert. The base `AlertCondition` class allows you to 
-fully customize your alert based on the fields privided by the `GCP Alert Resource <https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#conditionhttps://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#condition>`_
-
-If you do not need a fully customized alert you can use the built in classes for `MetricCondition`, `LogMatchCondition`, and `CustomMetricCondition`. These come with 
-defaults in terms of duration and aggregations, but can be overriden as needed. The `CustomMetricCondition` creates a custom metric based on the filter provided and then 
-creates an alert using that metric.  
-
-For `LogMatchCondition` you can completely replace the filter if necessary by setting the `replace_filter` flag to True. 
-
-`PubSubDLQCondition` is a special case of `MetricCondition` that will create an alert for `pubsub.googleapis.com/subscription/dead_letter_message_count` on a subscription.
-
-.. code:: python
-
-    from goblet.infrastructures.alerts import MetricCondition,LogMatchCondition,CustomMetricCondition
-    app = Goblet()
-    
-    # Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10
-    app.alert("metric",conditions=[MetricCondition("test", metric="cloudfunctions.googleapis.com/function/execution_count", value=10)])
-
-    # Example Log Match metric that will trigger an incendent off of any Error logs
-    app.alert("error",conditions=[LogMatchCondition("error", "severity>=ERROR")])
-
-    # Example Metric Alert that creates a custom metric for severe errors with http code in the 500's and creates an alert with a threshold of 10
-    app.alert("custom",conditions=[CustomMetricCondition("custom", metric_filter='severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)', value=10)])
-
-    # Example PubSub Alert that will trigger an incident if there are more than 10 dead letter messages in the subscription
-    app.alert("pubsub",conditions=[PubSubDLQCondition("pubsub", subscription_id="{subscription}", value=10)])
 .. _redis:
 
 Redis
@@ -143,15 +112,19 @@ PubSub Topics
 To further configure your PubSub topic within Goblet, provide the config parameter base on the documentation. `Topic Resource <https://cloud.google.com/pubsub/docs/reference/rest/v1/projects.topic>`_.
 
 BigQuery Spark Stored Procedures
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 To deploy BigQuery stored procedures using Spark follow the example below. 
 BigQuery stored procedures documentation can be found `here <https://cloud.google.com/bigquery/docs/spark-procedures>`_.
 
 Using a function from the same python file:
 .. code:: python
+
     import logging
     from goblet import Goblet, goblet_entrypoint
+    import pyspark.sql.functions as F
+    from pyspark.sql import SparkSession
 
     app = Goblet(function_name="create-bq-spark-stored-procedure")
 
@@ -160,8 +133,7 @@ Using a function from the same python file:
 
     # Create a bq spark stored procedure with the spark code and additional python files
     def spark_handler():
-        from pyspark.sql import SparkSession
-        import pyspark.sql.functions as F
+
         spark = SparkSession.builder.appName("spark-bigquery-demo").getOrCreate()
 
         # Load data from BigQuery.
@@ -183,12 +155,12 @@ Using a function from the same python file:
     app.bqsparkstoredprocedure(
         name="count_words_procedure_external",
         dataset_id="tutorial",
-        func=spark_handler,
-    )
+        func=spark_handler)
 
 Using a function from a different python file and loading additional python files:
 `spark.py`:
 .. code:: python
+
     def spark_handler():
         from pyspark.sql import SparkSession
         import pyspark.sql.functions as F
@@ -215,6 +187,7 @@ Using a function from a different python file and loading additional python file
 
 `additional.py`:
 .. code:: python
+
     import logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -224,6 +197,7 @@ Using a function from a different python file and loading additional python file
 
 `main.py`:
 .. code:: python
+
     import logging
     from goblet import Goblet, goblet_entrypoint
 
@@ -233,12 +207,8 @@ Using a function from a different python file and loading additional python file
     goblet_entrypoint(app)
 
     # Create a bq spark stored procedure with the spark code and additional python files
-    app.bqsparkstoredprocedure(
-        name="count_words_procedure_external",
-        dataset_id="tutorial",
-        spark_file="spark.py",
-        additional_python_files=["additional.py"],
-    )
+    app.bqsparkstoredprocedure(name="count_words_procedure_external", dataset_id="tutorial", spark_file="spark.py", additional_python_files=["additional.py"])
+
 
 Options that can be passed to the `bqsparkstoredprocedure` method are:
 - name: name of resource

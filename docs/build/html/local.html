@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Local &mdash; goblet 0.12.5 documentation</title>
+  <title>Local &mdash; goblet 0.13.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -79,6 +79,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alerts.html">Alerts</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
@@ -191,15 +194,17 @@ this will pass through environment variables set in a stage as well if you speci
 Or if you prefer you can also use docker. There’s a Dockerfile and docker-compose.yml files on the examples to run the emulator:
 .. code:: yaml</p>
 <blockquote>
-<div><dl>
-<dt>services:</dt><dd><dl>
+<div><dl class="simple">
+<dt>services:</dt><dd><dl class="simple">
 <dt>pubsub-emulator:</dt><dd><dl class="simple">
 <dt>build:</dt><dd><p>context: .
 dockerfile: pubsub-emulator.Dockerfile</p>
 </dd>
+<dt>ports:</dt><dd><ul class="simple">
+<li><p>“8085:8085”</p></li>
+</ul>
+</dd>
 </dl>
-<p>ports:
-- “8085:8085”</p>
 </dd>
 </dl>
 </dd>

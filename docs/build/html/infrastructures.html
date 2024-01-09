@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Infrastructure &mdash; goblet 0.12.5 documentation</title>
+  <title>Infrastructure &mdash; goblet 0.13.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Integrations" href="integrations.html" />
+    <link rel="next" title="Alerts" href="alerts.html" />
     <link rel="prev" title="Backends" href="backends.html" /> 
 </head>
 
@@ -59,7 +59,6 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Infrastructure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#alerts">Alerts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#redis">Redis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#vpc-connector">VPC Connector</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api-gateway">Api Gateway</a></li>
@@ -68,6 +67,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#bigquery-spark-stored-procedures">BigQuery Spark Stored Procedures</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alerts.html">Alerts</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
@@ -108,34 +110,7 @@
              
   <section id="infrastructure">
 <span id="id1"></span><h1>Infrastructure<a class="headerlink" href="#infrastructure" title="Permalink to this heading">¶</a></h1>
-<p>You can now provision infrastructure within your Goblet code.</p>
-<section id="alerts">
-<h2>Alerts<a class="headerlink" href="#alerts" title="Permalink to this heading">¶</a></h2>
-<p>You can deploy alerts related to your application by using the alert method. Each alert takes a name and a list of conditions. Notification channels
-can be added to the <cite>alerts.notification_channel</cite> key in <cite>config.json</cite> or explicity in the alert. The base <cite>AlertCondition</cite> class allows you to
-fully customize your alert based on the fields privided by the <a class="reference external" href="https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#conditionhttps://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#condition">GCP Alert Resource</a></p>
-<p>If you do not need a fully customized alert you can use the built in classes for <cite>MetricCondition</cite>, <cite>LogMatchCondition</cite>, and <cite>CustomMetricCondition</cite>. These come with
-defaults in terms of duration and aggregations, but can be overriden as needed. The <cite>CustomMetricCondition</cite> creates a custom metric based on the filter provided and then
-creates an alert using that metric.</p>
-<p>For <cite>LogMatchCondition</cite> you can completely replace the filter if necessary by setting the <cite>replace_filter</cite> flag to True.</p>
-<p><cite>PubSubDLQCondition</cite> is a special case of <cite>MetricCondition</cite> that will create an alert for <cite>pubsub.googleapis.com/subscription/dead_letter_message_count</cite> on a subscription.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">goblet.infrastructures.alerts</span> <span class="kn">import</span> <span class="n">MetricCondition</span><span class="p">,</span><span class="n">LogMatchCondition</span><span class="p">,</span><span class="n">CustomMetricCondition</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
-
-<span class="c1"># Example Metric Alert for the cloudfunction metric execution_count with a threshold of 10</span>
-<span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;metric&quot;</span><span class="p">,</span><span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">MetricCondition</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;cloudfunctions.googleapis.com/function/execution_count&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
-
-<span class="c1"># Example Log Match metric that will trigger an incendent off of any Error logs</span>
-<span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span><span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">LogMatchCondition</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;severity&gt;=ERROR&quot;</span><span class="p">)])</span>
-
-<span class="c1"># Example Metric Alert that creates a custom metric for severe errors with http code in the 500&#39;s and creates an alert with a threshold of 10</span>
-<span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span><span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">CustomMetricCondition</span><span class="p">(</span><span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="n">metric_filter</span><span class="o">=</span><span class="s1">&#39;severity=(ERROR OR CRITICAL OR ALERT OR EMERGENCY) httpRequest.status=(500 OR 501 OR 502 OR 503 OR 504)&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
-
-<span class="c1"># Example PubSub Alert that will trigger an incident if there are more than 10 dead letter messages in the subscription</span>
-<span class="n">app</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">,</span><span class="n">conditions</span><span class="o">=</span><span class="p">[</span><span class="n">PubSubDLQCondition</span><span class="p">(</span><span class="s2">&quot;pubsub&quot;</span><span class="p">,</span> <span class="n">subscription_id</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{subscription}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
-</pre></div>
-</div>
-</section>
+<p>You can  provision infrastructure within your Goblet code.</p>
 <section id="redis">
 <span id="id2"></span><h2>Redis<a class="headerlink" href="#redis" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Goblet</span><span class="p">()</span>
@@ -239,16 +214,16 @@ BigQuery stored procedures documentation can be found <a class="reference extern
 .. code:: python</p>
 <blockquote>
 <div><p>import logging
-from goblet import Goblet, goblet_entrypoint</p>
+from goblet import Goblet, goblet_entrypoint
+import pyspark.sql.functions as F
+from pyspark.sql import SparkSession</p>
 <p>app = Goblet(function_name=”create-bq-spark-stored-procedure”)</p>
 <p>app.log.setLevel(logging.DEBUG)  # configure goblet logger level
 goblet_entrypoint(app)</p>
 <p># Create a bq spark stored procedure with the spark code and additional python files
 def spark_handler():</p>
 <blockquote>
-<div><p>from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
-spark = SparkSession.builder.appName(“spark-bigquery-demo”).getOrCreate()</p>
+<div><p>spark = SparkSession.builder.appName(“spark-bigquery-demo”).getOrCreate()</p>
 <p># Load data from BigQuery.
 texts = spark.read.format(“bigquery”) .option(“table”, “tutorial.poc”) .load()
 texts.createOrReplaceTempView(“words”)</p>
@@ -262,10 +237,9 @@ text_count.write.mode(“append”).format(“bigquery”) .option(“writeMetho
 <dl class="simple">
 <dt>app.bqsparkstoredprocedure(</dt><dd><p>name=”count_words_procedure_external”,
 dataset_id=”tutorial”,
-func=spark_handler,</p>
+func=spark_handler)</p>
 </dd>
 </dl>
-<p>)</p>
 </div></blockquote>
 <p>Using a function from a different python file and loading additional python files:
 <cite>spark.py</cite>:
@@ -309,14 +283,7 @@ from goblet import Goblet, goblet_entrypoint</p>
 <p>app.log.setLevel(logging.DEBUG)  # configure goblet logger level
 goblet_entrypoint(app)</p>
 <p># Create a bq spark stored procedure with the spark code and additional python files
-app.bqsparkstoredprocedure(</p>
-<blockquote>
-<div><p>name=”count_words_procedure_external”,
-dataset_id=”tutorial”,
-spark_file=”spark.py”,
-additional_python_files=[“additional.py”],</p>
-</div></blockquote>
-<p>)</p>
+app.bqsparkstoredprocedure(name=”count_words_procedure_external”, dataset_id=”tutorial”, spark_file=”spark.py”, additional_python_files=[“additional.py”])</p>
 </div></blockquote>
 <p>Options that can be passed to the <cite>bqsparkstoredprocedure</cite> method are:
 - name: name of resource
@@ -336,7 +303,7 @@ additional_python_files=[“additional.py”],</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="backends.html" class="btn btn-neutral float-left" title="Backends" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="integrations.html" class="btn btn-neutral float-right" title="Integrations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="alerts.html" class="btn btn-neutral float-right" title="Alerts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

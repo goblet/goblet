@@ -778,11 +778,11 @@ Cors can be set on the route level or on the Goblet application level. Setting `
     def home():
         return "cors headers"
 
-Use the `CORSConfig` class to set customized cors headers from the `goblet.resources.routes` class. 
+Use the `CORSConfig` class to set customized cors headers from the `goblet.handlers.routes` class. 
 
 .. code:: python 
 
-    from goblet.resources.routes import CORSConfig
+    from goblet.handlers.routes import CORSConfig
 
     @app.route('/custom_cors', cors=CORSConfig(allow_origin='localhost'))
     def custom_cors():

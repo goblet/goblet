@@ -119,6 +119,14 @@ Infrastructures
 
    infrastructures
 
+Alerts
+------
+
+.. toctree::
+   :maxdepth: 2
+
+   alerts
+
 Integrations
 ------------
 

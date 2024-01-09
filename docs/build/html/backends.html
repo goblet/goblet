@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Backends &mdash; goblet 0.12.5 documentation</title>
+  <title>Backends &mdash; goblet 0.13.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -63,6 +63,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="infrastructures.html">Infrastructure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alerts.html">Alerts</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="integrations.html">Integrations</a></li>
@@ -126,7 +129,34 @@ for first-gen cloudfunctions and the <a class="reference external" href="https:/
 <li><p>For cloudfunctions v1, python version must be at least python3.8, and for cloudfunctionv2, python version must be at least python3.8.
 To specify a python version for your cloudfunction, you can set the runtime field in config.json as such:</p></li>
 </ul>
-<p>{“cloudfunction”: {“runtime”: “python38”}}</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;cloudfunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;runtime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python38&quot;</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>To set a custom GCS Bucket to upload the Cloudfunction sourcecode, use the <cite>artifact_bucket</cite> configuration in the <cite>deploy</cite> configuration key.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;deploy&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;artifact_bucket&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name-of-the-bucket&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or the <code class="docutils literal notranslate"><span class="pre">GOBLET_ARTIFACT_BUCKET</span></code> environment variable.</p>
+<p>To tag the <cite>.zip</cite> file with the code uploaded to the GCS Bucket, use the <code class="docutils literal notranslate"><span class="pre">GOBLET_BUILD_TAGS</span></code> environment variable with the tag.
+The Cloudfunction will be created using the file uploaded to this custom location.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GOBLET_BUILD_TAGS</span><span class="o">=</span>1cac04f3b
+</pre></div>
+</div>
+<p>In order to use <code class="docutils literal notranslate"><span class="pre">GOBLET_BUILD_TAGS</span></code>, <code class="docutils literal notranslate"><span class="pre">GOBLET_ARTIFACT_BUCKET</span></code> must also have a value.</p>
+<p>To deploy a Cloudfunction from a tagged <cite>.zip</cite> file use the <cite>artifact_tag</cite> configuration in the <cite>deploy</cite> configuration key</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;deploy&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;artifact_tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1cac04f3b&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or use the <code class="docutils literal notranslate"><span class="pre">GOBLET_ARTIFACT_TAG</span></code> environment variable.
+When using an <cite>artifact_tag</cite> to deploy, <code class="docutils literal notranslate"><span class="pre">GOBLET_ARTIFACT_BUCKET</span></code> must also have a value.</p>
 <ul class="simple">
 <li><p>Goblet does not currently support eventarc triggers for cloudfunctions</p></li>
 </ul>
@@ -206,7 +236,7 @@ Having a custom Dockerfile if only needed if you would like to customize you con
 </pre></div>
 </div>
 <p>Here the service account from <cite>project_b</cite> is granted permissions to read from artifact registry en <cite>project_a</cite></p>
-<p>For adding custom tags to be created in cloud build and pushed to artifact registry, use the <cite>GOBLET_BUILD_TAGS</cite> environment variable with a comma-sepparated list of tags to be created:</p>
+<p>To set the tags used to tag the image created in CloudBuild and pushed to artifact registry, use the <cite>GOBLET_BUILD_TAGS</cite> environment variable with a comma-sepparated list of tags to be created:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GOBLET_BUILD_TAGS</span><span class="o">=</span>tag1,tag2,tag3
 </pre></div>
 </div>
