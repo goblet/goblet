@@ -231,18 +231,18 @@ class TestDecoraters:
 
         app = Goblet("test", backend="cloudrun", config={"stages": {"TEST": {}}})
 
-        @app.job("testjob1", schedule="* * * * *", stage="TEST")
         @app.stage("TEST")
+        @app.job("testjob1", schedule="* * * * *")
         def dummy_function():
             return "test"
 
-        @app.job("testjob2", schedule="* * * * *", stage="TEST2")
         @app.stage("TEST2")
+        @app.job("testjob2", schedule="* * * * *")
         def dummy_function2():
             return "test"
 
-        @app.job("testjob3", schedule="* * * * *", stages=["TEST", "TEST2"])
         @app.stage(stages=["TEST", "TEST2"])
+        @app.job("testjob3", schedule="* * * * *")
         def dummy_function3():
             return "test"
 
