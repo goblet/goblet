@@ -259,14 +259,27 @@ class Goblet_Decorators:
             registration_kwargs={"headers": headers},
         )
 
-    def job(self, name, task_id=0, schedule=None, timezone="UTC", stage="", stages=[], **kwargs):
+    def job(
+        self,
+        name,
+        task_id=0,
+        schedule=None,
+        timezone="UTC",
+        stage=None,
+        stages=[],
+        **kwargs,
+    ):
         """Cloudrun Job"""
 
         if schedule and task_id != 0:
             raise ValueError("Schedule can only be added to task_id with value 0")
         if kwargs and task_id != 0:
             raise ValueError("Arguments can only be added to task_id with value 0")
-        if schedule and (os.getenv("STAGE") == stage or os.getenv("STAGE") in stages):
+
+        if schedule and (
+            (not stage and not stages)
+            or (os.getenv("STAGE") == stage or os.getenv("STAGE") in stages)
+        ):
             self._register_handler(
                 "schedule",
                 f"schedule-job-{name}",

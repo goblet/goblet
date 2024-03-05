@@ -226,7 +226,7 @@ class TestDecoraters:
 
         assert len(app.handlers["route"].resources) == 2
 
-    def test_stages_with_schedule(self, monkeypatch):
+    def test_schedule_with_stages(self, monkeypatch):
         monkeypatch.setenv("STAGE", "TEST")
 
         app = Goblet("test", backend="cloudrun", config={"stages": {"TEST": {}}})
@@ -248,7 +248,20 @@ class TestDecoraters:
 
         assert list(app.handlers["schedule"].resources.keys()) == [
             "schedule-job-testjob1",
-            "schedule-job-testjob3"
+            "schedule-job-testjob3",
+        ]
+
+    def test_schedule_without_stages(self, monkeypatch):
+        monkeypatch.setenv("STAGE", "TEST")
+
+        app = Goblet("test", backend="cloudrun", config={"stages": {"TEST": {}}})
+
+        @app.job("testjob1", schedule="* * * * *")
+        def dummy_function():
+            return "test"
+
+        assert list(app.handlers["schedule"].resources.keys()) == [
+            "schedule-job-testjob1"
         ]
 
     def test_errorhandler_default(self):
