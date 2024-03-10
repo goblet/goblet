@@ -18,6 +18,8 @@ from goblet.infrastructures.bq_spark_stored_procedure import (
     BigQuerySparkStoredProcedure,
 )
 
+from functools import partial
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.getLevelName(os.getenv("GOBLET_LOG_LEVEL", "INFO")))
 
@@ -140,6 +142,8 @@ class Goblet_Decorators:
         dlq = kwargs.pop("dlq", False)
         dlq_topic_config = kwargs.pop("dlq_topic_config", {})
         dlq_alerts = kwargs.pop("dlq_alerts", [])
+
+        extra_registrations = []
         if dlq:
             log.info(f"DLQ enabled use of subscription will be forced to topic {topic}")
             kwargs["use_subscription"] = True
@@ -157,19 +161,22 @@ class Goblet_Decorators:
                 else dlq_pull_subscription_config.pop("name")
             )
             # Create DLQ topic
-            self._register_infrastructure(
-                handler_type="pubsub_topic",
-                kwargs={
-                    "name": dlq_topic_name,
-                    "kwargs": {
-                        "config": dlq_topic_config,
-                        "dlq": True,
-                        "dlq_pull_subscription": {
-                            "name": dlq_pull_subscription_name,
-                            "config": dlq_pull_subscription_config,
+            extra_registrations.append(
+                partial(
+                    self._register_infrastructure,
+                    handler_type="pubsub_topic",
+                    kwargs={
+                        "name": dlq_topic_name,
+                        "kwargs": {
+                            "config": dlq_topic_config,
+                            "dlq": True,
+                            "dlq_pull_subscription": {
+                                "name": dlq_pull_subscription_name,
+                                "config": dlq_pull_subscription_config,
+                            },
                         },
                     },
-                },
+                )
             )
             dlq_policy = {
                 "deadLetterPolicy": {
@@ -185,11 +192,12 @@ class Goblet_Decorators:
 
             for dlq_alert in dlq_alerts:
                 dlq_alert.update_extras({"topic": dlq_topic_name})
-                self.alerts.register(dlq_alert)
+                extra_registrations.append(partial(self.alerts.register, dlq_alert))
 
         return self._create_registration_function(
             handler_type="pubsub",
             registration_kwargs={"topic": topic, "kwargs": kwargs},
+            extra_registrations=extra_registrations,
         )
 
     def topic(self, topic, **kwargs):
@@ -261,29 +269,34 @@ class Goblet_Decorators:
 
     def job(self, name, task_id=0, schedule=None, timezone="UTC", **kwargs):
         """Cloudrun Job"""
+        extra_registrations = []
         if schedule and task_id != 0:
             raise ValueError("Schedule can only be added to task_id with value 0")
         if kwargs and task_id != 0:
             raise ValueError("Arguments can only be added to task_id with value 0")
         if schedule:
-            self._register_handler(
-                "schedule",
-                f"schedule-job-{name}",
-                None,
-                kwargs={
-                    "schedule": schedule,
-                    "timezone": timezone,
-                    "kwargs": {
-                        "uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project()}/jobs/{self.function_name}-{name}:run",
-                        "httpMethod": "POST",
-                        "authMethod": "oauthToken",
-                        **kwargs,
+            extra_registrations.append(
+                partial(
+                    self._register_handler,
+                    "schedule",
+                    f"schedule-job-{name}",
+                    None,
+                    kwargs={
+                        "schedule": schedule,
+                        "timezone": timezone,
+                        "kwargs": {
+                            "uri": f"https://{get_default_location()}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/{get_default_project()}/jobs/{self.function_name}-{name}:run",
+                            "httpMethod": "POST",
+                            "authMethod": "oauthToken",
+                            **kwargs,
+                        },
                     },
-                },
+                )
             )
         return self._create_registration_function(
             handler_type="jobs",
             registration_kwargs={"name": name, "task_id": task_id, "kwargs": kwargs},
+            extra_registrations=extra_registrations,
         )
 
     def apigateway(self, name, backend_url, filename=None, openapi_dict=None, **kwargs):
@@ -414,12 +427,17 @@ class Goblet_Decorators:
 
         return _register_stage
 
-    def _create_registration_function(self, handler_type, registration_kwargs=None):
+    def _create_registration_function(
+        self, handler_type, extra_registrations=[], registration_kwargs=None
+    ):
         def _register_handler(user_handler):
             if user_handler:
                 handler_name = user_handler.__name__
                 kwargs = registration_kwargs or {}
                 self._register_handler(handler_type, handler_name, user_handler, kwargs)
+                # Deploy extra registrations correctly with stage decorator
+                for extra in extra_registrations:
+                    extra()
             return user_handler
 
         return _register_handler
