@@ -180,9 +180,7 @@ class Goblet_Decorators:
             )
             dlq_policy = {
                 "deadLetterPolicy": {
-                    "deadLetterTopic": self.infrastructure["pubsub_topic"].resources[
-                        dlq_topic_name
-                    ]["name"],
+                    "deadLetterTopic": f"projects/goblet/subscriptions/topics/{dlq_topic_name}"
                 }
             }
             if "config" in kwargs:
