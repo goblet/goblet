@@ -101,7 +101,7 @@ class TestBqSparkStoredProcedure:
             routine_response["body"]["sparkOptions"]["connection"]
             == connection_response["body"]["name"]
         )
-        assert 3 == get_replay_count()
+        assert 2 == get_replay_count()
 
     def test_destroy_bqsparkstoredprocedure(self, monkeypatch):
         test_deploy_name = "bqsparkstoredprocedure-destroy"
@@ -128,7 +128,7 @@ class TestBqSparkStoredProcedure:
         responses = get_responses(test_deploy_name)
 
         assert len(responses) != 0
-        assert 3 == get_replay_count()
+        assert 2 == get_replay_count()
 
     def test_deploy_bqsparkstoredprocedure_remote_code(self, monkeypatch):
         test_name = "bqsparkstoredprocedure-remote-deploy"
@@ -186,7 +186,7 @@ class TestBqSparkStoredProcedure:
             routine_response["body"]["sparkOptions"]["mainFileUri"]
             == f"gs://{test_name}/spark.py"
         )
-        assert 5 == get_replay_count()
+        assert 4 == get_replay_count()
         os.remove("spark.py")
 
     def test_destroy_bqsparkstoredprocedure_remote_code(self, monkeypatch):
@@ -212,4 +212,4 @@ class TestBqSparkStoredProcedure:
         responses = get_responses(test_deploy_name)
 
         assert len(responses) != 0
-        assert 6 == get_replay_count()
+        assert 5 == get_replay_count()

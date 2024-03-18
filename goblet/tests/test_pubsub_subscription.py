@@ -570,6 +570,42 @@ class TestPubSubSubscription:
 
         assert get_replay_count() == 15
 
+    def test_deploy_pubsub_subscription_with_dlq_with_stage(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
+        monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
+        monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy-subscription-dlq")
+        monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
+        service_account = "SERVICE_ACCOUNT@developer.gserviceaccount.com"
+
+        app = Goblet(
+            function_name="goblet-topic-subscription",
+            config={"pubsub": {"serviceAccountEmail": service_account}},
+        )
+        setattr(app, "entrypoint", "app")
+
+        @app.pubsub_subscription(
+            "test",
+            dlq=True,
+            dlq_alerts=[
+                PubSubDLQAlert(
+                    "pubsubdlq",
+                    conditions=[
+                        PubSubDLQCondition(
+                            "pubsubdlq",
+                            subscription_id="pubsub-deploy-subscription",
+                        )
+                    ],
+                )
+            ],
+        )
+        @app.stage("TEST")
+        def dummy():
+            return
+
+        assert len(app.alerts.resources) == 0
+        assert len(app.infrastructure["pubsub_topic"].resources) == 0
+        assert len(app.handlers["pubsub"].resources) == 0
+
     def test_deploy_local(self, monkeypatch):
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")

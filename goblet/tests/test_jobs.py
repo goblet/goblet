@@ -224,3 +224,41 @@ class TestJobs:
                 0
             ]["image"]
         )
+
+    def test_schedule_with_stages(self, monkeypatch):
+        monkeypatch.setenv("STAGE", "TEST")
+
+        app = Goblet("test", backend="cloudrun", config={"stages": {"TEST": {}}})
+
+        @app.job("testjob1", schedule="* * * * *")
+        @app.stage("TEST")
+        def dummy_function():
+            return "test"
+
+        @app.job("testjob2", schedule="* * * * *")
+        @app.stage("TEST2")
+        def dummy_function2():
+            return "test"
+
+        @app.job("testjob3", schedule="* * * * *")
+        @app.stage(stages=["TEST", "TEST2"])
+        def dummy_function3():
+            return "test"
+
+        assert list(app.handlers["schedule"].resources.keys()) == [
+            "schedule-job-testjob1",
+            "schedule-job-testjob3",
+        ]
+
+    def test_schedule_without_stages(self, monkeypatch):
+        monkeypatch.setenv("STAGE", "TEST")
+
+        app = Goblet("test", backend="cloudrun", config={"stages": {"TEST": {}}})
+
+        @app.job("testjob1", schedule="* * * * *")
+        def dummy_function():
+            return "test"
+
+        assert list(app.handlers["schedule"].resources.keys()) == [
+            "schedule-job-testjob1"
+        ]
