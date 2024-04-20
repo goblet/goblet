@@ -213,7 +213,7 @@ class Backend:
         for pattern in self.zip_config.get("include", []):
             globbed_files.extend(Path("").rglob(pattern))
         for path in globbed_files:
-            if not set(path.parts).intersection(exclusion_set):
+            if not set(path.parts).intersection(exclusion_set) and str(path) != '.goblet/config.json':
                 self.log.debug(f"Zipping file: {path}...")
                 self.zipf.write(str(path))
 
