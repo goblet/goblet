@@ -91,8 +91,7 @@ class TestRoutes:
         assert resp == ("success", 201)
 
     def test_call_tuple_with_cors_response(self):
-        app = Goblet(function_name="goblet_example",
-                     cors=True)
+        app = Goblet(function_name="goblet_example", cors=True)
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -123,8 +122,7 @@ class TestRoutes:
         assert resp == ("success", 201, {"x-header": "test"})
 
     def test_call_tuple_with_cors_and_headers_response(self):
-        app = Goblet(function_name="goblet_example",
-                     cors=True)
+        app = Goblet(function_name="goblet_example", cors=True)
 
         @app.route("/test", methods=["POST"])
         def mock_function():
