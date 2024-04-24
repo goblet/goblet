@@ -450,7 +450,15 @@ class RouteEntry:
         if isinstance(resp, goblet.Response):
             resp.headers.update(self.cors.get_access_control_headers())
         if isinstance(resp, tuple):
-            resp[2].update(self.cors.get_access_control_headers())
+            # Flask custom Tuple response: body, status code, headers ({}, 200, {})
+            if len(resp) > 2:
+                resp[2].update(self.cors.get_access_control_headers())
+            else:
+                resp = goblet.Response(
+                    resp[0],
+                    status_code=int(resp[1]) or 200, 
+                    headers=self.cors.get_access_control_headers()
+                )
         if isinstance(resp, str):
             resp = goblet.Response(resp, headers=self.cors.get_access_control_headers())
         return resp
