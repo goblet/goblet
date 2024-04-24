@@ -89,7 +89,7 @@ class TestRoutes:
         mock_event1.json = {}
         resp = app(mock_event1, None)
         assert resp == ("success", 201)
-        
+
     def test_call_tuple_with_cors_response(self):
         app = Goblet(function_name="goblet_example",
                      cors=True)
@@ -106,7 +106,7 @@ class TestRoutes:
         resp = app(mock_event1, None)
         assert resp.body == "success"
         assert resp.status_code == 201
-        
+
     def test_call_tuple_with_headers_response(self):
         app = Goblet(function_name="goblet_example")
 
@@ -121,7 +121,7 @@ class TestRoutes:
         mock_event1.json = {}
         resp = app(mock_event1, None)
         assert resp == ("success", 201, {"x-header": "test"})
-    
+
     def test_call_tuple_with_cors_and_headers_response(self):
         app = Goblet(function_name="goblet_example",
                      cors=True)

@@ -456,7 +456,7 @@ class RouteEntry:
             else:
                 resp = goblet.Response(
                     resp[0],
-                    status_code=int(resp[1]) or 200, 
+                    status_code=int(resp[1]) or 200,
                     headers=self.cors.get_access_control_headers()
                 )
         if isinstance(resp, str):
