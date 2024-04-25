@@ -75,6 +75,69 @@ class TestRoutes:
         assert gateway.resources["/home"]["GET"]
         assert gateway.resources["/home2"]["GET"]
 
+    def test_call_tuple_response(self):
+        app = Goblet(function_name="goblet_example")
+
+        @app.route("/test", methods=["POST"])
+        def mock_function():
+            return "success", 201
+
+        mock_event1 = Mock()
+        mock_event1.path = "/test"
+        mock_event1.method = "POST"
+        mock_event1.headers = {}
+        mock_event1.json = {}
+        resp = app(mock_event1, None)
+        assert resp == ("success", 201)
+
+    def test_call_tuple_with_cors_response(self):
+        app = Goblet(function_name="goblet_example", cors=True)
+
+        @app.route("/test", methods=["POST"])
+        def mock_function():
+            return "success", 201
+
+        mock_event1 = Mock()
+        mock_event1.path = "/test"
+        mock_event1.method = "POST"
+        mock_event1.headers = {}
+        mock_event1.json = {}
+        resp = app(mock_event1, None)
+        assert resp.body == "success"
+        assert resp.status_code == 201
+
+    def test_call_tuple_with_headers_response(self):
+        app = Goblet(function_name="goblet_example")
+
+        @app.route("/test", methods=["POST"])
+        def mock_function():
+            return "success", 201, {"x-header": "test"}
+
+        mock_event1 = Mock()
+        mock_event1.path = "/test"
+        mock_event1.method = "POST"
+        mock_event1.headers = {}
+        mock_event1.json = {}
+        resp = app(mock_event1, None)
+        assert resp == ("success", 201, {"x-header": "test"})
+
+    def test_call_tuple_with_cors_and_headers_response(self):
+        app = Goblet(function_name="goblet_example", cors=True)
+
+        @app.route("/test", methods=["POST"])
+        def mock_function():
+            return "success", 201, {"x-header": "test"}
+
+        mock_event1 = Mock()
+        mock_event1.path = "/test"
+        mock_event1.method = "POST"
+        mock_event1.headers = {}
+        mock_event1.json = {}
+        resp = app(mock_event1, None)
+        assert resp[0] == "success"
+        assert resp[1] == 201
+        assert resp[2].get("x-header") == "test"
+
     def test_call_route(self):
         app = Goblet(function_name="goblet_example")
         mock = Mock()
