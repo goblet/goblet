@@ -12,6 +12,9 @@ pypi:
 lint:
 	flake8 goblet
 
+format:
+	black goblet
+
 coverage:
 	export G_HTTP_TEST=REPLAY
 	export G_TEST_DATA_DIR=$PWD/goblet/tests/data/http
