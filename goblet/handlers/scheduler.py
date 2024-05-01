@@ -141,14 +141,17 @@ class Scheduler(Handler):
             triggered_resource = f"{self.name}-{job_name.split('schedule-job-')[-1]}"
             # Set invoker permission on cloudrun job
             if "jobs/" in target:
-                add_binding(
-                    self.versioned_clients.run_job,
-                    "projects/{project_id}/locations/{location_id}/jobs/"
-                    + triggered_resource,
-                    "roles/run.invoker",
-                    [f"serviceAccount:{service_account}"],
-                )
-
+                try:
+                    add_binding(
+                        self.versioned_clients.run_job,
+                        "projects/{project_id}/locations/{location_id}/jobs/"
+                        + triggered_resource,
+                        "roles/run.invoker",
+                        [f"serviceAccount:{service_account}"],
+                    )
+                except Exception:
+                    log.warning(f"Error setting invoker permissions for {triggered_resource}")
+                    
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
         filtered_jobs = list(
