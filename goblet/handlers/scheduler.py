@@ -150,7 +150,9 @@ class Scheduler(Handler):
                         [f"serviceAccount:{service_account}"],
                     )
                 except Exception:
-                    log.warning(f"Error setting invoker permissions for {triggered_resource}")
+                    log.warning(
+                        f"Error setting invoker permissions for {triggered_resource}"
+                    )
 
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
