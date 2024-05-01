@@ -151,7 +151,7 @@ class Scheduler(Handler):
                     )
                 except Exception:
                     log.warning(f"Error setting invoker permissions for {triggered_resource}")
-        
+
     def _sync(self, dryrun=False):
         jobs = self.versioned_clients.cloudscheduler.execute("list").get("jobs", [])
         filtered_jobs = list(
