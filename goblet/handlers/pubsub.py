@@ -84,7 +84,7 @@ class PubSub(Handler):
         # Subscription
         else:
             subscription = event.json["subscription"].split("/")[-1]
-            topic_name = subscription.replace(self.name + "-", "")
+            topic_name = subscription.replace(self.name + "-", "", 1)
             data = base64.b64decode(event.json["message"]["data"]).decode("utf-8")
             attributes = event.json["message"].get("attributes") or {}
 
@@ -145,15 +145,17 @@ class PubSub(Handler):
         req_body = {
             "topic": f"projects/{topic['project']}/topics/{topic_name}",
             "filter": topic["filter"] or "",
-            "pushConfig": {}
-            if topic["config"].get("enableExactlyOnceDelivery", None)
-            else {
-                "pushEndpoint": push_url,
-                "oidcToken": {
-                    "serviceAccountEmail": service_account,
-                    "audience": push_url,
-                },
-            },
+            "pushConfig": (
+                {}
+                if topic["config"].get("enableExactlyOnceDelivery", None)
+                else {
+                    "pushEndpoint": push_url,
+                    "oidcToken": {
+                        "serviceAccountEmail": service_account,
+                        "audience": push_url,
+                    },
+                }
+            ),
             "labels": self.config.labels,
             **topic["config"],
         }
