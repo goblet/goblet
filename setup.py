@@ -32,7 +32,7 @@ REQUIRED = [
     "google-cloud-logging",
     "google-cloud-appengine-logging",
     "goblet-gcp-client",
-    "protobuf==4.24.*",
+    "protobuf>=4.24,<4.26",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
