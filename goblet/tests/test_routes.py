@@ -107,7 +107,7 @@ class TestRoutes:
         assert resp.status_code == 201
 
     def test_call_tuple_with_headers_response(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -122,9 +122,7 @@ class TestRoutes:
         assert resp == ("success", 201, {"x-header": "test"})
 
     def test_call_tuple_with_cors_and_headers_response(self):
-        app = Goblet(
-            function_name="goblet-example", cors=True, backend="cloudfunctionv1"
-        )
+        app = Goblet(function_name="goblet-example", cors=True, backend="cloudfunction")
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -141,7 +139,7 @@ class TestRoutes:
         assert resp[2].get("x-header") == "test"
 
     def test_call_route(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
         mock = Mock()
         mock_param = Mock()
 
@@ -171,7 +169,7 @@ class TestRoutes:
         mock_param.assert_called_once_with("param")
 
     def test_call_route_list_request_body(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
         mock = Mock()
 
         app.route("/test", methods=["POST"])(mock_dummy_function(mock))
@@ -186,7 +184,7 @@ class TestRoutes:
         assert mock.call_count == 1
 
     def test_cors(self):
-        app = Goblet(function_name="goblet_cors", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet_cors", backend="cloudfunction")
         app2 = Goblet(
             function_name="goblet_cors", cors=CORSConfig(allow_origin="app-level")
         )
@@ -272,7 +270,7 @@ class TestRoutes:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet_routes", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet_routes", backend="cloudfunction")
         setattr(app, "entrypoint", "app")
 
         app.route("/")(dummy_function)
@@ -338,7 +336,7 @@ class TestRoutes:
             "goblet_routes",
             resources=["not_empty"],
             backend=CloudFunctionV1(
-                Goblet(function_name="goblet_routes", backend="cloudfunctionv1")
+                Goblet(function_name="goblet_routes", backend="cloudfunction")
             ),
         )
         apigw.destroy()
@@ -358,7 +356,7 @@ class TestRoutes:
         monkeypatch.setenv("G_TEST_NAME", "routes-deploy-without-backend")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet("goblet-routes", backend="cloudfunctionv1")
+        app = Goblet("goblet-routes", backend="cloudfunction")
         app.route("/home")(dummy_function)
 
         with pytest.raises(SystemExit) as e:

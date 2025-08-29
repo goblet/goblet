@@ -7,7 +7,7 @@ from goblet.test_utils import dummy_function
 from goblet.handlers.pubsub import PubSub
 from goblet.handlers.routes import Routes
 
-from goblet.backends.cloudfunctionv1 import CloudFunctionV1
+from goblet.backends.cloudfunction import CloudFunctionV1
 
 from goblet_gcp_client import (
     get_response,

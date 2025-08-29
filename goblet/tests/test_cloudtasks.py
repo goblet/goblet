@@ -58,7 +58,7 @@ class TestCloudTasks:
         app = Goblet(
             function_name="goblet-example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
-            backend="cloudfunctionv1",
+            backend="cloudfunction",
         )
 
         client: CloudTaskClient = app.cloudtaskqueue(  # noqa: F841
@@ -83,7 +83,7 @@ class TestCloudTasks:
         app = Goblet(
             function_name="goblet-example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
-            backend="cloudfunctionv1",
+            backend="cloudfunction",
         )
 
         client: CloudTaskClient = app.cloudtaskqueue(name="cloudtaskqueue")

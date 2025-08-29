@@ -18,7 +18,7 @@ from goblet_gcp_client import (
 
 class TestAlerts:
     def test_add_alert(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         metric_alert = BackendAlert(
             "metric",
@@ -79,7 +79,7 @@ class TestAlerts:
 
         reset_replay_count()
 
-        app = Goblet(function_name="alerts-test", backend="cloudfunctionv1")
+        app = Goblet(function_name="alerts-test", backend="cloudfunction")
 
         metric_alert = BackendAlert(
             "metric",
@@ -169,7 +169,7 @@ class TestAlerts:
 
         reset_replay_count()
 
-        app = Goblet(function_name="alerts-test", backend="cloudfunctionv1")
+        app = Goblet(function_name="alerts-test", backend="cloudfunction")
 
         metric_alert = BackendAlert(
             "metric",
@@ -210,7 +210,7 @@ class TestAlerts:
         monkeypatch.setenv("G_TEST_NAME", "alerts-sync")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="alerts-test", backend="cloudfunctionv1")
+        app = Goblet(function_name="alerts-test", backend="cloudfunction")
 
         custom_alert = BackendAlert(
             "custom",

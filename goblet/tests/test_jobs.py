@@ -66,7 +66,7 @@ class TestJobs:
         mock = Mock()
         mock2 = Mock()
 
-        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
         app.job("test")(mock_dummy_function(mock))
         app.job("test", task_id=1)(mock_dummy_function(mock2))
 
