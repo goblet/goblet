@@ -20,7 +20,7 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet-example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"] = HTTP("name", app)
@@ -181,7 +181,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", "deployer-function-destroy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_test_app")
+        app = Goblet(function_name="goblet_test_app", backend="cloudfunctionv1")
 
         app.destroy()
 
@@ -199,7 +199,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", "deployer-function-destroy-all")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
 
         app.destroy(all=True)
 
@@ -219,6 +219,7 @@ class TestDeployer:
         app = Goblet(
             function_name="goblet_bindings",
             config={"bindings": bindings},
+            backend="cloudfunctionv1",
         )
         setattr(app, "entrypoint", "app")
 
@@ -245,7 +246,7 @@ class TestDeployer:
             headers={"x-goog-hash": "crc32c=+kjoHA==, md5=QcWxCkEOHzBSBgerQcjMEg=="},
         )
 
-        app = Goblet(function_name="goblet_test_app")
+        app = Goblet(function_name="goblet_test_app", backend="cloudfunctionv1")
 
         app_backend = app.backend_class(app)
 
@@ -443,7 +444,9 @@ class TestDeployer:
         monkeypatch.setenv("GOBLET_ARTIFACT_BUCKET", "bucket")
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
-        app = Goblet(function_name="cloudfunction-build-tags")
+        app = Goblet(
+            function_name="cloudfunction-build-tags", backend="cloudfunctionv1"
+        )
         goblet_entrypoint(app)
         setattr(app, "entrypoint", "app")
 
@@ -463,7 +466,9 @@ class TestDeployer:
         monkeypatch.setenv("GOBLET_ARTIFACT_BUCKET", "bucket")
         monkeypatch.setenv("GOBLET_ARTIFACT_TAG", artifact_tag)
 
-        app = Goblet(function_name="cloudfunction-build-tags")
+        app = Goblet(
+            function_name="cloudfunction-build-tags", backend="cloudfunctionv1"
+        )
         goblet_entrypoint(app)
         setattr(app, "entrypoint", "app")
 

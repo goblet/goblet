@@ -11,7 +11,7 @@ class TestStorage:
     def test_add_bucket(self, monkeypatch):
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
 
         app.storage("test", "finalize")(dummy_function)
         app.storage("test2", "archive")(dummy_function)
@@ -30,7 +30,7 @@ class TestStorage:
     def test_call_storage(self, monkeypatch):
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunctionv1")
         mock = Mock()
 
         app.storage("test", "finalize")(mock_dummy_function(mock))
@@ -50,7 +50,7 @@ class TestStorage:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet_storage")
+        app = Goblet(function_name="goblet_storage", backend="cloudfunctionv1")
         setattr(app, "entrypoint", "app")
 
         app.storage("test", "finalize")(dummy_function)

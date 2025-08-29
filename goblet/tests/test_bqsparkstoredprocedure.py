@@ -13,7 +13,9 @@ from goblet.infrastructures.bq_spark_stored_procedure import (
 
 class TestBqSparkStoredProcedure:
     def test_register_bqsparkstoredprocedure(self, monkeypatch):
-        app = Goblet(function_name="bqsparkstoredprocedure_test")
+        app = Goblet(
+            function_name="bqsparkstoredprocedure_test", backend="cloudfunctionv1"
+        )
         monkeypatch.setenv("GOOGLE_PROJECT", "goblet")
         monkeypatch.setenv("GOOGLE_LOCATION", "us")
         reset_replay_count()
@@ -62,7 +64,7 @@ class TestBqSparkStoredProcedure:
 
         test_name = "bqsparkstoredprocedure_test"
         procedure_name = "test_spark_stored_procedure"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunctionv1")
         test_dataset_id = "blogs"
 
         def spark_handler():
@@ -112,7 +114,7 @@ class TestBqSparkStoredProcedure:
         reset_replay_count()
 
         test_name = "bqsparkstoredprocedure_test"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunctionv1")
         test_dataset_id = "blogs"
 
         def spark_handler():
@@ -139,7 +141,7 @@ class TestBqSparkStoredProcedure:
         reset_replay_count()
 
         procedure_name = "test_spark_stored_procedure"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunctionv1")
         test_dataset_id = "blogs"
 
         with open("spark.py", "w") as f:
@@ -199,7 +201,7 @@ class TestBqSparkStoredProcedure:
 
         test_name = "bqsparkstoredprocedure-remote-deploy"
         procedure_name = "test_spark_stored_procedure"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunctionv1")
         test_dataset_id = "blogs"
 
         app.bqsparkstoredprocedure(
