@@ -170,9 +170,9 @@ class TestBqRemoteFunction:
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         test_name = "bq-test-region"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
-        @app.bqremotefunction(dataset_id="test", location="US", backend="cloudfunction")
+        @app.bqremotefunction(dataset_id="test", location="US")
         def string_test_blogs_1(x: str, y: str) -> str:
             return f"Passed parameters x:{x}  y:{y}"
 

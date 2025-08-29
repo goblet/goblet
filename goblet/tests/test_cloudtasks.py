@@ -56,7 +56,7 @@ class TestCloudTasks:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
-            function_name="goblet-example",
+            function_name="goblet_example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
             backend="cloudfunction",
         )

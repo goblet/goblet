@@ -60,13 +60,13 @@ class TestJobs:
         assert scheduler.resources["schedule-job-test"]["uri"]
 
     def test_call_job(self, monkeypatch):
-        app = Goblet(function_name="goblet-example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         monkeypatch.setenv("CLOUD_RUN_TASK_INDEX", "0")
 
         mock = Mock()
         mock2 = Mock()
 
-        app = Goblet(function_name="goblet-example", backend="cloudfunction")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         app.job("test")(mock_dummy_function(mock))
         app.job("test", task_id=1)(mock_dummy_function(mock2))
 

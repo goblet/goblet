@@ -143,7 +143,7 @@ class TestPubSubSubscription:
             app(event3, mock_context)
 
     def test_call_subscription(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunction")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         mock = Mock()
         app.pubsub_subscription("test")(mock_dummy_function(mock))
@@ -162,7 +162,7 @@ class TestPubSubSubscription:
         assert mock.call_count == 1
 
     def test_call_subscription_attributes(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunction")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         mock = Mock()
         app.pubsub_subscription("test", attributes={"t": 1})(mock_dummy_function(mock))
@@ -188,7 +188,7 @@ class TestPubSubSubscription:
         assert mock.call_count == 1
 
     def test_context(self):
-        app = Goblet(function_name="goblet-example", backend="cloudfunction")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         @app.pubsub_subscription("test")
         def dummy_function(data):

@@ -199,7 +199,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", "deployer-function-destroy-all")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet-example", backend="cloudfunction")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         app.destroy(all=True)
 
