@@ -1,4 +1,4 @@
-apispec==6.8.2
+apispec==6.6.1
 click== 8.2.1
 functions-framework==3.9.2
 marshmallow==3.26.1
