@@ -16,7 +16,7 @@ from goblet.backends import CloudRun
 
 class TestJobs:
     def test_add_job(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.job("test")(dummy_function)
 
@@ -25,7 +25,7 @@ class TestJobs:
         assert jobs.resources[f"{app.function_name}-test"].get(0)
 
     def test_add_job_tasks(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.job("test")(dummy_function)
         app.job("test", task_id=1)(dummy_function)
@@ -38,7 +38,7 @@ class TestJobs:
         assert jobs.resources[f"{app.function_name}-test"].get(2)
 
     def test_add_job_tasks_valid_kwargs(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         with pytest.raises(Exception):
             app.job("test", task_id=1, schedule="* * * * *")(dummy_function)
@@ -47,7 +47,7 @@ class TestJobs:
             app.job("test", task_id=1, extra_arg="test")(dummy_function)
 
     def test_add_job_with_schedule(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.job("test", schedule="* * * * *")(dummy_function)
 
@@ -60,13 +60,13 @@ class TestJobs:
         assert scheduler.resources["schedule-job-test"]["uri"]
 
     def test_call_job(self, monkeypatch):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         monkeypatch.setenv("CLOUD_RUN_TASK_INDEX", "0")
 
         mock = Mock()
         mock2 = Mock()
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         app.job("test")(mock_dummy_function(mock))
         app.job("test", task_id=1)(mock_dummy_function(mock2))
 

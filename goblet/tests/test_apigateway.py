@@ -87,7 +87,7 @@ class TestApiGatewayExisting:
             "definitions": {},
         }
 
-        app = Goblet("goblet_routes")
+        app = Goblet("goblet_routes", backend="cloudfunction")
         app.apigateway("goblet-routes", "URL", openapi_dict=openapi_dict)
         app.deploy(force=True, skip_handlers=True, skip_backend=True)
 

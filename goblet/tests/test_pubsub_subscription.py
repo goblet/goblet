@@ -22,7 +22,7 @@ from goblet_gcp_client import (
 
 class TestPubSubSubscription:
     def test_add_topic(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.pubsub_subscription("test")(dummy_function)
 
@@ -34,7 +34,7 @@ class TestPubSubSubscription:
         )
 
     def test_add_topic_with_subscription(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.pubsub_subscription("test", use_subscription="true")(dummy_function)
 
@@ -46,7 +46,7 @@ class TestPubSubSubscription:
         )
 
     def test_add_topic_attributes(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         app.pubsub_subscription("test", attributes={"test": True})(dummy_function)
 
@@ -65,7 +65,7 @@ class TestPubSubSubscription:
         )
 
     def test_add_topic_filter(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         app.pubsub_subscription("test", filter='attributes.test = "1"')(dummy_function)
 
@@ -77,7 +77,7 @@ class TestPubSubSubscription:
         )
 
     def test_call_topic(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         @app.pubsub_subscription("test")
         def dummy_function(data):
@@ -93,7 +93,7 @@ class TestPubSubSubscription:
         app(event, mock_context)
 
     def test_call_responses(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         @app.pubsub_subscription("test")
         def dummy_function(data):
@@ -117,7 +117,7 @@ class TestPubSubSubscription:
         assert app(event, mock_context2) == "success"
 
     def test_call_topic_attributes(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example", backend="cloudfunction")
 
         @app.pubsub_subscription("test", attributes={"t": 1})
         def dummy_function(data):
@@ -143,7 +143,7 @@ class TestPubSubSubscription:
             app(event3, mock_context)
 
     def test_call_subscription(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         mock = Mock()
         app.pubsub_subscription("test")(mock_dummy_function(mock))
@@ -162,7 +162,7 @@ class TestPubSubSubscription:
         assert mock.call_count == 1
 
     def test_call_subscription_attributes(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         mock = Mock()
         app.pubsub_subscription("test", attributes={"t": 1})(mock_dummy_function(mock))
@@ -188,7 +188,7 @@ class TestPubSubSubscription:
         assert mock.call_count == 1
 
     def test_context(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
 
         @app.pubsub_subscription("test")
         def dummy_function(data):
@@ -210,7 +210,7 @@ class TestPubSubSubscription:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet_topic")
+        app = Goblet(function_name="goblet_topic", backend="cloudfunction")
         setattr(app, "entrypoint", "app")
 
         app.pubsub_subscription("test-topic")(dummy_function)
@@ -245,6 +245,7 @@ class TestPubSubSubscription:
         app = Goblet(
             function_name="goblet-topic-cross-project",
             config={"pubsub": {"serviceAccountEmail": service_account}},
+            backend="cloudfunction",
         )
         setattr(app, "entrypoint", "app")
 
@@ -270,6 +271,7 @@ class TestPubSubSubscription:
         app = Goblet(
             function_name="goblet-topic-subscription-filter",
             config={"pubsub": {"serviceAccountEmail": service_account}},
+            backend="cloudfunction",
         )
         setattr(app, "entrypoint", "app")
 
@@ -295,7 +297,7 @@ class TestPubSubSubscription:
 
         pubsub = PubSub(
             "goblet_topic",
-            backend=CloudFunctionV1(Goblet()),
+            backend=CloudFunctionV1(Goblet(backend="cloudfunction")),
             resources={
                 "test-topic": {"trigger": {"test-topic": {}}, "subscription": {}}
             },
@@ -487,6 +489,7 @@ class TestPubSubSubscription:
         app = Goblet(
             function_name="goblet-topic-subscription-config",
             config={"pubsub": {"serviceAccountEmail": service_account}},
+            backend="cloudfunction",
         )
         setattr(app, "entrypoint", "app")
 
@@ -515,6 +518,7 @@ class TestPubSubSubscription:
         app = Goblet(
             function_name="goblet-topic-subscription",
             config={"pubsub": {"serviceAccountEmail": service_account}},
+            backend="cloudfunction",
         )
         setattr(app, "entrypoint", "app")
 
@@ -580,6 +584,7 @@ class TestPubSubSubscription:
         app = Goblet(
             function_name="goblet-topic-subscription",
             config={"pubsub": {"serviceAccountEmail": service_account}},
+            backend="cloudfunction",
         )
         setattr(app, "entrypoint", "app")
 
@@ -618,6 +623,7 @@ class TestPubSubSubscription:
         app = Goblet(
             function_name="goblet-topic-subscription",
             config={"pubsub": {"serviceAccountEmail": service_account}},
+            backend="cloudfunction",
         )
 
         app.pubsub_subscription("test", use_subscription=True)(dummy_function)

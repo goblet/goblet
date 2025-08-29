@@ -12,7 +12,7 @@ from unittest.mock import Mock
 
 class TestEventArc:
     def test_add_trigger_topic(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.eventarc(topic="test")(dummy_function)
 
@@ -28,7 +28,7 @@ class TestEventArc:
         ]
 
     def test_add_trigger_event_filter(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.eventarc(
             event_filters=[
@@ -50,7 +50,7 @@ class TestEventArc:
         ]
 
     def test_call_eventarc_topic(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
 
         app.eventarc(topic="test")(mock_dummy_function(mock))
@@ -66,7 +66,7 @@ class TestEventArc:
         assert mock.call_count == 1
 
     def test_call_eventarc_topic_no_response(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.eventarc(topic="test")(mock_dummy_function(dummy_function))
 

@@ -11,7 +11,7 @@ from goblet_gcp_client import get_responses, get_response
 
 class TestScheduler:
     def test_add_schedule(self, monkeypatch):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
@@ -40,7 +40,7 @@ class TestScheduler:
         assert scheduler.resources["dummy_function"]["func"] == dummy_function
 
     def test_multiple_schedules(self, monkeypatch):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
@@ -94,7 +94,7 @@ class TestScheduler:
         )
 
     def test_call_scheduler(self, monkeypatch):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet_example", backend="cloudfunction")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
@@ -122,7 +122,9 @@ class TestScheduler:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
-        scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
+        scheduler = Scheduler(
+            goblet_name, backend=CloudFunctionV1(Goblet(backend="cloudfunction"))
+        )
         scheduler.register(
             "test-job",
             None,
@@ -186,7 +188,10 @@ class TestScheduler:
 
         goblet_name = "goblet-test-schedule"
         scheduler = Scheduler(
-            goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
+            goblet_name,
+            backend=CloudFunctionV1(
+                Goblet(function_name=goblet_name, backend="cloudfunction")
+            ),
         )
         scheduler.register(
             "test-job",
@@ -246,7 +251,10 @@ class TestScheduler:
 
         goblet_name = "goblet_example"
         scheduler = Scheduler(
-            goblet_name, backend=CloudFunctionV1(Goblet(function_name=goblet_name))
+            goblet_name,
+            backend=CloudFunctionV1(
+                Goblet(function_name=goblet_name, backend="cloudfunction")
+            ),
         )
         scheduler.register(
             "test-job",

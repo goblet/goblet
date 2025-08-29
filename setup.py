@@ -32,7 +32,6 @@ REQUIRED = [
     "google-cloud-logging",
     "google-cloud-appengine-logging",
     "goblet-gcp-client",
-    "protobuf==4.24.*",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -117,7 +116,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

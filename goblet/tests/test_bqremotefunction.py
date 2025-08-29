@@ -8,7 +8,7 @@ from typing import List
 
 class TestBqRemoteFunction:
     def test_register_bqremotefunction(self, monkeypatch):
-        app = Goblet(function_name="bqremotefunction_test")
+        app = Goblet(function_name="bqremotefunction_test", backend="cloudfunction")
         monkeypatch.setenv("GOOGLE_PROJECT", "TEST_PROJECT")
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
@@ -50,7 +50,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
         @app.bqremotefunction(dataset_id="blogs", vectorize_func=True)
         def function_test(x: List[int], y: List[str]) -> List[str]:
@@ -77,7 +77,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("GOOGLE_LOCATION", "us-central1")
 
         test_name = "bqremotefunction_test"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
         @app.bqremotefunction(dataset_id="blogs")
         def function_test(x: int, y: int) -> int:
@@ -107,7 +107,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
         @app.bqremotefunction(dataset_id="blogs")
         def string_test_blogs_1(x: str, y: str) -> str:
@@ -170,7 +170,7 @@ class TestBqRemoteFunction:
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
         test_name = "bq-test-region"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
         @app.bqremotefunction(dataset_id="test", location="US")
         def string_test_blogs_1(x: str, y: str) -> str:
@@ -228,7 +228,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
         @app.bqremotefunction(dataset_id="blogs")
         def string_test_blogs_1(x: str, y: str) -> str:
@@ -260,7 +260,7 @@ class TestBqRemoteFunction:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         test_name = "bqremotefunction_test"
-        app = Goblet(function_name=test_name)
+        app = Goblet(function_name=test_name, backend="cloudfunction")
 
         @app.bqremotefunction(dataset_id="test", location="US")
         def string_test_blogs_1(x: str, y: str) -> str:

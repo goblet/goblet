@@ -9,7 +9,7 @@ from goblet_gcp_client import (
 
 class TestPubSub:
     def test_add_pubsub_topics(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.pubsub_topic(name="pubsub_topic01")
         app.pubsub_topic(name="pubsub_topic02")
@@ -24,7 +24,7 @@ class TestPubSub:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         client: PubSubClient = app.pubsub_topic(name="test")  # noqa: F841
 
@@ -49,7 +49,7 @@ class TestPubSub:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-deploy")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         client: PubSubClient = app.pubsub_topic(name="test")  # noqa: F841
 
@@ -73,7 +73,7 @@ class TestPubSub:
         monkeypatch.setenv("G_TEST_NAME", "pubsub-update")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.pubsub_topic(name="test")  # noqa: F841
 
@@ -124,7 +124,7 @@ class TestPubSub:
         monkeypatch.setenv("PUBSUB_EMULATOR_HOST", "localhost:8085")
         reset_replay_count()
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.pubsub_topic(name="test")  # noqa: F841
 

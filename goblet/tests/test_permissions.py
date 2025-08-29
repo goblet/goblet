@@ -23,7 +23,7 @@ class TestPermissions:
         assert len(permissions) == 5
 
     def test_get_permissions(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         app.pubsub_subscription("test")(dummy_function)
         permissions = app.get_permissions()
 

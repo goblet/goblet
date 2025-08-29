@@ -5,7 +5,7 @@ from goblet.test_utils import mock_dummy_function
 
 class TestHttp:
     def test_call_route(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
 
         app.http()(mock_dummy_function(mock))
@@ -20,7 +20,7 @@ class TestHttp:
         assert mock.call_count == 1
 
     def test_call_headers_dict(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
 
         @app.http(headers={"test": 1, "test2": 2})
@@ -50,7 +50,7 @@ class TestHttp:
         assert mock.call_count == 1
 
     def test_call_headers_set(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
 
         @app.http(headers={"test", "also_test"})

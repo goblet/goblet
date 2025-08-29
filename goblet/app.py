@@ -29,7 +29,7 @@ class Goblet(Goblet_Decorators, Resource_Manager):
     def __init__(
         self,
         function_name="goblet",
-        backend="cloudfunction",
+        backend="cloudfunctionv2",
         local="local",
         cors=None,
         routes_type="apigateway",

@@ -10,7 +10,7 @@ from goblet.infrastructures.vpcconnector import VPCConnector
 class TestVPCConnector:
     def test_add_vpcconnector(self):
         app = Goblet(
-            function_name="goblet_example",
+            function_name="goblet-example",
             config={"vpcconnector": {"ipCidrRange": "10.32.1.0/28"}},
         )
 
@@ -19,7 +19,7 @@ class TestVPCConnector:
         assert vpc.resources["name"] == "vpc-test"
 
     def test_add_invalid_vpcconnector(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         with raises(ValueError):
             app.vpcconnector(name="vpc-test")
 

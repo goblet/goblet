@@ -54,8 +54,8 @@ class TestResponse:
 
 class TestDecoraters:
     def test_add(self):
-        app1 = Goblet("test")
-        app2 = Goblet("test")
+        app1 = Goblet("test", backend="cloudfunction")
+        app2 = Goblet("test", backend="cloudfunction")
 
         @app1.route("/home")
         @app2.route("/home2")
@@ -76,8 +76,8 @@ class TestDecoraters:
         ]
 
     def test_add_current_request(self):
-        app1 = Goblet("test")
-        app2 = Goblet("test")
+        app1 = Goblet("test", backend="cloudfunction")
+        app2 = Goblet("test", backend="cloudfunction")
 
         @app2.route("/app2")
         def dummy_function():
