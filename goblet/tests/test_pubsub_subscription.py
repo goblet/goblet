@@ -297,7 +297,7 @@ class TestPubSubSubscription:
 
         pubsub = PubSub(
             "goblet_topic",
-            backend=CloudFunctionV1(Goblet()),
+            backend=CloudFunctionV1(Goblet(backend="cloudfunction")),
             resources={
                 "test-topic": {"trigger": {"test-topic": {}}, "subscription": {}}
             },

@@ -187,7 +187,7 @@ class TestRoutes:
         app = Goblet(function_name="goblet_cors", backend="cloudfunction")
         app2 = Goblet(
             function_name="goblet_cors",
-            cors=CORSConfig(allow_origin="app-level", backend="cloudfunction"),
+            cors=CORSConfig(allow_origin="app-level"),
         )
 
         @app.route("/test", cors=True)
@@ -248,7 +248,7 @@ class TestRoutes:
         assert resp3[2]["X-TEST"] == "X-VALUE"
 
     def test_cors_options(self):
-        app = Goblet(function_name="goblet_cors")
+        app = Goblet(function_name="goblet_cors", backend="cloudfunction")
 
         @app.route("/test", cors=True)
         def mock_function():

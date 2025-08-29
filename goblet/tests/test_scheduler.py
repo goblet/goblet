@@ -122,7 +122,9 @@ class TestScheduler:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         goblet_name = "goblet_example"
-        scheduler = Scheduler(goblet_name, backend=CloudFunctionV1(Goblet()))
+        scheduler = Scheduler(
+            goblet_name, backend=CloudFunctionV1(Goblet(backend="cloudfunction"))
+        )
         scheduler.register(
             "test-job",
             None,
