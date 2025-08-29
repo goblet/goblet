@@ -20,7 +20,7 @@ class TestDeployer:
 
         requests_mock.register_uri("PUT", "https://storage.googleapis.com/mock")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         setattr(app, "entrypoint", "app")
 
         app.handlers["http"] = HTTP("name", app)
@@ -199,7 +199,7 @@ class TestDeployer:
         monkeypatch.setenv("G_TEST_NAME", "deployer-function-destroy-all")
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.destroy(all=True)
 

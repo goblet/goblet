@@ -58,7 +58,7 @@ Let's take a look at the main.py file:
 
     from goblet import Goblet, goblet_entrypoint
 
-    app = Goblet(function_name="goblet_example")
+    app = Goblet(function_name="goblet-example")
     goblet_entrypoint(app)
 
     @app.route('/home')

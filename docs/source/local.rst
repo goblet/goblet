@@ -14,7 +14,7 @@ You can have a custom local name by setting the local param in the goblet class
 
     from goblet import Goblet
 
-    app = Goblet(function_name="goblet_example", local='test')
+    app = Goblet(function_name="goblet-example", local='test')
 
 
 Then run ``goblet local test``

@@ -11,7 +11,7 @@ class TestStorage:
     def test_add_bucket(self, monkeypatch):
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.storage("test", "finalize")(dummy_function)
         app.storage("test2", "archive")(dummy_function)
@@ -22,7 +22,7 @@ class TestStorage:
         assert storage.resources[1]["event_type"] == "archive"
 
     def test_add_invalid_event(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         with pytest.raises(Exception):
             app.storage("test", "wrong")(dummy_function)
@@ -30,7 +30,7 @@ class TestStorage:
     def test_call_storage(self, monkeypatch):
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
 
         app.storage("test", "finalize")(mock_dummy_function(mock))

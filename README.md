@@ -20,7 +20,7 @@ You can create Rest APIs:
 ```python
 from goblet import Goblet, jsonify, goblet_entrypoint
 
-app = Goblet(function_name="goblet_example")
+app = Goblet(function_name="goblet-example")
 goblet_entrypoint(app)
 
 @app.route('/home')
@@ -37,7 +37,7 @@ You can also create other GCP resources that are related to your REST api:
 ```python
 from goblet import Goblet, jsonify, goblet_entrypoint
 
-app = Goblet(function_name="goblet_example")
+app = Goblet(function_name="goblet-example")
 goblet_entrypoint(app)
 
 # Scheduled job
@@ -69,13 +69,14 @@ $ curl https://api.uc.gateway.dev/home
 {"hello": "world"}
 ```
 
-> Note: Due to breaking changes in Cloudfunctions you will need to wrap your goblet class in a function. See [issue #88](https://github.com/goblet/goblet/issues/88). In the latest goblet version (0.5.0) there is a helper function `goblet_entrypoint` that can be used as well. 
+> Note: Due to breaking changes in Cloudfunctions you will need to wrap your goblet class in a function. See [issue #88](https://github.com/goblet/goblet/issues/88). In the latest goblet version (0.5.0) there is a helper function `goblet_entrypoint` that can be used as well.
 
 > `goblet_entrypoint(app)`
 
 ## Resources Supported
 
 #### Infrastructure
+
 * vpc connector
 * redis
 * api gateway
@@ -84,15 +85,18 @@ $ curl https://api.uc.gateway.dev/home
 * bq spark stored procedures
 
 #### Backends
+
 * cloudfunction
 * cloudfunction V2
 * cloudrun
 
 #### Routing
+
 * api gateway
 * http
 
 #### Handlers
+
 * pubsub
 * scheduler
 * storage
@@ -103,6 +107,7 @@ $ curl https://api.uc.gateway.dev/home
 * uptime checks
 
 #### Alerts
+
 * Backend Alerts
 * Uptime Alerts
 * PubSub DLQ Alerts
@@ -173,7 +178,7 @@ Let's take a look at the main.py file:
 ```python
 from goblet import Goblet, goblet_entrypoint
 
-app = Goblet(function_name="goblet_example")
+app = Goblet(function_name="goblet-example")
 goblet_entrypoint(app)
 
 @app.route('/home')
@@ -190,7 +195,7 @@ Running your functions locally for testing and debugging is easy to do with gobl
 ```python
 from goblet import Goblet
 
-app = Goblet(function_name="goblet_example")
+app = Goblet(function_name="goblet-example")
 goblet_entrypoint(app)
 
 @app.route('/home')
@@ -344,7 +349,6 @@ Please file any issues, bugs or feature requests as an issue on our [GitHub](htt
  &#9745; Create Deployment Service Accounts \
  &#9745; Automatically add IAM invoker bindings on the backend based on deployed handlers \
  &#9745; [Uptime Checks](https://cloud.google.com/monitoring/uptime-checks)
-
 
 ## Want to Contribute
 

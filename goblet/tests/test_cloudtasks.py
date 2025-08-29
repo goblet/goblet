@@ -10,7 +10,7 @@ from unittest.mock import Mock
 class TestCloudTasks:
     def test_add_cloudtaskqueues(self):
         app = Goblet(
-            function_name="goblet_example",
+            function_name="goblet-example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
         )
 
@@ -28,7 +28,7 @@ class TestCloudTasks:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
-            function_name="goblet_example",
+            function_name="goblet-example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
         )
 
@@ -56,7 +56,7 @@ class TestCloudTasks:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
-            function_name="goblet_example",
+            function_name="goblet-example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
         )
 
@@ -80,7 +80,7 @@ class TestCloudTasks:
         monkeypatch.setenv("G_HTTP_TEST", "REPLAY")
 
         app = Goblet(
-            function_name="goblet_example",
+            function_name="goblet-example",
             config={"cloudtask": {"serviceAccount": "service-account@goblet.com"}},
         )
 
@@ -137,7 +137,7 @@ class TestCloudTasks:
         )
 
     def test_duplicate_targets(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         with pytest.raises(Exception):
 
@@ -150,7 +150,7 @@ class TestCloudTasks:
                 return {}
 
     def test_handle_cloud_task(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         @app.cloudtasktarget(name="target")
         def dummy_function(task):

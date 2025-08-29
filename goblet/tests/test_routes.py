@@ -12,7 +12,7 @@ from goblet_gcp_client import get_response, get_responses
 
 class TestRoutes:
     def test_add_base_route(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.route("/home")(dummy_function)
 
@@ -25,7 +25,7 @@ class TestRoutes:
         assert route_entry.route_function == dummy_function
 
     def test_add_route_path_params(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.route("/home/{home_id}", content_types={"home_id": "boolean"})(
             dummy_function
@@ -40,7 +40,7 @@ class TestRoutes:
         assert route_entry.route_function == dummy_function
 
     def test_add_multiple_methods(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         @app.route("/home", methods=["POST", "GET"])
         def dummy_function(self):
@@ -65,7 +65,7 @@ class TestRoutes:
         )
 
     def test_add_multiple_routes(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.route("/home")(dummy_function)
         app.route("/home2")(dummy_function)
@@ -76,7 +76,7 @@ class TestRoutes:
         assert gateway.resources["/home2"]["GET"]
 
     def test_call_tuple_response(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -91,7 +91,7 @@ class TestRoutes:
         assert resp == ("success", 201)
 
     def test_call_tuple_with_cors_response(self):
-        app = Goblet(function_name="goblet_example", cors=True)
+        app = Goblet(function_name="goblet-example", cors=True)
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -107,7 +107,7 @@ class TestRoutes:
         assert resp.status_code == 201
 
     def test_call_tuple_with_headers_response(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -122,7 +122,7 @@ class TestRoutes:
         assert resp == ("success", 201, {"x-header": "test"})
 
     def test_call_tuple_with_cors_and_headers_response(self):
-        app = Goblet(function_name="goblet_example", cors=True)
+        app = Goblet(function_name="goblet-example", cors=True)
 
         @app.route("/test", methods=["POST"])
         def mock_function():
@@ -139,7 +139,7 @@ class TestRoutes:
         assert resp[2].get("x-header") == "test"
 
     def test_call_route(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
         mock_param = Mock()
 
@@ -169,7 +169,7 @@ class TestRoutes:
         mock_param.assert_called_once_with("param")
 
     def test_call_route_list_request_body(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
         mock = Mock()
 
         app.route("/test", methods=["POST"])(mock_dummy_function(mock))

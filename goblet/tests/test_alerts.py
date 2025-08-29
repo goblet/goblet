@@ -18,7 +18,7 @@ from goblet_gcp_client import (
 
 class TestAlerts:
     def test_add_alert(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         metric_alert = BackendAlert(
             "metric",

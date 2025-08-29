@@ -11,7 +11,7 @@ from goblet_gcp_client import (
 
 class TestRedis:
     def test_add_redis(self):
-        app = Goblet(function_name="goblet_example")
+        app = Goblet(function_name="goblet-example")
 
         app.redis(name="redis-test")
         redis = app.infrastructure["redis"]
