@@ -188,6 +188,7 @@ class TestRoutes:
         app2 = Goblet(
             function_name="goblet_cors",
             cors=CORSConfig(allow_origin="app-level"),
+            backend="cloudfunction",
         )
 
         @app.route("/test", cors=True)
