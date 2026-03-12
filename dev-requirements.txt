@@ -5,6 +5,6 @@ coverage
 flake8==3.8.4
 pytest
 requests-mock
-black==24.3.0
+black==26.3.1
 importlib-metadata==4.13.0
 build
